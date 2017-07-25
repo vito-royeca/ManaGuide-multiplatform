@@ -1,4 +1,4 @@
-# Mana Guide
+# ManaGuide-ios
 An iOS app database of Magic: The Gathering cards.
 
 ## Author
