@@ -55,6 +55,7 @@ extension CMCard {
     @NSManaged public var toughness: String?
     @NSManaged public var type: String?
     @NSManaged public var types: Data?
+    @NSManaged public var typeSection: String?
     @NSManaged public var variations: Data?
     @NSManaged public var watermark: String?
     @NSManaged public var artist_: CMArtist?
