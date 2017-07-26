@@ -58,30 +58,19 @@ class SetsViewController: BaseViewController {
     func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
         var request:NSFetchRequest<NSFetchRequestResult>?
         let defaults = defaultsValue()
+        let setsSectionName = defaults["setsSectionName"] as! String
         let setsSortBy = defaults["setsSortBy"] as! String
         let setsOrderBy = defaults["setsOrderBy"] as! Bool
-        var sectionName:String?
-        
-        switch setsSortBy {
-        case "releaseDate":
-            sectionName = "yearSection"
-        case "name":
-            sectionName = "nameSection"
-        case "type_.name":
-            sectionName = "typeSection"
-        default:
-            ()
-        }
         
         if let fetchRequest = fetchRequest {
             request = fetchRequest
         } else {
             request = NSFetchRequest(entityName: "CMSet")
-            request!.sortDescriptors = [NSSortDescriptor(key: sectionName!, ascending: setsOrderBy),
+            request!.sortDescriptors = [NSSortDescriptor(key: setsSectionName, ascending: setsOrderBy),
                                         NSSortDescriptor(key: setsSortBy, ascending: setsOrderBy)]
         }
         
-        let dataSource = DATASource(tableView: tableView, cellIdentifier: "SetCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: sectionName, configuration: { cell, item, indexPath in
+        let dataSource = DATASource(tableView: tableView, cellIdentifier: "SetCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setsSectionName, configuration: { cell, item, indexPath in
             if let set = item as? CMSet {
                 
                 if let setIconView = cell.contentView.viewWithTag(100) as? UIImageView {
@@ -117,22 +106,26 @@ class SetsViewController: BaseViewController {
             sectionTitles = [String]()
             
             let defaults = defaultsValue()
-            let setsSortBy = defaults["setsSortBy"] as! String
+            let setsSectionName = defaults["setsSectionName"] as! String
             
-            switch setsSortBy {
-            case "name":
+            switch setsSectionName {
+            case "nameSection":
                 for set in sets {
-                    if !sectionIndexTitles.contains(set.nameSection!) {
-                        sectionIndexTitles.append(set.nameSection!)
+                    if let nameSection = set.nameSection {
+                        if !sectionIndexTitles.contains(nameSection) {
+                            sectionIndexTitles.append(nameSection)
+                        }
                     }
                 }
                 
-            case "type_.name":
+            case "typeSection":
                 for set in sets {
-                    let prefix = String(set.type_!.name!.characters.prefix(1)).uppercased()
+                    if let type_ = set.type_ {
+                        let prefix = String(type_.name!.characters.prefix(1)).uppercased()
                     
-                    if !sectionIndexTitles.contains(prefix) {
-                        sectionIndexTitles.append(prefix)
+                        if !sectionIndexTitles.contains(prefix) {
+                            sectionIndexTitles.append(prefix)
+                        }
                     }
                 }
             default:
@@ -153,35 +146,35 @@ class SetsViewController: BaseViewController {
     func updateData(_ notification: Notification) {
         if let userInfo = notification.userInfo as? [String: Any] {
             let defaults = defaultsValue()
+            var setsSectionName = defaults["setsSectionName"] as! String
             var setsSortBy = defaults["setsSortBy"] as! String
             var setsOrderBy = defaults["setsOrderBy"] as! Bool
             
-            if let value = userInfo["setsSortBy"] as? NSNumber {
-                switch value {
-                case 1:
-                    setsSortBy = "releaseDate"
-                case 2:
-                    setsSortBy = "name"
-                case 3:
-                    setsSortBy = "type_.name"
+            if let value = userInfo["setsSortBy"] as? String {
+                setsSortBy = value
+                
+                switch setsSortBy {
+                case "releaseDate":
+                    setsSectionName = "yearSection"
+                case "name":
+                    setsSectionName = "nameSection"
+                case "type_.name":
+                    setsSectionName = "typeSection"
                 default:
                     ()
                 }
+                
+                UserDefaults.standard.set(setsSectionName, forKey: "setsSectionName")
+                UserDefaults.standard.synchronize()
             }
             
-            if let value = userInfo["setsOrderBy"] as? NSNumber {
-                switch value {
-                case 1:
-                    setsOrderBy = true
-                case 2:
-                    setsOrderBy = false
-                default:
-                    ()
-                }
+            if let value = userInfo["setsOrderBy"] as? Bool {
+                setsOrderBy = value
             }
             
             let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMSet")
-            request.sortDescriptors = [NSSortDescriptor(key: setsSortBy, ascending: setsOrderBy)]
+            request.sortDescriptors = [NSSortDescriptor(key: setsSectionName, ascending: setsOrderBy),
+                                        NSSortDescriptor(key: setsSortBy, ascending: setsOrderBy)]
             
             dataSource = getDataSource(request)
             updateSections()
@@ -191,33 +184,23 @@ class SetsViewController: BaseViewController {
     
     func defaultsValue() -> [String: Any] {
         var values = [String: Any]()
+        var setsSectionName = "yearSection"
         var setsSortBy = "releaseDate"
         var setsOrderBy = false
         
-        if let value = UserDefaults.standard.value(forKey: "setsSortBy") as? NSNumber {
-            switch value {
-            case 1:
-                setsSortBy = "releaseDate"
-            case 2:
-                setsSortBy = "name"
-            case 3:
-                setsSortBy = "type_.name"
-            default:
-                ()
-            }
+        if let value = UserDefaults.standard.value(forKey: "setsSectionName") as? String {
+            setsSectionName = value
         }
         
-        if let value = UserDefaults.standard.value(forKey: "setsOrderBy") as? NSNumber {
-            switch value {
-            case 1:
-                setsOrderBy = true
-            case 2:
-                setsOrderBy = false
-            default:
-                ()
-            }
+        if let value = UserDefaults.standard.value(forKey: "setsSortBy") as? String {
+            setsSortBy = value
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "setsOrderBy") as? Bool {
+            setsOrderBy = value
         }
 
+        values["setsSectionName"] = setsSectionName
         values["setsSortBy"] = setsSortBy
         values["setsOrderBy"] = setsOrderBy
         

@@ -10,6 +10,35 @@ import UIKit
 
 class BrowserTableViewCell: UITableViewCell {
 
+    // MARK: Variables
+    
+    // MARK: Outlets
+    @IBOutlet weak var webView: UIWebView!
+    @IBOutlet weak var backButton: UIBarButtonItem!
+    @IBOutlet weak var forwardButton: UIBarButtonItem!
+    @IBOutlet weak var refreshButton: UIBarButtonItem!
+    
+    
+    // MARK: Actions
+    @IBAction func backAction(_ sender: UIBarButtonItem) {
+        if webView.canGoBack {
+            webView.goBack()
+        }
+    }
+    
+    @IBAction func forwardAction(_ sender: UIBarButtonItem) {
+        if webView.canGoForward {
+            webView.goForward()
+        }
+        
+        webView.goForward()
+    }
+    
+    @IBAction func refreshAction(_ sender: UIBarButtonItem) {
+        webView.reload()
+    }
+    
+    // MARK: Overrides
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

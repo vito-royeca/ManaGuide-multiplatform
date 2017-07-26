@@ -14,12 +14,12 @@
 			<key>Key</key>
 			<string>setsSortBy</string>
 			<key>DefaultValue</key>
-			<integer>1</integer>
+			<string>releaseDate</string>
 			<key>Values</key>
 			<array>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
+				<string>releaseDate</string>
+				<string>name</string>
+				<string>type_.name</string>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -36,11 +36,11 @@
 			<key>Key</key>
 			<string>setsOrderBy</string>
 			<key>DefaultValue</key>
-			<integer>2</integer>
+			<false/>
 			<key>Values</key>
 			<array>
-				<integer>1</integer>
-				<integer>2</integer>
+				<true/>
+				<false/>
 			</array>
 			<key>Titles</key>
 			<array>

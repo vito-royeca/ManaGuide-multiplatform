@@ -35,6 +35,10 @@
 		1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7651F224874004EF296 /* SettingsViewController.swift */; };
 		1147B7691F226143004EF296 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1147B7681F226143004EF296 /* Settings.bundle */; };
 		1147B76A1F226143004EF296 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1147B7681F226143004EF296 /* Settings.bundle */; };
+		11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */; };
+		11E4374B1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */; };
+		11E4374C1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */; };
+		11E4374D1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */; };
 		74354F476842033081184C2B /* Pods_ManaGuide.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBC4619D8E82345F50B95062 /* Pods_ManaGuide.framework */; };
 		C6B3BF0EAEFDFD7753AABDCA /* Pods_ManaGuideUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D468E164F8FD81E252338DF /* Pods_ManaGuideUITests.framework */; };
 		CF25780178833B6EA5E11C6F /* Pods_ManaGuideTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5D11A42B4FA676E10149FA9 /* Pods_ManaGuideTests.framework */; };
@@ -81,6 +85,8 @@
 		1147B7621F224198004EF296 /* SetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetViewController.swift; sourceTree = "<group>"; };
 		1147B7651F224874004EF296 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		1147B7681F226143004EF296 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserTableViewCell.swift; sourceTree = "<group>"; };
+		11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BrowserTableViewCell.xib; sourceTree = "<group>"; };
 		16CE1263B7BD598033CE1752 /* Pods-ManaGuideUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ManaGuideUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ManaGuideUITests/Pods-ManaGuideUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		24D1EA6B21F1DF4EBD57196F /* Pods-ManaGuide.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ManaGuide.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ManaGuide/Pods-ManaGuide.debug.xcconfig"; sourceTree = "<group>"; };
 		2C8C1EAFD37CC486643EE4F2 /* Pods-ManaGuideUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ManaGuideUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ManaGuideUITests/Pods-ManaGuideUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -186,12 +192,14 @@
 		110BB5271F2084D600086841 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */,
+				1147B75C1F223820004EF296 /* SetItemSliderCollectionViewCell.swift */,
+				1147B7471F21F340004EF296 /* SliderTableViewCell.swift */,
+				11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */,
+				1147B75D1F223820004EF296 /* SetItemSliderCollectionViewCell.xib */,
+				1147B7481F21F340004EF296 /* SliderTableViewCell.xib */,
 				110BB5021F207C6400086841 /* LaunchScreen.storyboard */,
 				110BB4FD1F207C6400086841 /* Main.storyboard */,
-				1147B75C1F223820004EF296 /* SetItemSliderCollectionViewCell.swift */,
-				1147B75D1F223820004EF296 /* SetItemSliderCollectionViewCell.xib */,
-				1147B7471F21F340004EF296 /* SliderTableViewCell.swift */,
-				1147B7481F21F340004EF296 /* SliderTableViewCell.xib */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -345,6 +353,7 @@
 				110BB5011F207C6400086841 /* Assets.xcassets in Resources */,
 				1147B74B1F21F340004EF296 /* SliderTableViewCell.xib in Resources */,
 				110BB4FF1F207C6400086841 /* Main.storyboard in Resources */,
+				11E4374C1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */,
 				1147B7691F226143004EF296 /* Settings.bundle in Resources */,
 				1147B7601F223820004EF296 /* SetItemSliderCollectionViewCell.xib in Resources */,
 			);
@@ -361,6 +370,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11E4374D1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */,
 				1147B74C1F21F340004EF296 /* SliderTableViewCell.xib in Resources */,
 				1147B76A1F226143004EF296 /* Settings.bundle in Resources */,
 				1147B7611F223820004EF296 /* SetItemSliderCollectionViewCell.xib in Resources */,
@@ -608,6 +618,7 @@
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
 				110BB52D1F20892B00086841 /* SearchViewController.swift in Sources */,
 				1147B75E1F223820004EF296 /* SetItemSliderCollectionViewCell.swift in Sources */,
+				11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
 				1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */,
 				110BB52A1F20891D00086841 /* FeaturedViewController.swift in Sources */,
 				1147B7491F21F340004EF296 /* SliderTableViewCell.swift in Sources */,
@@ -632,6 +643,7 @@
 				1147B74A1F21F340004EF296 /* SliderTableViewCell.swift in Sources */,
 				1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */,
 				1147B75F1F223820004EF296 /* SetItemSliderCollectionViewCell.swift in Sources */,
+				11E4374B1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
 				1147B7641F224198004EF296 /* SetViewController.swift in Sources */,
 				1147B75B1F22379F004EF296 /* BaseViewController.swift in Sources */,
 				110BB52B1F20891D00086841 /* FeaturedViewController.swift in Sources */,

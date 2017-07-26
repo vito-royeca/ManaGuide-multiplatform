@@ -14,18 +14,20 @@
 			<key>Key</key>
 			<string>setSortBy</string>
 			<key>DefaultValue</key>
-			<integer>1</integer>
+			<string>name</string>
 			<key>Values</key>
 			<array>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
+				<string>name</string>
+				<string>mciNumber</string>
+				<string>typeSection</string>
+				<string>artist_.name</string>
 			</array>
 			<key>Titles</key>
 			<array>
 				<string>Name</string>
 				<string>Number</string>
 				<string>Type</string>
+				<string>Artist</string>
 			</array>
 		</dict>
 		<dict>
@@ -36,11 +38,11 @@
 			<key>Key</key>
 			<string>setOrderBy</string>
 			<key>DefaultValue</key>
-			<integer>1</integer>
+			<true/>
 			<key>Values</key>
 			<array>
-				<integer>1</integer>
-				<integer>2</integer>
+				<true/>
+				<false/>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -56,12 +58,12 @@
 			<key>Key</key>
 			<string>setDisplayBy</string>
 			<key>DefaultValue</key>
-			<integer>1</integer>
+			<string>list</string>
 			<key>Values</key>
 			<array>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
+				<string>list</string>
+				<string>2x2</string>
+				<string>4x4</string>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -78,11 +80,11 @@
 			<key>Key</key>
 			<string>setShow</string>
 			<key>DefaultValue</key>
-			<integer>1</integer>
+			<string>cards</string>
 			<key>Values</key>
 			<array>
-				<integer>1</integer>
-				<integer>2</integer>
+				<string>cards</string>
+				<string>setInfo</string>
 			</array>
 			<key>Titles</key>
 			<array>
