@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB4F91F207C6400086841 /* AppDelegate.swift */; };
-		110BB4FC1F207C6400086841 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB4FB1F207C6400086841 /* ViewController.swift */; };
 		110BB4FF1F207C6400086841 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 110BB4FD1F207C6400086841 /* Main.storyboard */; };
 		110BB5011F207C6400086841 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 110BB5001F207C6400086841 /* Assets.xcassets */; };
 		110BB5041F207C6400086841 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 110BB5021F207C6400086841 /* LaunchScreen.storyboard */; };
@@ -61,7 +60,6 @@
 /* Begin PBXFileReference section */
 		110BB4F61F207C6400086841 /* ManaGuide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ManaGuide.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		110BB4F91F207C6400086841 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		110BB4FB1F207C6400086841 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		110BB4FE1F207C6400086841 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		110BB5001F207C6400086841 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		110BB5031F207C6400086841 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -162,7 +160,6 @@
 				110BB5281F2084E100086841 /* Controller */,
 				110BB5051F207C6400086841 /* Info.plist */,
 				110BB5271F2084D600086841 /* View */,
-				110BB4FB1F207C6400086841 /* ViewController.swift */,
 				1147B7681F226143004EF296 /* Settings.bundle */,
 			);
 			path = ManaGuide;
@@ -608,7 +605,6 @@
 				1147B7571F223607004EF296 /* SetsViewController.swift in Sources */,
 				1147B7661F224874004EF296 /* SettingsViewController.swift in Sources */,
 				1147B7631F224198004EF296 /* SetViewController.swift in Sources */,
-				110BB4FC1F207C6400086841 /* ViewController.swift in Sources */,
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
 				110BB52D1F20892B00086841 /* SearchViewController.swift in Sources */,
 				1147B75E1F223820004EF296 /* SetItemSliderCollectionViewCell.swift in Sources */,

@@ -17,6 +17,7 @@ class SetsViewController: BaseViewController {
     // MARK: Variables
     var dataSource: DATASource?
     var sectionIndexTitles = [String]()
+    var sectionTitles = [String]()
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
@@ -39,7 +40,7 @@ class SetsViewController: BaseViewController {
         rightMenuButton.title = nil
         
         dataSource = getDataSource(nil)
-        updateSectionIndexTitles()
+        updateSections()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -92,12 +93,15 @@ class SetsViewController: BaseViewController {
                 }
                 if let label = cell.contentView.viewWithTag(300) as? UILabel {
                     label.text = set.code
+                    label.adjustsFontSizeToFitWidth = true
                 }
                 if let label = cell.contentView.viewWithTag(400) as? UILabel {
                     label.text = set.releaseDate
+                    label.adjustsFontSizeToFitWidth = true
                 }
                 if let label = cell.contentView.viewWithTag(500) as? UILabel {
                     label.text = "\(set.cards!.allObjects.count) cards"
+                    label.adjustsFontSizeToFitWidth = true
                 }
             }
         })
@@ -106,10 +110,11 @@ class SetsViewController: BaseViewController {
         return dataSource
     }
 
-    func updateSectionIndexTitles() {
+    func updateSections() {
         if let dataSource = dataSource {
             let sets = dataSource.all() as [CMSet]
             sectionIndexTitles = [String]()
+            sectionTitles = [String]()
             
             let defaults = defaultsValue()
             let setsSortBy = defaults["setsSortBy"] as! String
@@ -133,9 +138,16 @@ class SetsViewController: BaseViewController {
             default:
                 ()
             }
+            
+            for i in 0...dataSource.numberOfSections(in: tableView) - 1 {
+                if let sectionTitle = dataSource.titleForHeader(i) {
+                    sectionTitles.append(sectionTitle)
+                }
+            }
         }
         
         sectionIndexTitles.sort()
+        sectionTitles.sort()
     }
 
     func updateData(_ notification: Notification) {
@@ -172,7 +184,7 @@ class SetsViewController: BaseViewController {
             request.sortDescriptors = [NSSortDescriptor(key: setsSortBy, ascending: setsOrderBy)]
             
             dataSource = getDataSource(request)
-            updateSectionIndexTitles()
+            updateSections()
             tableView.reloadData()
         }
     }
@@ -234,29 +246,17 @@ extension SetsViewController : DATASourceDelegate {
         let setsOrderBy = defaults["setsOrderBy"] as! Bool
         var sectionIndex = 0
         
-        // TODO: fix this!!!
-        print("\(title) / \(index)")
-        
-        if setsOrderBy {
-            sectionIndex = index
-        } else {
-            sectionIndex = (sectionIndexTitles.count - 1) - index
+        for i in 0...sectionTitles.count - 1 {
+            if sectionTitles[i].hasPrefix(title) {
+                if setsOrderBy {
+                    sectionIndex = i
+                } else {
+                    sectionIndex = (sectionTitles.count - 1) - i
+                }
+                break
+            }
         }
-        
-//        if setsOrderBy {
-//            for i in 0...sectionIndexTitles.count - 1 {
-//                if sectionIndexTitles[i] == title {
-//                    return i
-//                }
-//            }
-//        } else {
-//            for i in stride(from: sectionIndexTitles.count - 1, to: 0, by: -1) {
-//                if sectionIndexTitles[i] == title {
-//                    return i
-//                }
-//            }
-//        }
-        
+
         return sectionIndex
     }
 }
