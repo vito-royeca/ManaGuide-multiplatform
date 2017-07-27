@@ -39,8 +39,7 @@ class SetsViewController: BaseViewController {
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
         
-        dataSource = getDataSource(nil)
-        updateSections()
+        updateDataDisplay()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -55,6 +54,12 @@ class SetsViewController: BaseViewController {
     }
 
     // MARK: Custom methods
+    func updateDataDisplay() {
+        dataSource = getDataSource(nil)
+        updateSections()
+        tableView.reloadData()
+    }
+    
     func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
         var request:NSFetchRequest<NSFetchRequestResult>?
         let defaults = defaultsValue()
@@ -163,22 +168,18 @@ class SetsViewController: BaseViewController {
                 default:
                     ()
                 }
-                
-                UserDefaults.standard.set(setsSectionName, forKey: "setsSectionName")
-                UserDefaults.standard.synchronize()
             }
             
             if let value = userInfo["setsOrderBy"] as? Bool {
                 setsOrderBy = value
             }
             
-            let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMSet")
-            request.sortDescriptors = [NSSortDescriptor(key: setsSectionName, ascending: setsOrderBy),
-                                        NSSortDescriptor(key: setsSortBy, ascending: setsOrderBy)]
+            UserDefaults.standard.set(setsSectionName, forKey: "setsSectionName")
+            UserDefaults.standard.set(setsSortBy, forKey: "setsSortBy")
+            UserDefaults.standard.set(setsOrderBy, forKey: "setsOrderBy")
+            UserDefaults.standard.synchronize()
             
-            dataSource = getDataSource(request)
-            updateSections()
-            tableView.reloadData()
+            updateDataDisplay()
         }
     }
     

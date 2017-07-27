@@ -26,18 +26,18 @@
                     <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VN2-Ib-39e">
                         <rect key="frame" x="0.0" y="156" width="320" height="44"/>
                         <items>
-                            <barButtonItem image="backButton" id="Zb2-0T-2Gg">
+                            <barButtonItem enabled="NO" image="backButton" id="Zb2-0T-2Gg">
                                 <connections>
                                     <action selector="backAction:" destination="KGk-i7-Jjw" id="ztX-ii-XeO"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem image="forwardButton" id="kOS-je-0OG">
+                            <barButtonItem enabled="NO" image="forwardButton" id="kOS-je-0OG">
                                 <connections>
                                     <action selector="forwardAction:" destination="KGk-i7-Jjw" id="aSq-oh-jea"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem style="plain" systemItem="flexibleSpace" id="ary-jW-I3x"/>
-                            <barButtonItem systemItem="refresh" id="wOa-I9-ev5">
+                            <barButtonItem enabled="NO" systemItem="refresh" id="wOa-I9-ev5">
                                 <connections>
                                     <action selector="refreshAction:" destination="KGk-i7-Jjw" id="fPA-nt-mCI"/>
                                 </connections>
@@ -56,7 +56,6 @@
                 </constraints>
             </tableViewCellContentView>
             <connections>
-                <outlet property="backAction" destination="Zb2-0T-2Gg" id="3Qg-B3-zPX"/>
                 <outlet property="backButton" destination="Zb2-0T-2Gg" id="qki-Tq-5HH"/>
                 <outlet property="forwardButton" destination="kOS-je-0OG" id="CHD-cN-gU0"/>
                 <outlet property="refreshButton" destination="wOa-I9-ev5" id="uzs-fs-g0e"/>

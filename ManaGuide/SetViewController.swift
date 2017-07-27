@@ -11,13 +11,7 @@ import DATASource
 import FontAwesome_swift
 import InAppSettingsKit
 import ManaKit
-
-enum SetDisplayType {
-    case list,
-    _2x2,
-    _4x4,
-    setInfo
-}
+import MBProgressHUD
 
 class SetViewController: BaseViewController {
 
@@ -47,7 +41,7 @@ class SetViewController: BaseViewController {
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
-        tableView.register(ManaKit.sharedInstance.nibFromBundle("BrowserTableViewCell"), forCellReuseIdentifier: "SetInfoCell")
+        tableView.register(UINib(nibName: "BrowserTableViewCell", bundle: nil), forCellReuseIdentifier: "SetInfoCell")
         
         updateDataDisplay()
     }
@@ -55,22 +49,20 @@ class SetViewController: BaseViewController {
     // MARK: Custom methods
     func updateDataDisplay() {
         let defaults = defaultsValue()
+//        let setSectionName = defaults["setSectionName"] as! String
+//        let setSortBy = defaults["setSortBy"] as! String
+//        let setOrderBy = defaults["setOrderBy"] as! Bool
+//        let setDisplayBy = defaults["setDisplayBy"] as! String
+        let setShow = defaults["setShow"] as! String
         
-//        if let setDisplayType = defaults["setDisplayType"] as? SetDisplayType {
-//            switch setDisplayType {
-//            case .list,
-//                 ._2x2,
-//                 ._4x4:
-//                dataSource = getDataSource(nil)
-//            case .setInfo:
-//                tableView.dataSource = self
-//                tableView.delegate = self
-//                ()
-//            }
-//        }
+        if setShow == "cards" {
+            dataSource = getDataSource(nil)
+            updateSections()
+        } else {
+            tableView.dataSource = self
+        }
 
-        dataSource = getDataSource(nil)
-        updateSections()
+        tableView.delegate = self
         tableView.reloadData()
     }
     
@@ -181,9 +173,6 @@ class SetViewController: BaseViewController {
                 default:
                     ()
                 }
-                
-                UserDefaults.standard.set(setSectionName, forKey: "setSectionName")
-                UserDefaults.standard.synchronize()
             }
             
             if let value = userInfo["setOrderBy"] as? Bool {
@@ -199,14 +188,14 @@ class SetViewController: BaseViewController {
                 setShow = value
             }
             
-            let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-            request.predicate = NSPredicate(format: "set.code = %@", set!.code!)
-            request.sortDescriptors = [NSSortDescriptor(key: setSectionName, ascending: setOrderBy),
-                                        NSSortDescriptor(key: setSortBy, ascending: setOrderBy)]
-
-            dataSource = getDataSource(request)
-            updateSections()
-            tableView.reloadData()
+            UserDefaults.standard.set(setSectionName, forKey: "setSectionName")
+            UserDefaults.standard.set(setSortBy, forKey: "setSortBy")
+            UserDefaults.standard.set(setOrderBy, forKey: "setOrderBy")
+            UserDefaults.standard.set(setDisplayBy, forKey: "setDisplayBy")
+            UserDefaults.standard.set(setShow, forKey: "setShow")
+            UserDefaults.standard.synchronize()
+            
+            updateDataDisplay()
         }
     }
     
@@ -217,7 +206,6 @@ class SetViewController: BaseViewController {
         var setOrderBy = true
         var setDisplayBy = "list"
         var setShow = "cards"
-//        var setDisplayType:SetDisplayType = .list
         
         if let value = UserDefaults.standard.value(forKey: "setSectionName") as? String {
             setSectionName = value
@@ -244,45 +232,87 @@ class SetViewController: BaseViewController {
         values["setOrderBy"] = setOrderBy
         values["setDisplayBy"] = setDisplayBy
         values["setShow"] = setShow
-//        values["setDisplayType"] = setDisplayType
         
         return values
+    }
+    
+    func wikiURL(ofSet set: CMSet) -> URL? {
+        var path = ""
+        
+        if let name = set.name,
+            let code = set.code {
+            
+            if code == "LEA" {
+                path = "Alpha"
+            } else if code == "LEB" {
+                path = "Beta"
+            } else {
+                path = name.replacingOccurrences(of: " ", with: "_")
+            }
+        }
+        
+        return URL(string: "http://mtg.gamepedia.com/\(path)")
     }
 
 }
 
 // MARK: UITableViewDataSource
-//extension SetViewController : UITableViewDataSource {
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        let defaults = defaultsValue()
-//        let setDisplayBy = defaults["setDisplayBy"] as! NSNumber
-//        let setShow = defaults["setShow"] as! NSNumber
-//        var rows = 0
-//        
-//        switch setDisplayBy {
-//        case 1:
-//            ()
-//        case 2:
-//            ()
-//        default:
-//            ()
-//        }
-//            
-//        return rows
-//    }
-//    
-//    
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "SetInfoCell")
-//        
-//        return cell!
-//    }
-//}
+extension SetViewController : UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let defaults = defaultsValue()
+        let setShow = defaults["setShow"] as! String
+        var rows = 0
+        
+        switch setShow {
+        case "setInfo":
+            rows = 1
+        default:
+            ()
+        }
+            
+        return rows
+    }
+    
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let defaults = defaultsValue()
+        let setShow = defaults["setShow"] as! String
+        var cell: UITableViewCell?
+        
+        switch setShow {
+        case "setInfo":
+            if let c = tableView.dequeueReusableCell(withIdentifier: "SetInfoCell") as? BrowserTableViewCell,
+                let set = set {
+                c.webView.delegate = self
+                let request = URLRequest(url: wikiURL(ofSet: set)!, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 10.0)
+                c.webView.loadRequest(request)
+                cell = c
+            }
+        default:
+            ()
+        }
+        
+        return cell!
+    }
+}
 
 // MARK: UITableViewDelegate
 extension SetViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return kCardTableViewCellHeight
+        let defaults = defaultsValue()
+        let setShow = defaults["setShow"] as! String
+        var height = CGFloat(0)
+        
+        switch setShow {
+        case "cards":
+            height = kCardTableViewCellHeight
+        case "setInfo":
+            height = tableView.frame.size.height
+        default:
+            ()
+        }
+        
+        return height
     }
 }
 
@@ -311,5 +341,61 @@ extension SetViewController : DATASourceDelegate {
         }
         
         return sectionIndex
+    }
+}
+
+// MARK: UIWebViewDelegate
+extension SetViewController : UIWebViewDelegate {
+    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
+        
+        var willLoad = false
+        if let url = request.url {
+            if let host = url.host {
+                if host.hasPrefix("mtg.gamepedia.com") {
+                    willLoad = true
+                } else if host.hasPrefix("www.magiccards.info") {
+                    let urlComponents = URLComponents(string: url.absoluteString)
+                    let queryItems = urlComponents?.queryItems
+                    let q = queryItems?.filter({$0.name == "q"}).first
+                    if let value = q?.value {
+                        let r = value.index(value.startIndex, offsetBy: 1)
+                        let cardName = value.substring(from: r).replacingOccurrences(of: "+", with: " ")
+                        
+                        print("\(cardName)")
+                    }
+                }
+            }
+        }
+        
+        return willLoad
+    }
+    
+    func webViewDidStartLoad(_ webView: UIWebView) {
+        MBProgressHUD.showAdded(to: webView, animated: true)
+    }
+    
+    func webViewDidFinishLoad(_ webView: UIWebView) {
+        MBProgressHUD.hide(for: webView, animated: true)
+        
+        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? BrowserTableViewCell {
+            cell.backButton.isEnabled = webView.canGoBack
+            cell.forwardButton.isEnabled = webView.canGoForward
+            cell.refreshButton.isEnabled = true
+        }
+    }
+    
+    func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
+        MBProgressHUD.hide(for: webView, animated: true)
+        
+        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? BrowserTableViewCell {
+            cell.backButton.isEnabled = webView.canGoBack
+            cell.forwardButton.isEnabled = webView.canGoForward
+            cell.refreshButton.isEnabled = true
+        }
+        
+        var html = "<html><body><center>"
+        html.append(error.localizedDescription)
+        html.append("</center></body></html>")
+        webView.loadHTMLString(html, baseURL: nil)
     }
 }

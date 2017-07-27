@@ -191,7 +191,7 @@
             </objects>
             <point key="canvasLocation" x="3357.5999999999999" y="-826.23688155922048"/>
         </scene>
-        <!--Set View Controller-->
+        <!--Set-->
         <scene sceneID="BJa-EA-u4c">
             <objects>
                 <viewController automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" id="aOj-40-y9v" customClass="SetViewController" customModule="ManaGuide" customModuleProvider="target" sceneMemberID="viewController">
@@ -204,14 +204,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="uA5-1d-p4e">
-                                <rect key="frame" x="0.0" y="64" width="375" height="559"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardCell" id="xxb-st-kEj">
                                         <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="xxb-st-kEj" id="Ngz-hC-aiW">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -219,7 +219,7 @@
                                         <rect key="frame" x="0.0" y="72" width="375" height="88"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="XcF-kd-Vx8" id="xbs-uE-isx">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="87.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="88"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -231,14 +231,14 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="uA5-1d-p4e" secondAttribute="trailing" id="P39-SW-pAp"/>
-                            <constraint firstItem="uA5-1d-p4e" firstAttribute="bottom" secondItem="841-wA-QXv" secondAttribute="top" id="V9e-MP-v7y"/>
-                            <constraint firstItem="uA5-1d-p4e" firstAttribute="top" secondItem="nRv-fG-j69" secondAttribute="bottom" id="drA-gH-pcc"/>
-                            <constraint firstItem="uA5-1d-p4e" firstAttribute="leading" secondItem="eGO-g0-CCv" secondAttribute="leading" id="vKu-J9-8bj"/>
+                            <constraint firstAttribute="trailing" secondItem="uA5-1d-p4e" secondAttribute="trailing" id="aR0-hk-fkf"/>
+                            <constraint firstAttribute="bottom" secondItem="uA5-1d-p4e" secondAttribute="bottom" id="b2B-TK-BKS"/>
+                            <constraint firstItem="uA5-1d-p4e" firstAttribute="top" secondItem="nRv-fG-j69" secondAttribute="bottom" id="chP-fs-6ZH"/>
+                            <constraint firstItem="uA5-1d-p4e" firstAttribute="leading" secondItem="eGO-g0-CCv" secondAttribute="leading" id="j3d-ZO-Iqa"/>
                         </constraints>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" id="Jvf-cB-9Ki">
+                    <navigationItem key="navigationItem" title="Set" id="Jvf-cB-9Ki">
                         <barButtonItem key="rightBarButtonItem" title="Item" id="pPe-Uo-193">
                             <connections>
                                 <action selector="showRightMenuAction:" destination="aOj-40-y9v" id="bM5-kH-7DR"/>
@@ -253,6 +253,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8Rr-dW-woe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3357.5999999999999" y="-72.413793103448285"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="dYq-zF-hTQ">
+            <objects>
+                <viewController id="v6L-wJ-qRt" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="tRB-T4-B73"/>
+                        <viewControllerLayoutGuide type="bottom" id="tqU-jq-t3l"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="fcE-qX-xlo">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="XRd-K3-nNu" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4388" y="-72"/>
         </scene>
         <!--Drawer Controller-->
         <scene sceneID="dW8-Sc-mB1">
