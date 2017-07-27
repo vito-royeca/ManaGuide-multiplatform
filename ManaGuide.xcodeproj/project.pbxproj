@@ -211,12 +211,12 @@
 			isa = PBXGroup;
 			children = (
 				1147B7591F22379F004EF296 /* BaseViewController.swift */,
+				11B2AA321F29DE490067E833 /* CardViewController.swift */,
 				110BB5291F20891D00086841 /* FeaturedViewController.swift */,
 				110BB52C1F20892B00086841 /* SearchViewController.swift */,
 				1147B7561F223607004EF296 /* SetsViewController.swift */,
-				1147B7621F224198004EF296 /* SetViewController.swift */,
 				1147B7651F224874004EF296 /* SettingsViewController.swift */,
-				11B2AA321F29DE490067E833 /* CardViewController.swift */,
+				1147B7621F224198004EF296 /* SetViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";

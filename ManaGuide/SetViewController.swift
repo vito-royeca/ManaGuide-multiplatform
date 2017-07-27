@@ -46,6 +46,18 @@ class SetViewController: BaseViewController {
         updateDataDisplay()
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showCard" {
+            if let dest = segue.destination as? CardViewController,
+            let dict = sender as? [String: Any] {
+                
+                dest.cardIndex = dict["cardIndex"] as! Int
+                dest.cards = dict["cards"] as? [CMCard]
+                dest.title = ""
+            }
+        }
+    }
+    
     // MARK: Custom methods
     func updateDataDisplay() {
         let defaults = defaultsValue()
@@ -313,6 +325,23 @@ extension SetViewController : UITableViewDelegate {
         }
         
         return height
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let defaults = defaultsValue()
+        let setShow = defaults["setShow"] as! String
+        
+        switch setShow {
+        case "cards":
+            let card = dataSource!.object(indexPath)
+            let cards = dataSource!.all()
+            let cardIndex = cards.index(of: card!)
+            
+            performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
+                                                              "cards": cards])
+        default:
+            ()
+        }
     }
 }
 
