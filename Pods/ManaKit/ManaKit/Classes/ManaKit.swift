@@ -18,6 +18,9 @@ public let kImagesVersionKey    = "kImagesVersionKey"
 public let kCardImageSource     = "http://magiccards.info"
 public let kEightEditionRelease = "2003-07-28"
 
+// Notification events
+public let kNotificationCardImageDownloaded = "kNotificationCardImageDownloaded"
+
 public enum ImageName: String {
     case cardCircles       = "Card_Circles",
     cardBackCropped        = "cardback-crop-hq",
@@ -27,15 +30,6 @@ public enum ImageName: String {
     grayPatterned          = "Gray_Patterned_BG",
     intlCollectorsCardBack = "internationalcollectorscardback-hq"
 }
-
-// Some image constants
-public let kImageCardCircles            = "Card_Circles"
-public let kImageCardBackCropped        = "cardback-crop-hq"
-public let kImageCardBack               = "cardback-hq"
-public let kImageCollectorsCardBack     = "collectorscardback-hq"
-public let kImageCropBack               = "cropback-hq"
-public let kImageGrayPatterned          = "Gray_Patterned_BG"
-public let kImageIntlCollectorsCardBack = "internationalcollectorscardback-hq"
 
 @objc(ManaKit)
 open class ManaKit: NSObject {
@@ -301,6 +295,7 @@ open class ManaKit: NSObject {
                 if let error = error {
                     completion(card, nil, nil, error)
                 } else {
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: kNotificationCardImageDownloaded), object: nil, userInfo: ["card": card])
                     completion(card, image, cropImage ? self.crop(image!, ofCard: card) : nil, nil)
                 }
             })
@@ -361,7 +356,17 @@ open class ManaKit: NSObject {
     
     open func cardImage(_ card: CMCard) -> UIImage? {
         if let url = urlOfCard(card) {
-            return NetworkingManager.sharedInstance.localImageFromURL(url)
+            if let image = NetworkingManager.sharedInstance.localImageFromURL(url) {
+                return image
+            } else {
+                if card.set!.code == "CED" {
+                    return imageFromFramework(imageName: .collectorsCardBack)
+                } else if card.set!.code == "CEI" {
+                    return imageFromFramework(imageName: .intlCollectorsCardBack)
+                } else {
+                    return imageFromFramework(imageName: .cardBack)
+                }
+            }
         } else {
             return nil
         }

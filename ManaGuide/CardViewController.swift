@@ -39,12 +39,30 @@ class CardViewController: BaseViewController {
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kNotificationCardImageDownloaded), object:nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.showCardImage(_:)), name: NSNotification.Name(rawValue: kNotificationCardImageDownloaded), object: nil)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if let cardsCollectionView = cardsCollectionView {
             cardsCollectionView.scrollToItem(at: IndexPath(item: cardIndex, section: 0), at: .centeredHorizontally, animated: false)
+        }
+    }
+    
+    // MARK: Custom methods
+    func showCardImage(_ notification: Notification) {
+        if let cardsCollectionView = cardsCollectionView,
+            let cards = cards,
+            let userInfo = notification.userInfo {
+            
+            if  let dCard = userInfo["card"] as? CMCard {
+                if dCard == cards[cardIndex] {
+                    let indexPath = IndexPath(item: cardIndex, section: 0)
+                    cardsCollectionView.reloadItems(at: [indexPath])
+                }
+            }
         }
     }
 
