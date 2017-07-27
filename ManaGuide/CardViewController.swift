@@ -15,7 +15,8 @@ class CardViewController: BaseViewController {
     var cardIndex = 0
     var cards: [CMCard]?
     var cardsCollectionView: UICollectionView?
-
+    var segmentedIndex = 0
+    
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
@@ -26,7 +27,8 @@ class CardViewController: BaseViewController {
     }
     
     @IBAction func segmentedAction(_ sender: UISegmentedControl) {
-        print("\(sender.selectedSegmentIndex)")
+        segmentedIndex = sender.selectedSegmentIndex
+        tableView.reloadData()
     }
     
     // MARK: Overrides
@@ -51,7 +53,20 @@ class CardViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension CardViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        var rows = 0
+        
+        switch segmentedIndex {
+        case 0:
+            rows = 3
+        case 1:
+            rows = 2
+        case 2:
+            rows = 2
+        default:
+            ()
+        }
+        
+        return rows
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -70,25 +85,34 @@ extension CardViewController : UITableViewDataSource {
                 cell = c
             }
         case 2:
-            if let c = tableView.dequeueReusableCell(withIdentifier: "CollectionViewCell") {
-                if let collectionView = c.viewWithTag(100) as? UICollectionView {
-                    cardsCollectionView = collectionView
-                    
-                    if let bgImage = ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.grayPatterned) {
-                        collectionView.backgroundColor = UIColor(patternImage: bgImage)
+            switch segmentedIndex {
+            case 0:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "CollectionViewCell") {
+                    if let collectionView = c.viewWithTag(100) as? UICollectionView {
+                        cardsCollectionView = collectionView
+                        
+                        if let bgImage = ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.grayPatterned) {
+                            collectionView.backgroundColor = UIColor(patternImage: bgImage)
+                        }
+                        
+                        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                            let width = tableView.frame.size.width - 80
+                            let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44) - 40
+                            flowLayout.itemSize = CGSize(width: width, height: height)
+                            flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 0)
+                        }
+                        
+                        collectionView.dataSource = self
+                        collectionView.delegate = self
                     }
-                    
-                    if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        let width = tableView.frame.size.width - 80
-                        let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44) - 40
-                        flowLayout.itemSize = CGSize(width: width, height: height)
-                        flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 0)
-                    }
-                    
-                    collectionView.dataSource = self
-                    collectionView.delegate = self
+                    cell = c
                 }
-                cell = c
+            case 1:
+                ()
+            case 2:
+                ()
+            default:
+                ()
             }
         default:
             ()
@@ -109,7 +133,17 @@ extension CardViewController : UITableViewDelegate {
         case 1:
             height = CGFloat(44)
         case 2:
-            height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
+            switch segmentedIndex {
+            case 0:
+                height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
+            case 1:
+                ()
+            case 2:
+                ()
+            default:
+                ()
+            }
+            
         default:
             ()
         }
@@ -173,7 +207,7 @@ extension CardViewController : UIScrollViewDelegate {
                 
                 // update the first table row cell
                 cardIndex = closestCellIndex
-                tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
             }
         }
     }
