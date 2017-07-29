@@ -20,7 +20,8 @@ class SetViewController: BaseViewController {
     var dataSource: DATASource?
     var sectionIndexTitles = [String]()
     var sectionTitles = [String]()
-
+    var collectionView: UICollectionView?
+    
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
@@ -46,6 +47,24 @@ class SetViewController: BaseViewController {
         updateDataDisplay()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        let defaults = defaultsValue()
+        let setDisplayBy = defaults["setDisplayBy"] as! String
+        let setShow = defaults["setShow"] as! String
+        
+        if setShow == "cards" {
+            switch setDisplayBy {
+            case "2x2",
+                 "4x4":
+                updateDataDisplay()
+            default:
+                ()
+            }
+        }
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showCard" {
             if let dest = segue.destination as? CardViewController,
@@ -58,18 +77,29 @@ class SetViewController: BaseViewController {
         }
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        updateDataDisplay()
+    }
+    
     // MARK: Custom methods
     func updateDataDisplay() {
         let defaults = defaultsValue()
-//        let setSectionName = defaults["setSectionName"] as! String
-//        let setSortBy = defaults["setSortBy"] as! String
-//        let setOrderBy = defaults["setOrderBy"] as! Bool
-//        let setDisplayBy = defaults["setDisplayBy"] as! String
+        let setDisplayBy = defaults["setDisplayBy"] as! String
         let setShow = defaults["setShow"] as! String
         
         if setShow == "cards" {
-            dataSource = getDataSource(nil)
-            updateSections()
+            switch setDisplayBy {
+            case "list":
+                dataSource = getDataSource(nil)
+                updateSections()
+            case "2x2",
+                 "4x4":
+                tableView.dataSource = self
+                dataSource = getDataSource(nil)
+                updateSections()
+            default:
+                ()
+            }
         } else {
             tableView.dataSource = self
         }
@@ -84,6 +114,8 @@ class SetViewController: BaseViewController {
         let setSectionName = defaults["setSectionName"] as! String
         let setSortBy = defaults["setSortBy"] as! String
         let setOrderBy = defaults["setOrderBy"] as! Bool
+        let setDisplayBy = defaults["setDisplayBy"] as! String
+        var ds: DATASource?
         
         if let fetchRequest = fetchRequest {
             request = fetchRequest
@@ -95,17 +127,53 @@ class SetViewController: BaseViewController {
             request!.predicate = NSPredicate(format: "set.code = %@", set!.code!)
         }
         
-        let dataSource = DATASource(tableView: tableView, cellIdentifier: "CardCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName, configuration: { cell, item, indexPath in
-            if let card = item as? CMCard,
-                let cardCell = cell as? CardTableViewCell {
-                
-                cardCell.card = card
-                cardCell.updateDataDisplay()
+        
+        switch setDisplayBy {
+        case "list":
+            ds = DATASource(tableView: tableView, cellIdentifier: "CardCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName, configuration: { cell, item, indexPath in
+                if let card = item as? CMCard,
+                    let cardCell = cell as? CardTableViewCell {
+                    
+                    cardCell.card = card
+                    cardCell.updateDataDisplay()
+                }
+            })
+        case "2x2",
+             "4x4":
+            if let collectionView = collectionView {
+                ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName, configuration: { cell, item, indexPath in
+                    if let card = item as? CMCard {
+                        if let imageView = cell.viewWithTag(100) as? UIImageView {
+                            imageView.image = ManaKit.sharedInstance.cardImage(card)
+                            
+                            if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.cardBack) {
+                                ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
+                                    if error == nil {
+                                        if card == self.dataSource!.object(indexPath) {
+                                            UIView.transition(with: imageView,
+                                                              duration: 1.0,
+                                                              options: .transitionFlipFromLeft,
+                                                              animations: {
+                                                                imageView.image = image
+                                            },
+                                                              completion: nil)
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    }
+                })
             }
-        })
+        default:
+            ()
+        }
     
-        dataSource.delegate = self
-        return dataSource
+        if let ds = ds {
+            ds.delegate = self
+            return ds
+        }
+        return nil
     }
     
     func updateSections() {
@@ -191,7 +259,6 @@ class SetViewController: BaseViewController {
                 setOrderBy = value
             }
             
-            // TODO: implement these
             if let value = userInfo["setDisplayBy"] as? String {
                 setDisplayBy = value
             }
@@ -263,7 +330,7 @@ class SetViewController: BaseViewController {
             }
         }
         
-        return URL(string: "http://mtg.gamepedia.com/\(path)")
+        return URL(string: "https://mtg.gamepedia.com/\(path)")
     }
 
 }
@@ -271,27 +338,69 @@ class SetViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension SetViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let defaults = defaultsValue()
-        let setShow = defaults["setShow"] as! String
-        var rows = 0
+//        let defaults = defaultsValue()
+//        let setShow = defaults["setShow"] as! String
+//        var rows = 0
+//        
+//        switch setShow {
+//        case "setInfo":
+//            rows = 1
+//        default:
+//            ()
+//        }
+//            
+//        return rows
+        let rows = 1
         
-        switch setShow {
-        case "setInfo":
-            rows = 1
-        default:
-            ()
-        }
-            
         return rows
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let defaults = defaultsValue()
+        let setDisplayBy = defaults["setDisplayBy"] as! String
         let setShow = defaults["setShow"] as! String
         var cell: UITableViewCell?
         
         switch setShow {
+        case "cards":
+            switch setDisplayBy {
+            case "2x2",
+                 "4x4":
+                if let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") {
+                    if let collectionView = c.viewWithTag(100) as? UICollectionView {
+                        self.collectionView = collectionView
+                        collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "Header")
+                        collectionView.delegate = self
+                        
+                        if let bgImage = ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.grayPatterned) {
+                            collectionView.backgroundColor = UIColor(patternImage: bgImage)
+                        }
+                        
+                        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                            var width = tableView.frame.size.width
+                            var height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
+                            
+                            if setDisplayBy == "2x2" {
+                                width = width / 2
+                                height = height / 2
+                            } else if setDisplayBy == "4x4" {
+                                width = width / 4
+                                height = height / 4
+                            }
+                            
+                            flowLayout.itemSize = CGSize(width: width, height: height)
+                            flowLayout.minimumInteritemSpacing = CGFloat(0)
+                            flowLayout.minimumLineSpacing = CGFloat(5)
+                            flowLayout.headerReferenceSize = CGSize(width: width, height: 22)
+                            flowLayout.sectionHeadersPinToVisibleBounds = true
+                        }
+                    }
+                    cell = c
+                }
+            default:
+                ()
+            }
         case "setInfo":
             if let c = tableView.dequeueReusableCell(withIdentifier: "SetInfoCell") as? BrowserTableViewCell,
                 let set = set {
@@ -312,12 +421,22 @@ extension SetViewController : UITableViewDataSource {
 extension SetViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let defaults = defaultsValue()
+        let setDisplayBy = defaults["setDisplayBy"] as! String
         let setShow = defaults["setShow"] as! String
         var height = CGFloat(0)
         
         switch setShow {
         case "cards":
-            height = kCardTableViewCellHeight
+            switch setDisplayBy {
+            case "list":
+                height = kCardTableViewCellHeight
+            case "2x2":
+                height = tableView.frame.size.height
+            case "4x4":
+                height = tableView.frame.size.height
+            default:
+                ()
+            }
         case "setInfo":
             height = tableView.frame.size.height
         default:
@@ -370,6 +489,27 @@ extension SetViewController : DATASourceDelegate {
         }
         
         return sectionIndex
+    }
+    
+    func dataSource(_ dataSource: DATASource, collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: IndexPath, withTitle title: Any?) -> UICollectionReusableView? {
+        var v: UICollectionReusableView?
+        
+        if kind == UICollectionElementKindSectionHeader {
+            v = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier:"Header", for: indexPath)
+            v!.backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1)
+            
+            if v!.subviews.count == 0 {
+                let label = UILabel(frame: CGRect(x: 20, y: 0, width: collectionView.frame.size.width - 20, height: 22))
+                label.tag = 100
+                v!.addSubview(label)
+            }
+            
+            if let lab = v!.viewWithTag(100) as? UILabel {
+                lab.text = sectionTitles[indexPath.section]
+            }
+        }
+        
+        return v
     }
 }
 
@@ -426,5 +566,17 @@ extension SetViewController : UIWebViewDelegate {
         html.append(error.localizedDescription)
         html.append("</center></body></html>")
         webView.loadHTMLString(html, baseURL: nil)
+    }
+}
+
+// UICollectionViewDelegate
+extension SetViewController : UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let card = dataSource!.object(indexPath)
+        let cards = dataSource!.all()
+        let cardIndex = cards.index(of: card!)
+        
+        performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
+                                                          "cards": cards])
     }
 }

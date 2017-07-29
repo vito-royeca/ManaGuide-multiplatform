@@ -51,6 +51,10 @@ class CardViewController: BaseViewController {
         }
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        tableView.reloadData()
+    }
+
     // MARK: Custom methods
     func showCardImage(_ notification: Notification) {
         if let cardsCollectionView = cardsCollectionView,

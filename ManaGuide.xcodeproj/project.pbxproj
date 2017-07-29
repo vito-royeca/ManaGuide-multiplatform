@@ -196,13 +196,13 @@
 			isa = PBXGroup;
 			children = (
 				11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */,
-				1147B75C1F223820004EF296 /* SetItemSliderCollectionViewCell.swift */,
-				1147B7471F21F340004EF296 /* SliderTableViewCell.swift */,
 				11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */,
-				1147B75D1F223820004EF296 /* SetItemSliderCollectionViewCell.xib */,
-				1147B7481F21F340004EF296 /* SliderTableViewCell.xib */,
 				110BB5021F207C6400086841 /* LaunchScreen.storyboard */,
 				110BB4FD1F207C6400086841 /* Main.storyboard */,
+				1147B75C1F223820004EF296 /* SetItemSliderCollectionViewCell.swift */,
+				1147B75D1F223820004EF296 /* SetItemSliderCollectionViewCell.xib */,
+				1147B7471F21F340004EF296 /* SliderTableViewCell.swift */,
+				1147B7481F21F340004EF296 /* SliderTableViewCell.xib */,
 			);
 			name = View;
 			sourceTree = "<group>";

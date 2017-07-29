@@ -75,7 +75,7 @@ class SetsViewController: BaseViewController {
                                         NSSortDescriptor(key: setsSortBy, ascending: setsOrderBy)]
         }
         
-        let dataSource = DATASource(tableView: tableView, cellIdentifier: "SetCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setsSectionName, configuration: { cell, item, indexPath in
+        let ds = DATASource(tableView: tableView, cellIdentifier: "SetCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setsSectionName, configuration: { cell, item, indexPath in
             if let set = item as? CMSet {
                 
                 if let setIconView = cell.contentView.viewWithTag(100) as? UIImageView {
@@ -100,8 +100,8 @@ class SetsViewController: BaseViewController {
             }
         })
         
-        dataSource.delegate = self
-        return dataSource
+        ds.delegate = self
+        return ds
     }
 
     func updateSections() {
