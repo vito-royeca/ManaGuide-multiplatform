@@ -47,24 +47,6 @@ class SetViewController: BaseViewController {
         updateDataDisplay()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        let defaults = defaultsValue()
-        let setDisplayBy = defaults["setDisplayBy"] as! String
-        let setShow = defaults["setShow"] as! String
-        
-        if setShow == "cards" {
-            switch setDisplayBy {
-            case "2x2",
-                 "4x4":
-                updateDataDisplay()
-            default:
-                ()
-            }
-        }
-    }
-
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showCard" {
             if let dest = segue.destination as? CardViewController,
@@ -95,8 +77,6 @@ class SetViewController: BaseViewController {
             case "2x2",
                  "4x4":
                 tableView.dataSource = self
-                dataSource = getDataSource(nil)
-                updateSections()
             default:
                 ()
             }
@@ -460,6 +440,23 @@ extension SetViewController : UITableViewDelegate {
                                                               "cards": cards])
         default:
             ()
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let defaults = defaultsValue()
+        let setDisplayBy = defaults["setDisplayBy"] as! String
+        let setShow = defaults["setShow"] as! String
+
+        if setShow == "cards" {
+            switch setDisplayBy {
+            case "2x2",
+                 "4x4":
+                dataSource = getDataSource(nil)
+                updateSections()
+            default:
+                ()
+            }
         }
     }
 }
