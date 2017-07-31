@@ -327,6 +327,7 @@ extension CardViewController : UITableViewDataSource {
                         } else if indexPath.section == CardViewControllerDetailsSection.printings.rawValue + 1{
                             printingsCollectionView = collectionView
                         }
+                        collectionView.reloadData()
                     }
                     
                     cell = c
@@ -660,6 +661,7 @@ extension CardViewController : UIScrollViewDelegate {
                 
                 // update the first table row cell
                 cardIndex = closestCellIndex
+                webViewSize = nil
                 tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
                 if let cards = cards {
                     NotificationCenter.default.post(name: Notification.Name(rawValue: kNotificationSwipedToCard), object: nil, userInfo: ["card": cards[cardIndex]])
