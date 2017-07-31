@@ -1,0 +1,142 @@
+@font-face
+{
+    font-family: Magic;
+    src: url('fonts/Goudy Medieval.ttf');
+}
+
+@font-face
+{
+    font-family: Matrix;
+    src: url('fonts/Matrix Bold.ttf');
+}
+
+@font-face
+{
+    font-family: MPlantin;
+    src: url('fonts/MPlantin.ttf');
+}
+
+body, td
+{
+    font-family: Helvetica;
+    font-size: 20pt;
+}
+
+html, body
+{
+    height: 100%;
+}
+
+.img_center
+{
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.td_circle
+{
+    width:393px;
+    height:400px;
+    background-image: url('images/Card_Circles.png');
+    background-repeat:no-repeat;
+    background-size:393px 400px;
+}
+
+.th_player, .th_rank
+{
+	font-family: Magic;
+    font-size: 24pt;
+    color: #ffffff;
+}
+
+.td_player, .td_rank
+{
+	font-family: Magic;
+    font-size: 20pt;
+    color: #ffffff;
+}
+
+.td_score
+{
+    font-family: Magic;
+    font-size: 18pt;
+    color: #ffffff;
+    text-align: right;
+}
+
+.td_totalCMC
+{
+	font-family: Magic;
+    font-size: 20pt;
+    color: #ffffff;
+    text-align: right;
+}
+
+.cardNamePreEightEdition
+{
+    font-family: Magic;
+    font-size: 24pt;
+}
+
+.cardNameEightEdition
+{
+    font-family: Matrix;
+    font-size: 24pt;
+}
+
+.detailHeader
+{
+    font-family: Helvetica;
+    font-size: 20pt;
+    font-weight: bold;
+}
+
+.detailHeaderSmall
+{
+    font-family: Helvetica;
+    font-size: 18pt;
+    color: silver;
+}
+
+.detailTextSmall
+{
+    font-family: Helvetica;
+    font-size: 18pt;
+}
+
+.originalType
+{
+    font-family : MPlantin;
+    font-size: 20pt;
+}
+
+.originalText
+{
+    font-family : MPlantin;
+    font-size: 20pt;
+}
+
+.flavorText
+{
+    font-family : "Times New Roman";
+    font-style: italic;
+    font-size: 20pt;
+}
+
+.textBox
+{
+    padding: 18px;
+    width: 100%;
+    border: 1px solid gray;
+}
+
+.powerToughness
+{
+    font-family : MPlantin;
+    font-size: 22pt;
+    text-align: right;
+}

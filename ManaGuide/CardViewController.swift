@@ -17,10 +17,17 @@ enum CardViewControllerSegmentedIndex: Int {
     case card, details, pricing
 }
 
-enum CardViewControllerDetailsSection: Int {
-    case text, rulings, legalities, variations, printings, artist, cardNumber
+enum CardViewControllerCardSection: Int {
+    case summary, segmented, cards
 }
 
+enum CardViewControllerDetailsSection: Int {
+    case text, rulings, legalities, variations, printings, artist
+}
+
+enum CardViewControllerPricingSection: Int {
+    case summary, segmented
+}
 
 class CardViewController: BaseViewController {
     // MARK: Variables
@@ -32,9 +39,10 @@ class CardViewController: BaseViewController {
     var variationsCollectionView: UICollectionView?
     var printingsCollectionView: UICollectionView?
     var segmentedIndex: CardViewControllerSegmentedIndex = .card
-
+    var webViewSize: CGSize?
+    
     // MARK: Constants
-    let detailsSections = ["Text", "Rulings", "Legalities", "Variations", "Printings", "Artist", "Card Number"]
+    let detailsSections = ["Text", "Rulings", "Legalities", "Variations", "Printings", "Artist"]
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
@@ -123,6 +131,19 @@ class CardViewController: BaseViewController {
         }
     }
 
+    func replaceSymbols(inText text: String) -> String {
+        var newText = text
+        newText = newText.replacingOccurrences(of: "\n", with:"<br/> ")
+        newText = newText.replacingOccurrences(of: "(", with:"(<i>")
+        newText = newText.replacingOccurrences(of:")", with:"</i>)")
+        
+//        if let range = newText.range(of:"{.*?}", options: .regularExpression) {
+//            let result = newText.substring(with:range)
+//            print("\(result)")
+//        }
+        
+        return newText
+    }
 }
 
 // MARK: UITableViewDataSource
@@ -137,6 +158,8 @@ extension CardViewController : UITableViewDataSource {
             switch section {
             case 0:
                 rows = 2
+            case CardViewControllerDetailsSection.text.rawValue + 1:
+                rows = 1
             case CardViewControllerDetailsSection.variations.rawValue + 1:
                 if let cards = cards {
                     let card = cards[cardIndex]
@@ -154,8 +177,6 @@ extension CardViewController : UITableViewDataSource {
                     }
                 }
             case CardViewControllerDetailsSection.artist.rawValue + 1:
-                rows = 1
-            case CardViewControllerDetailsSection.cardNumber.rawValue + 1:
                 rows = 1
             default:
                 rows = 0
@@ -188,18 +209,18 @@ extension CardViewController : UITableViewDataSource {
         switch segmentedIndex {
         case .card:
             switch indexPath.row {
-            case 0:
+            case CardViewControllerCardSection.summary.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "CardCell") as? CardTableViewCell,
                     let cards = cards {
                     c.card = cards[cardIndex]
                     c.updateDataDisplay()
                     cell = c
                 }
-            case 1:
+            case CardViewControllerCardSection.segmented.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "SegmentedCell") {
                     cell = c
                 }
-            case 2:
+            case CardViewControllerCardSection.cards.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "CardsCell") {
                     if let collectionView = c.viewWithTag(100) as? UICollectionView {
                         cardsCollectionView = collectionView
@@ -242,6 +263,51 @@ extension CardViewController : UITableViewDataSource {
                 default:
                     ()
                 }
+            case CardViewControllerDetailsSection.text.rawValue + 1:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "WebViewCell") {
+                    if let webView = c.viewWithTag(100) as? UIWebView,
+                        let cards = cards {
+                        
+                        if webViewSize == nil {
+                            let card = cards[cardIndex]
+                            var html = try! String(contentsOfFile: "\(Bundle.main.bundlePath)/data/web/cardtext.html", encoding: String.Encoding.utf8)
+                            var css = try! String(contentsOfFile: "\(Bundle.main.bundlePath)/data/web/style.css", encoding: String.Encoding.utf8)
+                            
+                            let bundle = Bundle(for: ManaKit.self)
+                            if let bundleURL = bundle.resourceURL?.appendingPathComponent("ManaKit.bundle") {
+                                css = css.replacingOccurrences(of: "fonts/", with: "\(bundleURL.path)/fonts/")
+                                css = css.replacingOccurrences(of: "images/", with: "\(bundleURL.path)/images/")
+                                html = html.replacingOccurrences(of: "{{css}}", with: css)
+                            }
+                            
+                            if let oracleText = card.text {
+                                html = html.replacingOccurrences(of: "{{oracleText}}", with: replaceSymbols(inText: oracleText))
+                            } else {
+                                html = html.replacingOccurrences(of: "{{oracleText}}", with: "")
+                            }
+                            if let originalText = card.originalText {
+                                html = html.replacingOccurrences(of: "{{originalTextTitle}}", with: "Original")
+                                html = html.replacingOccurrences(of: "{{originalText}}", with: replaceSymbols(inText: originalText))
+                            } else {
+                                html = html.replacingOccurrences(of: "{{originalTextTitle}}", with: "")
+                                html = html.replacingOccurrences(of: "{{originalText}}", with: "")
+                            }
+                            if let flavorText = card.flavor {
+                                html = html.replacingOccurrences(of: "{{flavorTextTitle}}", with: "Flavor")
+                                html = html.replacingOccurrences(of: "{{flavorText}}", with: flavorText)
+                            } else {
+                                html = html.replacingOccurrences(of: "{{flavorTextTitle}}", with: "")
+                                html = html.replacingOccurrences(of: "{{flavorText}}", with: "")
+                            }
+                            
+                            webView.delegate = self
+                            webView.scrollView.isScrollEnabled = false
+                            webView.scrollView.bounces = false
+                            webView.loadHTMLString(html, baseURL: URL(fileURLWithPath: "\(Bundle.main.bundlePath)/data/web"))
+                        }
+                    }
+                    cell = c
+                }
             case CardViewControllerDetailsSection.variations.rawValue + 1,
                  CardViewControllerDetailsSection.printings.rawValue + 1:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") {
@@ -272,19 +338,7 @@ extension CardViewController : UITableViewDataSource {
                     let card = cards[cardIndex]
                     if let artist_ = card.artist_ {
                         c.textLabel?.text = artist_.name
-                        c.detailTextLabel?.text = nil
                     }
-                    
-                    cell = c
-                }
-            case CardViewControllerDetailsSection.cardNumber.rawValue + 1:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DefaultCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
-                    let number = card.number ?? card.mciNumber
-                    c.textLabel?.text = number
-                    c.detailTextLabel?.text = nil
                     
                     cell = c
                 }
@@ -294,14 +348,14 @@ extension CardViewController : UITableViewDataSource {
         
         case .pricing:
             switch indexPath.row {
-            case 0:
+            case CardViewControllerPricingSection.summary.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "CardCell") as? CardTableViewCell,
                     let cards = cards {
                     c.card = cards[cardIndex]
                     c.updateDataDisplay()
                     cell = c
                 }
-            case 1:
+            case CardViewControllerPricingSection.segmented.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "SegmentedCell") {
                     cell = c
                 }
@@ -360,11 +414,11 @@ extension CardViewController : UITableViewDelegate {
         switch segmentedIndex {
         case .card:
             switch indexPath.row {
-            case 0:
+            case CardViewControllerCardSection.summary.rawValue:
                 height = kCardTableViewCellHeight
-            case 1:
+            case CardViewControllerCardSection.segmented.rawValue:
                 height = CGFloat(44)
-            case 2:
+            case CardViewControllerCardSection.cards.rawValue:
                 height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
             default:
                 ()
@@ -380,6 +434,10 @@ extension CardViewController : UITableViewDelegate {
                     height = CGFloat(44)
                 default:
                     ()
+                }
+            case CardViewControllerDetailsSection.text.rawValue + 1:
+                if let webViewSize = webViewSize {
+                    height = webViewSize.height
                 }
             case CardViewControllerDetailsSection.variations.rawValue + 1:
                 if let cards = cards {
@@ -397,8 +455,7 @@ extension CardViewController : UITableViewDelegate {
                         height = printings_.allObjects.count > 0 ? CGFloat(88) : 0
                     }
                 }
-            case CardViewControllerDetailsSection.artist.rawValue + 1,
-                 CardViewControllerDetailsSection.cardNumber.rawValue + 1:
+            case CardViewControllerDetailsSection.artist.rawValue + 1:
                 height = UITableViewAutomaticDimension
             default:
                 ()
@@ -406,9 +463,9 @@ extension CardViewController : UITableViewDelegate {
             
         case .pricing:
             switch indexPath.row {
-            case 0:
+            case CardViewControllerPricingSection.summary.rawValue:
                 height = kCardTableViewCellHeight
-            case 1:
+            case CardViewControllerPricingSection.segmented.rawValue:
                 height = CGFloat(44)
             default:
                 ()
@@ -568,6 +625,14 @@ extension CardViewController : UICollectionViewDataSource {
 // UICollectionViewDelegate
 extension CardViewController : UICollectionViewDelegate {
     
+}
+
+// MARK: UIWebViewDelegate
+extension CardViewController : UIWebViewDelegate {
+    func webViewDidFinishLoad(_ webView: UIWebView) {
+        webViewSize = webView.scrollView.contentSize
+        tableView.reloadData()
+    }
 }
 
 // MARK: UIScrollViewDelegate

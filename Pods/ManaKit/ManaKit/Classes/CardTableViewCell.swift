@@ -162,16 +162,11 @@ open class CardTableViewCell: UITableViewCell {
                 
                 rarityImage.image = ManaKit.sharedInstance.setImage(set: set, rarity: rarity)
                 
-//                var setText = ""
-                
-//                if let name = set.name,
-//                    let number = card.number ?? card.mciNumber,
-//                    let cards = set.cards {
-//                    setText += "\(name) (No. \(number)/\(cards.allObjects.count))"
-//                }
-//                setLabel.text = setText
-                
-                setLabel.text = set.name
+                var text = set.name
+                if let number = card.number ?? card.mciNumber{
+                    text!.append(" \u{2014} #\(number)")
+                }
+                setLabel.text = text
             }
         }
     }
