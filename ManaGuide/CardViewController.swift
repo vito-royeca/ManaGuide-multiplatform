@@ -10,6 +10,8 @@ import UIKit
 import FontAwesome_swift
 import ManaKit
 
+let kNotificationSwipedToCard = "kNotificationSwipedToCard"
+
 class CardViewController: BaseViewController {
     // MARK: Variables
     var cardIndex = 0
@@ -230,6 +232,9 @@ extension CardViewController : UIScrollViewDelegate {
                 // update the first table row cell
                 cardIndex = closestCellIndex
                 tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+                if let cards = cards {
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: kNotificationSwipedToCard), object: nil, userInfo: ["card": cards[cardIndex]])
+                }
             }
         }
     }

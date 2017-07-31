@@ -38,6 +38,8 @@ class SetViewController: BaseViewController {
         // Do any additional setup after loading the view.
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(SetViewController.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kNotificationSwipedToCard), object:nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(SetViewController.scrollToCard(_:)), name: NSNotification.Name(rawValue: kNotificationSwipedToCard), object: nil)
         
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
@@ -258,6 +260,46 @@ class SetViewController: BaseViewController {
         }
     }
     
+    func scrollToCard(_ notification: Notification) {
+        if let userInfo = notification.userInfo {
+            if let card = userInfo["card"] as? CMCard,
+                let dataSource = dataSource {
+                let defaults = defaultsValue()
+                let setDisplayBy = defaults["setDisplayBy"] as! String
+                let setShow = defaults["setShow"] as! String
+                
+                if setShow == "cards" {
+                    switch setDisplayBy {
+                    case "list":
+                        for i in 0...dataSource.numberOfSections(in: tableView) - 1{
+                            for j in 0...tableView.numberOfRows(inSection: i) - 1 {
+                                let indexPath = IndexPath(row: j, section: i)
+                                if dataSource.object(indexPath) == card {
+                                    tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                                }
+                            }
+                        }
+                    case "2x2",
+                         "4x4":
+                        if let collectionView = collectionView {
+                            for i in 0...dataSource.numberOfSections(in: collectionView) - 1{
+                                for j in 0...collectionView.numberOfItems(inSection: i) - 1 {
+                                    let indexPath = IndexPath(row: j, section: i)
+                                    if dataSource.object(indexPath) == card {
+                                        collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
+                                    }
+                                }
+                            }
+                        }
+                    default:
+                        ()
+                    }
+                }
+                
+            }
+        }
+    }
+
     func defaultsValue() -> [String: Any] {
         var values = [String: Any]()
         var setSectionName = "nameSection"
