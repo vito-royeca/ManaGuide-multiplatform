@@ -616,9 +616,6 @@ extension CardViewController : UICollectionViewDataSource {
                         let thumbnailImage = cell!.viewWithTag(100) as? UIImageView,
                         let setImage = cell!.viewWithTag(200) as? UIImageView {
                         
-                        thumbnailImage.layer.cornerRadius = thumbnailImage.frame.height / 6
-                        thumbnailImage.layer.masksToBounds = true
-                        
                         variations = variations_.allObjects as? [CMCard]
                         let v = variations![indexPath.row]
                         if let croppedImage = ManaKit.sharedInstance.croppedImage(v) {
@@ -653,9 +650,6 @@ extension CardViewController : UICollectionViewDataSource {
                     if let printings_ = card.printings_,
                         let thumbnailImage = cell!.viewWithTag(100) as? UIImageView,
                         let setImage = cell!.viewWithTag(200) as? UIImageView {
-                        
-                        thumbnailImage.layer.cornerRadius = thumbnailImage.frame.height / 6
-                        thumbnailImage.layer.masksToBounds = true
                         
                         let array = printings_.allObjects as! [CMSet]
                         let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
@@ -701,7 +695,13 @@ extension CardViewController : UICollectionViewDataSource {
 
 // UICollectionViewDelegate
 extension CardViewController : UICollectionViewDelegate {
-    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if let thumbnailImage = cell.viewWithTag(100) as? UIImageView {
+            
+            thumbnailImage.layer.cornerRadius = thumbnailImage.frame.height / 6
+            thumbnailImage.layer.masksToBounds = true
+        }
+    }
 }
 
 // MARK: UIWebViewDelegate
