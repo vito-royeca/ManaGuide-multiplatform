@@ -455,8 +455,30 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RulingsCell" rowHeight="88" id="1rC-Af-DYR">
+                                        <rect key="frame" x="0.0" y="336" width="375" height="88"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1rC-Af-DYR" id="qgM-pV-j0H">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="87.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" tag="100" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="soH-9F-2uN">
+                                                    <rect key="frame" x="16" y="4" width="343" height="80"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="soH-9F-2uN" firstAttribute="top" secondItem="qgM-pV-j0H" secondAttribute="top" constant="4" id="05C-6r-kHQ"/>
+                                                <constraint firstItem="soH-9F-2uN" firstAttribute="leading" secondItem="qgM-pV-j0H" secondAttribute="leading" constant="16" id="5p4-NN-xBj"/>
+                                                <constraint firstAttribute="bottom" secondItem="soH-9F-2uN" secondAttribute="bottom" constant="3.5" id="tMx-0V-xpe"/>
+                                                <constraint firstAttribute="trailing" secondItem="soH-9F-2uN" secondAttribute="trailing" constant="16" id="yOE-yD-lu2"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="LegalitiesCell" textLabel="bdJ-V2-A0c" detailTextLabel="m2I-XA-aEo" rowHeight="44" style="IBUITableViewCellStyleSubtitle" id="FrZ-no-jf4">
-                                        <rect key="frame" x="0.0" y="336" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="424" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="FrZ-no-jf4" id="eYf-7B-nRH">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
@@ -480,7 +502,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ThumbnailsCell" rowHeight="88" id="Lag-pk-aPO">
-                                        <rect key="frame" x="0.0" y="380" width="375" height="88"/>
+                                        <rect key="frame" x="0.0" y="468" width="375" height="88"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Lag-pk-aPO" id="qgA-rX-9to">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="87.5"/>
