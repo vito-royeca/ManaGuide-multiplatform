@@ -22,7 +22,7 @@ enum CardViewControllerCardSection: Int {
 }
 
 enum CardViewControllerDetailsSection: Int {
-    case text, rulings, legalities, variations, printings, artist
+    case text, artist, rulings, legalities, variations, printings
 }
 
 enum CardViewControllerPricingSection: Int {
@@ -42,7 +42,7 @@ class CardViewController: BaseViewController {
     var webViewSize: CGSize?
     
     // MARK: Constants
-    let detailsSections = ["Text", "Rulings", "Legalities", "Variations", "Printings", "Artist"]
+    let detailsSections = ["Text", "Artist", "Rulings", "Legalities", "Variations", "Printings"]
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
@@ -160,6 +160,16 @@ extension CardViewController : UITableViewDataSource {
                 rows = 2
             case CardViewControllerDetailsSection.text.rawValue + 1:
                 rows = 1
+            case CardViewControllerDetailsSection.artist.rawValue + 1:
+                rows = 1
+            case CardViewControllerDetailsSection.legalities.rawValue + 1:
+                if let cards = cards {
+                    let card = cards[cardIndex]
+                    
+                    if let cardLegalities_ = card.cardLegalities_ {
+                        rows = cardLegalities_.allObjects.count
+                    }
+                }
             case CardViewControllerDetailsSection.variations.rawValue + 1:
                 if let cards = cards {
                     let card = cards[cardIndex]
@@ -176,8 +186,6 @@ extension CardViewController : UITableViewDataSource {
                         rows = printings_.allObjects.count > 0 ? 1 : 0
                     }
                 }
-            case CardViewControllerDetailsSection.artist.rawValue + 1:
-                rows = 1
             default:
                 rows = 0
             }
@@ -308,6 +316,31 @@ extension CardViewController : UITableViewDataSource {
                     }
                     cell = c
                 }
+            case CardViewControllerDetailsSection.artist.rawValue + 1:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "ArtistCell"),
+                    let cards = cards {
+                    
+                    let card = cards[cardIndex]
+                    if let artist_ = card.artist_ {
+                        c.textLabel?.text = artist_.name
+                    }
+                    
+                    cell = c
+                }
+            case CardViewControllerDetailsSection.legalities.rawValue + 1:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "LegalitiesCell"),
+                    let cards = cards {
+                    
+                    let card = cards[cardIndex]
+                    if let cardLegalities_ = card.cardLegalities_ {
+                        let array = cardLegalities_.allObjects as! [CMCardLegality]
+                        let cardLegality = array[indexPath.row]
+                        c.textLabel?.text = cardLegality.format!.name
+                        c.detailTextLabel?.text = cardLegality.legality!.name
+                    }
+                    
+                    cell = c
+                }
             case CardViewControllerDetailsSection.variations.rawValue + 1,
                  CardViewControllerDetailsSection.printings.rawValue + 1:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") {
@@ -328,17 +361,6 @@ extension CardViewController : UITableViewDataSource {
                             printingsCollectionView = collectionView
                         }
                         collectionView.reloadData()
-                    }
-                    
-                    cell = c
-                }
-            case CardViewControllerDetailsSection.artist.rawValue + 1:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DefaultCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
-                    if let artist_ = card.artist_ {
-                        c.textLabel?.text = artist_.name
                     }
                     
                     cell = c
@@ -376,6 +398,16 @@ extension CardViewController : UITableViewDataSource {
             switch section {
             case 0:
                 ()
+            case CardViewControllerDetailsSection.legalities.rawValue + 1:
+                headerTitle = detailsSections[CardViewControllerDetailsSection.legalities.rawValue]
+                
+                if let cards = cards {
+                    let card = cards[cardIndex]
+                    
+                    if let cardLegalities_ = card.cardLegalities_ {
+                        headerTitle?.append(": \(cardLegalities_.count)")
+                    }
+                }
             case CardViewControllerDetailsSection.variations.rawValue + 1:
                 headerTitle = detailsSections[CardViewControllerDetailsSection.variations.rawValue]
                 
@@ -440,6 +472,9 @@ extension CardViewController : UITableViewDelegate {
                 if let webViewSize = webViewSize {
                     height = webViewSize.height
                 }
+            case CardViewControllerDetailsSection.artist.rawValue + 1,
+                 CardViewControllerDetailsSection.legalities.rawValue + 1:
+                height = UITableViewAutomaticDimension
             case CardViewControllerDetailsSection.variations.rawValue + 1:
                 if let cards = cards {
                     let card = cards[cardIndex]
@@ -456,8 +491,6 @@ extension CardViewController : UITableViewDelegate {
                         height = printings_.allObjects.count > 0 ? CGFloat(88) : 0
                     }
                 }
-            case CardViewControllerDetailsSection.artist.rawValue + 1:
-                height = UITableViewAutomaticDimension
             default:
                 ()
             }
