@@ -186,6 +186,16 @@ class SetViewController: BaseViewController {
                         }
                     }
                 }
+            case "rarity_.name":
+                for card in cards {
+                    if let rarity = card.rarity_ {
+                        let prefix = String(rarity.name!.characters.prefix(1))
+                        
+                        if !sectionIndexTitles.contains(prefix) {
+                            sectionIndexTitles.append(prefix)
+                        }
+                    }
+                }
             case "artist_.name":
                 for card in cards {
                     if let artist = card.artist_ {
@@ -230,6 +240,8 @@ class SetViewController: BaseViewController {
                     setSectionName = "numberSection"
                 case "typeSection":
                     setSectionName = "typeSection"
+                case "rarity_.name":
+                    setSectionName = "rarity_.name"
                 case "artist_.name":
                     setSectionName = "artist_.name"
                 default:

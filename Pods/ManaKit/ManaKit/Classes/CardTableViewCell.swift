@@ -164,7 +164,7 @@ open class CardTableViewCell: UITableViewCell {
                 
                 var text = set.name
                 if let number = card.number ?? card.mciNumber{
-                    text!.append(" \u{2014} #\(number)")
+                    text!.append(" \u{2014} No.\(number)")
                 }
                 setLabel.text = text
             }

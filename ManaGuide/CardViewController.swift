@@ -137,10 +137,11 @@ class CardViewController: BaseViewController {
         newText = newText.replacingOccurrences(of: "(", with:"(<i>")
         newText = newText.replacingOccurrences(of:")", with:"</i>)")
         
-//        if let range = newText.range(of:"{.*?}", options: .regularExpression) {
-//            let result = newText.substring(with:range)
-//            print("\(result)")
-//        }
+        for (_,v) in Symbols {
+            if let imgLink = ManaKit.sharedInstance.symbolHTML(name: v) {
+                newText = newText.replacingOccurrences(of: v, with: imgLink)
+            }
+        }
         
         return newText
     }
@@ -696,10 +697,13 @@ extension CardViewController : UICollectionViewDataSource {
 // UICollectionViewDelegate
 extension CardViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let thumbnailImage = cell.viewWithTag(100) as? UIImageView {
-            
-            thumbnailImage.layer.cornerRadius = thumbnailImage.frame.height / 6
-            thumbnailImage.layer.masksToBounds = true
+        if collectionView == variationsCollectionView ||
+            collectionView == printingsCollectionView {
+            if let thumbnailImage = cell.viewWithTag(100) as? UIImageView {
+                
+                thumbnailImage.layer.cornerRadius = thumbnailImage.frame.height / 6
+                thumbnailImage.layer.masksToBounds = true
+            }
         }
     }
 }
