@@ -438,7 +438,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ArtistCell" textLabel="MDP-KX-5GI" rowHeight="44" style="IBUITableViewCellStyleDefault" id="k5L-nd-0a2">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BasicCell" textLabel="MDP-KX-5GI" rowHeight="44" style="IBUITableViewCellStyleDefault" id="k5L-nd-0a2">
                                         <rect key="frame" x="0.0" y="292" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="k5L-nd-0a2" id="c0g-y0-SWI">
@@ -455,7 +455,7 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RulingsCell" rowHeight="88" id="1rC-Af-DYR">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="DynamicHeightCell" rowHeight="88" id="1rC-Af-DYR">
                                         <rect key="frame" x="0.0" y="336" width="375" height="88"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1rC-Af-DYR" id="qgM-pV-j0H">
@@ -477,7 +477,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="LegalitiesCell" textLabel="bdJ-V2-A0c" detailTextLabel="m2I-XA-aEo" rowHeight="44" style="IBUITableViewCellStyleSubtitle" id="FrZ-no-jf4">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SubtitleCell" textLabel="bdJ-V2-A0c" detailTextLabel="m2I-XA-aEo" rowHeight="44" style="IBUITableViewCellStyleSubtitle" id="FrZ-no-jf4">
                                         <rect key="frame" x="0.0" y="424" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="FrZ-no-jf4" id="eYf-7B-nRH">
@@ -637,7 +637,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="611-iq-DQy" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" systemItem="featured" id="Vux-9U-ydJ"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="E6l-rT-Hay">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="E6l-rT-Hay">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -655,7 +655,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="zfj-Ad-6ED" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="UVG-am-LSK">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="UVG-am-LSK">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
