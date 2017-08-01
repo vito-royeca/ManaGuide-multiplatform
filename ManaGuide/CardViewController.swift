@@ -288,7 +288,7 @@ extension CardViewController : UITableViewDataSource {
                             }
                             if let flavorText = card.flavor {
                                 html = html.replacingOccurrences(of: "{{flavorTextTitle}}", with: "Flavor")
-                                html = html.replacingOccurrences(of: "{{flavorText}}", with: flavorText)
+                                html = html.replacingOccurrences(of: "{{flavorText}}", with:  replaceSymbols(inText: flavorText))
                             } else {
                                 html = html.replacingOccurrences(of: "{{flavorTextTitle}}", with: "")
                                 html = html.replacingOccurrences(of: "{{flavorText}}", with: "")

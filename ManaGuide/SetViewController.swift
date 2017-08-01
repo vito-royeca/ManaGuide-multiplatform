@@ -128,6 +128,7 @@ class SetViewController: BaseViewController {
                         if let imageView = cell.viewWithTag(100) as? UIImageView {
                             imageView.image = ManaKit.sharedInstance.cardImage(card)
                             
+                            // TODO: fix multiple image loading if scrolling fast
                             if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.cardBack) {
                                 ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
                                     if error == nil {
@@ -372,18 +373,6 @@ class SetViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension SetViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        let defaults = defaultsValue()
-//        let setShow = defaults["setShow"] as! String
-//        var rows = 0
-//        
-//        switch setShow {
-//        case "setInfo":
-//            rows = 1
-//        default:
-//            ()
-//        }
-//            
-//        return rows
         let rows = 1
         
         return rows
@@ -574,6 +563,7 @@ extension SetViewController : UIWebViewDelegate {
                 if host.hasPrefix("mtg.gamepedia.com") {
                     willLoad = true
                 } else if host.hasPrefix("www.magiccards.info") {
+                    // TODO: show the card instead of jumping to link!!!
                     let urlComponents = URLComponents(string: url.absoluteString)
                     let queryItems = urlComponents?.queryItems
                     let q = queryItems?.filter({$0.name == "q"}).first
