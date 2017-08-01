@@ -22,7 +22,7 @@ enum CardViewControllerCardSection: Int {
 }
 
 enum CardViewControllerDetailsSection: Int {
-    case text, artist, variations, printings, source, rulings, legalities
+    case text, artist, printings, source, rulings, legalities
 }
 
 enum CardViewControllerPricingSection: Int {
@@ -36,13 +36,12 @@ class CardViewController: BaseViewController {
     var variations: [CMCard]?
     var printings: [CMCard]?
     var cardsCollectionView: UICollectionView?
-    var variationsCollectionView: UICollectionView?
     var printingsCollectionView: UICollectionView?
     var segmentedIndex: CardViewControllerSegmentedIndex = .card
     var webViewSize: CGSize?
     
     // MARK: Constants
-    let detailsSections = ["Text", "Artist", "Variations", "Printings", "Source", "Rulings", "Legalities"]
+    let detailsSections = ["Text", "Artist", "Printings", "Source", "Rulings", "Legalities"]
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
@@ -94,13 +93,6 @@ class CardViewController: BaseViewController {
                 }
                 
                 if let parentView = parentView {
-                    if let variationsCollectionView = variationsCollectionView,
-                        let variations = variations {
-                        if parentView == variationsCollectionView {
-                            dest.cards = [variations[variationsCollectionView.indexPath(for: cell)!.item]]
-                        }
-                    }
-                    
                     if let printingsCollectionView = printingsCollectionView,
                         let printings = printings {
                         if parentView == printingsCollectionView {
@@ -283,8 +275,13 @@ extension CardViewController : UITableViewDataSource {
                                 html = html.replacingOccurrences(of: "{{oracleText}}", with: "")
                             }
                             if let originalText = card.originalText {
-                                html = html.replacingOccurrences(of: "{{originalTextTitle}}", with: "Original")
-                                html = html.replacingOccurrences(of: "{{originalText}}", with: replaceSymbols(inText: originalText))
+                                if card.text != originalText {
+                                    html = html.replacingOccurrences(of: "{{originalTextTitle}}", with: "Original")
+                                    html = html.replacingOccurrences(of: "{{originalText}}", with: replaceSymbols(inText: originalText))
+                                } else {
+                                    html = html.replacingOccurrences(of: "{{originalTextTitle}}", with: "")
+                                    html = html.replacingOccurrences(of: "{{originalText}}", with: "")
+                                }
                             } else {
                                 html = html.replacingOccurrences(of: "{{originalTextTitle}}", with: "")
                                 html = html.replacingOccurrences(of: "{{originalText}}", with: "")
@@ -316,10 +313,12 @@ extension CardViewController : UITableViewDataSource {
                     
                     cell = c
                 }
-            case CardViewControllerDetailsSection.variations.rawValue + 1,
-                 CardViewControllerDetailsSection.printings.rawValue + 1:
+            case CardViewControllerDetailsSection.printings.rawValue + 1:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") {
-                    if let collectionView = c.viewWithTag(100) as? UICollectionView {
+                    if let collectionView = c.viewWithTag(100) as? UICollectionView,
+                        let cards = cards  {
+                        let card = cards[cardIndex]
+                        
                         if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                             let width = CGFloat(100)
                             let height = CGFloat(72)
@@ -330,10 +329,17 @@ extension CardViewController : UITableViewDataSource {
                         collectionView.dataSource = self
                         collectionView.delegate = self
                         
-                        if indexPath.section == CardViewControllerDetailsSection.variations.rawValue + 1 {
-                            variationsCollectionView = collectionView
-                        } else if indexPath.section == CardViewControllerDetailsSection.printings.rawValue + 1{
-                            printingsCollectionView = collectionView
+                        printingsCollectionView = collectionView
+                        
+                        if let printings_ = card.printings_ {
+                            let array = printings_.allObjects as! [CMSet]
+                            let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                            request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                                       NSSortDescriptor(key: "number", ascending: true),
+                                                       NSSortDescriptor(key: "mciNumber", ascending: true)]
+                            request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, array.map({$0.code}))
+                            
+                            printings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMCard]
                         }
                         collectionView.reloadData()
                     }
@@ -392,7 +398,7 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             case CardViewControllerDetailsSection.legalities.rawValue + 1:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "SubtitleCell"),
+                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
                     let cards = cards {
                     
                     let card = cards[cardIndex]
@@ -454,25 +460,11 @@ extension CardViewController : UITableViewDataSource {
                         headerTitle?.append(": \(rulings_.count)")
                     }
                 }
-            case CardViewControllerDetailsSection.variations.rawValue + 1:
-                headerTitle = detailsSections[CardViewControllerDetailsSection.variations.rawValue]
-                
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    
-                    if let variations_ = card.variations_ {
-                        headerTitle?.append(": \(variations_.count)")
-                    }
-                }
             case CardViewControllerDetailsSection.printings.rawValue + 1:
                 headerTitle = detailsSections[CardViewControllerDetailsSection.printings.rawValue]
                 
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    
-                    if let printings_ = card.printings_ {
-                        headerTitle?.append(": \(printings_.count)")
-                    }
+                if let printings = printings {
+                    headerTitle?.append(": \(printings.count)")
                 }
             case CardViewControllerDetailsSection.legalities.rawValue + 1:
                 headerTitle = detailsSections[CardViewControllerDetailsSection.legalities.rawValue]
@@ -528,8 +520,7 @@ extension CardViewController : UITableViewDelegate {
                 if let webViewSize = webViewSize {
                     height = webViewSize.height
                 }
-            case CardViewControllerDetailsSection.variations.rawValue + 1,
-                 CardViewControllerDetailsSection.printings.rawValue + 1:
+            case CardViewControllerDetailsSection.printings.rawValue + 1:
                 height = CGFloat(88)
             default:
                 height = UITableViewAutomaticDimension
@@ -566,22 +557,8 @@ extension CardViewController : UICollectionViewDataSource {
             }
             
         case .details:
-            if collectionView == variationsCollectionView {
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    
-                    if let variations_ = card.variations_ {
-                        items = variations_.allObjects.count
-                    }
-                }
-            } else if collectionView == printingsCollectionView {
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    
-                    if let printings_ = card.printings_ {
-                        items = printings_.allObjects.count
-                    }
-                }
+            if let printings = printings {
+                items = printings.count
             }
             
         case .pricing:
@@ -607,83 +584,33 @@ extension CardViewController : UICollectionViewDataSource {
             }
             
         case .details:
-            if collectionView == variationsCollectionView {
-                cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ThumbnailItemCell", for: indexPath)
+            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ThumbnailItemCell", for: indexPath)
+            
+            if let printings = printings,
+                let thumbnailImage = cell!.viewWithTag(100) as? UIImageView,
+                let setImage = cell!.viewWithTag(200) as? UIImageView {
+                let printing = printings[indexPath.row]
                 
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    
-                    if let variations_ = card.variations_,
-                        let thumbnailImage = cell!.viewWithTag(100) as? UIImageView,
-                        let setImage = cell!.viewWithTag(200) as? UIImageView {
-                        
-                        variations = variations_.allObjects as? [CMCard]
-                        let v = variations![indexPath.row]
-                        if let croppedImage = ManaKit.sharedInstance.croppedImage(v) {
-                            thumbnailImage.image = croppedImage
-                        } else {
-                            thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
-                            ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
-                                if error == nil {
-                                    if v == c {
-                                        UIView.transition(with: thumbnailImage,
-                                                          duration: 1.0,
-                                                          options: .transitionCrossDissolve,
-                                                          animations: {
-                                                            thumbnailImage.image = croppedImage
-                                        },
-                                                          completion: nil)
-                                    }
-                                }
-                            })
+                if let croppedImage = ManaKit.sharedInstance.croppedImage(printing) {
+                    thumbnailImage.image = croppedImage
+                } else {
+                    thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
+                    ManaKit.sharedInstance.downloadCardImage(printing, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
+                        if error == nil {
+                            if printing == c {
+                                UIView.transition(with: thumbnailImage,
+                                                  duration: 1.0,
+                                                  options: .transitionCrossDissolve,
+                                                  animations: {
+                                                    thumbnailImage.image = croppedImage
+                                },
+                                                  completion: nil)
+                            }
                         }
-                        
-                        setImage.image = ManaKit.sharedInstance.setImage(set: v.set!, rarity: v.rarity_)
-                    }
+                    })
                 }
                 
-            } else if collectionView == printingsCollectionView {
-                cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ThumbnailItemCell", for: indexPath)
-                
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    
-                    if let printings_ = card.printings_,
-                        let thumbnailImage = cell!.viewWithTag(100) as? UIImageView,
-                        let setImage = cell!.viewWithTag(200) as? UIImageView {
-                        
-                        let array = printings_.allObjects as! [CMSet]
-                        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-                        request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                                                   NSSortDescriptor(key: "number", ascending: true),
-                                                   NSSortDescriptor(key: "mciNumber", ascending: true)]
-                        request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, array.map({$0.code}))
-                        
-                        printings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMCard]
-                        let printing = printings![indexPath.row]
-                        
-                        if let croppedImage = ManaKit.sharedInstance.croppedImage(printing) {
-                            thumbnailImage.image = croppedImage
-                        } else {
-                            thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
-                            ManaKit.sharedInstance.downloadCardImage(printing, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
-                                if error == nil {
-                                    if printing == c {
-                                        UIView.transition(with: thumbnailImage,
-                                                          duration: 1.0,
-                                                          options: .transitionCrossDissolve,
-                                                          animations: {
-                                                            thumbnailImage.image = croppedImage
-                                        },
-                                                          completion: nil)
-                                    }
-                                }
-                            })
-                        }
-                        
-                        setImage.image = ManaKit.sharedInstance.setImage(set: printing.set!, rarity: printing.rarity_)
-                    }
-                }
+                setImage.image = ManaKit.sharedInstance.setImage(set: printing.set!, rarity: printing.rarity_)
             }
             
         case .pricing:
@@ -697,8 +624,7 @@ extension CardViewController : UICollectionViewDataSource {
 // UICollectionViewDelegate
 extension CardViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if collectionView == variationsCollectionView ||
-            collectionView == printingsCollectionView {
+        if collectionView == printingsCollectionView {
             if let thumbnailImage = cell.viewWithTag(100) as? UIImageView {
                 
                 thumbnailImage.layer.cornerRadius = thumbnailImage.frame.height / 6

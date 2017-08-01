@@ -32,6 +32,7 @@ public enum ImageName: String {
 }
 
 public let Symbols = [
+    "∞": "{∞}",
     "0": "{0}",
     "1": "{1}",
     "2": "{2}",
@@ -56,27 +57,27 @@ public let Symbols = [
     "100": "{100}",
     "1000000": "{1000000}",
     "B": "{B}",
-    "BG": "{BG}",
-    "BP": "{BP}",
-    "BR": "{BR}",
+    "BG": "{B/G}",
+    "BP": "{B/P}",
+    "BR": "{B/R}",
     "C": "{C}",
     "G": "{G}",
-    "GP": "{GP}",
-    "GU": "{GU}",
-    "GW": "{GW}",
+    "GP": "{G/P}",
+    "GU": "{G/U}",
+    "GW": "{G/W}",
     "R": "{R}",
-    "RG": "{RG}",
-    "RP": "{RP}",
-    "RW": "{RW}",
+    "RG": "{R/G}",
+    "RP": "{R/P}",
+    "RW": "{R/W}",
     "S": "{S}",
     "U": "{U}",
-    "UB": "{UB}",
-    "UP": "{UP}",
-    "UR": "{UR}",
+    "UB": "{U/B}",
+    "UP": "{U/P}",
+    "UR": "{U/R}",
     "W": "{W}",
-    "WB": "{WB}",
-    "WP": "{WP}",
-    "WU": "{WU}",
+    "WB": "{W/B}",
+    "WP": "{W/P}",
+    "WU": "{W/U}",
     "X": "{X}",
     "Y": "{Y}",
     "Z": "{Z}",
@@ -154,11 +155,11 @@ open class ManaKit: NSObject {
         let mc = manaCost.replacingOccurrences(of: "{", with: "")
             .replacingOccurrences(of: "}", with: " ")
             .replacingOccurrences(of: "/", with: "")
-        let manaArray = mc.components(separatedBy: " ")
         
         if let bundleURL = bundle.resourceURL?.appendingPathComponent("ManaKit.bundle") {
             let resourceBundle = Bundle(url: bundleURL)
-            
+            let manaArray = mc.components(separatedBy: " ")
+
             for mana in manaArray {
                 if mana.characters.count == 0 {
                     continue
@@ -197,7 +198,9 @@ open class ManaKit: NSObject {
     }
     
     open func symbolHTML(name: String) -> String? {
-        let cleanName = name.replacingOccurrences(of: "{", with: "").replacingOccurrences(of: "}", with: "")
+        let cleanName = name.replacingOccurrences(of: "{", with: "")
+            .replacingOccurrences(of: "}", with: "")
+            .replacingOccurrences(of: "/", with: "")
         var image: UIImage?
         var html: String?
         
@@ -226,7 +229,14 @@ open class ManaKit: NSObject {
                 
                     try! UIImagePNGRepresentation(image)?.write(to: URL(fileURLWithPath: targetPath))
                 }
-                html = "<img src=\'\(targetPath)\' width=\'25\' height=\'25\' />"
+                var width = "25"
+                if cleanName == "100" {
+                    width = "50"
+                } else if cleanName == "1000000" {
+                    width = "75"
+                }
+                
+                html = "<img src='\(targetPath)' width='\(width)' height='25' />"
             }
         }
         
