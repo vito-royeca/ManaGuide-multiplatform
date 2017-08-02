@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>StringsTable</key>
+	<string>Root</string>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>File</key>
+			<string>AdvancedSearch</string>
+			<key>Title</key>
+			<string>Search Filters</string>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSRadioGroupSpecifier</string>
+			<key>Title</key>
+			<string>Sort By</string>
+			<key>Key</key>
+			<string>searchSortBy</string>
+			<key>DefaultValue</key>
+			<string>name</string>
+			<key>Values</key>
+			<array>
+				<string>name</string>
+				<string>typeSection</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Name</string>
+				<string>Type</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSRadioGroupSpecifier</string>
+			<key>Title</key>
+			<string>Order By</string>
+			<key>Key</key>
+			<string>searchOrderBy</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Values</key>
+			<array>
+				<true/>
+				<false/>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Ascending</string>
+				<string>Descending</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSRadioGroupSpecifier</string>
+			<key>Title</key>
+			<string>Display By</string>
+			<key>Key</key>
+			<string>searchDisplayBy</string>
+			<key>DefaultValue</key>
+			<string>list</string>
+			<key>Values</key>
+			<array>
+				<string>list</string>
+				<string>2x2</string>
+				<string>4x4</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>List</string>
+				<string>2x2 Grid</string>
+				<string>4x4 Grid</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

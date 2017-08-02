@@ -133,13 +133,15 @@ class SetViewController: BaseViewController {
                                 ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
                                     if error == nil {
                                         if card == self.dataSource!.object(indexPath) {
-                                            UIView.transition(with: imageView,
-                                                              duration: 1.0,
-                                                              options: .transitionFlipFromLeft,
-                                                              animations: {
-                                                                imageView.image = image
-                                            },
-                                                              completion: nil)
+                                            if let image = image {
+                                                UIView.transition(with: imageView,
+                                                                  duration: 1.0,
+                                                                  options: .transitionFlipFromLeft,
+                                                                  animations: {
+                                                                    imageView.image = image
+                                                },
+                                                                  completion: nil)
+                                            }
                                         }
                                     }
                                 })
@@ -377,7 +379,6 @@ extension SetViewController : UITableViewDataSource {
         
         return rows
     }
-    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let defaults = defaultsValue()
