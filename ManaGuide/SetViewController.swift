@@ -94,7 +94,7 @@ class SetViewController: BaseViewController {
         var request:NSFetchRequest<NSFetchRequestResult>?
         let defaults = defaultsValue()
         let setSectionName = defaults["setSectionName"] as! String
-        let setSortBy = defaults["setSortBy"] as! String
+        let setSecondSortBy = defaults["setSecondSortBy"] as! String
         let setOrderBy = defaults["setOrderBy"] as! Bool
         let setDisplayBy = defaults["setDisplayBy"] as! String
         var ds: DATASource?
@@ -105,14 +105,13 @@ class SetViewController: BaseViewController {
             request = NSFetchRequest(entityName: "CMCard")
             
             request!.sortDescriptors = [NSSortDescriptor(key: setSectionName, ascending: setOrderBy),
-                                        NSSortDescriptor(key: setSortBy, ascending: setOrderBy)]
+                                        NSSortDescriptor(key: setSecondSortBy, ascending: setOrderBy)]
             request!.predicate = NSPredicate(format: "set.code = %@", set!.code!)
         }
         
-        
         switch setDisplayBy {
         case "list":
-            ds = DATASource(tableView: tableView, cellIdentifier: "CardCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName, configuration: { cell, item, indexPath in
+            ds = DATASource(tableView: tableView, cellIdentifier: "CardCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName == "numberSection" ? nil : setSectionName, configuration: { cell, item, indexPath in
                 if let card = item as? CMCard,
                     let cardCell = cell as? CardTableViewCell {
                     
@@ -123,7 +122,7 @@ class SetViewController: BaseViewController {
         case "2x2",
              "4x4":
             if let collectionView = collectionView {
-                ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName, configuration: { cell, item, indexPath in
+                ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName == "numberSection" ? nil : setSectionName, configuration: { cell, item, indexPath in
                     if let card = item as? CMCard {
                         if let imageView = cell.viewWithTag(100) as? UIImageView {
                             imageView.image = ManaKit.sharedInstance.cardImage(card)
@@ -169,6 +168,8 @@ class SetViewController: BaseViewController {
             
             let defaults = defaultsValue()
             let setSectionName = defaults["setSectionName"] as! String
+            let setDisplayBy = defaults["setDisplayBy"] as! String
+            let setShow = defaults["setShow"] as! String
             
             switch setSectionName {
             case "nameSection":
@@ -213,9 +214,27 @@ class SetViewController: BaseViewController {
                 ()
             }
             
-            for i in 0...dataSource.numberOfSections(in: tableView) - 1 {
-                if let sectionTitle = dataSource.titleForHeader(i) {
-                    sectionTitles.append(sectionTitle)
+            
+            var sections = 0
+            if setShow == "cards" {
+                switch setDisplayBy {
+                case "list":
+                    sections = dataSource.numberOfSections(in: tableView)
+                case "2x2",
+                     "4x4":
+                    if let collectionView = collectionView {
+                        sections = dataSource.numberOfSections(in: collectionView)
+                    }
+                default:
+                    ()
+                }
+            }
+            
+            if sections > 0 {
+                for i in 0...sections - 1 {
+                    if let sectionTitle = dataSource.titleForHeader(i) {
+                        sectionTitles.append(sectionTitle)
+                    }
                 }
             }
         }
@@ -229,6 +248,7 @@ class SetViewController: BaseViewController {
             let defaults = defaultsValue()
             var setSectionName = defaults["setSectionName"] as! String
             var setSortBy = defaults["setSortBy"] as! String
+            var setSecondSortBy = defaults["setSecondSortBy"] as! String
             var setOrderBy = defaults["setOrderBy"] as! Bool
             var setDisplayBy = defaults["setDisplayBy"] as! String
             var setShow = defaults["setShow"] as! String
@@ -239,14 +259,19 @@ class SetViewController: BaseViewController {
                 switch setSortBy {
                 case "name":
                     setSectionName = "nameSection"
+                    setSecondSortBy = "name"
                 case "mciNumber":
                     setSectionName = "numberSection"
+                    setSecondSortBy = "name"
                 case "typeSection":
                     setSectionName = "typeSection"
+                    setSecondSortBy = "name"
                 case "rarity_.name":
                     setSectionName = "rarity_.name"
+                    setSecondSortBy = "name"
                 case "artist_.name":
                     setSectionName = "artist_.name"
+                    setSecondSortBy = "name"
                 default:
                     ()
                 }
@@ -266,6 +291,7 @@ class SetViewController: BaseViewController {
             
             UserDefaults.standard.set(setSectionName, forKey: "setSectionName")
             UserDefaults.standard.set(setSortBy, forKey: "setSortBy")
+            UserDefaults.standard.set(setSecondSortBy, forKey: "setSecondSortBy")
             UserDefaults.standard.set(setOrderBy, forKey: "setOrderBy")
             UserDefaults.standard.set(setDisplayBy, forKey: "setDisplayBy")
             UserDefaults.standard.set(setShow, forKey: "setShow")
@@ -273,6 +299,48 @@ class SetViewController: BaseViewController {
             
             updateDataDisplay()
         }
+    }
+    
+    func defaultsValue() -> [String: Any] {
+        var values = [String: Any]()
+        
+        if let value = UserDefaults.standard.value(forKey: "setSectionName") as? String {
+            values["setSectionName"] = value
+        } else {
+            values["setSectionName"] = "nameSection"
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "setSortBy") as? String {
+            values["setSortBy"] = value
+        } else {
+            values["setSortBy"] = "name"
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "setSecondSortBy") as? String {
+            values["setSecondSortBy"] = value
+        } else {
+            values["setSecondSortBy"] = "name"
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "setOrderBy") as? Bool {
+            values["setOrderBy"] = value
+        } else {
+            values["setOrderBy"] = true
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "setDisplayBy") as? String {
+            values["setDisplayBy"] = value
+        } else {
+            values["setDisplayBy"] = "list"
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "setShow") as? String {
+            values["setShow"] = value
+        } else {
+            values["setShow"] = "cards"
+        }
+        
+        return values
     }
     
     func scrollToCard(_ notification: Notification) {
@@ -314,43 +382,6 @@ class SetViewController: BaseViewController {
             }
         }
     }
-
-    func defaultsValue() -> [String: Any] {
-        var values = [String: Any]()
-        var setSectionName = "nameSection"
-        var setSortBy = "name"
-        var setOrderBy = true
-        var setDisplayBy = "list"
-        var setShow = "cards"
-        
-        if let value = UserDefaults.standard.value(forKey: "setSectionName") as? String {
-            setSectionName = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "setSortBy") as? String {
-            setSortBy = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "setOrderBy") as? Bool {
-            setOrderBy = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "setDisplayBy") as? String {
-            setDisplayBy = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "setShow") as? String {
-            setShow = value
-        }
-        
-        values["setSectionName"] = setSectionName
-        values["setSortBy"] = setSortBy
-        values["setOrderBy"] = setOrderBy
-        values["setDisplayBy"] = setDisplayBy
-        values["setShow"] = setShow
-        
-        return values
-    }
     
     func wikiURL(ofSet set: CMSet) -> URL? {
         var path = ""
@@ -369,7 +400,6 @@ class SetViewController: BaseViewController {
         
         return URL(string: "https://mtg.gamepedia.com/\(path)")
     }
-
 }
 
 // MARK: UITableViewDataSource
@@ -546,11 +576,33 @@ extension SetViewController : DATASourceDelegate {
             }
             
             if let lab = v!.viewWithTag(100) as? UILabel {
-                lab.text = sectionTitles[indexPath.section]
+                let defaults = defaultsValue()
+                let setOrderBy = defaults["setOrderBy"] as! Bool
+                var sectionTitle: String?
+                
+                if setOrderBy {
+                    sectionTitle = sectionTitles[indexPath.section]
+                } else {
+                    sectionTitle = sectionTitles[sectionTitles.count - 1 - indexPath.section]
+                }
+                
+                lab.text = sectionTitle
             }
         }
         
         return v
+    }
+}
+
+// UICollectionViewDelegate
+extension SetViewController : UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let card = dataSource!.object(indexPath)
+        let cards = dataSource!.all()
+        let cardIndex = cards.index(of: card!)
+        
+        performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
+                                                          "cards": cards])
     }
 }
 
@@ -608,17 +660,5 @@ extension SetViewController : UIWebViewDelegate {
         html.append(error.localizedDescription)
         html.append("</center></body></html>")
         webView.loadHTMLString(html, baseURL: nil)
-    }
-}
-
-// UICollectionViewDelegate
-extension SetViewController : UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let card = dataSource!.object(indexPath)
-        let cards = dataSource!.all()
-        let cardIndex = cards.index(of: card!)
-        
-        performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
-                                                          "cards": cards])
     }
 }

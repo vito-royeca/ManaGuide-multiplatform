@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>StringsTable</key>
+	<string>Root</string>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Type</key>
+			<string>PSRadioGroupSpecifier</string>
+			<key>Title</key>
+			<string>Boolean</string>
+			<key>Key</key>
+			<string>searchColorBoolean</string>
+			<key>DefaultValue</key>
+			<string>or</string>
+			<key>Values</key>
+			<array>
+				<string>and</string>
+				<string>or</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>And</string>
+				<string>Or</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Not</string>
+			<key>Key</key>
+			<string>searchColorNot</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSRadioGroupSpecifier</string>
+			<key>Title</key>
+			<string>Match</string>
+			<key>Key</key>
+			<string>searchColorMatch</string>
+			<key>DefaultValue</key>
+			<string>exact</string>
+			<key>Values</key>
+			<array>
+				<string>begins</string>
+				<string>contains</string>
+				<string>exact</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Begins</string>
+				<string>Contains</string>
+				<string>Exact</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

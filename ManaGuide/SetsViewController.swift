@@ -64,7 +64,7 @@ class SetsViewController: BaseViewController {
         var request:NSFetchRequest<NSFetchRequestResult>?
         let defaults = defaultsValue()
         let setsSectionName = defaults["setsSectionName"] as! String
-        let setsSortBy = defaults["setsSortBy"] as! String
+        let setsSecondSortBy = defaults["setsSecondSortBy"] as! String
         let setsOrderBy = defaults["setsOrderBy"] as! Bool
         
         if let fetchRequest = fetchRequest {
@@ -72,7 +72,7 @@ class SetsViewController: BaseViewController {
         } else {
             request = NSFetchRequest(entityName: "CMSet")
             request!.sortDescriptors = [NSSortDescriptor(key: setsSectionName, ascending: setsOrderBy),
-                                        NSSortDescriptor(key: setsSortBy, ascending: setsOrderBy)]
+                                        NSSortDescriptor(key: setsSecondSortBy, ascending: setsOrderBy)]
         }
         
         let ds = DATASource(tableView: tableView, cellIdentifier: "SetCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setsSectionName, configuration: { cell, item, indexPath in
@@ -136,9 +136,12 @@ class SetsViewController: BaseViewController {
                 ()
             }
             
-            for i in 0...dataSource.numberOfSections(in: tableView) - 1 {
-                if let sectionTitle = dataSource.titleForHeader(i) {
-                    sectionTitles.append(sectionTitle)
+            let sections = dataSource.numberOfSections(in: tableView)
+            if sections > 0 {
+                for i in 0...sections - 1 {
+                    if let sectionTitle = dataSource.titleForHeader(i) {
+                        sectionTitles.append(sectionTitle)
+                    }
                 }
             }
         }
@@ -152,6 +155,7 @@ class SetsViewController: BaseViewController {
             let defaults = defaultsValue()
             var setsSectionName = defaults["setsSectionName"] as! String
             var setsSortBy = defaults["setsSortBy"] as! String
+            var setsSecondSortBy = defaults["setsSecondSortBy"] as! String
             var setsOrderBy = defaults["setsOrderBy"] as! Bool
             
             if let value = userInfo["setsSortBy"] as? String {
@@ -160,10 +164,13 @@ class SetsViewController: BaseViewController {
                 switch setsSortBy {
                 case "releaseDate":
                     setsSectionName = "yearSection"
+                    setsSecondSortBy = "releaseDate"
                 case "name":
                     setsSectionName = "nameSection"
+                    setsSecondSortBy = "name"
                 case "type_.name":
                     setsSectionName = "typeSection"
+                    setsSecondSortBy = "name"
                 default:
                     ()
                 }
@@ -175,6 +182,7 @@ class SetsViewController: BaseViewController {
             
             UserDefaults.standard.set(setsSectionName, forKey: "setsSectionName")
             UserDefaults.standard.set(setsSortBy, forKey: "setsSortBy")
+            UserDefaults.standard.set(setsSecondSortBy, forKey: "setsSecondSortBy")
             UserDefaults.standard.set(setsOrderBy, forKey: "setsOrderBy")
             UserDefaults.standard.synchronize()
             
@@ -184,26 +192,31 @@ class SetsViewController: BaseViewController {
     
     func defaultsValue() -> [String: Any] {
         var values = [String: Any]()
-        var setsSectionName = "yearSection"
-        var setsSortBy = "releaseDate"
-        var setsOrderBy = false
         
         if let value = UserDefaults.standard.value(forKey: "setsSectionName") as? String {
-            setsSectionName = value
+            values["setsSectionName"] = value
+        } else {
+            values["setsSectionName"] = "yearSection"
         }
         
         if let value = UserDefaults.standard.value(forKey: "setsSortBy") as? String {
-            setsSortBy = value
+            values["setsSortBy"] = value
+        } else {
+            values["setsSortBy"] = "releaseDate"
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "setsSecondSortBy") as? String {
+            values["setsSecondSortBy"] = value
+        } else {
+            values["setsSecondSortBy"] = "releaseDate"
         }
         
         if let value = UserDefaults.standard.value(forKey: "setsOrderBy") as? Bool {
-            setsOrderBy = value
+            values["setsOrderBy"] = value
+        } else {
+            values["setsOrderBy"] = false
         }
 
-        values["setsSectionName"] = setsSectionName
-        values["setsSortBy"] = setsSortBy
-        values["setsOrderBy"] = setsOrderBy
-        
         return values
     }
 }
