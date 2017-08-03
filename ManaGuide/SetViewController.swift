@@ -67,6 +67,13 @@ class SetViewController: BaseViewController {
                     dest.title = dest.cards?[dest.cardIndex].name
                 }
             }
+        } else if segue.identifier == "showSearch" {
+            if let dest = segue.destination as? SearchViewController,
+                let request = sender as? NSFetchRequest<NSFetchRequestResult> {
+                
+                dest.request = request
+                dest.title = "Search Results"
+            }
         }
     }
     
@@ -391,7 +398,6 @@ class SetViewController: BaseViewController {
                         ()
                     }
                 }
-                
             }
         }
     }
@@ -635,7 +641,28 @@ extension SetViewController : UIWebViewDelegate {
                         let r = value.index(value.startIndex, offsetBy: 1)
                         let cardName = value.substring(from: r).replacingOccurrences(of: "+", with: " ")
                         
-                        print("\(cardName)")
+                        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                        request.predicate = NSPredicate(format: "name = %@", cardName)
+                        
+                        let results = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
+                        if results.count == 1 {
+                            if let card = results.first as? CMCard {
+                                if UIDevice.current.userInterfaceIdiom == .phone {
+                                    performSegue(withIdentifier: "showCard", sender: ["cardIndex": 0 as Any,
+                                                                                      "cards": [card]])
+                                } else if UIDevice.current.userInterfaceIdiom == .pad {
+                                    performSegue(withIdentifier: "showCardModal", sender: ["cardIndex": 0 as Any,
+                                                                                           "cards": [card]])
+                                }
+                            }
+                        } else if results.count > 1 {
+                            performSegue(withIdentifier: "showSearch", sender: request)
+                        } else {
+                            let alertVC = UIAlertController(title: "Card Not found", message: "The card: \(cardName) was not found in the database", preferredStyle: .alert)
+                            let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                            alertVC.addAction(okAction)
+                            present(alertVC, animated: true, completion: nil)
+                        }
                     }
                 }
             }

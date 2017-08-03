@@ -11,7 +11,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Search View Controller-->
+        <!--Search-->
         <scene sceneID="lji-HF-kJZ">
             <objects>
                 <viewController automaticallyAdjustsScrollViewInsets="NO" id="t1B-qF-FHV" customClass="SearchViewController" customModule="ManaGuide" customModuleProvider="target" sceneMemberID="viewController">
@@ -24,9 +24,9 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="88" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="c6Y-yF-szq">
-                                <rect key="frame" x="0.0" y="64" width="414" height="623"/>
+                                <rect key="frame" x="0.0" y="64" width="414" height="628"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <view key="tableHeaderView" contentMode="scaleToFill" id="nnZ-aV-lye">
+                                <view key="tableHeaderView" tag="100" contentMode="scaleToFill" id="nnZ-aV-lye">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
@@ -124,7 +124,7 @@
                             <constraint firstItem="c6Y-yF-szq" firstAttribute="bottom" secondItem="bam-Dw-5q0" secondAttribute="top" id="gk0-L4-HWY"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="9yE-fJ-3l8">
+                    <navigationItem key="navigationItem" title="Search" id="9yE-fJ-3l8">
                         <barButtonItem key="rightBarButtonItem" title="Item" id="pW4-Bt-JMi">
                             <connections>
                                 <action selector="rightMenuAction:" destination="t1B-qF-FHV" id="sIH-p9-Kg8"/>
@@ -411,6 +411,7 @@
                         <outlet property="tableView" destination="uA5-1d-p4e" id="Udg-Xr-B4G"/>
                         <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="J88-7q-TTb"/>
                         <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="X4a-uC-2tC"/>
+                        <segue destination="t1B-qF-FHV" kind="show" identifier="showSearch" id="bra-At-7UT"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8Rr-dW-woe" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -836,7 +837,8 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="ISp-PC-gA3"/>
-        <segue reference="X4a-uC-2tC"/>
-        <segue reference="J88-7q-TTb"/>
+        <segue reference="bra-At-7UT"/>
+        <segue reference="Ubl-6g-hH9"/>
+        <segue reference="sDJ-KE-8ls"/>
     </inferredMetricsTieBreakers>
 </document>

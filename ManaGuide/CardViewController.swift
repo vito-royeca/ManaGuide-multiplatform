@@ -241,7 +241,7 @@ extension CardViewController : UITableViewDataSource {
                             let height = view.frame.size.height - kCardTableViewCellHeight - CGFloat(44) - 22
   
                             flowLayout.itemSize = CGSize(width: width * 0.7, height: height * 0.9)
-                            flowLayout.sectionInset = UIEdgeInsets(top: 10, left: width * 0.3, bottom: 10, right: 0)
+                            flowLayout.sectionInset = UIEdgeInsets(top: 10, left: width * 0.15, bottom: 10, right: width * 0.15)
                             flowLayout.minimumInteritemSpacing = CGFloat(0)
                         }
                         

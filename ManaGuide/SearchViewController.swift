@@ -19,7 +19,8 @@ class SearchViewController: BaseViewController {
     var sectionIndexTitles = [String]()
     var sectionTitles = [String]()
     var collectionView: UICollectionView?
-
+    var request:NSFetchRequest<NSFetchRequestResult>?
+    
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
     @IBOutlet weak var searchBar: UISearchBar!
@@ -52,6 +53,12 @@ class SearchViewController: BaseViewController {
         searchButton.setTitle(nil, for: .normal)
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
+        // we have a custom search result, so remove the searchBar and rightMenuButton
+        if request != nil {
+            tableView.viewWithTag(100)?.removeFromSuperview()
+            tableView.tableHeaderView = nil
+            navigationItem.setRightBarButtonItems(nil, animated: false)
+        }
         updateDataDisplay()
     }
 
@@ -89,7 +96,7 @@ class SearchViewController: BaseViewController {
         
         switch searchDisplayBy {
         case "list":
-            dataSource = getDataSource(createSearchRequeat())
+            dataSource = getDataSource(request != nil ? request : createSearchRequeat())
             updateSections()
         case "grid":
             tableView.dataSource = self
@@ -105,17 +112,20 @@ class SearchViewController: BaseViewController {
         var request:NSFetchRequest<NSFetchRequestResult>?
         let defaults = defaultsValue()
         let searchSectionName = defaults["searchSectionName"] as! String
-        let searchSortBy = defaults["searchSortBy"] as! String
+        let searchSecondSortBy = defaults["searchSecondSortBy"] as! String
         let searchOrderBy = defaults["searchOrderBy"] as! Bool
         let searchDisplayBy = defaults["searchDisplayBy"] as! String
         var ds: DATASource?
 
         if let fetchRequest = fetchRequest {
             request = fetchRequest
+            request!.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
+                                        NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy)]
         } else {
             request = NSFetchRequest(entityName: "CMCard")
+            request!.predicate = NSPredicate(format: "name = nil")
             request!.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
-                                        NSSortDescriptor(key: searchSortBy, ascending: searchOrderBy)]
+                                        NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy)]
         }
 
         switch searchDisplayBy {
@@ -220,6 +230,7 @@ class SearchViewController: BaseViewController {
             let defaults = defaultsValue()
             var searchSectionName = defaults["searchSectionName"] as! String
             var searchSortBy = defaults["searchSortBy"] as! String
+            var searchSecondSortBy = defaults["searchSecondSortBy"] as! String
             var searchOrderBy = defaults["searchOrderBy"] as! Bool
             var searchDisplayBy = defaults["searchDisplayBy"] as! String
             
@@ -229,8 +240,10 @@ class SearchViewController: BaseViewController {
                 switch searchSortBy {
                 case "name":
                     searchSectionName = "nameSection"
+                    searchSecondSortBy = "name"
                 case "typeSection":
                     searchSectionName = "typeSection"
+                    searchSecondSortBy = "name"
                 default:
                     ()
                 }
@@ -246,6 +259,7 @@ class SearchViewController: BaseViewController {
             
             UserDefaults.standard.set(searchSectionName, forKey: "searchSectionName")
             UserDefaults.standard.set(searchSortBy, forKey: "searchSortBy")
+            UserDefaults.standard.set(searchSecondSortBy, forKey: "searchSecondSortBy")
             UserDefaults.standard.set(searchOrderBy, forKey: "searchOrderBy")
             UserDefaults.standard.set(searchDisplayBy, forKey: "searchDisplayBy")
             UserDefaults.standard.synchronize()
@@ -311,6 +325,12 @@ class SearchViewController: BaseViewController {
             values["searchSortBy"] = value
         } else {
             values["searchSortBy"] = "name"
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "searchSecondSortBy") as? String {
+            values["searchSecondSortBy"] = value
+        } else {
+            values["searchSecondSortBy"] = "name"
         }
         
         if let value = UserDefaults.standard.value(forKey: "searchOrderBy") as? Bool {
@@ -418,7 +438,7 @@ class SearchViewController: BaseViewController {
         
         // displayers
         let searchSectionName = defaults["searchSectionName"] as! String
-        let searchSortBy = defaults["searchSortBy"] as! String
+        let searchSecondSortBy = defaults["searchSecondSortBy"] as! String
         let searchOrderBy = defaults["searchOrderBy"] as! Bool
         
         // keyword filters
@@ -536,7 +556,7 @@ class SearchViewController: BaseViewController {
         
         request.predicate = predicate
         request.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
-                                    NSSortDescriptor(key: searchSortBy, ascending: searchOrderBy)]
+                                    NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy)]
         
         return request
     }
@@ -575,8 +595,11 @@ extension SearchViewController : UITableViewDataSource {
                     
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                         let width = tableView.frame.size.width
-                        let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
-                        
+                        var height = tableView.frame.size.height - kCardTableViewCellHeight
+                        if let tableHeaderView = tableView.tableHeaderView {
+                            height -= tableHeaderView.frame.size.height
+                        }
+
                         flowLayout.itemSize = cardSize(inFrame: CGSize(width: width, height: height))
                         flowLayout.minimumInteritemSpacing = CGFloat(0)
                         flowLayout.minimumLineSpacing = CGFloat(10)
@@ -605,7 +628,10 @@ extension SearchViewController : UITableViewDelegate {
         case "list":
             height = kCardTableViewCellHeight
         case "grid":
-            height = tableView.frame.size.height - searchBar.frame.size.height
+            height = tableView.frame.size.height
+            if let tableHeaderView = tableView.tableHeaderView {
+                height -= tableHeaderView.frame.size.height
+            }
         default:
             ()
         }
@@ -633,7 +659,7 @@ extension SearchViewController : UITableViewDelegate {
         
         switch searchDisplayBy {
         case "grid":
-            dataSource = getDataSource(createSearchRequeat())
+            dataSource = getDataSource(request != nil ? request : createSearchRequeat())
             updateSections()
         default:
             ()
