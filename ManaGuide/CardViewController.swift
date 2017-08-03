@@ -11,7 +11,7 @@ import DATASource
 import FontAwesome_swift
 import ManaKit
 
-let kNotificationSwipedToCard = "kNotificationSwipedToCard"
+let kNotificationCardIndexChanged = "kNotificationCardIndexChanged"
 
 enum CardViewControllerSegmentedIndex: Int {
     case card, details, pricing
@@ -49,7 +49,8 @@ class CardViewController: BaseViewController {
 
     // MARK: Actions
     @IBAction func rightMenuAction(_ sender: UIBarButtonItem) {
-        showSettingsMenu(file: "Card")
+        // TODO: fix this in iPad
+//        showSettingsMenu(file: "Card")
     }
     
     @IBAction func segmentedAction(_ sender: UISegmentedControl) {
@@ -78,6 +79,13 @@ class CardViewController: BaseViewController {
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if let cards = cards {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: kNotificationCardIndexChanged), object: nil, userInfo: ["card": cards[cardIndex]])
+        }
+    }
+
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         tableView.reloadData()
     }
@@ -102,7 +110,6 @@ class CardViewController: BaseViewController {
                 }
                 
                 dest.cardIndex = 0
-                
                 dest.title = ""
             }
         }
@@ -669,9 +676,6 @@ extension CardViewController : UIScrollViewDelegate {
                 cardIndex = closestCellIndex
                 webViewSize = nil
                 tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
-                if let cards = cards {
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: kNotificationSwipedToCard), object: nil, userInfo: ["card": cards[cardIndex]])
-                }
             }
         }
     }

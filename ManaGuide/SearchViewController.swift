@@ -43,8 +43,8 @@ class SearchViewController: BaseViewController {
         // Do any additional setup after loading the view.
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kNotificationSwipedToCard), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(SetViewController.scrollToCard(_:)), name: NSNotification.Name(rawValue: kNotificationSwipedToCard), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kNotificationCardIndexChanged), object:nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.scrollToCard(_:)), name: NSNotification.Name(rawValue: kNotificationCardIndexChanged), object: nil)
         
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
@@ -64,11 +64,22 @@ class SearchViewController: BaseViewController {
                 dest.cards = dict["cards"] as? [CMCard]
                 dest.title = ""
             }
+        } else if segue.identifier == "showCardModal" {
+            if let nav = segue.destination as? UINavigationController {
+                if let dest = nav.childViewControllers.first as? CardViewController,
+                    let dict = sender as? [String: Any] {
+                    dest.cardIndex = dict["cardIndex"] as! Int
+                    dest.cards = dict["cards"] as? [CMCard]
+                    dest.title = dest.cards?[dest.cardIndex].name
+                }
+            }
         }
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        updateDataDisplay()
+        if tableView != nil { // check if we have already loaded
+            updateDataDisplay()
+        }
     }
 
     // MARK: Custom methods
@@ -257,8 +268,13 @@ class SearchViewController: BaseViewController {
                     for i in 0...dataSource.numberOfSections(in: tableView) - 1{
                         for j in 0...tableView.numberOfRows(inSection: i) - 1 {
                             let indexPath = IndexPath(row: j, section: i)
-                            if dataSource.object(indexPath) == card {
-                                tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                            
+                            if  let visible = tableView.indexPathsForVisibleRows?.contains(indexPath) {
+                                if !visible {
+                                    if dataSource.object(indexPath) == card {
+                                        tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                                    }
+                                }
                             }
                         }
                     }
@@ -268,8 +284,11 @@ class SearchViewController: BaseViewController {
                         for i in 0...dataSource.numberOfSections(in: collectionView) - 1{
                             for j in 0...collectionView.numberOfItems(inSection: i) - 1 {
                                 let indexPath = IndexPath(row: j, section: i)
-                                if dataSource.object(indexPath) == card {
-                                    collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
+                                
+                                if  !collectionView.indexPathsForVisibleItems.contains(indexPath) {
+                                    if dataSource.object(indexPath) == card {
+                                        collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
+                                    }
                                 }
                             }
                         }
@@ -425,7 +444,7 @@ class SearchViewController: BaseViewController {
         
         // process keyword filter
         if searchKeywordName {
-            if let text = searchBar.text {
+            if let text = searchBar?.text {
                 // if only 1 letter, search beginning letter else search containg letters
                 if text.characters.count == 1 {
                     subpredicates.append(NSPredicate(format: "name BEGINSWITH[cd] %@", text))
@@ -435,7 +454,7 @@ class SearchViewController: BaseViewController {
             }
         }
         if searchKeywordText {
-            if let text = searchBar.text {
+            if let text = searchBar?.text {
                 // if only 1 letter, search beginning letter else search containg letters
                 if text.characters.count == 1 {
                     subpredicates.append(NSPredicate(format: "text BEGINSWITH[cd] %@ OR originalText BEGINSWITH[cd] %@", text, text))
@@ -445,7 +464,7 @@ class SearchViewController: BaseViewController {
             }
         }
         if searchKeywordFlavor {
-            if let text = searchBar.text {
+            if let text = searchBar?.text {
                 // if only 1 letter, search beginning letter else search containg letters
                 if text.characters.count == 1 {
                     subpredicates.append(NSPredicate(format: "flavor BEGINSWITH[cd] %@", text))
@@ -599,7 +618,7 @@ extension SearchViewController : UITableViewDelegate {
             height = kCardTableViewCellHeight
         case "2x2",
              "4x4":
-            height = tableView.frame.size.height
+            height = tableView.frame.size.height - searchBar.frame.size.height
         default:
             ()
         }
@@ -612,8 +631,13 @@ extension SearchViewController : UITableViewDelegate {
         let cards = dataSource!.all()
         let cardIndex = cards.index(of: card!)
         
-        performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
-                                                          "cards": cards])
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
+                                                              "cards": cards])
+        } else if UIDevice.current.userInterfaceIdiom == .pad {
+            performSegue(withIdentifier: "showCardModal", sender: ["cardIndex": cardIndex as Any,
+                                                                   "cards": cards])
+        }
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -687,8 +711,13 @@ extension SearchViewController : UICollectionViewDelegate {
         let cards = dataSource!.all()
         let cardIndex = cards.index(of: card!)
         
-        performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
-                                                          "cards": cards])
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
+                                                              "cards": cards])
+        } else if UIDevice.current.userInterfaceIdiom == .pad {
+            performSegue(withIdentifier: "showCardModal", sender: ["cardIndex": cardIndex as Any,
+                                                                   "cards": cards])
+        }
     }
 }
 
