@@ -72,6 +72,45 @@ class BaseViewController: UIViewController {
             }
         }
     }
+    
+    func cardSize(inFrame frame: CGSize) -> CGSize {
+        let width = frame.width
+        let height = frame.height
+        let defaultSize = CGSize(width: 480, height: 680)
+        var newWidth = CGFloat(0)
+        var newHeight = CGFloat(0)
+        var itemsInRow = 0
+        
+        // iPhone portrait = 3
+        // iPhone landscape = 4
+        // iPad portrait = 4
+        // iPad landscape = 6
+        // card image = 480x680
+        
+        switch UIApplication.shared.statusBarOrientation {
+        case .portrait,
+             .portraitUpsideDown:
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                itemsInRow = 3
+            } else if UIDevice.current.userInterfaceIdiom == .pad {
+                itemsInRow = 4
+            }
+        case .landscapeLeft,
+             .landscapeRight:
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                itemsInRow = 4
+            } else if UIDevice.current.userInterfaceIdiom == .pad {
+                itemsInRow = 5
+            }
+        default:
+            ()
+        }
+        
+        newWidth = CGFloat(width / CGFloat(itemsInRow))
+        newHeight = (newWidth * defaultSize.height) / defaultSize.width
+        
+        return CGSize(width: newWidth, height: newHeight)
+    }
 }
 
 // MARK: UIGestureRecognizerDelegate

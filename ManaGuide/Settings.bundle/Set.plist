@@ -64,14 +64,12 @@
 			<key>Values</key>
 			<array>
 				<string>list</string>
-				<string>2x2</string>
-				<string>4x4</string>
+				<string>grid</string>
 			</array>
 			<key>Titles</key>
 			<array>
 				<string>List</string>
-				<string>2x2 Grid</string>
-				<string>4x4 Grid</string>
+				<string>Grid</string>
 			</array>
 		</dict>
 		<dict>

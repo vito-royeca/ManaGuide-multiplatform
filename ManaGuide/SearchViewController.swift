@@ -42,9 +42,9 @@ class SearchViewController: BaseViewController {
 
         // Do any additional setup after loading the view.
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kNotificationCardIndexChanged), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(SearchViewController.scrollToCard(_:)), name: NSNotification.Name(rawValue: kNotificationCardIndexChanged), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.scrollToCard(_:)), name: NSNotification.Name(rawValue: kNotificationCardIndexChanged), object: nil)
         
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
@@ -91,8 +91,7 @@ class SearchViewController: BaseViewController {
         case "list":
             dataSource = getDataSource(createSearchRequeat())
             updateSections()
-        case "2x2",
-             "4x4":
+        case "grid":
             tableView.dataSource = self
         default:
             ()
@@ -129,8 +128,7 @@ class SearchViewController: BaseViewController {
                     cardCell.updateDataDisplay()
                 }
             })
-        case "2x2",
-             "4x4":
+        case "grid":
             if let collectionView = collectionView {
                 ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: searchSectionName, configuration: { cell, item, indexPath in
                     if let card = item as? CMCard {
@@ -278,8 +276,7 @@ class SearchViewController: BaseViewController {
                             }
                         }
                     }
-                case "2x2",
-                     "4x4":
+                case "grid":
                     if let collectionView = collectionView {
                         for i in 0...dataSource.numberOfSections(in: collectionView) - 1{
                             for j in 0...collectionView.numberOfItems(inSection: i) - 1 {
@@ -565,8 +562,7 @@ extension SearchViewController : UITableViewDataSource {
         var cell: UITableViewCell?
         
         switch searchDisplayBy {
-        case "2x2",
-             "4x4":
+        case "grid":
             if let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") {
                 if let collectionView = c.viewWithTag(100) as? UICollectionView {
                     self.collectionView = collectionView
@@ -578,20 +574,12 @@ extension SearchViewController : UITableViewDataSource {
                     }
                     
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        var width = tableView.frame.size.width
-                        var height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
+                        let width = tableView.frame.size.width
+                        let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
                         
-                        if searchDisplayBy == "2x2" {
-                            width = width / 2
-                            height = height / 2
-                        } else if searchDisplayBy == "4x4" {
-                            width = width / 4
-                            height = height / 4
-                        }
-                        
-                        flowLayout.itemSize = CGSize(width: width, height: height)
+                        flowLayout.itemSize = cardSize(inFrame: CGSize(width: width, height: height))
                         flowLayout.minimumInteritemSpacing = CGFloat(0)
-                        flowLayout.minimumLineSpacing = CGFloat(5)
+                        flowLayout.minimumLineSpacing = CGFloat(10)
                         flowLayout.headerReferenceSize = CGSize(width: width, height: 22)
                         flowLayout.sectionHeadersPinToVisibleBounds = true
                     }
@@ -616,8 +604,7 @@ extension SearchViewController : UITableViewDelegate {
         switch searchDisplayBy {
         case "list":
             height = kCardTableViewCellHeight
-        case "2x2",
-             "4x4":
+        case "grid":
             height = tableView.frame.size.height - searchBar.frame.size.height
         default:
             ()
@@ -645,8 +632,7 @@ extension SearchViewController : UITableViewDelegate {
         let searchDisplayBy = defaults["searchDisplayBy"] as! String
         
         switch searchDisplayBy {
-        case "2x2",
-             "4x4":
+        case "grid":
             dataSource = getDataSource(createSearchRequeat())
             updateSections()
         default:

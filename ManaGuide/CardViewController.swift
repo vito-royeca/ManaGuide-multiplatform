@@ -88,6 +88,17 @@ class CardViewController: BaseViewController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         tableView.reloadData()
+        
+        switch segmentedIndex {
+        case .card:
+//            scrollToNearestVisibleCollectionViewCell()
+//            if let cardsCollectionView = cardsCollectionView {
+//                cardsCollectionView.scrollToItem(at: IndexPath(row: cardIndex, section: 0), at: .centeredHorizontally, animated: false)
+//            }
+            ()
+        default:
+            ()
+        }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -226,10 +237,12 @@ extension CardViewController : UITableViewDataSource {
                         }
                         
                         if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                            let width = tableView.frame.size.width - 80
-                            let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44) - 40
-                            flowLayout.itemSize = CGSize(width: width, height: height)
-                            flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 0)
+                            let width = view.frame.size.width
+                            let height = view.frame.size.height - kCardTableViewCellHeight - CGFloat(44) - 22
+  
+                            flowLayout.itemSize = CGSize(width: width * 0.7, height: height * 0.9)
+                            flowLayout.sectionInset = UIEdgeInsets(top: 10, left: width * 0.3, bottom: 10, right: 0)
+                            flowLayout.minimumInteritemSpacing = CGFloat(0)
                         }
                         
                         collectionView.dataSource = self
@@ -633,7 +646,6 @@ extension CardViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if collectionView == printingsCollectionView {
             if let thumbnailImage = cell.viewWithTag(100) as? UIImageView {
-                
                 thumbnailImage.layer.cornerRadius = thumbnailImage.frame.height / 6
                 thumbnailImage.layer.masksToBounds = true
             }

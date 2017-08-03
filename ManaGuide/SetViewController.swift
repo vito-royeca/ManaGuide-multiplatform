@@ -37,9 +37,9 @@ class SetViewController: BaseViewController {
 
         // Do any additional setup after loading the view.
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(SetViewController.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kNotificationCardIndexChanged), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(SetViewController.scrollToCard(_:)), name: NSNotification.Name(rawValue: kNotificationCardIndexChanged), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.scrollToCard(_:)), name: NSNotification.Name(rawValue: kNotificationCardIndexChanged), object: nil)
         
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
@@ -85,8 +85,7 @@ class SetViewController: BaseViewController {
             case "list":
                 dataSource = getDataSource(nil)
                 updateSections()
-            case "2x2",
-                 "4x4":
+            case "grid":
                 tableView.dataSource = self
             default:
                 ()
@@ -128,8 +127,7 @@ class SetViewController: BaseViewController {
                     cardCell.updateDataDisplay()
                 }
             })
-        case "2x2",
-             "4x4":
+        case "grid":
             if let collectionView = collectionView {
                 ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName == "numberSection" ? nil : setSectionName, configuration: { cell, item, indexPath in
                     if let card = item as? CMCard {
@@ -229,8 +227,7 @@ class SetViewController: BaseViewController {
                 switch setDisplayBy {
                 case "list":
                     sections = dataSource.numberOfSections(in: tableView)
-                case "2x2",
-                     "4x4":
+                case "grid":
                     if let collectionView = collectionView {
                         sections = dataSource.numberOfSections(in: collectionView)
                     }
@@ -376,8 +373,7 @@ class SetViewController: BaseViewController {
                                 }
                             }
                         }
-                    case "2x2",
-                         "4x4":
+                    case "grid":
                         if let collectionView = collectionView {
                             for i in 0...dataSource.numberOfSections(in: collectionView) - 1{
                                 for j in 0...collectionView.numberOfItems(inSection: i) - 1 {
@@ -436,8 +432,7 @@ extension SetViewController : UITableViewDataSource {
         switch setShow {
         case "cards":
             switch setDisplayBy {
-            case "2x2",
-                 "4x4":
+            case "grid":
                 if let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") {
                     if let collectionView = c.viewWithTag(100) as? UICollectionView {
                         self.collectionView = collectionView
@@ -449,20 +444,12 @@ extension SetViewController : UITableViewDataSource {
                         }
                         
                         if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                            var width = tableView.frame.size.width
-                            var height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
+                            let width = tableView.frame.size.width
+                            let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
                             
-                            if setDisplayBy == "2x2" {
-                                width = width / 2
-                                height = height / 2
-                            } else if setDisplayBy == "4x4" {
-                                width = width / 4
-                                height = height / 4
-                            }
-                            
-                            flowLayout.itemSize = CGSize(width: width, height: height)
+                            flowLayout.itemSize = cardSize(inFrame: CGSize(width: width, height: height))
                             flowLayout.minimumInteritemSpacing = CGFloat(0)
-                            flowLayout.minimumLineSpacing = CGFloat(5)
+                            flowLayout.minimumLineSpacing = CGFloat(10)
                             flowLayout.headerReferenceSize = CGSize(width: width, height: 22)
                             flowLayout.sectionHeadersPinToVisibleBounds = true
                         }
@@ -501,9 +488,7 @@ extension SetViewController : UITableViewDelegate {
             switch setDisplayBy {
             case "list":
                 height = kCardTableViewCellHeight
-            case "2x2":
-                height = tableView.frame.size.height
-            case "4x4":
+            case "grid":
                 height = tableView.frame.size.height
             default:
                 ()
@@ -546,8 +531,7 @@ extension SetViewController : UITableViewDelegate {
 
         if setShow == "cards" {
             switch setDisplayBy {
-            case "2x2",
-                 "4x4":
+            case "grid":
                 dataSource = getDataSource(nil)
                 updateSections()
             default:
