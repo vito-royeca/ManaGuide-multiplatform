@@ -12,7 +12,7 @@ import SSZipArchive
 import Sync
 
 
-public let kMTGJSONVersion      = "3.11.2"
+public let kMTGJSONVersion      = "3.11.2b"
 public let kMTGJSONVersionKey   = "kMTGJSONVersionKey"
 public let kImagesVersionKey    = "kImagesVersionKey"
 public let kCardImageSource     = "http://magiccards.info"

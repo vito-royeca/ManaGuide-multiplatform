@@ -43,96 +43,92 @@
 			<false/>
 		</dict>
 		<dict>
-			<key>File</key>
-			<string>AdvancedSearchKeyword</string>
-			<key>Title</key>
-			<string>Advance</string>
 			<key>Type</key>
-			<string>PSChildPaneSpecifier</string>
+			<string>PSRadioGroupSpecifier</string>
+			<key>Title</key>
+			<string>Boolean</string>
+			<key>Key</key>
+			<string>searchKeywordBoolean</string>
+			<key>DefaultValue</key>
+			<string>or</string>
+			<key>Values</key>
+			<array>
+				<string>and</string>
+				<string>or</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>And</string>
+				<string>Or</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Not</string>
+			<key>Key</key>
+			<string>searchKeywordNot</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSRadioGroupSpecifier</string>
+			<key>Title</key>
+			<string>Match</string>
+			<key>Key</key>
+			<string>searchKeywordMatch</string>
+			<key>DefaultValue</key>
+			<string>contains</string>
+			<key>Values</key>
+			<array>
+				<string>begins</string>
+				<string>contains</string>
+				<string>exact</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Begins</string>
+				<string>Contains</string>
+				<string>Exact</string>
+			</array>
 		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
-			<string>Color</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Black</string>
-			<key>Key</key>
-			<string>searchColorBlack</string>
-			<key>DefaultValue</key>
-			<false/>
-			<key>IASKCellImage</key>
-			<string>mana-B</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Blue</string>
-			<key>Key</key>
-			<string>searchColorBlue</string>
-			<key>DefaultValue</key>
-			<false/>
-			<key>IASKCellImage</key>
-			<string>mana-U</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Green</string>
-			<key>Key</key>
-			<string>searchColorGreen</string>
-			<key>DefaultValue</key>
-			<false/>
-			<key>IASKCellImage</key>
-			<string>mana-G</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Red</string>
-			<key>Key</key>
-			<string>searchColorRed</string>
-			<key>DefaultValue</key>
-			<false/>
-			<key>IASKCellImage</key>
-			<string>mana-R</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>White</string>
-			<key>Key</key>
-			<string>searchColorWhite</string>
-			<key>DefaultValue</key>
-			<false/>
-			<key>IASKCellImage</key>
-			<string>mana-W</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Colorless</string>
-			<key>Key</key>
-			<string>searchColorColorless</string>
-			<key>DefaultValue</key>
-			<false/>
-			<key>IASKCellImage</key>
-			<string>mana-C</string>
+			<string>Other Filters</string>
 		</dict>
 		<dict>
 			<key>File</key>
 			<string>AdvancedSearchColor</string>
 			<key>Title</key>
-			<string>Advance</string>
+			<string>Color</string>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+		</dict>
+		<dict>
+			<key>File</key>
+			<string>AdvancedSearchType</string>
+			<key>Title</key>
+			<string>Type</string>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+		</dict>
+		<dict>
+			<key>File</key>
+			<string>AdvancedSearchFormat</string>
+			<key>Title</key>
+			<string>Format</string>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+		</dict>
+		<dict>
+			<key>IASKSegueIdentifier</key>
+			<string>customSettingsSegue</string>
+			<key>Title</key>
+			<string>Custom Subview (via Storyboard Segue)</string>
 			<key>Type</key>
 			<string>PSChildPaneSpecifier</string>
 		</dict>

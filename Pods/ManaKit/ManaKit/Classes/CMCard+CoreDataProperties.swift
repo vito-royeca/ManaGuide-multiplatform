@@ -37,7 +37,7 @@ extension CMCard {
     @NSManaged public var nameSection: String?
     @NSManaged public var names: Data?
     @NSManaged public var number: String?
-    @NSManaged public var numberSection: String?
+    @NSManaged public var numberOrder: Double
     @NSManaged public var originalText: String?
     @NSManaged public var originalType: String?
     @NSManaged public var power: String?

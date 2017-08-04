@@ -8,6 +8,78 @@
 	<array>
 		<dict>
 			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Black</string>
+			<key>Key</key>
+			<string>searchColorBlack</string>
+			<key>DefaultValue</key>
+			<false/>
+			<key>IASKCellImage</key>
+			<string>mana-B</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Blue</string>
+			<key>Key</key>
+			<string>searchColorBlue</string>
+			<key>DefaultValue</key>
+			<false/>
+			<key>IASKCellImage</key>
+			<string>mana-U</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Green</string>
+			<key>Key</key>
+			<string>searchColorGreen</string>
+			<key>DefaultValue</key>
+			<false/>
+			<key>IASKCellImage</key>
+			<string>mana-G</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Red</string>
+			<key>Key</key>
+			<string>searchColorRed</string>
+			<key>DefaultValue</key>
+			<false/>
+			<key>IASKCellImage</key>
+			<string>mana-R</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>White</string>
+			<key>Key</key>
+			<string>searchColorWhite</string>
+			<key>DefaultValue</key>
+			<false/>
+			<key>IASKCellImage</key>
+			<string>mana-W</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Colorless</string>
+			<key>Key</key>
+			<string>searchColorColorless</string>
+			<key>DefaultValue</key>
+			<false/>
+			<key>IASKCellImage</key>
+			<string>mana-C</string>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSRadioGroupSpecifier</string>
 			<key>Title</key>
 			<string>Boolean</string>
@@ -44,16 +116,14 @@
 			<key>Key</key>
 			<string>searchColorMatch</string>
 			<key>DefaultValue</key>
-			<string>exact</string>
+			<string>contains</string>
 			<key>Values</key>
 			<array>
-				<string>begins</string>
 				<string>contains</string>
 				<string>exact</string>
 			</array>
 			<key>Titles</key>
 			<array>
-				<string>Begins</string>
 				<string>Contains</string>
 				<string>Exact</string>
 			</array>

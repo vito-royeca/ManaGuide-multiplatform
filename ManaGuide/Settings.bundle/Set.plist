@@ -18,7 +18,7 @@
 			<key>Values</key>
 			<array>
 				<string>name</string>
-				<string>mciNumber</string>
+				<string>numberOrder</string>
 				<string>typeSection</string>
 				<string>rarity_.name</string>
 				<string>artist_.name</string>

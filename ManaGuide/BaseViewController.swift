@@ -27,14 +27,16 @@ class BaseViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if let tapBGGesture = tapBGGesture {
-            view.window!.addGestureRecognizer(tapBGGesture)
+        if let tapBGGesture = tapBGGesture,
+            let window = view.window  {
+            window.addGestureRecognizer(tapBGGesture)
         }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        if let tapBGGesture = tapBGGesture {
-            view.window!.removeGestureRecognizer(tapBGGesture)
+        if let tapBGGesture = tapBGGesture,
+            let window = view.window {
+            window.removeGestureRecognizer(tapBGGesture)
         }
     }
     

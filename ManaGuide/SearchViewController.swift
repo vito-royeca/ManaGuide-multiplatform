@@ -24,17 +24,14 @@ class SearchViewController: BaseViewController {
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
     @IBOutlet weak var searchBar: UISearchBar!
-    @IBOutlet weak var searchButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var statusBar: UIView!
+    @IBOutlet var statusLabel: UILabel!
     
     // MARK: Actions
     @IBAction func rightMenuAction(_ sender: UIBarButtonItem) {
         searchBar.resignFirstResponder()
         showSettingsMenu(file: "Search")
-    }
-    
-    @IBAction func searchAction(_ sender: UIButton) {
-        doSearch()
     }
     
     // MARK: Overrides
@@ -49,10 +46,15 @@ class SearchViewController: BaseViewController {
         
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
-        searchButton.setImage(UIImage.fontAwesomeIcon(name: .play, textColor: UIColor.white, size: CGSize(width: 30, height: 30)), for: .normal)
-        searchButton.setTitle(nil, for: .normal)
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
+        // set statusBar's color to searchBar's background color
+        if let imageView = searchBar.subviews.first?.subviews.first as? UIImageView {
+            if let image = imageView.image {
+                statusBar.backgroundColor = UIColor.init(patternImage: image)
+            }
+        }
+
         // we have a custom search result, so remove the searchBar and rightMenuButton
         if request != nil {
             tableView.viewWithTag(100)?.removeFromSuperview()
@@ -173,6 +175,7 @@ class SearchViewController: BaseViewController {
         
         if let ds = ds {
             ds.delegate = self
+            statusLabel.text = "\(ds.all().count) results"
             return ds
         }
         return nil
@@ -345,8 +348,7 @@ class SearchViewController: BaseViewController {
             values["searchDisplayBy"] = "list"
         }
         
-        // filters
-        // keyword
+        // keyword filters
         if let value = UserDefaults.standard.value(forKey: "searchKeywordName") as? Bool {
             values["searchKeywordName"] = value
         } else {
@@ -356,13 +358,13 @@ class SearchViewController: BaseViewController {
         if let value = UserDefaults.standard.value(forKey: "searchKeywordText") as? Bool {
             values["searchKeywordText"] = value
         } else {
-            values["searchKeywordText"] = true
+            values["searchKeywordText"] = false
         }
         
         if let value = UserDefaults.standard.value(forKey: "searchKeywordFlavor") as? Bool {
             values["searchKeywordFlavor"] = value
         } else {
-            values["searchKeywordFlavor"] = true
+            values["searchKeywordFlavor"] = false
         }
         
         if let value = UserDefaults.standard.value(forKey: "searchKeywordBoolean") as? String {
@@ -377,41 +379,47 @@ class SearchViewController: BaseViewController {
             values["searchKeywordNot"] = false
         }
         
-        // color
+        if let value = UserDefaults.standard.value(forKey: "searchKeywordMatch") as? String {
+            values["searchKeywordMatch"] = value
+        } else {
+            values["searchKeywordMatch"] = "contains"
+        }
+
+        // color filters
         if let value = UserDefaults.standard.value(forKey: "searchColorBlack") as? Bool {
             values["searchColorBlack"] = value
         } else {
-            values["searchColorBlack"] = true
+            values["searchColorBlack"] = false
         }
         
         if let value = UserDefaults.standard.value(forKey: "searchColorBlue") as? Bool {
             values["searchColorBlue"] = value
         } else {
-            values["searchColorBlue"] = true
+            values["searchColorBlue"] = false
         }
         
         if let value = UserDefaults.standard.value(forKey: "searchColorGreen") as? Bool {
             values["searchColorGreen"] = value
         } else {
-            values["searchColorGreen"] = true
+            values["searchColorGreen"] = false
         }
         
         if let value = UserDefaults.standard.value(forKey: "searchColorRed") as? Bool {
             values["searchColorRed"] = value
         } else {
-            values["searchColorRed"] = true
+            values["searchColorRed"] = false
         }
         
         if let value = UserDefaults.standard.value(forKey: "searchColorWhite") as? Bool {
             values["searchColorWhite"] = value
         } else {
-            values["searchColorWhite"] = true
+            values["searchColorWhite"] = false
         }
         
         if let value = UserDefaults.standard.value(forKey: "searchColorColorless") as? Bool {
             values["searchColorColorless"] = value
         } else {
-            values["searchColorColorless"] = true
+            values["searchColorColorless"] = false
         }
         
         if let value = UserDefaults.standard.value(forKey: "searchColorBoolean") as? String {
@@ -424,6 +432,12 @@ class SearchViewController: BaseViewController {
             values["searchColorNot"] = value
         } else {
             values["searchColorNot"] = false
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "searchColorMatch") as? String {
+            values["searchColorMatch"] = value
+        } else {
+            values["searchColorMatch"] = "contains"
         }
         
         return values
@@ -447,7 +461,8 @@ class SearchViewController: BaseViewController {
         let searchKeywordFlavor = defaults["searchKeywordFlavor"] as! Bool
         let searchKeywordBoolean = defaults["searchKeywordBoolean"] as! String
         let searchKeywordNot = defaults["searchKeywordNot"] as! Bool
-
+        let searchKeywordMatch = defaults["searchKeywordMatch"] as! String
+        
         // color filters
         let searchColorBlack = defaults["searchColorBlack"] as! Bool
         let searchColorBlue = defaults["searchColorBlue"] as! Bool
@@ -457,36 +472,39 @@ class SearchViewController: BaseViewController {
         let searchColorColorless = defaults["searchColorColorless"] as! Bool
         let searchColorBoolean = defaults["searchColorBoolean"] as! String
         let searchColorNot = defaults["searchColorNot"] as! Bool
-        
+        let searchColorMatch = defaults["searchColorMatch"] as! String
         
         // process keyword filter
         if searchKeywordName {
             if let text = searchBar?.text {
-                // if only 1 letter, search beginning letter else search containg letters
-                if text.characters.count == 1 {
+                if searchKeywordMatch == "begins" {
                     subpredicates.append(NSPredicate(format: "name BEGINSWITH[cd] %@", text))
-                } else if text.characters.count > 1  {
+                } else if searchKeywordMatch == "contains" {
                     subpredicates.append(NSPredicate(format: "name CONTAINS[cd] %@", text))
+                } else if searchKeywordMatch == "exact" {
+                    subpredicates.append(NSPredicate(format: "name ==[c] %@", text))
                 }
             }
         }
         if searchKeywordText {
             if let text = searchBar?.text {
-                // if only 1 letter, search beginning letter else search containg letters
-                if text.characters.count == 1 {
+                if searchKeywordMatch == "begins" {
                     subpredicates.append(NSPredicate(format: "text BEGINSWITH[cd] %@ OR originalText BEGINSWITH[cd] %@", text, text))
-                } else if text.characters.count > 1 {
+                } else if searchKeywordMatch == "contains" {
                     subpredicates.append(NSPredicate(format: "text CONTAINS[cd] %@ OR originalText CONTAINS[cd] %@", text, text))
+                } else if searchKeywordMatch == "exact" {
+                    subpredicates.append(NSPredicate(format: "text ==[c] %@ OR originalText ==[c] %@", text, text))
                 }
             }
         }
         if searchKeywordFlavor {
             if let text = searchBar?.text {
-                // if only 1 letter, search beginning letter else search containg letters
-                if text.characters.count == 1 {
+                if searchKeywordMatch == "begins" {
                     subpredicates.append(NSPredicate(format: "flavor BEGINSWITH[cd] %@", text))
-                } else if text.characters.count > 1 {
+                } else if searchKeywordMatch == "contains" {
                     subpredicates.append(NSPredicate(format: "flavor CONTAINS[cd] %@", text))
+                } else if searchKeywordMatch == "exact" {
+                    subpredicates.append(NSPredicate(format: "flavor ==[c] %@", text))
                 }
             }
         }
@@ -554,6 +572,7 @@ class SearchViewController: BaseViewController {
             predicate = NSPredicate(format: "name = nil")
         }
         
+        print("\(predicate!)")
         request.predicate = predicate
         request.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
                                     NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy)]
@@ -564,6 +583,7 @@ class SearchViewController: BaseViewController {
     func doSearch() {
         searchBar.resignFirstResponder()
         dataSource = getDataSource(createSearchRequeat())
+        updateSections()
         tableView.reloadData()
     }
 }
@@ -629,9 +649,10 @@ extension SearchViewController : UITableViewDelegate {
             height = kCardTableViewCellHeight
         case "grid":
             height = tableView.frame.size.height
-            if let tableHeaderView = tableView.tableHeaderView {
-                height -= tableHeaderView.frame.size.height
-            }
+//            if let tableHeaderView = tableView.tableHeaderView {
+//                height -= tableHeaderView.frame.size.height
+//            }
+            height -= statusBar.frame.size.height
         default:
             ()
         }

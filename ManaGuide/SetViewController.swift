@@ -126,7 +126,7 @@ class SetViewController: BaseViewController {
         
         switch setDisplayBy {
         case "list":
-            ds = DATASource(tableView: tableView, cellIdentifier: "CardCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName == "numberSection" ? nil : setSectionName, configuration: { cell, item, indexPath in
+            ds = DATASource(tableView: tableView, cellIdentifier: "CardCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName == "numberOrder" ? nil : setSectionName, configuration: { cell, item, indexPath in
                 if let card = item as? CMCard,
                     let cardCell = cell as? CardTableViewCell {
                     
@@ -136,7 +136,7 @@ class SetViewController: BaseViewController {
             })
         case "grid":
             if let collectionView = collectionView {
-                ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName == "numberSection" ? nil : setSectionName, configuration: { cell, item, indexPath in
+                ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName == "numberOrder" ? nil : setSectionName, configuration: { cell, item, indexPath in
                     if let card = item as? CMCard {
                         if let imageView = cell.viewWithTag(100) as? UIImageView {
                             imageView.image = ManaKit.sharedInstance.cardImage(card)
@@ -273,8 +273,8 @@ class SetViewController: BaseViewController {
                 case "name":
                     setSectionName = "nameSection"
                     setSecondSortBy = "name"
-                case "mciNumber":
-                    setSectionName = "numberSection"
+                case "numberOrder":
+                    setSectionName = "numberOrder"
                     setSecondSortBy = "name"
                 case "typeSection":
                     setSectionName = "typeSection"
@@ -633,7 +633,7 @@ extension SetViewController : UIWebViewDelegate {
                 if host.hasPrefix("mtg.gamepedia.com") {
                     willLoad = true
                 } else if host.hasPrefix("www.magiccards.info") {
-                    // TODO: show the card instead of jumping to link!!!
+                    // Show the card instead opening the link!!!
                     let urlComponents = URLComponents(string: url.absoluteString)
                     let queryItems = urlComponents?.queryItems
                     let q = queryItems?.filter({$0.name == "q"}).first
