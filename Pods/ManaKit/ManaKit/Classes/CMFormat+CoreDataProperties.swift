@@ -17,6 +17,7 @@ extension CMFormat {
     }
 
     @NSManaged public var name: String?
+    @NSManaged public var nameSection: String?
     @NSManaged public var cardLegalities: NSSet?
 
 }
