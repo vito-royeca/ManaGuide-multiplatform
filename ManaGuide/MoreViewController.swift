@@ -37,6 +37,11 @@ class MoreViewController: UIViewController {
                 dest.title = dict["title"] as? String
                 dest.customSectionName = "nameSection"
             }
+        } else if segue.identifier == "showComprehensiveRules" {
+//            if let dest = segue.destination as? ComprehensiveRulesViewController {
+//                
+//                
+//            }
         }
     }
 
@@ -65,7 +70,7 @@ extension MoreViewController : UITableViewDelegate {
         case MoreViewControllerRows.basicRules.rawValue:
             ()
         case MoreViewControllerRows.comprehensiveRules.rawValue:
-            ()
+            performSegue(withIdentifier: "showComprehensiveRules", sender: nil)
         case MoreViewControllerRows.bannedList.rawValue:
             performSegue(withIdentifier: "showBannedList", sender: nil)
         case MoreViewControllerRows.reservedList.rawValue:

@@ -31,8 +31,15 @@ class SearchViewController: BaseViewController {
     
     // MARK: Actions
     @IBAction func rightMenuAction(_ sender: UIBarButtonItem) {
-        searchBar.resignFirstResponder()
-        showSettingsMenu(file: "Search")
+        if let searchBar = searchBar {
+            searchBar.resignFirstResponder()
+        }
+
+        if request != nil {
+            showSettingsMenu(file: "SearchResults")
+        } else {
+            showSettingsMenu(file: "Search")
+        }
     }
     
     // MARK: Overrides
@@ -58,7 +65,6 @@ class SearchViewController: BaseViewController {
         if request != nil {
             tableView.viewWithTag(100)?.removeFromSuperview()
             tableView.tableHeaderView = nil
-            navigationItem.setRightBarButtonItems(nil, animated: false)
         }
         updateDataDisplay()
     }
@@ -643,10 +649,9 @@ extension SearchViewController : UITableViewDelegate {
             height = kCardTableViewCellHeight
         case "grid":
             height = tableView.frame.size.height
-//            if let tableHeaderView = tableView.tableHeaderView {
-//                height -= tableHeaderView.frame.size.height
+//            if let searchBar = searchBar {
+//                height -= searchBar.frame.size.height
 //            }
-            height -= statusBar.frame.size.height
         default:
             ()
         }

@@ -201,6 +201,7 @@
                         <outlet property="tableView" destination="Dwq-OW-JWe" id="w5B-Jq-jUb"/>
                         <segue destination="t1B-qF-FHV" kind="show" identifier="showSearch" id="UrL-X6-SyK"/>
                         <segue destination="eLp-Dt-MRm" kind="show" identifier="showBannedList" id="nJO-zw-y4u"/>
+                        <segue destination="l7I-xe-vzR" kind="show" identifier="showComprehensiveRules" id="yGD-rl-Kob"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GLw-q2-tgD" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -262,7 +263,26 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="25I-Ke-a41" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2566.666666666667" y="1144.5652173913045"/>
+            <point key="canvasLocation" x="2751" y="1885"/>
+        </scene>
+        <!--Comprehensive Rules-->
+        <scene sceneID="pbj-v5-jB8">
+            <objects>
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="l7I-xe-vzR" customClass="ComprehensiveRulesViewController" customModule="ManaGuide" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="4UH-Ch-RAe"/>
+                        <viewControllerLayoutGuide type="bottom" id="cDS-n6-BsD"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="w0c-IX-Xvx">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Comprehensive Rules" id="fQt-Mm-Bj0"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZK4-Fd-rhl" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2750.7246376811595" y="1144.5652173913045"/>
         </scene>
         <!--Featured-->
         <scene sceneID="Qng-H5-Uwz">
@@ -976,9 +996,9 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
+        <segue reference="sDJ-KE-8ls"/>
         <segue reference="PW5-em-XGg"/>
         <segue reference="ISp-PC-gA3"/>
-        <segue reference="sDJ-KE-8ls"/>
         <segue reference="Ubl-6g-hH9"/>
     </inferredMetricsTieBreakers>
 </document>

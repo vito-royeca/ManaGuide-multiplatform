@@ -24,7 +24,7 @@ enum CardViewControllerDetailsSection: Int {
 }
 
 enum CardViewControllerPricingSection: Int {
-    case summary, segmented
+    case summary, segmented, low, mid, high, foil, buy
 }
 
 class CardViewController: BaseViewController {
@@ -40,6 +40,7 @@ class CardViewController: BaseViewController {
     
     // MARK: Constants
     let detailsSections = ["Text", "Artist", "Printings", "Source", "Rulings", "Legalities"]
+    let pricingSections = ["Low", "Mid", "High", "Foil", "Buy this card at TCGPlayer.com"]
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
@@ -180,7 +181,7 @@ extension CardViewController : UITableViewDataSource {
                 rows = 1
             }
         case .pricing:
-            rows = 2
+            rows = 7
         }
         
         return rows
@@ -244,7 +245,9 @@ extension CardViewController : UITableViewDataSource {
             default:
                 ()
             }
-        
+            cell!.accessoryType = .none
+            cell!.detailTextLabel?.textColor = UIColor.black
+            
         case .details:
             switch indexPath.section {
             case 0:
@@ -431,7 +434,9 @@ extension CardViewController : UITableViewDataSource {
             default:
                 ()
             }
-        
+            cell!.accessoryType = .none
+            cell!.detailTextLabel?.textColor = UIColor.black
+            
         case .pricing:
             switch indexPath.row {
             case CardViewControllerPricingSection.summary.rawValue:
@@ -439,10 +444,52 @@ extension CardViewController : UITableViewDataSource {
                     let cards = cards {
                     c.card = cards[cardIndex]
                     c.updateDataDisplay()
+                    c.accessoryType = .none
                     cell = c
                 }
             case CardViewControllerPricingSection.segmented.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "SegmentedCell") {
+                    c.accessoryType = .none
+                    cell = c
+                }
+            case CardViewControllerPricingSection.low.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
+                    c.accessoryType = .none
+                    c.textLabel?.text = pricingSections[0]
+                    c.detailTextLabel?.textColor = UIColor.red
+                    c.detailTextLabel?.text = "$0.0"
+                    
+                    cell = c
+                }
+            case CardViewControllerPricingSection.mid.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
+                    c.accessoryType = .none
+                    c.textLabel?.text = pricingSections[1]
+                    c.detailTextLabel?.textColor = UIColor.blue
+                    c.detailTextLabel?.text = "$0.0"
+                    
+                    cell = c
+                }
+            case CardViewControllerPricingSection.high.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
+                    c.accessoryType = .none
+                    c.textLabel?.text = pricingSections[2]
+                    c.detailTextLabel?.textColor = UIColor(red:0.00, green:0.50, blue:0.00, alpha:1.0)
+                    c.detailTextLabel?.text = "$0.0"
+                    cell = c
+                }
+            case CardViewControllerPricingSection.foil.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
+                    c.accessoryType = .none
+                    c.textLabel?.text = pricingSections[3]
+                    c.detailTextLabel?.textColor = UIColor(red:0.60, green:0.51, blue:0.00, alpha:1.0)
+                    c.detailTextLabel?.text = "$0.0"
+                    cell = c
+                }
+            case CardViewControllerPricingSection.buy.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") {
+                    c.accessoryType = .disclosureIndicator
+                    c.textLabel?.text = pricingSections[4]
                     cell = c
                 }
             default:
@@ -541,10 +588,8 @@ extension CardViewController : UITableViewDelegate {
             switch indexPath.row {
             case CardViewControllerPricingSection.summary.rawValue:
                 height = kCardTableViewCellHeight
-            case CardViewControllerPricingSection.segmented.rawValue:
-                height = UITableViewAutomaticDimension
             default:
-                ()
+                height = UITableViewAutomaticDimension
             }
         }
         

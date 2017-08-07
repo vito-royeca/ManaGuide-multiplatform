@@ -18,6 +18,10 @@
 		110BB52D1F20892B00086841 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB52C1F20892B00086841 /* SearchViewController.swift */; };
 		110BB52E1F20892B00086841 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB52C1F20892B00086841 /* SearchViewController.swift */; };
 		113661591F2F912500DCBB41 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 113661581F2F912500DCBB41 /* data */; };
+		113A6B0E1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113A6B0C1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift */; };
+		113A6B0F1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113A6B0C1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift */; };
+		113A6B101F385D1700C68FF9 /* DynamicHeightTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 113A6B0D1F385D1700C68FF9 /* DynamicHeightTableViewCell.xib */; };
+		113A6B111F385D1700C68FF9 /* DynamicHeightTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 113A6B0D1F385D1700C68FF9 /* DynamicHeightTableViewCell.xib */; };
 		1147B7491F21F340004EF296 /* SliderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7471F21F340004EF296 /* SliderTableViewCell.swift */; };
 		1147B74A1F21F340004EF296 /* SliderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7471F21F340004EF296 /* SliderTableViewCell.swift */; };
 		1147B74B1F21F340004EF296 /* SliderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1147B7481F21F340004EF296 /* SliderTableViewCell.xib */; };
@@ -86,6 +90,8 @@
 		110BB5291F20891D00086841 /* FeaturedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeaturedViewController.swift; sourceTree = "<group>"; };
 		110BB52C1F20892B00086841 /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		113661581F2F912500DCBB41 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = "<group>"; };
+		113A6B0C1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DynamicHeightTableViewCell.swift; sourceTree = "<group>"; };
+		113A6B0D1F385D1700C68FF9 /* DynamicHeightTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DynamicHeightTableViewCell.xib; sourceTree = "<group>"; };
 		1147B7471F21F340004EF296 /* SliderTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SliderTableViewCell.swift; sourceTree = "<group>"; };
 		1147B7481F21F340004EF296 /* SliderTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SliderTableViewCell.xib; sourceTree = "<group>"; };
 		1147B7561F223607004EF296 /* SetsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetsViewController.swift; sourceTree = "<group>"; };
@@ -209,6 +215,8 @@
 			children = (
 				11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */,
 				11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */,
+				113A6B0C1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift */,
+				113A6B0D1F385D1700C68FF9 /* DynamicHeightTableViewCell.xib */,
 				110BB5021F207C6400086841 /* LaunchScreen.storyboard */,
 				110BB4FD1F207C6400086841 /* Main.storyboard */,
 				1147B75C1F223820004EF296 /* SetItemSliderCollectionViewCell.swift */,
@@ -369,6 +377,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				110BB5041F207C6400086841 /* LaunchScreen.storyboard in Resources */,
+				113A6B101F385D1700C68FF9 /* DynamicHeightTableViewCell.xib in Resources */,
 				110BB5011F207C6400086841 /* Assets.xcassets in Resources */,
 				1147B74B1F21F340004EF296 /* SliderTableViewCell.xib in Resources */,
 				110BB4FF1F207C6400086841 /* Main.storyboard in Resources */,
@@ -393,6 +402,7 @@
 				11E4374D1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */,
 				1147B74C1F21F340004EF296 /* SliderTableViewCell.xib in Resources */,
 				1147B76A1F226143004EF296 /* Settings.bundle in Resources */,
+				113A6B111F385D1700C68FF9 /* DynamicHeightTableViewCell.xib in Resources */,
 				1147B7611F223820004EF296 /* SetItemSliderCollectionViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -643,6 +653,7 @@
 				1147B7631F224198004EF296 /* SetViewController.swift in Sources */,
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
 				1165CD761F377F58006CC433 /* BannedListViewController.swift in Sources */,
+				113A6B0E1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */,
 				1165CD791F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
 				110BB52D1F20892B00086841 /* SearchViewController.swift in Sources */,
 				1147B75E1F223820004EF296 /* SetItemSliderCollectionViewCell.swift in Sources */,
@@ -672,6 +683,7 @@
 				110BB51A1F207C6400086841 /* ManaGuideUITests.swift in Sources */,
 				1147B74A1F21F340004EF296 /* SliderTableViewCell.swift in Sources */,
 				1165CD771F377F58006CC433 /* BannedListViewController.swift in Sources */,
+				113A6B0F1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */,
 				1165CD7A1F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
 				1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */,
 				1147B75F1F223820004EF296 /* SetItemSliderCollectionViewCell.swift in Sources */,

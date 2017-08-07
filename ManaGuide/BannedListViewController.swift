@@ -56,7 +56,7 @@ class BannedListViewController: UIViewController {
             request!.predicate = NSPredicate(format: "ANY cardLegalities.legality.name IN %@", ["Banned", "Restricted"])
         }
         
-        ds = DATASource(tableView: tableView, cellIdentifier: "Cell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: nil, configuration: { cell, item, indexPath in
+        ds = DATASource(tableView: tableView, cellIdentifier: "Cell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: "nameSection", configuration: { cell, item, indexPath in
             if let format = item as? CMFormat {
                 
                 cell.textLabel?.text = format.name
@@ -81,6 +81,15 @@ class BannedListViewController: UIViewController {
                 
                 if !sectionIndexTitles.contains(prefix) {
                     sectionIndexTitles.append(prefix)
+                }
+            }
+            
+            let sections = dataSource.numberOfSections(in: tableView)
+            if sections > 0 {
+                for i in 0...sections - 1 {
+                    if let sectionTitle = dataSource.titleForHeader(i) {
+                        sectionTitles.append(sectionTitle)
+                    }
                 }
             }
         }
