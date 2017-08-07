@@ -38,8 +38,6 @@ class SetViewController: BaseViewController {
         // Do any additional setup after loading the view.
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kNotificationCardIndexChanged), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.scrollToCard(_:)), name: NSNotification.Name(rawValue: kNotificationCardIndexChanged), object: nil)
         
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
@@ -73,6 +71,7 @@ class SetViewController: BaseViewController {
                 
                 dest.request = request
                 dest.title = "Search Results"
+                dest.customSectionName = "nameSection"
             }
         }
     }
@@ -356,52 +355,6 @@ class SetViewController: BaseViewController {
         return values
     }
     
-    func scrollToCard(_ notification: Notification) {
-        if let userInfo = notification.userInfo {
-            if let card = userInfo["card"] as? CMCard,
-                let dataSource = dataSource {
-                let defaults = defaultsValue()
-                let setDisplayBy = defaults["setDisplayBy"] as! String
-                let setShow = defaults["setShow"] as! String
-                
-                if setShow == "cards" {
-                    switch setDisplayBy {
-                    case "list":
-                        for i in 0...dataSource.numberOfSections(in: tableView) - 1{
-                            for j in 0...tableView.numberOfRows(inSection: i) - 1 {
-                                let indexPath = IndexPath(row: j, section: i)
-                                
-                                if  let visible = tableView.indexPathsForVisibleRows?.contains(indexPath) {
-                                    if !visible {
-                                        if dataSource.object(indexPath) == card {
-                                            tableView.scrollToRow(at: indexPath, at: .top, animated: false)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    case "grid":
-                        if let collectionView = collectionView {
-                            for i in 0...dataSource.numberOfSections(in: collectionView) - 1{
-                                for j in 0...collectionView.numberOfItems(inSection: i) - 1 {
-                                    let indexPath = IndexPath(row: j, section: i)
-                                    
-                                    if  !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-                                        if dataSource.object(indexPath) == card {
-                                            collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    default:
-                        ()
-                    }
-                }
-            }
-        }
-    }
-    
     func wikiURL(ofSet set: CMSet) -> URL? {
         var path = ""
         
@@ -643,6 +596,8 @@ extension SetViewController : UIWebViewDelegate {
                         
                         let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
                         request.predicate = NSPredicate(format: "name = %@", cardName)
+                        request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                                    NSSortDescriptor(key: "name", ascending: true)]
                         
                         let results = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
                         if results.count == 1 {

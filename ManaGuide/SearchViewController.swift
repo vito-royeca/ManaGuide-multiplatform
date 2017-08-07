@@ -20,6 +20,7 @@ class SearchViewController: BaseViewController {
     var sectionTitles = [String]()
     var collectionView: UICollectionView?
     var request:NSFetchRequest<NSFetchRequestResult>?
+    var customSectionName: String?
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
@@ -41,8 +42,6 @@ class SearchViewController: BaseViewController {
         // Do any additional setup after loading the view.
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kNotificationCardIndexChanged), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.scrollToCard(_:)), name: NSNotification.Name(rawValue: kNotificationCardIndexChanged), object: nil)
         
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
@@ -113,16 +112,14 @@ class SearchViewController: BaseViewController {
     func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
         var request:NSFetchRequest<NSFetchRequestResult>?
         let defaults = defaultsValue()
-        let searchSectionName = defaults["searchSectionName"] as! String
-        let searchSecondSortBy = defaults["searchSecondSortBy"] as! String
+        let searchSectionName = customSectionName != nil ? customSectionName : defaults["searchSectionName"] as? String
+        let searchSecondSortBy = defaults["searchSecondSortBy"] as? String
         let searchOrderBy = defaults["searchOrderBy"] as! Bool
         let searchDisplayBy = defaults["searchDisplayBy"] as! String
         var ds: DATASource?
 
         if let fetchRequest = fetchRequest {
             request = fetchRequest
-            request!.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
-                                        NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy)]
         } else {
             request = NSFetchRequest(entityName: "CMCard")
             request!.predicate = NSPredicate(format: "name = nil")
@@ -138,6 +135,11 @@ class SearchViewController: BaseViewController {
                     
                     cardCell.card = card
                     cardCell.updateDataDisplay()
+                } else if let cardLegality = item as? CMCardLegality,
+                    let cardCell = cell as? CardTableViewCell {
+                    
+                    cardCell.card = cardLegality.card
+                    cardCell.updateDataDisplay()
                 }
             })
         case "grid":
@@ -151,8 +153,33 @@ class SearchViewController: BaseViewController {
                             if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.cardBack) {
                                 ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
                                     if error == nil {
-                                        if card == self.dataSource!.object(indexPath) {
+                                        if c == self.dataSource!.object(indexPath) {
                                             if let image = image {
+                                                UIView.transition(with: imageView,
+                                                                  duration: 1.0,
+                                                                  options: .transitionFlipFromLeft,
+                                                                  animations: {
+                                                                    imageView.image = image
+                                                },
+                                                                  completion: nil)
+                                            }
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    } else if let cardLegality = item as? CMCardLegality {
+                        if let imageView = cell.viewWithTag(100) as? UIImageView {
+                            imageView.image = ManaKit.sharedInstance.cardImage(cardLegality.card!)
+                            
+                            // TODO: fix multiple image loading if scrolling fast
+                            if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.cardBack) {
+                                ManaKit.sharedInstance.downloadCardImage(cardLegality.card!, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
+                                    if error == nil {
+                                        if let cl = self.dataSource!.object(indexPath) as? CMCardLegality,
+                                            let image = image {
+                                            
+                                            if cl.card == c {
                                                 UIView.transition(with: imageView,
                                                                   duration: 1.0,
                                                                   options: .transitionFlipFromLeft,
@@ -188,10 +215,10 @@ class SearchViewController: BaseViewController {
             sectionTitles = [String]()
             
             let defaults = defaultsValue()
-            let searchSectionName = defaults["searchSectionName"] as! String
+            let searchSectionName = customSectionName != nil ? customSectionName : defaults["searchSectionName"] as? String //defaults["searchSectionName"] as! String
             
             switch searchSectionName {
-            case "nameSection":
+            case "nameSection"?:
                 for card in cards {
                     if let nameSection = card.nameSection {
                         if !sectionIndexTitles.contains(nameSection) {
@@ -199,11 +226,21 @@ class SearchViewController: BaseViewController {
                         }
                     }
                 }
-                
-            case "typeSection":
+            case "typeSection"?:
                 for card in cards {
                     if let typeSection = card.typeSection {
                         let prefix = String(typeSection.characters.prefix(1))
+                        
+                        if !sectionIndexTitles.contains(prefix) {
+                            sectionIndexTitles.append(prefix)
+                        }
+                    }
+                }
+            case "legality.name"?:
+                let cardLegalities = dataSource.all() as [CMCardLegality]
+                for cardLegality in cardLegalities {
+                    if let legality = cardLegality.legality {
+                        let prefix = String(legality.name!.characters.prefix(1))
                         
                         if !sectionIndexTitles.contains(prefix) {
                             sectionIndexTitles.append(prefix)
@@ -271,49 +308,6 @@ class SearchViewController: BaseViewController {
         }
     }
 
-    func scrollToCard(_ notification: Notification) {
-        if let userInfo = notification.userInfo {
-            if let card = userInfo["card"] as? CMCard,
-                let dataSource = dataSource {
-                let defaults = defaultsValue()
-                let searchDisplayBy = defaults["searchDisplayBy"] as! String
-                
-                switch searchDisplayBy {
-                case "list":
-                    for i in 0...dataSource.numberOfSections(in: tableView) - 1{
-                        for j in 0...tableView.numberOfRows(inSection: i) - 1 {
-                            let indexPath = IndexPath(row: j, section: i)
-                            
-                            if  let visible = tableView.indexPathsForVisibleRows?.contains(indexPath) {
-                                if !visible {
-                                    if dataSource.object(indexPath) == card {
-                                        tableView.scrollToRow(at: indexPath, at: .top, animated: false)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                case "grid":
-                    if let collectionView = collectionView {
-                        for i in 0...dataSource.numberOfSections(in: collectionView) - 1{
-                            for j in 0...collectionView.numberOfItems(inSection: i) - 1 {
-                                let indexPath = IndexPath(row: j, section: i)
-                                
-                                if  !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-                                    if dataSource.object(indexPath) == card {
-                                        collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                default:
-                    ()
-                }
-            }
-        }
-    }
-    
     func defaultsValue() -> [String: Any] {
         var values = [String: Any]()
         
@@ -661,9 +655,24 @@ extension SearchViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let card = dataSource!.object(indexPath)
-        let cards = dataSource!.all()
-        let cardIndex = cards.index(of: card!)
+        var card: CMCard?
+        var cards = [CMCard]()
+        var cardIndex = 0
+        
+        if let c = dataSource!.object(indexPath) as? CMCard {
+            card = c
+            cards = dataSource!.all()
+            cardIndex = cards.index(of: card!)!
+        } else if let c = dataSource!.object(indexPath) as? CMCardLegality {
+            card = c.card
+            let cardLegalities = dataSource!.all() as! [CMCardLegality]
+            
+            for cardLegality in cardLegalities {
+                cards.append(cardLegality.card!)
+            }
+            cardIndex = cardLegalities.index(of: c)!
+        }
+        
         
         if UIDevice.current.userInterfaceIdiom == .phone {
             performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
@@ -703,10 +712,15 @@ extension SearchViewController : DATASourceDelegate {
         
         for i in 0...sectionTitles.count - 1 {
             if sectionTitles[i].hasPrefix(title) {
-                if searchOrderBy {
+                
+                if customSectionName != nil {
                     sectionIndex = i
                 } else {
-                    sectionIndex = (sectionTitles.count - 1) - i
+                    if searchOrderBy {
+                        sectionIndex = i
+                    } else {
+                        sectionIndex = (sectionTitles.count - 1) - i
+                    }
                 }
                 break
             }
@@ -740,9 +754,23 @@ extension SearchViewController : DATASourceDelegate {
 // UICollectionViewDelegate
 extension SearchViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let card = dataSource!.object(indexPath)
-        let cards = dataSource!.all()
-        let cardIndex = cards.index(of: card!)
+        var card: CMCard?
+        var cards = [CMCard]()
+        var cardIndex = 0
+        
+        if let c = dataSource!.object(indexPath) as? CMCard {
+            card = c
+            cards = dataSource!.all()
+            cardIndex = cards.index(of: card!)!
+        } else if let c = dataSource!.object(indexPath) as? CMCardLegality {
+            card = c.card
+            let cardLegalities = dataSource!.all() as! [CMCardLegality]
+            
+            for cardLegality in cardLegalities {
+                cards.append(cardLegality.card!)
+            }
+            cardIndex = cardLegalities.index(of: c)!
+        }
         
         if UIDevice.current.userInterfaceIdiom == .phone {
             performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,

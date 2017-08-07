@@ -11,8 +11,6 @@ import DATASource
 import FontAwesome_swift
 import ManaKit
 
-let kNotificationCardIndexChanged = "kNotificationCardIndexChanged"
-
 enum CardViewControllerSegmentedIndex: Int {
     case card, details, pricing
 }
@@ -79,13 +77,6 @@ class CardViewController: BaseViewController {
         }
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        if let cards = cards {
-            NotificationCenter.default.post(name: Notification.Name(rawValue: kNotificationCardIndexChanged), object: nil, userInfo: ["card": cards[cardIndex]])
-        }
-    }
-
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         tableView.reloadData()
         

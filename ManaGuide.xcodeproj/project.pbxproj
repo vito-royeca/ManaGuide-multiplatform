@@ -36,6 +36,12 @@
 		1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7651F224874004EF296 /* SettingsViewController.swift */; };
 		1147B7691F226143004EF296 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1147B7681F226143004EF296 /* Settings.bundle */; };
 		1147B76A1F226143004EF296 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1147B7681F226143004EF296 /* Settings.bundle */; };
+		1165CD731F377395006CC433 /* MoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD721F377395006CC433 /* MoreViewController.swift */; };
+		1165CD741F377395006CC433 /* MoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD721F377395006CC433 /* MoreViewController.swift */; };
+		1165CD761F377F58006CC433 /* BannedListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD751F377F58006CC433 /* BannedListViewController.swift */; };
+		1165CD771F377F58006CC433 /* BannedListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD751F377F58006CC433 /* BannedListViewController.swift */; };
+		1165CD791F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */; };
+		1165CD7A1F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */; };
 		11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
 		11B2AA341F29DE490067E833 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
 		11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */; };
@@ -89,6 +95,9 @@
 		1147B7621F224198004EF296 /* SetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetViewController.swift; sourceTree = "<group>"; };
 		1147B7651F224874004EF296 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		1147B7681F226143004EF296 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		1165CD721F377395006CC433 /* MoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreViewController.swift; sourceTree = "<group>"; };
+		1165CD751F377F58006CC433 /* BannedListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannedListViewController.swift; sourceTree = "<group>"; };
+		1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComprehensiveRulesViewController.swift; sourceTree = "<group>"; };
 		11B2AA321F29DE490067E833 /* CardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserTableViewCell.swift; sourceTree = "<group>"; };
 		11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BrowserTableViewCell.xib; sourceTree = "<group>"; };
@@ -213,9 +222,12 @@
 		110BB5281F2084E100086841 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				1165CD751F377F58006CC433 /* BannedListViewController.swift */,
 				1147B7591F22379F004EF296 /* BaseViewController.swift */,
 				11B2AA321F29DE490067E833 /* CardViewController.swift */,
+				1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */,
 				110BB5291F20891D00086841 /* FeaturedViewController.swift */,
+				1165CD721F377395006CC433 /* MoreViewController.swift */,
 				110BB52C1F20892B00086841 /* SearchViewController.swift */,
 				1147B7561F223607004EF296 /* SetsViewController.swift */,
 				1147B7651F224874004EF296 /* SettingsViewController.swift */,
@@ -420,6 +432,7 @@
 				"${BUILT_PRODUCTS_DIR}/MMDrawerController+Storyboard/MMDrawerController_Storyboard.framework",
 				"${BUILT_PRODUCTS_DIR}/ManaKit/ManaKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Networking/Networking.framework",
+				"${BUILT_PRODUCTS_DIR}/RATreeView/RATreeView.framework",
 				"${BUILT_PRODUCTS_DIR}/ReachabilitySwift/ReachabilitySwift.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
 				"${BUILT_PRODUCTS_DIR}/Sync/Sync.framework",
@@ -436,6 +449,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MMDrawerController_Storyboard.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ManaKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Networking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RATreeView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReachabilitySwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sync.framework",
@@ -516,6 +530,7 @@
 				"${BUILT_PRODUCTS_DIR}/MMDrawerController+Storyboard/MMDrawerController_Storyboard.framework",
 				"${BUILT_PRODUCTS_DIR}/ManaKit/ManaKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Networking/Networking.framework",
+				"${BUILT_PRODUCTS_DIR}/RATreeView/RATreeView.framework",
 				"${BUILT_PRODUCTS_DIR}/ReachabilitySwift/ReachabilitySwift.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
 				"${BUILT_PRODUCTS_DIR}/Sync/Sync.framework",
@@ -532,6 +547,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MMDrawerController_Storyboard.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ManaKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Networking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RATreeView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReachabilitySwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sync.framework",
@@ -588,6 +604,7 @@
 				"${BUILT_PRODUCTS_DIR}/MMDrawerController+Storyboard/MMDrawerController_Storyboard.framework",
 				"${BUILT_PRODUCTS_DIR}/ManaKit/ManaKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Networking/Networking.framework",
+				"${BUILT_PRODUCTS_DIR}/RATreeView/RATreeView.framework",
 				"${BUILT_PRODUCTS_DIR}/ReachabilitySwift/ReachabilitySwift.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
 				"${BUILT_PRODUCTS_DIR}/Sync/Sync.framework",
@@ -604,6 +621,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MMDrawerController_Storyboard.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ManaKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Networking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RATreeView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReachabilitySwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sync.framework",
@@ -624,11 +642,14 @@
 				1147B7661F224874004EF296 /* SettingsViewController.swift in Sources */,
 				1147B7631F224198004EF296 /* SetViewController.swift in Sources */,
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
+				1165CD761F377F58006CC433 /* BannedListViewController.swift in Sources */,
+				1165CD791F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
 				110BB52D1F20892B00086841 /* SearchViewController.swift in Sources */,
 				1147B75E1F223820004EF296 /* SetItemSliderCollectionViewCell.swift in Sources */,
 				11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
 				1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */,
 				11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */,
+				1165CD731F377395006CC433 /* MoreViewController.swift in Sources */,
 				110BB52A1F20891D00086841 /* FeaturedViewController.swift in Sources */,
 				1147B7491F21F340004EF296 /* SliderTableViewCell.swift in Sources */,
 			);
@@ -650,11 +671,14 @@
 				1147B7581F223607004EF296 /* SetsViewController.swift in Sources */,
 				110BB51A1F207C6400086841 /* ManaGuideUITests.swift in Sources */,
 				1147B74A1F21F340004EF296 /* SliderTableViewCell.swift in Sources */,
+				1165CD771F377F58006CC433 /* BannedListViewController.swift in Sources */,
+				1165CD7A1F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
 				1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */,
 				1147B75F1F223820004EF296 /* SetItemSliderCollectionViewCell.swift in Sources */,
 				11E4374B1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
 				1147B7641F224198004EF296 /* SetViewController.swift in Sources */,
 				11B2AA341F29DE490067E833 /* CardViewController.swift in Sources */,
+				1165CD741F377395006CC433 /* MoreViewController.swift in Sources */,
 				1147B75B1F22379F004EF296 /* BaseViewController.swift in Sources */,
 				110BB52B1F20891D00086841 /* FeaturedViewController.swift in Sources */,
 			);
