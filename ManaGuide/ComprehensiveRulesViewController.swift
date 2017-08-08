@@ -13,18 +13,18 @@ import ManaKit
 import RATreeView
 
 class ComprehensiveRulesViewController: UIViewController {
-
+    
+    // MARK: Constants
+    let data = ["Title", "Introduction", "Contents", "Glossary", "Credits"]
+    
     // MARK: Variables
     var treeView: RATreeView?
-    var data: [String]?
     
     // MARK: Overrides
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        data = ["Title", "Introduction", "Contents", "Glossary", "Credits"]
-        
         var heightAdjustments = CGFloat(0)
         if let nc = navigationController {
             heightAdjustments = nc.navigationBar.frame.size.height
@@ -66,27 +66,25 @@ extension ComprehensiveRulesViewController : RATreeViewDataSource {
     func treeView(_ treeView: RATreeView, numberOfChildrenOfItem item: Any?) -> Int {
         var count = 0
         
-        if let data = data {
-            if let item = item as? String {
-                switch item {
-                case data[2]: // Contents
-                    let predicate = NSPredicate(format: "parent = nil AND NOT (number IN %@)", [data[0], data[1], data[4]])
-                    if let rules = fetchRules(predicate: predicate) {
-                        count = rules.count
-                    }
-                    
-                case data[3]: // Glossary
-                    count = 0
-                default:
-                    count = 1
+        if let item = item as? String {
+            switch item {
+            case data[2]: // Contents
+                let predicate = NSPredicate(format: "parent = nil AND NOT (number IN %@)", [data[0], data[1], data[4]])
+                if let rules = fetchRules(predicate: predicate) {
+                    count = rules.count
                 }
-            } else if let item = item as? CMRule {
-                if let children = item.children {
-                    count = children.allObjects.count
-                }
-            } else {
-                count = data.count
+                
+            case data[3]: // Glossary
+                count = 0
+            default:
+                count = 1
             }
+        } else if let item = item as? CMRule {
+            if let children = item.children {
+                count = children.allObjects.count
+            }
+        } else {
+            count = data.count
         }
         
         return count
@@ -103,8 +101,7 @@ extension ComprehensiveRulesViewController : RATreeViewDataSource {
     func treeView(_ treeView: RATreeView, cellForItem item: Any?) -> UITableViewCell {
         var cell: UITableViewCell?
         
-        if let c = treeView.dequeueReusableCell(withIdentifier: "Cell") as? DynamicHeightTableViewCell,
-            let data = data {
+        if let c = treeView.dequeueReusableCell(withIdentifier: "Cell") as? DynamicHeightTableViewCell {
             
             var image: UIImage?
             var text: String?
@@ -171,54 +168,53 @@ extension ComprehensiveRulesViewController : RATreeViewDataSource {
     func treeView(_ treeView: RATreeView, child index: Int, ofItem item: Any?) -> Any {
         var child: Any?
         
-        if let data = data {
-            if let item = item as? String {
-                switch item {
-                case data[0]: // Title
-                    let predicate = NSPredicate(format: "number = %@", data[0])
-                    if let rules = fetchRules(predicate: predicate) {
-                        child = rules.first
-                    }
-                    
-                case data[1]: // Introduction
-                    let predicate = NSPredicate(format: "number = %@", data[1])
-                    if let rules = fetchRules(predicate: predicate) {
-                        child = rules.first
-                    }
-                    
-                case data[2]: // Contents
-                    let predicate = NSPredicate(format: "parent = nil AND NOT (number IN %@)", [data[0], data[1], data[4]])
-                    if let rules = fetchRules(predicate: predicate) {
-                        child = rules[index]
-                    }
-                    
-                case data[3]: // Glossary
-                    ()
-                case data[4]: // Credits
-                    let predicate = NSPredicate(format: "number = %@", data[4])
-                    if let rules = fetchRules(predicate: predicate) {
-                        child = rules.first
-                    }
-                    
-                default:
-                    child = item
+        if let item = item as? String {
+            switch item {
+            case data[0]: // Title
+                let predicate = NSPredicate(format: "number = %@", data[0])
+                if let rules = fetchRules(predicate: predicate) {
+                    child = rules.first
                 }
-            } else if let item = item as? CMRule {
-                if let children = item.children {
-                    let sortedChildren = children.allObjects.sorted(by: {(a: Any, b: Any) -> Bool in
-                        if let a2 = a as? CMRule,
-                            let b2 = b as? CMRule {
-                            return a2.numberOrder < b2.numberOrder
-                        }
-                        
-                        return false
-                    })
-                    child = sortedChildren[index]
+                
+            case data[1]: // Introduction
+                let predicate = NSPredicate(format: "number = %@", data[1])
+                if let rules = fetchRules(predicate: predicate) {
+                    child = rules.first
                 }
-            } else {
-                child = data[index]
+                
+            case data[2]: // Contents
+                let predicate = NSPredicate(format: "parent = nil AND NOT (number IN %@)", [data[0], data[1], data[4]])
+                if let rules = fetchRules(predicate: predicate) {
+                    child = rules[index]
+                }
+                
+            case data[3]: // Glossary
+                ()
+            case data[4]: // Credits
+                let predicate = NSPredicate(format: "number = %@", data[4])
+                if let rules = fetchRules(predicate: predicate) {
+                    child = rules.first
+                }
+                
+            default:
+                child = item
             }
+        } else if let item = item as? CMRule {
+            if let children = item.children {
+                let sortedChildren = children.allObjects.sorted(by: {(a: Any, b: Any) -> Bool in
+                    if let a2 = a as? CMRule,
+                        let b2 = b as? CMRule {
+                        return a2.numberOrder < b2.numberOrder
+                    }
+                    
+                    return false
+                })
+                child = sortedChildren[index]
+            }
+        } else {
+            child = data[index]
         }
+        
         
         return child!
     }
@@ -242,16 +238,8 @@ extension ComprehensiveRulesViewController : RATreeViewDelegate {
         return CGFloat(44)
     }
     
-    /**
-     *  Asks the delegate to return the level of indentation for a row for a specified item.
-     *
-     *  @param treeView     The tree-view object requesting this information.
-     *  @param item         An item identifying a cell in tree view.
-     *
-     *  @return Returns the depth of the specified row to show its hierarchical position.
-     */
     func treeView(_ treeView: RATreeView, indentationLevelForRowForItem item: Any) -> Int {
-        var level = 1
+        var level = 0
         
         if let item = item as? CMRule {
             var rule: CMRule?
@@ -264,6 +252,15 @@ extension ComprehensiveRulesViewController : RATreeViewDelegate {
         }
         
         return level
+    }
+
+    public func treeView(_ treeView: RATreeView, didSelectRowForItem item: Any) {
+        if let item = item as? String {
+            
+            if item == data[3] {// Glossary
+                performSegue(withIdentifier: "showGlossary", sender: nil)
+            }
+        }
     }
     
     func treeView(_ treeView: RATreeView, didCollapseRowForItem item: Any) {
