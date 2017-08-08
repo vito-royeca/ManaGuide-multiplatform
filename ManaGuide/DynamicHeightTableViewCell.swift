@@ -7,15 +7,32 @@
 //
 
 import UIKit
+import FontAwesome_swift
+import ManaKit
+
+protocol DynamicHeightTableViewCellDelegate : NSObjectProtocol {
+    func expandButtonClicked(withItem item: Any?)
+}
 
 class DynamicHeightTableViewCell: UITableViewCell {
 
     // MARK: Variables
     var isExpanded = false
+    var delegate: DynamicHeightTableViewCellDelegate?
+    var item: Any?
+    var expanded = false
 
     // MARK: Outlets
     @IBOutlet weak var dynamicTextLabel: UILabel!
     @IBOutlet weak var expandButton: UIButton!
+    
+    // MARK: Actions
+    
+    @IBAction func expandAction(_ sender: UIButton) {
+        if let delegate = delegate {
+            delegate.expandButtonClicked(withItem: item)
+        }
+    }
     
     // MARK: Overrides
     override func awakeFromNib() {
@@ -30,9 +47,26 @@ class DynamicHeightTableViewCell: UITableViewCell {
     }
     
     // MARK: Custom methods
-    func updateDataDisplay(text: String, level: Int) {
+    func updateButton(expanded: Bool) {
+        self.expanded = expanded
+        
+        var image: UIImage?
+        
+        if expanded  {
+            image = UIImage.fontAwesomeIcon(name: .minusSquare, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+        } else {
+            image = UIImage.fontAwesomeIcon(name: .plusSquare, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+        }
+        
+        expandButton.setImage(image, for: .normal)
+        expandButton.setTitle(nil, for: .normal)
+    }
+    
+    func updateDataDisplay(text: String, image: UIImage?) {
         dynamicTextLabel.text = text
-
+        expandButton.setImage(image, for: .normal)
+        expandButton.setTitle(nil, for: .normal)
+        
 //        let indent = CGFloat(16 * level)
 //        let margin = CGFloat(8.0)
 //        

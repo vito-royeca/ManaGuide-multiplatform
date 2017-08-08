@@ -102,7 +102,6 @@ extension ComprehensiveRulesViewController : RATreeViewDataSource {
         var cell: UITableViewCell?
         
         if let c = treeView.dequeueReusableCell(withIdentifier: "Cell") as? DynamicHeightTableViewCell {
-            
             var image: UIImage?
             var text: String?
             var level = 0
@@ -129,7 +128,7 @@ extension ComprehensiveRulesViewController : RATreeViewDataSource {
                     }
                     
                     if item.number == data[0] ||
-                       item.number == data[1] ||
+                        item.number == data[1] ||
                         item.number == data[4] {
                         text = "\(tabs)\(item.text!)"
                     } else {
@@ -142,11 +141,9 @@ extension ComprehensiveRulesViewController : RATreeViewDataSource {
                 }
             }
             
-            c.updateDataDisplay(text: text!, level: level)
-            c.expandButton.setImage(image, for: .normal)
-            c.expandButton.setTitle(nil, for: .normal)
-            // TODO: handle button touch
-            c.expandButton.addTarget(self, action: #selector(self.expandButtonClicked(_:)), for: .touchUpInside)
+            c.delegate = self
+            c.item = item
+            c.updateDataDisplay(text: text!, image: image)
             c.selectionStyle = .none
             
             cell = c
@@ -264,11 +261,15 @@ extension ComprehensiveRulesViewController : RATreeViewDelegate {
     }
     
     func treeView(_ treeView: RATreeView, didCollapseRowForItem item: Any) {
-        updateCellButton(treeView, forItem: item, expanded: false)
+        if let cell = treeView.cell(forItem: item) as? DynamicHeightTableViewCell {
+            cell.updateButton(expanded: false)
+        }
     }
     
     func treeView(_ treeView: RATreeView, didExpandRowForItem item: Any) {
-        updateCellButton(treeView, forItem: item, expanded: true)
+        if let cell = treeView.cell(forItem: item) as? DynamicHeightTableViewCell {
+            cell.updateButton(expanded: true)
+        }
 
 //        if let item = item as? CMRule {
 //            if let children = item.children {
@@ -287,21 +288,25 @@ extension ComprehensiveRulesViewController : RATreeViewDelegate {
 //            }
 //        }
     }
-    
-    func updateCellButton(_ treeView: RATreeView, forItem item: Any, expanded: Bool) {
-        if let cell = treeView.cell(forItem: item) as? DynamicHeightTableViewCell {
-            if let _ = cell.expandButton.image(for: .normal) {
-                var image: UIImage?
+}
+
+// MARK: 
+extension ComprehensiveRulesViewController: DynamicHeightTableViewCellDelegate {
+    func expandButtonClicked(withItem item: Any?) {
+        if let treeView = treeView,
+            let item = item {
+            
+            if let cell = treeView.cell(forItem: item) as? DynamicHeightTableViewCell {
+                let expanded = cell.expanded
                 
-                // TODO: fix this - isCellExpanded is unreliable
-                if expanded /*treeView.isCellExpanded(cell)*/ {
-                    image = UIImage.fontAwesomeIcon(name: .minusSquare, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+                if expanded {
+                    treeView.collapseRow(forItem: item)
                 } else {
-                    image = UIImage.fontAwesomeIcon(name: .plusSquare, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+                    treeView.expandRow(forItem: item)
                 }
-                
-                cell.expandButton.setImage(image, for: .normal)
+                cell.updateButton(expanded: !expanded)
             }
         }
     }
 }
+
