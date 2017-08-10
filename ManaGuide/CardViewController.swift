@@ -20,7 +20,7 @@ enum CardViewControllerImageSection: Int {
 }
 
 enum CardViewControllerDetailsSection: Int {
-    case text, artist, printings, source, rulings, legalities
+    case information, printings, rulings, legalities
 }
 
 class CardViewController: BaseViewController {
@@ -35,7 +35,7 @@ class CardViewController: BaseViewController {
     var webViewSize: CGSize?
     
     // MARK: Constants
-    let detailsSections = ["Text", "Artist", "Printings", "Source", "Rulings", "Legalities"]
+    let detailsSections = ["Information", "Printings", "Rulings", "Legalities"]
     let pricingSections = ["Low", "Mid", "High", "Foil", "Buy this card at TCGPlayer.com"]
     
     // MARK: Outlets
@@ -135,6 +135,133 @@ class CardViewController: BaseViewController {
         }
         
         return newText
+    }
+    
+    func composeHTMLInformation(forCard card: CMCard) -> String {
+        var html = try! String(contentsOfFile: "\(Bundle.main.bundlePath)/data/web/cardtext.html", encoding: String.Encoding.utf8)
+        var css = try! String(contentsOfFile: "\(Bundle.main.bundlePath)/data/web/style.css", encoding: String.Encoding.utf8)
+        
+        let bundle = Bundle(for: ManaKit.self)
+        if let bundleURL = bundle.resourceURL?.appendingPathComponent("ManaKit.bundle") {
+            css = css.replacingOccurrences(of: "fonts/", with: "\(bundleURL.path)/fonts/")
+            css = css.replacingOccurrences(of: "images/", with: "\(bundleURL.path)/images/")
+            html = html.replacingOccurrences(of: "{{css}}", with: css)
+        }
+        
+        if let name = card.name {
+            html = html.replacingOccurrences(of: "{{name}}", with: name)
+        } else {
+            html = html.replacingOccurrences(of: "{{name}}", with: "&nbsp;")
+        }
+        if let oracleText = card.text {
+            html = html.replacingOccurrences(of: "{{oracleText}}", with: replaceSymbols(inText: oracleText))
+        } else {
+            html = html.replacingOccurrences(of: "{{oracleText}}", with: "&nbsp;")
+        }
+        if let originalText = card.originalText {
+            if card.text != originalText {
+                html = html.replacingOccurrences(of: "{{originalText}}", with: replaceSymbols(inText: originalText))
+            } else {
+                html = html.replacingOccurrences(of: "{{originalText}}", with: "&mdash;")
+            }
+        } else {
+            html = html.replacingOccurrences(of: "{{originalText}}", with: "&mdash;")
+        }
+        if let flavorText = card.flavor {
+            html = html.replacingOccurrences(of: "{{flavorText}}", with:  replaceSymbols(inText: flavorText))
+        } else {
+            html = html.replacingOccurrences(of: "{{flavorText}}", with: "&mdash;")
+        }
+        
+        if let manaCost = card.manaCost {
+            html = html.replacingOccurrences(of: "{{manaCost}}", with: replaceSymbols(inText: manaCost))
+        }
+        
+        html = html.replacingOccurrences(of: "{{cmc}}", with: String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))
+        
+        if let power = card.power {
+            html = html.replacingOccurrences(of: "{{power}}", with: power)
+        } else {
+            html = html.replacingOccurrences(of: "{{power}}", with: "&mdash;")
+        }
+        
+        if let toughness = card.toughness {
+            html = html.replacingOccurrences(of: "{{toughness}}", with: toughness)
+        } else {
+            html = html.replacingOccurrences(of: "{{toughness}}", with: "&mdash;")
+        }
+        
+        if let type_ = card.type_ {
+            html = html.replacingOccurrences(of: "{{type}}", with: type_.name!)
+        } else {
+            html = html.replacingOccurrences(of: "{{type}}", with: "&mdash;")
+        }
+        
+        if let originalType = card.originalType {
+            html = html.replacingOccurrences(of: "{{originalType}}", with: originalType)
+        } else {
+            html = html.replacingOccurrences(of: "{{originalType}}", with: "&mdash;")
+        }
+        
+        if let supertypes_ = card.supertypes_ {
+            if let s = supertypes_.allObjects as? [CMCardType] {
+                let string = s.map({ $0.name! }).joined(separator: ", ")
+                html = html.replacingOccurrences(of: "{{supertypes}}", with: string.characters.count > 0 ? string : "&mdash;")
+            } else {
+                html = html.replacingOccurrences(of: "{{supertypes}}", with: "&mdash;")
+            }
+        } else {
+            html = html.replacingOccurrences(of: "{{supertypes}}", with: "&mdash;")
+        }
+        
+        if let subtypes_ = card.subtypes_ {
+            if let s = subtypes_.allObjects as? [CMCardType] {
+                let string = s.map({ $0.name! }).joined(separator: ", ")
+                html = html.replacingOccurrences(of: "{{subtypes}}", with: string.characters.count > 0 ? string : "&mdash;")
+            } else {
+                html = html.replacingOccurrences(of: "{{subtypes}}", with: "&mdash;")
+            }
+        } else {
+            html = html.replacingOccurrences(of: "{{subtypes}}", with: "&mdash;")
+        }
+        
+        if let rarity = card.rarity_ {
+            html = html.replacingOccurrences(of: "{{rarity}}", with: rarity.name!)
+        } else {
+            html = html.replacingOccurrences(of: "{{rarity}}", with: "&mdash;")
+        }
+        
+        if let set = card.set {
+            html = html.replacingOccurrences(of: "{{set}}", with: set.name!)
+        } else {
+            html = html.replacingOccurrences(of: "{{set}}", with: "&mdash;")
+        }
+        
+        if let releaseDate = card.releaseDate ?? card.set!.releaseDate {
+            html = html.replacingOccurrences(of: "{{releaseDate}}", with: releaseDate)
+        } else {
+            html = html.replacingOccurrences(of: "{{releaseDate}}", with: "&mdash;")
+        }
+        
+        if let source = card.source {
+            html = html.replacingOccurrences(of: "{{source}}", with: source)
+        } else {
+            html = html.replacingOccurrences(of: "{{source}}", with: "&mdash;")
+        }
+        
+        if let artist = card.artist_ {
+            html = html.replacingOccurrences(of: "{{artist}}", with: artist.name!)
+        } else {
+            html = html.replacingOccurrences(of: "{{artist}}", with: "&mdash;")
+        }
+        
+        if let number = card.number ?? card.mciNumber {
+            html = html.replacingOccurrences(of: "{{number}}", with: number)
+        } else {
+            html = html.replacingOccurrences(of: "{{number}}", with: "&mdash;")
+        }
+        
+        return html
     }
 }
 
@@ -250,47 +377,14 @@ extension CardViewController : UITableViewDataSource {
                 default:
                     ()
                 }
-            case CardViewControllerDetailsSection.text.rawValue + 1:
+            case CardViewControllerDetailsSection.information.rawValue + 1:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "WebViewCell") {
                     if let webView = c.viewWithTag(100) as? UIWebView,
                         let cards = cards {
                         
                         if webViewSize == nil {
                             let card = cards[cardIndex]
-                            var html = try! String(contentsOfFile: "\(Bundle.main.bundlePath)/data/web/cardtext.html", encoding: String.Encoding.utf8)
-                            var css = try! String(contentsOfFile: "\(Bundle.main.bundlePath)/data/web/style.css", encoding: String.Encoding.utf8)
-                            
-                            let bundle = Bundle(for: ManaKit.self)
-                            if let bundleURL = bundle.resourceURL?.appendingPathComponent("ManaKit.bundle") {
-                                css = css.replacingOccurrences(of: "fonts/", with: "\(bundleURL.path)/fonts/")
-                                css = css.replacingOccurrences(of: "images/", with: "\(bundleURL.path)/images/")
-                                html = html.replacingOccurrences(of: "{{css}}", with: css)
-                            }
-                            
-                            if let oracleText = card.text {
-                                html = html.replacingOccurrences(of: "{{oracleText}}", with: replaceSymbols(inText: oracleText))
-                            } else {
-                                html = html.replacingOccurrences(of: "{{oracleText}}", with: "")
-                            }
-                            if let originalText = card.originalText {
-                                if card.text != originalText {
-                                    html = html.replacingOccurrences(of: "{{originalTextTitle}}", with: "Original")
-                                    html = html.replacingOccurrences(of: "{{originalText}}", with: replaceSymbols(inText: originalText))
-                                } else {
-                                    html = html.replacingOccurrences(of: "{{originalTextTitle}}", with: "")
-                                    html = html.replacingOccurrences(of: "{{originalText}}", with: "")
-                                }
-                            } else {
-                                html = html.replacingOccurrences(of: "{{originalTextTitle}}", with: "")
-                                html = html.replacingOccurrences(of: "{{originalText}}", with: "")
-                            }
-                            if let flavorText = card.flavor {
-                                html = html.replacingOccurrences(of: "{{flavorTextTitle}}", with: "Flavor")
-                                html = html.replacingOccurrences(of: "{{flavorText}}", with:  replaceSymbols(inText: flavorText))
-                            } else {
-                                html = html.replacingOccurrences(of: "{{flavorTextTitle}}", with: "")
-                                html = html.replacingOccurrences(of: "{{flavorText}}", with: "")
-                            }
+                            let html = composeHTMLInformation(forCard: card)
                             
                             webView.delegate = self
                             webView.scrollView.isScrollEnabled = false
@@ -298,17 +392,6 @@ extension CardViewController : UITableViewDataSource {
                             webView.loadHTMLString(html, baseURL: URL(fileURLWithPath: "\(Bundle.main.bundlePath)/data/web"))
                         }
                     }
-                    cell = c
-                }
-            case CardViewControllerDetailsSection.artist.rawValue + 1:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
-                    if let artist_ = card.artist_ {
-                        c.textLabel?.text = artist_.name
-                    }
-                    
                     cell = c
                 }
             case CardViewControllerDetailsSection.printings.rawValue + 1:
@@ -340,17 +423,6 @@ extension CardViewController : UITableViewDataSource {
                             printings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMCard]
                         }
                         collectionView.reloadData()
-                    }
-                    
-                    cell = c
-                }
-            case CardViewControllerDetailsSection.source.rawValue + 1:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
-                    if let label = c.viewWithTag(100) as? UILabel {
-                        label.text = card.source != nil ? card.source : " "
                     }
                     
                     cell = c
@@ -485,9 +557,7 @@ extension CardViewController : UITableViewDelegate {
             
         case .details:
             switch indexPath.section {
-            case 0:
-                height = UITableViewAutomaticDimension
-            case CardViewControllerDetailsSection.text.rawValue + 1:
+            case CardViewControllerDetailsSection.information.rawValue + 1:
                 if let webViewSize = webViewSize {
                     height = webViewSize.height
                 }
