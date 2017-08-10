@@ -12,8 +12,8 @@ import CoreData
 
 extension CMGlossary {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<CMGlossary> {
-        return NSFetchRequest<CMGlossary>(entityName: "CMGlossary")
+    @nonobjc open override class func fetchRequest() -> NSFetchRequest<NSFetchRequestResult> {
+        return NSFetchRequest<CMGlossary>(entityName: "CMGlossary") as! NSFetchRequest<NSFetchRequestResult>
     }
 
     @NSManaged public var term: String?

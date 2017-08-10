@@ -12,8 +12,8 @@ import CoreData
 
 extension CMRule {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<CMRule> {
-        return NSFetchRequest<CMRule>(entityName: "CMRule")
+    @nonobjc open override class func fetchRequest() -> NSFetchRequest<NSFetchRequestResult> {
+        return NSFetchRequest<CMRule>(entityName: "CMRule") as! NSFetchRequest<NSFetchRequestResult>
     }
 
     @NSManaged public var number: String?
