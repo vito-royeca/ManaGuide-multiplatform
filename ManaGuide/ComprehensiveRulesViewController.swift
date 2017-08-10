@@ -262,12 +262,14 @@ extension ComprehensiveRulesViewController : RATreeViewDelegate {
     
     func treeView(_ treeView: RATreeView, didCollapseRowForItem item: Any) {
         if let cell = treeView.cell(forItem: item) as? DynamicHeightTableViewCell {
+            // TODO: fix if Glossary should not have a button image
             cell.updateButton(expanded: false)
         }
     }
     
     func treeView(_ treeView: RATreeView, didExpandRowForItem item: Any) {
         if let cell = treeView.cell(forItem: item) as? DynamicHeightTableViewCell {
+            // TODO: fix if Glossary should not have a button image
             cell.updateButton(expanded: true)
         }
 
@@ -292,20 +294,20 @@ extension ComprehensiveRulesViewController : RATreeViewDelegate {
 
 // MARK: 
 extension ComprehensiveRulesViewController: DynamicHeightTableViewCellDelegate {
-    func expandButtonClicked(withItem item: Any?) {
+    func expandButtonClicked(_ cell: DynamicHeightTableViewCell, withItem item: Any?) {
         if let treeView = treeView,
             let item = item {
             
-            if let cell = treeView.cell(forItem: item) as? DynamicHeightTableViewCell {
-                let expanded = cell.expanded
-                
-                if expanded {
-                    treeView.collapseRow(forItem: item)
-                } else {
-                    treeView.expandRow(forItem: item)
-                }
-                cell.updateButton(expanded: !expanded)
+            let expanded = cell.expanded
+            
+            if expanded {
+                treeView.collapseRow(forItem: item)
+            } else {
+                treeView.expandRow(forItem: item)
             }
+
+            // TODO: fix if Glossary should not have a button image
+            cell.updateButton(expanded: !expanded)
         }
     }
 }

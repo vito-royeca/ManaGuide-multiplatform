@@ -77,7 +77,8 @@ extension MoreViewController : UITableViewDelegate {
             let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
             request.predicate = NSPredicate(format: "reserved = true")
             request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                       NSSortDescriptor(key: "name", ascending: true)]
+                                       NSSortDescriptor(key: "name", ascending: true),
+                                       NSSortDescriptor(key: "set.releaseDate", ascending: true)]
             performSegue(withIdentifier: "showSearch", sender: ["title": "Reserved List",
                                                                 "request": request])
         default:

@@ -12,19 +12,15 @@ import FontAwesome_swift
 import ManaKit
 
 enum CardViewControllerSegmentedIndex: Int {
-    case card, details, pricing
+    case image, details
 }
 
-enum CardViewControllerCardSection: Int {
-    case summary, segmented, cards
+enum CardViewControllerImageSection: Int {
+    case pricing, segmented, cards
 }
 
 enum CardViewControllerDetailsSection: Int {
     case text, artist, printings, source, rulings, legalities
-}
-
-enum CardViewControllerPricingSection: Int {
-    case summary, segmented, low, mid, high, foil, buy
 }
 
 class CardViewController: BaseViewController {
@@ -35,7 +31,7 @@ class CardViewController: BaseViewController {
     var printings: [CMCard]?
     var cardsCollectionView: UICollectionView?
     var printingsCollectionView: UICollectionView?
-    var segmentedIndex: CardViewControllerSegmentedIndex = .card
+    var segmentedIndex: CardViewControllerSegmentedIndex = .image
     var webViewSize: CGSize?
     
     // MARK: Constants
@@ -68,6 +64,11 @@ class CardViewController: BaseViewController {
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kNotificationCardImageDownloaded), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.showCardImage(_:)), name: NSNotification.Name(rawValue: kNotificationCardImageDownloaded), object: nil)
+        
+        if let cards = cards {
+            let card = cards[cardIndex]
+            title = card.name
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -80,17 +81,6 @@ class CardViewController: BaseViewController {
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         tableView.reloadData()
-        
-        switch segmentedIndex {
-        case .card:
-//            scrollToNearestVisibleCollectionViewCell()
-//            if let cardsCollectionView = cardsCollectionView {
-//                cardsCollectionView.scrollToItem(at: IndexPath(row: cardIndex, section: 0), at: .centeredHorizontally, animated: false)
-//            }
-            ()
-        default:
-            ()
-        }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -113,7 +103,6 @@ class CardViewController: BaseViewController {
                 }
                 
                 dest.cardIndex = 0
-                dest.title = ""
             }
         }
     }
@@ -155,7 +144,7 @@ extension CardViewController : UITableViewDataSource {
         var rows = 0
         
         switch segmentedIndex {
-        case .card:
+        case .image:
             rows = 3
         case .details:
             switch section {
@@ -180,8 +169,6 @@ extension CardViewController : UITableViewDataSource {
             default:
                 rows = 1
             }
-        case .pricing:
-            rows = 7
         }
         
         return rows
@@ -191,12 +178,10 @@ extension CardViewController : UITableViewDataSource {
         var rows = 0
         
         switch segmentedIndex {
-        case .card:
+        case .image:
             rows = 1
         case .details:
             rows = detailsSections.count + 1
-        case .pricing:
-            rows = 1
         }
         
         return rows
@@ -206,20 +191,20 @@ extension CardViewController : UITableViewDataSource {
         var cell: UITableViewCell?
         
         switch segmentedIndex {
-        case .card:
+        case .image:
             switch indexPath.row {
-            case CardViewControllerCardSection.summary.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "CardCell") as? CardTableViewCell,
+            case CardViewControllerImageSection.pricing.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell"),
                     let cards = cards {
-                    c.card = cards[cardIndex]
-                    c.updateDataDisplay()
+                    let card = cards[cardIndex]
+                    // TODO: Fetch price from TCGPlayer
                     cell = c
                 }
-            case CardViewControllerCardSection.segmented.rawValue:
+            case CardViewControllerImageSection.segmented.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "SegmentedCell") {
                     cell = c
                 }
-            case CardViewControllerCardSection.cards.rawValue:
+            case CardViewControllerImageSection.cards.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "CardsCell") {
                     if let collectionView = c.viewWithTag(100) as? UICollectionView {
                         cardsCollectionView = collectionView
@@ -230,10 +215,10 @@ extension CardViewController : UITableViewDataSource {
                         
                         if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                             let width = view.frame.size.width
-                            let height = view.frame.size.height - kCardTableViewCellHeight - CGFloat(44) - 22
+                            let height = view.frame.size.height - CGFloat(44) - CGFloat(44) - 22 // 2x CGFloat(44) for Pricing and Segmented cells
   
-                            flowLayout.itemSize = CGSize(width: width * 0.7, height: height * 0.9)
-                            flowLayout.sectionInset = UIEdgeInsets(top: 10, left: width * 0.15, bottom: 10, right: width * 0.15)
+                            flowLayout.itemSize = CGSize(width: width * 0.74, height: height * 0.9)
+                            flowLayout.sectionInset = UIEdgeInsets(top: height * 0.05, left: width * 0.13, bottom: height * 0.05, right: width * 0.13)
                             flowLayout.minimumInteritemSpacing = CGFloat(0)
                         }
                         
@@ -245,7 +230,6 @@ extension CardViewController : UITableViewDataSource {
             default:
                 ()
             }
-            cell!.accessoryType = .none
             cell!.detailTextLabel?.textColor = UIColor.black
             
         case .details:
@@ -253,10 +237,10 @@ extension CardViewController : UITableViewDataSource {
             case 0:
                 switch indexPath.row {
                 case 0:
-                    if let c = tableView.dequeueReusableCell(withIdentifier: "CardCell") as? CardTableViewCell,
+                    if let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell"),
                         let cards = cards {
-                        c.card = cards[cardIndex]
-                        c.updateDataDisplay()
+                        let card = cards[cardIndex]
+                        // TODO: Fetch price from TCGPlayer
                         cell = c
                     }
                 case 1:
@@ -434,67 +418,7 @@ extension CardViewController : UITableViewDataSource {
             default:
                 ()
             }
-            cell!.accessoryType = .none
             cell!.detailTextLabel?.textColor = UIColor.black
-            
-        case .pricing:
-            switch indexPath.row {
-            case CardViewControllerPricingSection.summary.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "CardCell") as? CardTableViewCell,
-                    let cards = cards {
-                    c.card = cards[cardIndex]
-                    c.updateDataDisplay()
-                    c.accessoryType = .none
-                    cell = c
-                }
-            case CardViewControllerPricingSection.segmented.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "SegmentedCell") {
-                    c.accessoryType = .none
-                    cell = c
-                }
-            case CardViewControllerPricingSection.low.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
-                    c.accessoryType = .none
-                    c.textLabel?.text = pricingSections[0]
-                    c.detailTextLabel?.textColor = UIColor.red
-                    c.detailTextLabel?.text = "$0.0"
-                    
-                    cell = c
-                }
-            case CardViewControllerPricingSection.mid.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
-                    c.accessoryType = .none
-                    c.textLabel?.text = pricingSections[1]
-                    c.detailTextLabel?.textColor = UIColor.blue
-                    c.detailTextLabel?.text = "$0.0"
-                    
-                    cell = c
-                }
-            case CardViewControllerPricingSection.high.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
-                    c.accessoryType = .none
-                    c.textLabel?.text = pricingSections[2]
-                    c.detailTextLabel?.textColor = UIColor(red:0.00, green:0.50, blue:0.00, alpha:1.0)
-                    c.detailTextLabel?.text = "$0.0"
-                    cell = c
-                }
-            case CardViewControllerPricingSection.foil.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
-                    c.accessoryType = .none
-                    c.textLabel?.text = pricingSections[3]
-                    c.detailTextLabel?.textColor = UIColor(red:0.60, green:0.51, blue:0.00, alpha:1.0)
-                    c.detailTextLabel?.text = "$0.0"
-                    cell = c
-                }
-            case CardViewControllerPricingSection.buy.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") {
-                    c.accessoryType = .disclosureIndicator
-                    c.textLabel?.text = pricingSections[4]
-                    cell = c
-                }
-            default:
-                ()
-            }
         }
         
         return cell!
@@ -551,43 +475,24 @@ extension CardViewController : UITableViewDelegate {
         var height = CGFloat(0)
         
         switch segmentedIndex {
-        case .card:
+        case .image:
             switch indexPath.row {
-            case CardViewControllerCardSection.summary.rawValue:
-                height = kCardTableViewCellHeight
-            case CardViewControllerCardSection.segmented.rawValue:
-                height = UITableViewAutomaticDimension
-            case CardViewControllerCardSection.cards.rawValue:
-                height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
+            case CardViewControllerImageSection.cards.rawValue:
+                height = tableView.frame.size.height - CGFloat(44) - CGFloat(44) // 2x CGFloat(44) for Pricing and Segmented cells
             default:
-                ()
+                height = UITableViewAutomaticDimension
             }
             
         case .details:
             switch indexPath.section {
             case 0:
-                switch indexPath.row {
-                case 0:
-                    height = kCardTableViewCellHeight
-                case 1:
-                    height = UITableViewAutomaticDimension
-                default:
-                    ()
-                }
+                height = UITableViewAutomaticDimension
             case CardViewControllerDetailsSection.text.rawValue + 1:
                 if let webViewSize = webViewSize {
                     height = webViewSize.height
                 }
             case CardViewControllerDetailsSection.printings.rawValue + 1:
                 height = CGFloat(88)
-            default:
-                height = UITableViewAutomaticDimension
-            }
-            
-        case .pricing:
-            switch indexPath.row {
-            case CardViewControllerPricingSection.summary.rawValue:
-                height = kCardTableViewCellHeight
             default:
                 height = UITableViewAutomaticDimension
             }
@@ -607,7 +512,7 @@ extension CardViewController : UICollectionViewDataSource {
         var items = 0
         
         switch segmentedIndex {
-        case .card:
+        case .image:
             if let cards = cards {
                 items = cards.count
             }
@@ -616,9 +521,6 @@ extension CardViewController : UICollectionViewDataSource {
             if let printings = printings {
                 items = printings.count
             }
-            
-        case .pricing:
-            ()
         }
 
         return items
@@ -629,7 +531,7 @@ extension CardViewController : UICollectionViewDataSource {
         var cell:UICollectionViewCell?
         
         switch segmentedIndex {
-        case .card:
+        case .image:
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardItemCell", for: indexPath)
             
             if let imageView = cell!.viewWithTag(100) as? UIImageView,
@@ -668,9 +570,6 @@ extension CardViewController : UICollectionViewDataSource {
                 
                 setImage.image = ManaKit.sharedInstance.setImage(set: printing.set!, rarity: printing.rarity_)
             }
-            
-        case .pricing:
-            ()
         }
         
         return cell!
@@ -724,6 +623,14 @@ extension CardViewController : UIScrollViewDelegate {
                 cardIndex = closestCellIndex
                 webViewSize = nil
                 tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+                
+                if let cards = cards {
+                    let card = cards[cardIndex]
+                    title = card.name
+                }
+                
+                // TODO: fetch pricing at TCGPlayer
+                // ...
             }
         }
     }

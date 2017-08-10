@@ -54,7 +54,6 @@ class SetViewController: BaseViewController {
                 
                 dest.cardIndex = dict["cardIndex"] as! Int
                 dest.cards = dict["cards"] as? [CMCard]
-                dest.title = ""
             }
         } else if segue.identifier == "showCardModal" {
             if let nav = segue.destination as? UINavigationController {

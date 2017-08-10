@@ -76,7 +76,6 @@ class SearchViewController: BaseViewController {
                 
                 dest.cardIndex = dict["cardIndex"] as! Int
                 dest.cards = dict["cards"] as? [CMCard]
-                dest.title = ""
             }
         } else if segue.identifier == "showCardModal" {
             if let nav = segue.destination as? UINavigationController {
@@ -130,7 +129,8 @@ class SearchViewController: BaseViewController {
             request = NSFetchRequest(entityName: "CMCard")
             request!.predicate = NSPredicate(format: "name = nil")
             request!.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
-                                        NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy)]
+                                        NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy),
+                                        NSSortDescriptor(key: "set.releaseDate", ascending: true)]
         }
 
         switch searchDisplayBy {
@@ -575,7 +575,8 @@ class SearchViewController: BaseViewController {
         print("\(predicate!)")
         request.predicate = predicate
         request.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
-                                    NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy)]
+                                NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy),
+                                   NSSortDescriptor(key: "set.releaseDate", ascending: true)]
         
         return request
     }

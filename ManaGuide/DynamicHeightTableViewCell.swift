@@ -11,7 +11,7 @@ import FontAwesome_swift
 import ManaKit
 
 protocol DynamicHeightTableViewCellDelegate : NSObjectProtocol {
-    func expandButtonClicked(withItem item: Any?)
+    func expandButtonClicked(_ cell: DynamicHeightTableViewCell, withItem item: Any?)
 }
 
 class DynamicHeightTableViewCell: UITableViewCell {
@@ -30,7 +30,7 @@ class DynamicHeightTableViewCell: UITableViewCell {
     
     @IBAction func expandAction(_ sender: UIButton) {
         if let delegate = delegate {
-            delegate.expandButtonClicked(withItem: item)
+            delegate.expandButtonClicked(self, withItem: item)
         }
     }
     
