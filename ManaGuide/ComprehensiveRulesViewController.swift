@@ -253,8 +253,7 @@ extension ComprehensiveRulesViewController : RATreeViewDelegate {
 
     public func treeView(_ treeView: RATreeView, didSelectRowForItem item: Any) {
         if let item = item as? String {
-            
-            if item == data[3] {// Glossary
+            if item == data[3] { // Glossary
                 performSegue(withIdentifier: "showGlossary", sender: nil)
             }
         }
@@ -262,17 +261,32 @@ extension ComprehensiveRulesViewController : RATreeViewDelegate {
     
     func treeView(_ treeView: RATreeView, didCollapseRowForItem item: Any) {
         if let cell = treeView.cell(forItem: item) as? DynamicHeightTableViewCell {
-            // TODO: fix if Glossary should not have a button image
-            cell.updateButton(expanded: false)
+            if let item = item as? String {
+                if item == data[3] {
+                    cell.updateDataDisplay(text: item, image: nil)
+                } else {
+                    cell.updateButton(expanded: false)
+                }
+            } else {
+                cell.updateButton(expanded: false)
+            }
         }
     }
     
     func treeView(_ treeView: RATreeView, didExpandRowForItem item: Any) {
         if let cell = treeView.cell(forItem: item) as? DynamicHeightTableViewCell {
-            // TODO: fix if Glossary should not have a button image
-            cell.updateButton(expanded: true)
+            if let item = item as? String {
+                if item == data[3] {
+                    cell.updateDataDisplay(text: item, image: nil)
+                } else {
+                    cell.updateButton(expanded: true)
+                }
+            } else {
+                cell.updateButton(expanded: true)
+            }
         }
 
+        // update the children
 //        if let item = item as? CMRule {
 //            if let children = item.children {
 //                let sortedChildren = children.allObjects.sorted(by: {(a: Any, b: Any) -> Bool in
@@ -285,7 +299,9 @@ extension ComprehensiveRulesViewController : RATreeViewDelegate {
 //                })
 //                
 //                for child in sortedChildren {
-//                    updateCellButton(treeView, forItem: child, expanded: true)
+//                    if let cell = treeView.cell(forItem: child) as? DynamicHeightTableViewCell {
+//                        cell.updateButton(expanded: cell.isExpanded)
+//                    }
 //                }
 //            }
 //        }
