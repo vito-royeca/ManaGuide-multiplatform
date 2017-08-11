@@ -62,9 +62,6 @@ class CardViewController: BaseViewController {
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kNotificationCardImageDownloaded), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.showCardImage(_:)), name: NSNotification.Name(rawValue: kNotificationCardImageDownloaded), object: nil)
-        
         if let cards = cards {
             let card = cards[cardIndex]
             title = card.name
@@ -108,20 +105,6 @@ class CardViewController: BaseViewController {
     }
     
     // MARK: Custom methods
-    func showCardImage(_ notification: Notification) {
-        if let cardsCollectionView = cardsCollectionView,
-            let cards = cards,
-            let userInfo = notification.userInfo {
-            
-            if  let dCard = userInfo["card"] as? CMCard {
-                if dCard == cards[cardIndex] {
-                    let indexPath = IndexPath(item: cardIndex, section: 0)
-                    cardsCollectionView.reloadItems(at: [indexPath])
-                }
-            }
-        }
-    }
-
     func replaceSymbols(inText text: String) -> String {
         var newText = text
         newText = newText.replacingOccurrences(of: "\n", with:"<br/> ")
@@ -153,11 +136,13 @@ class CardViewController: BaseViewController {
         } else {
             html = html.replacingOccurrences(of: "{{name}}", with: "&nbsp;")
         }
+        
         if let oracleText = card.text {
             html = html.replacingOccurrences(of: "{{oracleText}}", with: replaceSymbols(inText: oracleText))
         } else {
             html = html.replacingOccurrences(of: "{{oracleText}}", with: "&nbsp;")
         }
+        
         if let originalText = card.originalText {
             if card.text != originalText {
                 html = html.replacingOccurrences(of: "{{originalText}}", with: replaceSymbols(inText: originalText))
@@ -167,6 +152,7 @@ class CardViewController: BaseViewController {
         } else {
             html = html.replacingOccurrences(of: "{{originalText}}", with: "&mdash;")
         }
+        
         if let flavorText = card.flavor {
             html = html.replacingOccurrences(of: "{{flavorText}}", with:  replaceSymbols(inText: flavorText))
         } else {
@@ -175,6 +161,8 @@ class CardViewController: BaseViewController {
         
         if let manaCost = card.manaCost {
             html = html.replacingOccurrences(of: "{{manaCost}}", with: replaceSymbols(inText: manaCost))
+        } else {
+            html = html.replacingOccurrences(of: "{{manaCost}}", with: "&mdash;")
         }
         
         html = html.replacingOccurrences(of: "{{cmc}}", with: String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))
@@ -203,17 +191,6 @@ class CardViewController: BaseViewController {
             html = html.replacingOccurrences(of: "{{originalType}}", with: "&mdash;")
         }
         
-        if let supertypes_ = card.supertypes_ {
-            if let s = supertypes_.allObjects as? [CMCardType] {
-                let string = s.map({ $0.name! }).joined(separator: ", ")
-                html = html.replacingOccurrences(of: "{{supertypes}}", with: string.characters.count > 0 ? string : "&mdash;")
-            } else {
-                html = html.replacingOccurrences(of: "{{supertypes}}", with: "&mdash;")
-            }
-        } else {
-            html = html.replacingOccurrences(of: "{{supertypes}}", with: "&mdash;")
-        }
-        
         if let subtypes_ = card.subtypes_ {
             if let s = subtypes_.allObjects as? [CMCardType] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
@@ -223,6 +200,17 @@ class CardViewController: BaseViewController {
             }
         } else {
             html = html.replacingOccurrences(of: "{{subtypes}}", with: "&mdash;")
+        }
+        
+        if let supertypes_ = card.supertypes_ {
+            if let s = supertypes_.allObjects as? [CMCardType] {
+                let string = s.map({ $0.name! }).joined(separator: ", ")
+                html = html.replacingOccurrences(of: "{{supertypes}}", with: string.characters.count > 0 ? string : "&mdash;")
+            } else {
+                html = html.replacingOccurrences(of: "{{supertypes}}", with: "&mdash;")
+            }
+        } else {
+            html = html.replacingOccurrences(of: "{{supertypes}}", with: "&mdash;")
         }
         
         if let rarity = card.rarity_ {
@@ -342,7 +330,7 @@ extension CardViewController : UITableViewDataSource {
                         
                         if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                             let width = view.frame.size.width
-                            let height = view.frame.size.height - CGFloat(44) - CGFloat(44) - 22 // 2x CGFloat(44) for Pricing and Segmented cells
+                            let height = view.frame.size.height - (CGFloat(44) * 2) // 2x CGFloat(44) for Pricing and Segmented cells
   
                             flowLayout.itemSize = CGSize(width: width * 0.74, height: height * 0.9)
                             flowLayout.sectionInset = UIEdgeInsets(top: height * 0.05, left: width * 0.13, bottom: height * 0.05, right: width * 0.13)
@@ -687,12 +675,39 @@ extension CardViewController : UIScrollViewDelegate {
                 }
             }
             if closestCellIndex != -1 {
-                collectionView.scrollToItem(at: IndexPath(row: closestCellIndex, section: 0), at: .centeredHorizontally, animated: false)
+                let indexPath = IndexPath(item: closestCellIndex, section: 0)
+                collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
                 
-                // update the first table row cell
+                // update the pricing cell and download the image
                 cardIndex = closestCellIndex
                 webViewSize = nil
                 tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+                if let cell = collectionView.cellForItem(at: indexPath) {
+                    
+                    if let imageView = cell.viewWithTag(100) as? UIImageView,
+                        let cards = cards {
+                        
+                        if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: .cardBack) {
+                            ManaKit.sharedInstance.downloadCardImage(cards[cardIndex], cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
+                                
+                                if error == nil {
+                                    let card = cards[self.cardIndex]
+                                    
+                                    if c == card {
+                                        UIView.transition(with: imageView,
+                                                          duration: 1.0,
+                                                          options: .transitionFlipFromLeft,
+                                                          animations: {
+                                                            imageView.image = image
+                                        },
+                                                          completion: nil)
+                                        
+                                    }
+                                }
+                            })
+                        }
+                    }
+                }
                 
                 if let cards = cards {
                     let card = cards[cardIndex]
