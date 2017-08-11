@@ -117,6 +117,8 @@ class CardViewController: BaseViewController {
             }
         }
         
+        
+        
         return newText
     }
     
@@ -131,16 +133,35 @@ class CardViewController: BaseViewController {
             html = html.replacingOccurrences(of: "{{css}}", with: css)
         }
         
+        var nameHeader: String?
+        if let releaseDate = card.set!.releaseDate {
+            let isModern = ManaKit.sharedInstance.isModern(card)
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            
+            if let m15Date = formatter.date(from: "2014-07-18"),
+                let setReleaseDate = formatter.date(from: releaseDate) {
+                
+                if setReleaseDate.compare(m15Date) == .orderedSame ||
+                    setReleaseDate.compare(m15Date) == .orderedDescending {
+                    nameHeader = "cardNameMagic2015"
+                    
+                } else {
+                    nameHeader = isModern ? "cardNameEightEdition" : "cardNamePreEightEdition"
+                }
+            }
+        }
+
+        if let nameHeader = nameHeader {
+            html = html.replacingOccurrences(of: "{{nameHeader}}", with: nameHeader)
+        } else {
+            html = html.replacingOccurrences(of: "{{nameHeader}}", with: "&nbsp;")
+        }
+        
         if let name = card.name {
             html = html.replacingOccurrences(of: "{{name}}", with: name)
         } else {
             html = html.replacingOccurrences(of: "{{name}}", with: "&nbsp;")
-        }
-        
-        if let oracleText = card.text {
-            html = html.replacingOccurrences(of: "{{oracleText}}", with: replaceSymbols(inText: oracleText))
-        } else {
-            html = html.replacingOccurrences(of: "{{oracleText}}", with: "&nbsp;")
         }
         
         if let originalText = card.originalText {
@@ -159,6 +180,12 @@ class CardViewController: BaseViewController {
             html = html.replacingOccurrences(of: "{{flavorText}}", with: "&mdash;")
         }
         
+        if let oracleText = card.text {
+            html = html.replacingOccurrences(of: "{{text}}", with: replaceSymbols(inText: oracleText))
+        } else {
+            html = html.replacingOccurrences(of: "{{text}}", with: "&nbsp;")
+        }
+
         if let manaCost = card.manaCost {
             html = html.replacingOccurrences(of: "{{manaCost}}", with: replaceSymbols(inText: manaCost))
         } else {
@@ -166,6 +193,28 @@ class CardViewController: BaseViewController {
         }
         
         html = html.replacingOccurrences(of: "{{cmc}}", with: String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))
+        
+        if let colors_ = card.colors_ {
+            if let s = colors_.allObjects as? [CMColor] {
+                let string = s.map({ $0.name! }).joined(separator: ", ")
+                html = html.replacingOccurrences(of: "{{colors}}", with: string.characters.count > 0 ? string : "&mdash;")
+            } else {
+                html = html.replacingOccurrences(of: "{{colors}}", with: "&mdash;")
+            }
+        } else {
+            html = html.replacingOccurrences(of: "{{colors}}", with: "&mdash;")
+        }
+        
+        if let colorIdentities_ = card.colorIdentities_ {
+            if let s = colorIdentities_.allObjects as? [CMColor] {
+                let string = s.map({ $0.name! }).joined(separator: ", ")
+                html = html.replacingOccurrences(of: "{{colorIdentities}}", with: string.characters.count > 0 ? string : "&mdash;")
+            } else {
+                html = html.replacingOccurrences(of: "{{colorIdentities}}", with: "&mdash;")
+            }
+        } else {
+            html = html.replacingOccurrences(of: "{{subtypes}}", with: "&mdash;")
+        }
         
         if let power = card.power {
             html = html.replacingOccurrences(of: "{{power}}", with: power)
@@ -178,17 +227,17 @@ class CardViewController: BaseViewController {
         } else {
             html = html.replacingOccurrences(of: "{{toughness}}", with: "&mdash;")
         }
-        
-        if let type_ = card.type_ {
-            html = html.replacingOccurrences(of: "{{type}}", with: type_.name!)
-        } else {
-            html = html.replacingOccurrences(of: "{{type}}", with: "&mdash;")
-        }
-        
+
         if let originalType = card.originalType {
             html = html.replacingOccurrences(of: "{{originalType}}", with: originalType)
         } else {
             html = html.replacingOccurrences(of: "{{originalType}}", with: "&mdash;")
+        }
+
+        if let type_ = card.type_ {
+            html = html.replacingOccurrences(of: "{{type}}", with: type_.name!)
+        } else {
+            html = html.replacingOccurrences(of: "{{type}}", with: "&mdash;")
         }
         
         if let subtypes_ = card.subtypes_ {
@@ -221,8 +270,10 @@ class CardViewController: BaseViewController {
         
         if let set = card.set {
             html = html.replacingOccurrences(of: "{{set}}", with: set.name!)
+            html = html.replacingOccurrences(of: "{{setOnlineOnly}}", with: set.onlineOnly ? "Yes" : "No")
         } else {
             html = html.replacingOccurrences(of: "{{set}}", with: "&mdash;")
+            html = html.replacingOccurrences(of: "{{setOnlineOnly}}", with: "&mdash;")
         }
         
         if let releaseDate = card.releaseDate ?? card.set!.releaseDate {
@@ -329,8 +380,8 @@ extension CardViewController : UITableViewDataSource {
                         }
                         
                         if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                            let width = view.frame.size.width
-                            let height = view.frame.size.height - (CGFloat(44) * 2) // 2x CGFloat(44) for Pricing and Segmented cells
+                            let width = tableView.frame.size.width
+                            let height = tableView.frame.size.height - (CGFloat(44) * 2)// 2x CGFloat(44) for Pricing and Segmented cells
   
                             flowLayout.itemSize = CGSize(width: width * 0.74, height: height * 0.9)
                             flowLayout.sectionInset = UIEdgeInsets(top: height * 0.05, left: width * 0.13, bottom: height * 0.05, right: width * 0.13)
@@ -538,7 +589,7 @@ extension CardViewController : UITableViewDelegate {
         case .image:
             switch indexPath.row {
             case CardViewControllerImageSection.cards.rawValue:
-                height = tableView.frame.size.height - CGFloat(44) - CGFloat(44) // 2x CGFloat(44) for Pricing and Segmented cells
+                height = tableView.frame.size.height - (CGFloat(44) * 2) // 2x CGFloat(44) for Pricing and Segmented cells
             default:
                 height = UITableViewAutomaticDimension
             }
@@ -556,6 +607,7 @@ extension CardViewController : UITableViewDelegate {
             }
         }
         
+//        print("Section: \(indexPath.section), Row: \(indexPath.row)")
         return height
     }
     
@@ -650,6 +702,7 @@ extension CardViewController : UICollectionViewDelegate {
 extension CardViewController : UIWebViewDelegate {
     func webViewDidFinishLoad(_ webView: UIWebView) {
         webViewSize = webView.scrollView.contentSize
+//        tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerDetailsSection.information.rawValue + 1)], with: .none)
         tableView.reloadData()
     }
 }

@@ -7,18 +7,9 @@
     </head>
 <body>
     <div id='webViewHeight'>
-    <table width="100%">
+    <table  cellspacing="5" width="100%">
         <tr>
-            <td colspan="2" class='detailHeader'>{{name}}</td>
-        </tr>
-        <tr>
-            <td colspan="2">&nbsp;</td>
-        </tr>
-        <tr>
-            <td colspan="2" class='detailHeader'>Text</td>
-        </tr>
-        <tr>
-            <td colspan="2">{{oracleText}}</td>
+            <td colspan="2" class='{{nameHeader}}'>{{name}}</td>
         </tr>
         <tr>
             <td colspan="2">&nbsp;</td>
@@ -30,72 +21,87 @@
             <td colspan="2" class='originalText'>{{originalText}}</td>
         </tr>
         <tr>
-            <td colspan="2">&nbsp;</td>
-        </tr>
-        <tr>
             <td colspan="2" class='detailHeader'>Flavor</td>
         </tr>
         <tr>
             <td colspan="2" class='flavorText'>{{flavorText}}</td>
         </tr>
         <tr>
+            <td colspan="2" class='detailHeader'>Text</td>
+        </tr>
+        <tr>
+            <td colspan="2">{{text}}</td>
+        </tr>
+        <tr>
             <td colspan="2">&nbsp;</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Mana Cost:</td>
-            <td width="50%">&nbsp;{{manaCost}}</td>
+            <td align="right" valign="top" width="50%">Mana Cost:</td>
+            <td width="50%">{{manaCost}}</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Converted Mana Cost:</td>
-            <td width="50%">&nbsp;{{cmc}}</td>
+            <td align="right" valign="top" width="50%">Converted Mana Cost:</td>
+            <td valign="top" width="50%">{{cmc}}</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Power:</td>
-            <td width="50%">&nbsp;{{power}}</td>
+            <td align="right" valign="top" width="50%">Colors:</td>
+            <td valign="top" width="50%">{{colors}}</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Toughness:</td>
-            <td width="50%">&nbsp;{{toughness}}</td>
+            <td align="right" valign="top" width="50%">Color Identity:</td>
+            <td valign="top" width="50%">{{colorIdentities}}</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Type:</td>
-            <td width="50%">&nbsp;{{type}}</td>
+            <td align="right" valign="top" width="50%">Power:</td>
+            <td valign="top" width="50%">{{power}}</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Original Type:</td>
-            <td width="50%">&nbsp;{{originalType}}</td>
+            <td align="right" valign="top" width="50%">Toughness:</td>
+            <td valign="top" width="50%">{{toughness}}</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Subtypes:</td>
-            <td width="50%">&nbsp;{{subtypes}}</td>
+            <td align="right" valign="top" width="50%">Original Type:</td>
+            <td valign="top" width="50%">{{originalType}}</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Supertypes:</td>
-            <td width="50%">&nbsp;{{supertypes}}</td>
+            <td align="right" valign="top" width="50%">Type:</td>
+            <td valign="top" width="50%">{{type}}</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Rarity:</td>
-            <td width="50%">&nbsp;{{rarity}}</td>
+            <td align="right" valign="top" width="50%">Subtypes:</td>
+            <td valign="top" width="50%">{{subtypes}}</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Set:</td>
-            <td width="50%">&nbsp;{{set}}</td>
+            <td align="right" valign="top" width="50%">Supertypes:</td>
+            <td valign="top" width="50%">{{supertypes}}</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Release Date:</td>
-            <td width="50%">&nbsp;{{releaseDate}}</td>
+            <td align="right" valign="top" width="50%">Rarity:</td>
+            <td valign="top" width="50%">{{rarity}}</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Source:</td>
-            <td width="50%">&nbsp;{{source}}</td>
+            <td align="right" valign="top" width="50%">Set:</td>
+            <td valign="top" width="50%">{{set}}</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Artist:</td>
-            <td width="50%">&nbsp;{{artist}}</td>
+            <td align="right" valign="top" width="50%">Set Online Only:</td>
+            <td valign="top" width="50%">{{setOnlineOnly}}</td>
         </tr>
         <tr>
-            <td align="right" width="50%">Number:</td>
-            <td width="50%">&nbsp;{{number}}</td>
+            <td align="right" valign="top" width="50%">Release Date:</td>
+            <td valign="top" width="50%">{{releaseDate}}</td>
+        </tr>
+        <tr>
+            <td align="right" valign="top" width="50%">Source:</td>
+            <td valign="top" width="50%">{{source}}</td>
+        </tr>
+        <tr>
+            <td align="right" valign="top" width="50%">Artist:</td>
+            <td valign="top" width="50%">{{artist}}</td>
+        </tr>
+        <tr>
+            <td align="right" valign="top" width="50%">Number:</td>
+            <td valign="top" width="50%">{{number}}</td>
         </tr>
     </table>
     </div>
