@@ -12,7 +12,7 @@ import FontAwesome_swift
 import ManaKit
 
 enum CardViewControllerSegmentedIndex: Int {
-    case image, details
+    case image, details, discussion, lists
 }
 
 enum CardViewControllerImageSection: Int {
@@ -335,6 +335,10 @@ extension CardViewController : UITableViewDataSource {
             default:
                 rows = 1
             }
+        case .discussion:
+            rows = 2
+        case .lists:
+            rows = 2
         }
         
         return rows
@@ -348,6 +352,10 @@ extension CardViewController : UITableViewDataSource {
             rows = 1
         case .details:
             rows = detailsSections.count + 1
+        case .discussion:
+            rows = 1
+        case .lists:
+            rows = 1
         }
         
         return rows
@@ -530,6 +538,38 @@ extension CardViewController : UITableViewDataSource {
                 ()
             }
             cell!.detailTextLabel?.textColor = UIColor.black
+        case .discussion:
+            switch indexPath.row {
+            case 0:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell"),
+                    let cards = cards {
+                    let card = cards[cardIndex]
+                    // TODO: Fetch price from TCGPlayer
+                    cell = c
+                }
+            case 1:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "SegmentedCell") {
+                    cell = c
+                }
+            default:
+                ()
+            }
+        case .lists:
+            switch indexPath.row {
+            case 0:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell"),
+                    let cards = cards {
+                    let card = cards[cardIndex]
+                    // TODO: Fetch price from TCGPlayer
+                    cell = c
+                }
+            case 1:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "SegmentedCell") {
+                    cell = c
+                }
+            default:
+                ()
+            }
         }
         
         return cell!
@@ -542,6 +582,8 @@ extension CardViewController : UITableViewDataSource {
         case .details:
             switch section {
             case 0:
+                ()
+            case CardViewControllerDetailsSection.information.rawValue + 1:
                 ()
             case CardViewControllerDetailsSection.rulings.rawValue + 1:
                 headerTitle = detailsSections[CardViewControllerDetailsSection.rulings.rawValue]
@@ -588,6 +630,8 @@ extension CardViewController : UITableViewDelegate {
         switch segmentedIndex {
         case .image:
             switch indexPath.row {
+            case 0:
+                height = CGFloat(44)
             case CardViewControllerImageSection.cards.rawValue:
                 height = tableView.frame.size.height - (CGFloat(44) * 2) // 2x CGFloat(44) for Pricing and Segmented cells
             default:
@@ -596,12 +640,28 @@ extension CardViewController : UITableViewDelegate {
             
         case .details:
             switch indexPath.section {
+            case 0:
+                height = CGFloat(44)
             case CardViewControllerDetailsSection.information.rawValue + 1:
                 if let webViewSize = webViewSize {
                     height = webViewSize.height
                 }
             case CardViewControllerDetailsSection.printings.rawValue + 1:
                 height = CGFloat(88)
+            default:
+                height = UITableViewAutomaticDimension
+            }
+        case .discussion:
+            switch indexPath.row {
+            case 0:
+                height = CGFloat(44)
+            default:
+                height = UITableViewAutomaticDimension
+            }
+        case .lists:
+            switch indexPath.row {
+            case 0:
+                height = CGFloat(44)
             default:
                 height = UITableViewAutomaticDimension
             }
@@ -631,6 +691,10 @@ extension CardViewController : UICollectionViewDataSource {
             if let printings = printings {
                 items = printings.count
             }
+        case .discussion:
+            ()
+        case .lists:
+            ()
         }
 
         return items
@@ -680,6 +744,10 @@ extension CardViewController : UICollectionViewDataSource {
                 
                 setImage.image = ManaKit.sharedInstance.setImage(set: printing.set!, rarity: printing.rarity_)
             }
+        case .discussion:
+            ()
+        case .lists:
+            ()
         }
         
         return cell!

@@ -26,7 +26,6 @@ class SearchViewController: BaseViewController {
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var statusBar: UIView!
     @IBOutlet var statusLabel: UILabel!
     
     // MARK: Actions
@@ -57,7 +56,7 @@ class SearchViewController: BaseViewController {
         // set statusBar's color to searchBar's background color
         if let imageView = searchBar.subviews.first?.subviews.first as? UIImageView {
             if let image = imageView.image {
-                statusBar.backgroundColor = UIColor.init(patternImage: image)
+                statusLabel.backgroundColor = UIColor.init(patternImage: image)
             }
         }
 
@@ -208,7 +207,7 @@ class SearchViewController: BaseViewController {
         
         if let ds = ds {
             ds.delegate = self
-            statusLabel.text = "\(ds.all().count) results"
+            statusLabel.text = "  \(ds.all().count) results"
             return ds
         }
         return nil

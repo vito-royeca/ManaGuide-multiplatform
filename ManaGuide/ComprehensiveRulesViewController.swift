@@ -50,6 +50,10 @@ class ComprehensiveRulesViewController: UIViewController {
     func expandButtonClicked(_ sender: Any) {
         print("\(sender)")
     }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        treeView?.reloadData()
+    }
 }
 
 // MARK: RAtreeViewDataSource
@@ -267,8 +271,12 @@ extension ComprehensiveRulesViewController : RATreeViewDelegate {
                 } else {
                     cell.updateButton(expanded: false)
                 }
-            } else {
-                cell.updateButton(expanded: false)
+            } else if let item = item as? CMRule {
+                if let children = item.children {
+                    if children.allObjects.count > 0 {
+                        cell.updateButton(expanded: false)
+                    }
+                }
             }
         }
     }
@@ -281,8 +289,12 @@ extension ComprehensiveRulesViewController : RATreeViewDelegate {
                 } else {
                     cell.updateButton(expanded: true)
                 }
-            } else {
-                cell.updateButton(expanded: true)
+            } else if let item = item as? CMRule {
+                if let children = item.children {
+                    if children.allObjects.count > 0 {
+                        cell.updateButton(expanded: true)
+                    }
+                }
             }
         }
 

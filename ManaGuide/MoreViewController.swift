@@ -16,7 +16,7 @@ enum MoreViewControllerRows: Int {
 class MoreViewController: UIViewController {
 
     // Constants:
-    let rowTitles = ["Basic Rules", "Comprehensive Rules", "Banned List", "Reserved List"]
+    let rowTitles = ["Basic Rules", "Comprehensive Rules", "Banned and Restricted List", "Reserved List"]
     
     // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
