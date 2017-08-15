@@ -16,6 +16,9 @@ class SettingsViewController: IASKAppSettingsViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        if let backButton = navigationItem.backBarButtonItem {
+            backButton.title = " "
+        }
     }
 
 

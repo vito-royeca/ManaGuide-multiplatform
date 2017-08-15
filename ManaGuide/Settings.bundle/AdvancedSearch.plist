@@ -94,44 +94,6 @@
 				<string>Exact</string>
 			</array>
 		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>Title</key>
-			<string>Other Filters</string>
-		</dict>
-		<dict>
-			<key>File</key>
-			<string>AdvancedSearchColor</string>
-			<key>Title</key>
-			<string>Color</string>
-			<key>Type</key>
-			<string>PSChildPaneSpecifier</string>
-		</dict>
-		<dict>
-			<key>File</key>
-			<string>AdvancedSearchType</string>
-			<key>Title</key>
-			<string>Type</string>
-			<key>Type</key>
-			<string>PSChildPaneSpecifier</string>
-		</dict>
-		<dict>
-			<key>File</key>
-			<string>AdvancedSearchFormat</string>
-			<key>Title</key>
-			<string>Format</string>
-			<key>Type</key>
-			<string>PSChildPaneSpecifier</string>
-		</dict>
-		<dict>
-			<key>IASKSegueIdentifier</key>
-			<string>customSettingsSegue</string>
-			<key>Title</key>
-			<string>Custom Subview (via Storyboard Segue)</string>
-			<key>Type</key>
-			<string>PSChildPaneSpecifier</string>
-		</dict>
 	</array>
 </dict>
 </plist>

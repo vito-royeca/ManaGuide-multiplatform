@@ -23,12 +23,17 @@ class SearchViewController: BaseViewController {
     var customSectionName: String?
     
     // MARK: Outlets
+    @IBOutlet weak var leftMenuButton: UIBarButtonItem!
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet var statusLabel: UILabel!
     
     // MARK: Actions
+    @IBAction func leftMenuAction(_ sender: UIBarButtonItem) {
+        
+    }
+
     @IBAction func rightMenuAction(_ sender: UIBarButtonItem) {
         if let searchBar = searchBar {
             searchBar.resignFirstResponder()
@@ -313,6 +318,14 @@ class SearchViewController: BaseViewController {
         }
     }
 
+    func doSearch() {
+        searchBar.resignFirstResponder()
+        dataSource = getDataSource(createSearchRequeat())
+        updateSections()
+        tableView.reloadData()
+    }
+
+    // MARK: Search filters
     func defaultsValue() -> [String: Any] {
         var values = [String: Any]()
         
@@ -347,105 +360,12 @@ class SearchViewController: BaseViewController {
             values["searchDisplayBy"] = "list"
         }
         
-        // keyword filters
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordName") as? Bool {
-            values["searchKeywordName"] = value
-        } else {
-            values["searchKeywordName"] = true
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordText") as? Bool {
-            values["searchKeywordText"] = value
-        } else {
-            values["searchKeywordText"] = false
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordFlavor") as? Bool {
-            values["searchKeywordFlavor"] = value
-        } else {
-            values["searchKeywordFlavor"] = false
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordBoolean") as? String {
-            values["searchKeywordBoolean"] = value
-        } else {
-            values["searchKeywordBoolean"] = "or"
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordNot") as? Bool {
-            values["searchKeywordNot"] = value
-        } else {
-            values["searchKeywordNot"] = false
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordMatch") as? String {
-            values["searchKeywordMatch"] = value
-        } else {
-            values["searchKeywordMatch"] = "contains"
-        }
-
-        // color filters
-        if let value = UserDefaults.standard.value(forKey: "searchColorBlack") as? Bool {
-            values["searchColorBlack"] = value
-        } else {
-            values["searchColorBlack"] = false
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorBlue") as? Bool {
-            values["searchColorBlue"] = value
-        } else {
-            values["searchColorBlue"] = false
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorGreen") as? Bool {
-            values["searchColorGreen"] = value
-        } else {
-            values["searchColorGreen"] = false
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorRed") as? Bool {
-            values["searchColorRed"] = value
-        } else {
-            values["searchColorRed"] = false
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorWhite") as? Bool {
-            values["searchColorWhite"] = value
-        } else {
-            values["searchColorWhite"] = false
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorColorless") as? Bool {
-            values["searchColorColorless"] = value
-        } else {
-            values["searchColorColorless"] = false
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorBoolean") as? String {
-            values["searchColorBoolean"] = value
-        } else {
-            values["searchColorBoolean"] = "or"
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorNot") as? Bool {
-            values["searchColorNot"] = value
-        } else {
-            values["searchColorNot"] = false
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorMatch") as? String {
-            values["searchColorMatch"] = value
-        } else {
-            values["searchColorMatch"] = "contains"
-        }
-        
         return values
     }
     
     func createSearchRequeat() -> NSFetchRequest<NSFetchRequestResult>? {
         let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
         var predicate: NSPredicate?
-        var subpredicates = [NSPredicate]()
         
         let defaults = defaultsValue()
         
@@ -454,24 +374,69 @@ class SearchViewController: BaseViewController {
         let searchSecondSortBy = defaults["searchSecondSortBy"] as! String
         let searchOrderBy = defaults["searchOrderBy"] as! Bool
         
-        // keyword filters
-        let searchKeywordName = defaults["searchKeywordName"] as! Bool
-        let searchKeywordText = defaults["searchKeywordText"] as! Bool
-        let searchKeywordFlavor = defaults["searchKeywordFlavor"] as! Bool
-        let searchKeywordBoolean = defaults["searchKeywordBoolean"] as! String
-        let searchKeywordNot = defaults["searchKeywordNot"] as! Bool
-        let searchKeywordMatch = defaults["searchKeywordMatch"] as! String
+        if let kp = createKeywordPredicate() {
+            predicate = kp
+        }
         
-        // color filters
-        let searchColorBlack = defaults["searchColorBlack"] as! Bool
-        let searchColorBlue = defaults["searchColorBlue"] as! Bool
-        let searchColorGreen = defaults["searchColorGreen"] as! Bool
-        let searchColorRed = defaults["searchColorRed"] as! Bool
-        let searchColorWhite = defaults["searchColorWhite"] as! Bool
-        let searchColorColorless = defaults["searchColorColorless"] as! Bool
-        let searchColorBoolean = defaults["searchColorBoolean"] as! String
-        let searchColorNot = defaults["searchColorNot"] as! Bool
-        let searchColorMatch = defaults["searchColorMatch"] as! String
+        // Skip other filters for now...
+//        if let mcp = createManaCostPredicate() {
+//            if let p = predicate {
+//                predicate = NSCompoundPredicate.init(andPredicateWithSubpredicates: [p, mcp])
+//            } else {
+//                predicate = mcp
+//            }
+//        }
+        
+        // create a negative predicate, i.e. search for cards with nil name which results to zero
+        if predicate == nil {
+            predicate = NSPredicate(format: "name = nil")
+        }
+        
+        print("\(predicate!)")
+        request.predicate = predicate
+        request.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
+                                   NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy),
+                                   NSSortDescriptor(key: "set.releaseDate", ascending: searchOrderBy),
+                                   NSSortDescriptor(key: "numberOrder", ascending: searchOrderBy)]
+        
+        return request
+    }
+    
+    func createKeywordPredicate() -> NSPredicate? {
+        var predicate: NSPredicate?
+        var subpredicates = [NSPredicate]()
+        
+        // keyword filters
+        var searchKeywordName = true
+        var searchKeywordText = false
+        var searchKeywordFlavor = false
+        var searchKeywordBoolean = "or"
+        var searchKeywordNot = false
+        var searchKeywordMatch = "contains"
+        
+        if let value = UserDefaults.standard.value(forKey: "searchKeywordName") as? Bool {
+            searchKeywordName = value
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "searchKeywordText") as? Bool {
+            searchKeywordText = value
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "searchKeywordFlavor") as? Bool {
+            searchKeywordFlavor = value
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "searchKeywordBoolean") as? String {
+            searchKeywordBoolean = value
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "searchKeywordNot") as? Bool {
+            searchKeywordNot = value
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "searchKeywordMatch") as? String {
+            searchKeywordMatch = value
+        }
         
         // process keyword filter
         if searchKeywordName {
@@ -518,42 +483,99 @@ class SearchViewController: BaseViewController {
             }
         }
         
-        // process color filter
-        subpredicates = [NSPredicate]()
+        return predicate
+    }
+    
+    func createManaCostPredicate() -> NSPredicate? {
+        // TODO: double check X, Y, and Z manaCosts
+        var predicate: NSPredicate?
+        var subpredicates = [NSPredicate]()
+        var arrayColors = [String]()
+
+        // color filters
+        var searchColorIdentityBlack = false
+        var searchColorIdentityBlue = false
+        var searchColorIdentityGreen = false
+        var searchColorIdentityRed = false
+        var searchColorIdentityWhite = false
+        var searchColorIdentityColorless = false
+        var searchColorIdentityBoolean = "or"
+        var searchColorIdentityNot = false
+        var searchColorIdentityMatch = "contains"
         
-        if searchColorBlack {
-            subpredicates.append(NSPredicate(format: "manaCost CONTAINS[cd] %@", "B"))
+        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityBlack") as? Bool {
+            searchColorIdentityBlack = value
         }
-        if searchColorBlue {
-            subpredicates.append(NSPredicate(format: "manaCost CONTAINS[cd] %@", "U"))
+        
+        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityBlue") as? Bool {
+            searchColorIdentityBlue = value
         }
-        if searchColorGreen {
-            subpredicates.append(NSPredicate(format: "manaCost CONTAINS[cd] %@", "G"))
+        
+        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityGreen") as? Bool {
+            searchColorIdentityGreen = value
         }
-        if searchColorRed {
-            subpredicates.append(NSPredicate(format: "manaCost CONTAINS[cd] %@", "R"))
+        
+        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityRed") as? Bool {
+            searchColorIdentityRed = value
         }
-        if searchColorWhite {
-            subpredicates.append(NSPredicate(format: "manaCost CONTAINS[cd] %@", "W"))
+        
+        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityWhite") as? Bool {
+            searchColorIdentityWhite = value
         }
-        if searchColorColorless {
-            // TODO: double check X, Y, and Z manaCosts
-            let array = ["{0}", "{1}", "{2}", "{3}", "{4}", "{5}",
-                         "{6}", "{7}", "{8}", "{9}", "{10}", "{11}",
-                         "{12}", "{13}", "{14}", "{15}", "{16}", "{17}",
-                         "{18}", "{19}", "{20}", "{100}", "{1000000}",
-                         "{X}", "{Y}", "{Z}", "{X}{X}", "{X}{Y}", "{X}{Y}{Z}"]
-            subpredicates.append(NSPredicate(format: "manaCost IN %@", array))
+        
+        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityColorless") as? Bool {
+            searchColorIdentityColorless = value
         }
+        
+        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityBoolean") as? String {
+            searchColorIdentityBoolean = value
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityNot") as? Bool {
+            searchColorIdentityNot = value
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityMatch") as? String {
+            searchColorIdentityMatch = value
+        }
+        
+        // process color filter
+        if searchColorIdentityBlack {
+            arrayColors.append("Black")
+        }
+        if searchColorIdentityBlue {
+            arrayColors.append("Blue")
+        }
+        if searchColorIdentityGreen {
+            arrayColors.append("Green")
+        }
+        if searchColorIdentityRed {
+            arrayColors.append("Red")
+        }
+        if searchColorIdentityWhite {
+            arrayColors.append("White")
+        }
+        if searchColorIdentityColorless {
+            
+        }
+        
+        if searchColorIdentityMatch == "contains" {
+            subpredicates.append(NSPredicate(format: "ANY colorIdentities_.name IN %@", arrayColors))
+        } else {
+            for color in arrayColors {
+                subpredicates.append(NSPredicate(format: "ANY colorIdentities_.name == %@", color))
+            }
+        }
+        
         if subpredicates.count > 0 {
-            if searchColorBoolean == "and" {
+            if searchColorIdentityBoolean == "and" {
                 let colorPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: subpredicates)
                 if predicate == nil {
                     predicate = colorPredicate
                 } else {
                     predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate!, colorPredicate])
                 }
-            } else if searchKeywordBoolean == "or" {
+            } else if searchColorIdentityBoolean == "or" {
                 let colorPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: subpredicates)
                 if predicate == nil {
                     predicate = colorPredicate
@@ -561,30 +583,12 @@ class SearchViewController: BaseViewController {
                     predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate!, colorPredicate])
                 }
             }
-            if searchColorNot {
+            if searchColorIdentityNot {
                 predicate = NSCompoundPredicate(notPredicateWithSubpredicate: predicate!)
             }
         }
-
-        // create a negative predicate, i.e. search for cards with nil name which results to zero
-        if predicate == nil {
-            predicate = NSPredicate(format: "name = nil")
-        }
         
-        print("\(predicate!)")
-        request.predicate = predicate
-        request.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
-                                NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy),
-                                   NSSortDescriptor(key: "set.releaseDate", ascending: true)]
-        
-        return request
-    }
-    
-    func doSearch() {
-        searchBar.resignFirstResponder()
-        dataSource = getDataSource(createSearchRequeat())
-        updateSections()
-        tableView.reloadData()
+        return predicate
     }
 }
 
