@@ -4,7 +4,15 @@ use_frameworks!
 target 'ManaGuide' do
     pod 'DATASource'
     pod 'DATAStack'
+    pod 'FacebookCore'
+    pod 'FacebookLogin'
+    pod 'FacebookShare', :git => 'https://github.com/1amageek/facebook-sdk-swift'
+    pod 'Firebase/Core'
+    pod 'Firebase/Database'
+    pod 'Firebase/Auth'
+    pod 'FirebaseUI/Storage'
     pod 'FontAwesome.swift'
+    pod 'GoogleSignIn'
     pod 'InAppSettingsKit'
     pod 'Kanna', '~> 2.1.0'
     pod 'ManaKit'
@@ -14,14 +22,25 @@ target 'ManaGuide' do
     pod 'Networking'
     pod 'RATreeView', '~> 2.1.2'
     pod 'ReachabilitySwift'
+    pod 'SimulatorStatusMagic', :configurations => ['Debug']
     pod 'SSZipArchive'
     pod 'Sync'
+    pod 'TwitterKit'
+    pod 'TwitterCore'
 end
 
 target 'ManaGuideTests' do
     pod 'DATASource'
     pod 'DATAStack'
+    pod 'FacebookCore'
+    pod 'FacebookLogin'
+    pod 'FacebookShare', :git => 'https://github.com/1amageek/facebook-sdk-swift'
+    pod 'Firebase/Core'
+    pod 'Firebase/Database'
+    pod 'Firebase/Auth'
+    pod 'FirebaseUI/Storage'
     pod 'FontAwesome.swift'
+    pod 'GoogleSignIn'
     pod 'InAppSettingsKit'
     pod 'Kanna', '~> 2.1.0'
     pod 'ManaKit'
@@ -31,14 +50,24 @@ target 'ManaGuideTests' do
     pod 'Networking'
     pod 'RATreeView', '~> 2.1.2'
     pod 'ReachabilitySwift'
+    pod 'SimulatorStatusMagic', :configurations => ['Debug']
     pod 'SSZipArchive'
     pod 'Sync'
-end
+    pod 'TwitterKit'
+    pod 'TwitterCore'end
 
 target 'ManaGuideUITests' do
     pod 'DATASource'
     pod 'DATAStack'
+    pod 'FacebookCore'
+    pod 'FacebookLogin'
+    pod 'FacebookShare', :git => 'https://github.com/1amageek/facebook-sdk-swift'
+    pod 'Firebase/Core'
+    pod 'Firebase/Database'
+    pod 'Firebase/Auth'
+    pod 'FirebaseUI/Storage'
     pod 'FontAwesome.swift'
+    pod 'GoogleSignIn'
     pod 'InAppSettingsKit'
     pod 'Kanna', '~> 2.1.0'
     pod 'ManaKit'
@@ -48,7 +77,10 @@ target 'ManaGuideUITests' do
     pod 'Networking'
     pod 'RATreeView', '~> 2.1.2'
     pod 'ReachabilitySwift'
+    pod 'SimulatorStatusMagic', :configurations => ['Debug']
     pod 'SSZipArchive'
     pod 'Sync'
+    pod 'TwitterKit'
+    pod 'TwitterCore'
 end
 

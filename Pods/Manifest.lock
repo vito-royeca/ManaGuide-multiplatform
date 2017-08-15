@@ -1,9 +1,94 @@
 PODS:
+  - Bolts (1.8.4):
+    - Bolts/AppLinks (= 1.8.4)
+    - Bolts/Tasks (= 1.8.4)
+  - Bolts/AppLinks (1.8.4):
+    - Bolts/Tasks
+  - Bolts/Tasks (1.8.4)
   - DATASource (6.1.5)
   - DATAStack (6.2.0)
+  - FacebookCore (0.2.0):
+    - Bolts (~> 1.8)
+    - FBSDKCoreKit (~> 4.15)
+  - FacebookLogin (0.2.0):
+    - Bolts (~> 1.8)
+    - FacebookCore (~> 0.2)
+    - FBSDKCoreKit (~> 4.15)
+    - FBSDKLoginKit (~> 4.15)
+  - FacebookShare (0.2.0):
+    - Bolts (~> 1.8)
+    - FacebookCore (~> 0.2)
+    - FBSDKCoreKit (~> 4.21)
+    - FBSDKShareKit (~> 4.21)
+  - FBSDKCoreKit (4.25.0):
+    - Bolts (~> 1.7)
+  - FBSDKLoginKit (4.25.0):
+    - FBSDKCoreKit
+  - FBSDKShareKit (4.25.0):
+    - FBSDKCoreKit
+  - Firebase/Auth (4.1.0):
+    - Firebase/Core
+    - FirebaseAuth (= 4.1.0)
+  - Firebase/Core (4.1.0):
+    - FirebaseAnalytics (= 4.0.3)
+    - FirebaseCore (= 4.0.5)
+  - Firebase/Database (4.1.0):
+    - Firebase/Core
+    - FirebaseDatabase (= 4.0.1)
+  - Firebase/Storage (4.1.0):
+    - Firebase/Core
+    - FirebaseStorage (= 2.0.1)
+  - FirebaseAnalytics (4.0.3):
+    - FirebaseCore (~> 4.0)
+    - FirebaseInstanceID (~> 2.0)
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - nanopb (~> 0.3)
+  - FirebaseAuth (4.1.0):
+    - FirebaseAnalytics (~> 4.0)
+    - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - FirebaseCore (4.0.5):
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - nanopb (~> 0.3)
+  - FirebaseDatabase (4.0.1):
+    - FirebaseAnalytics (~> 4.0)
+    - FirebaseCore (~> 4.0)
+    - leveldb-library (~> 1.18)
+  - FirebaseInstanceID (2.0.0):
+    - FirebaseCore (~> 4.0)
+  - FirebaseStorage (2.0.1):
+    - FirebaseAnalytics (~> 4.0)
+    - FirebaseCore (~> 4.0)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - FirebaseUI/Storage (4.1.1):
+    - Firebase/Storage
+    - SDWebImage (~> 4.0)
   - FontAwesome.swift (1.2.0)
+  - GoogleSignIn (4.0.2):
+    - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
+    - GoogleToolboxForMac/NSString+URLArguments (~> 2.1)
+    - GTMOAuth2 (~> 1.0)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - GoogleToolboxForMac/DebugUtils (2.1.1):
+    - GoogleToolboxForMac/Defines (= 2.1.1)
+  - GoogleToolboxForMac/Defines (2.1.1)
+  - GoogleToolboxForMac/NSData+zlib (2.1.1):
+    - GoogleToolboxForMac/Defines (= 2.1.1)
+  - GoogleToolboxForMac/NSDictionary+URLArguments (2.1.1):
+    - GoogleToolboxForMac/DebugUtils (= 2.1.1)
+    - GoogleToolboxForMac/Defines (= 2.1.1)
+    - GoogleToolboxForMac/NSString+URLArguments (= 2.1.1)
+  - GoogleToolboxForMac/NSString+URLArguments (2.1.1)
+  - GTMOAuth2 (1.1.4):
+    - GTMSessionFetcher (~> 1.1)
+  - GTMSessionFetcher (1.1.11):
+    - GTMSessionFetcher/Full (= 1.1.11)
+  - GTMSessionFetcher/Core (1.1.11)
+  - GTMSessionFetcher/Full (1.1.11):
+    - GTMSessionFetcher/Core (= 1.1.11)
   - InAppSettingsKit (2.8.1)
   - Kanna (2.1.1)
+  - leveldb-library (1.18.3)
   - ManaKit (0.9.6):
     - DATASource
     - DATAStack (~> 6)
@@ -27,16 +112,36 @@ PODS:
     - MMDrawerController/Core
   - MMDrawerController/Subclass (0.6.0):
     - MMDrawerController/Core
+  - nanopb (0.3.8):
+    - nanopb/decode (= 0.3.8)
+    - nanopb/encode (= 0.3.8)
+  - nanopb/decode (0.3.8)
+  - nanopb/encode (0.3.8)
   - Networking (3.0.3)
   - RATreeView (2.1.2)
   - ReachabilitySwift (3)
+  - SDWebImage (4.1.0):
+    - SDWebImage/Core (= 4.1.0)
+  - SDWebImage/Core (4.1.0)
+  - SimulatorStatusMagic (1.9.5)
   - SSZipArchive (2.0.3)
   - Sync (3.3.0)
+  - TwitterCore (3.0.0)
+  - TwitterKit (3.1.0):
+    - TwitterCore (>= 3.0.0)
 
 DEPENDENCIES:
   - DATASource
   - DATAStack
+  - FacebookCore
+  - FacebookLogin
+  - FacebookShare (from `https://github.com/1amageek/facebook-sdk-swift`)
+  - Firebase/Auth
+  - Firebase/Core
+  - Firebase/Database
+  - FirebaseUI/Storage
   - FontAwesome.swift
+  - GoogleSignIn
   - InAppSettingsKit
   - Kanna (~> 2.1.0)
   - ManaKit
@@ -46,25 +151,62 @@ DEPENDENCIES:
   - Networking
   - RATreeView (~> 2.1.2)
   - ReachabilitySwift
+  - SimulatorStatusMagic
   - SSZipArchive
   - Sync
+  - TwitterCore
+  - TwitterKit
+
+EXTERNAL SOURCES:
+  FacebookShare:
+    :git: https://github.com/1amageek/facebook-sdk-swift
+
+CHECKOUT OPTIONS:
+  FacebookShare:
+    :commit: 3ac76c770e9849285c380f380309d866911d2e93
+    :git: https://github.com/1amageek/facebook-sdk-swift
 
 SPEC CHECKSUMS:
+  Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
   DATASource: 52b86cfff6c7ac3db45192c01f7839c7473576c3
   DATAStack: 06d6a00f4fe84f11afdae2a6f47558f1087000e5
+  FacebookCore: 2cb3f0fbff218e9d3119cec84bae983b232412de
+  FacebookLogin: c9d606504735780a9e3002465a615512e0a691a5
+  FacebookShare: d086f7a4610bbbca9cec5e774de450a9b3e1a20b
+  FBSDKCoreKit: 53e3f4bfb64e80c5f229dd30ae33ff57fbbbd2d1
+  FBSDKLoginKit: f628c09684dae9c17f071cf90b014e886f5093ea
+  FBSDKShareKit: aea699d3cac749af08e360f4e949b82ffa8813f5
+  Firebase: ebebf41db7f10e0c7668b6eaaa857fbe599aa478
+  FirebaseAnalytics: 76f754d37ca5b04f36856729b6af3ca0152d1069
+  FirebaseAuth: 8d1d2389cf82f891048d6d50d27d044f55ae09a6
+  FirebaseCore: 7d876ea97a830cbe62ba7fbbe7670c833a324ba0
+  FirebaseDatabase: 94c38c783d23dc6679441050772d42e801d06e9e
+  FirebaseInstanceID: 9fbf536668f4d3f0880e7438456dabd1376e294b
+  FirebaseStorage: 661fc1f8d4131891d256b62e82a45ace8b3f0c3b
+  FirebaseUI: 5ebebe2c096c71f20abd1d43d0388958373bdaa0
   FontAwesome.swift: 60063e3f19ba4801155d4b0f2334ab7585763ab3
+  GoogleSignIn: d7ad83f13480e1f30453471d00d19b5293ac46af
+  GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
+  GTMOAuth2: 7fc9c10f5c745f4d9850419ea88889fe3baa6b7d
+  GTMSessionFetcher: 5ad62e8200fa00ed011fe5e08d27fef72c5b1429
   InAppSettingsKit: 94d2fba3ccd700fc4e32c6d09fabcc0af2426744
   Kanna: 9b4b086c218703f2b94f5b21a466217dd2f9332e
+  leveldb-library: 10fb39c39e243db4af1828441162405bbcec1404
   ManaKit: a908a02918e040d874a6c6286ea3ef69b9d177dd
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   MMDrawerController: e3a54a5570388463ad3b36975251575b50c4e1a0
   MMDrawerController+Storyboard: c98f86c0f32cdef1d466d19a7da3ad2fc6c6ac00
+  nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Networking: e2c42013296d093e4249f8247acb08e36958a11a
   RATreeView: 380cde0090cfde21dc6ac29137f49d3b768fdd28
   ReachabilitySwift: f5b9bb30a0777fac8f09ce8b067e32faeb29bb64
+  SDWebImage: 0e435c14e402a6730315a0fb79f95e68654d55a4
+  SimulatorStatusMagic: b3b4c5c49a07e8b1c452cc0327275e267a865fea
   SSZipArchive: b6648b70a36303ca5be9f0351174b347e1886236
   Sync: 7bf0699de46e470d68dc5f1f8408e4c19536c71f
+  TwitterCore: 8ce250be1eb34633a0e6acc89520d4165ec52c10
+  TwitterKit: 21d0b22d67cb9a568cd8053972d0da7df2e0e9a0
 
-PODFILE CHECKSUM: ad4066a9823c4fa7e37ec657d4d77032fc1cc748
+PODFILE CHECKSUM: 4b97c7ef2796815c5890a62464551a14840cd1b0
 
 COCOAPODS: 1.3.0
