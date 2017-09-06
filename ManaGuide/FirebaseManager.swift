@@ -11,6 +11,9 @@ import CoreData
 import Firebase
 import ManaKit
 
+let kMaxFetchTopViewed = UInt(15)
+let kMaxFetchTopRated  = UInt(15)
+
 class FirebaseManager: NSObject {
     var queries = [String: DatabaseQuery]()
     var online = false
@@ -41,9 +44,9 @@ class FirebaseManager: NSObject {
         }
     }
     
-    func monitorTopViewed(completion: @escaping ([FCCard]) -> Void) {
+    func monitorTopRated(completion: @escaping ([FCCard]) -> Void) {
         let ref = Database.database().reference().child("cards")
-        let query = ref.queryOrdered(byChild: FCCard.Keys.Views).queryStarting(atValue: 1).queryLimited(toLast: 20)
+        let query = ref.queryOrdered(byChild: FCCard.Keys.Rating).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopRated)
         query.observe(.value, with: { snapshot in
             var cards = [FCCard]()
             
@@ -55,7 +58,36 @@ class FirebaseManager: NSObject {
                     
                     if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
                         if let card = result.first {
-                            card.views = Int64(fcard.views!)
+                            card.rating = fcard.rating == nil ? 1 : fcard.rating!
+                        }
+                    }
+                    
+                    cards.append(fcard)
+                }
+            }
+            
+            try! ManaKit.sharedInstance.dataStack!.mainContext.save()
+            completion(cards.reversed())
+        })
+        
+        queries["topRated"] = query
+    }
+
+    func monitorTopViewed(completion: @escaping ([FCCard]) -> Void) {
+        let ref = Database.database().reference().child("cards")
+        let query = ref.queryOrdered(byChild: FCCard.Keys.Views).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopViewed)
+        query.observe(.value, with: { snapshot in
+            var cards = [FCCard]()
+            
+            for child in snapshot.children {
+                if let c = child as? DataSnapshot {
+                    let fcard = FCCard(snapshot: c)
+                    let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                    request.predicate = NSPredicate(format: "id == %@", c.key)
+                    
+                    if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
+                        if let card = result.first {
+                            card.views = Int64(fcard.views == nil ? 1 : fcard.views!)
                         }
                     }
                     
@@ -74,6 +106,11 @@ class FirebaseManager: NSObject {
         if let query = queries["topViewed"] {
             query.removeAllObservers()
             queries["topViewed"] = nil
+        }
+        
+        if let query = queries["topRated"] {
+            query.removeAllObservers()
+            queries["topRated"] = nil
         }
     }
     

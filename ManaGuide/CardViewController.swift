@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Cosmos
 import DATASource
 import FontAwesome_swift
 import ManaKit
@@ -22,6 +23,9 @@ enum CardViewControllerImageSection: Int {
 enum CardViewControllerDetailsSection: Int {
     case information, printings, rulings, legalities
 }
+
+let kNotificationCardViewsUpdated  = "kNotificationCardViewsUpdated"
+let kNotificationCardRatingUpdated = "kNotificationCardRatingUpdated"
 
 class CardViewController: BaseViewController {
     // MARK: Variables
@@ -62,7 +66,7 @@ class CardViewController: BaseViewController {
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
-        setupCard()
+        updateCardViews()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -102,12 +106,13 @@ class CardViewController: BaseViewController {
     }
     
     // MARK: Custom methods
-    func setupCard() {
+    func updateCardViews() {
         if let cards = cards {
             let card = cards[cardIndex]
             title = card.name
             
             FirebaseManager.sharedInstance.incrementCardViews(card.id!)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: kNotificationCardViewsUpdated), object: nil, userInfo: ["card": card])
         }
     }
     
@@ -714,13 +719,27 @@ extension CardViewController : UICollectionViewDataSource {
         case .image:
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardItemCell", for: indexPath)
             
-            if let imageView = cell!.viewWithTag(100) as? UIImageView,
-                let cards = cards {
+            if let cards = cards {
                 let card = cards[indexPath.row]
+                if let imageView = cell!.viewWithTag(100) as? UIImageView {
+                    imageView.image = ManaKit.sharedInstance.cardImage(card)
+                }
                 
-                imageView.image = ManaKit.sharedInstance.cardImage(card)
+                if let ratingView = cell!.viewWithTag(200) as? CosmosView {
+                    ratingView.settings.fillMode = .precise
+                    ratingView.rating = card.rating
+                    ratingView.isHidden = cardIndex != indexPath.row
+                }
+                if let viewedImage = cell!.viewWithTag(300) as? UIImageView {
+                    let image = UIImage.fontAwesomeIcon(name: .eye, textColor: UIColor(red:0.00, green:0.48, blue:1.00, alpha:1.0), size: CGSize(width: 20, height: 20))
+                    viewedImage.image = image
+                    viewedImage.isHidden = cardIndex != indexPath.row
+                }
+                if let viewsLabel = cell!.viewWithTag(400) as? UILabel {
+                    viewsLabel.text = "\(card.views)"
+                    viewsLabel.isHidden = cardIndex != indexPath.row
+                }
             }
-            
         case .details:
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ThumbnailItemCell", for: indexPath)
             
@@ -808,7 +827,6 @@ extension CardViewController : UIScrollViewDelegate {
                 // update the pricing cell and download the image
                 cardIndex = closestCellIndex
                 webViewSize = nil
-                tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
                 if let cell = collectionView.cellForItem(at: indexPath) {
                     if let imageView = cell.viewWithTag(100) as? UIImageView,
                         let cards = cards {
@@ -834,8 +852,8 @@ extension CardViewController : UIScrollViewDelegate {
                         }
                     }
                 }
-                
-                setupCard()
+                collectionView.reloadData()
+                updateCardViews()
                 
                 // TODO: fetch pricing at TCGPlayer
                 // ...
