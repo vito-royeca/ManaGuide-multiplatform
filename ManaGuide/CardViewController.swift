@@ -62,10 +62,7 @@ class CardViewController: BaseViewController {
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
-        if let cards = cards {
-            let card = cards[cardIndex]
-            title = card.name
-        }
+        setupCard()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -105,6 +102,15 @@ class CardViewController: BaseViewController {
     }
     
     // MARK: Custom methods
+    func setupCard() {
+        if let cards = cards {
+            let card = cards[cardIndex]
+            title = card.name
+            
+            FirebaseManager.sharedInstance.incrementCardViews(card.id!)
+        }
+    }
+    
     func replaceSymbols(inText text: String) -> String {
         var newText = text
         newText = newText.replacingOccurrences(of: "\n", with:"<br/> ")
@@ -804,7 +810,6 @@ extension CardViewController : UIScrollViewDelegate {
                 webViewSize = nil
                 tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
                 if let cell = collectionView.cellForItem(at: indexPath) {
-                    
                     if let imageView = cell.viewWithTag(100) as? UIImageView,
                         let cards = cards {
                         
@@ -830,10 +835,7 @@ extension CardViewController : UIScrollViewDelegate {
                     }
                 }
                 
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    title = card.name
-                }
+                setupCard()
                 
                 // TODO: fetch pricing at TCGPlayer
                 // ...

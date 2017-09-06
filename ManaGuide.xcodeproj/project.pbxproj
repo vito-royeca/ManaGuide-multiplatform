@@ -22,18 +22,19 @@
 		113A6B0F1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113A6B0C1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift */; };
 		113A6B101F385D1700C68FF9 /* DynamicHeightTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 113A6B0D1F385D1700C68FF9 /* DynamicHeightTableViewCell.xib */; };
 		113A6B111F385D1700C68FF9 /* DynamicHeightTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 113A6B0D1F385D1700C68FF9 /* DynamicHeightTableViewCell.xib */; };
-		1147B7491F21F340004EF296 /* SliderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7471F21F340004EF296 /* SliderTableViewCell.swift */; };
-		1147B74A1F21F340004EF296 /* SliderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7471F21F340004EF296 /* SliderTableViewCell.swift */; };
-		1147B74B1F21F340004EF296 /* SliderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1147B7481F21F340004EF296 /* SliderTableViewCell.xib */; };
-		1147B74C1F21F340004EF296 /* SliderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1147B7481F21F340004EF296 /* SliderTableViewCell.xib */; };
+		1140F0C71F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
+		1140F0C81F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
+		1140F0C91F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
+		1140F0CC1F42CA500023E107 /* FCCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0CB1F42CA500023E107 /* FCCard.swift */; };
+		1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0CB1F42CA500023E107 /* FCCard.swift */; };
+		1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0CB1F42CA500023E107 /* FCCard.swift */; };
+		1140F0D11F42CC020023E107 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0D01F42CC020023E107 /* FirebaseManager.swift */; };
+		1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0D01F42CC020023E107 /* FirebaseManager.swift */; };
+		1140F0D31F42CC020023E107 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0D01F42CC020023E107 /* FirebaseManager.swift */; };
 		1147B7571F223607004EF296 /* SetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7561F223607004EF296 /* SetsViewController.swift */; };
 		1147B7581F223607004EF296 /* SetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7561F223607004EF296 /* SetsViewController.swift */; };
 		1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7591F22379F004EF296 /* BaseViewController.swift */; };
 		1147B75B1F22379F004EF296 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7591F22379F004EF296 /* BaseViewController.swift */; };
-		1147B75E1F223820004EF296 /* SetItemSliderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B75C1F223820004EF296 /* SetItemSliderCollectionViewCell.swift */; };
-		1147B75F1F223820004EF296 /* SetItemSliderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B75C1F223820004EF296 /* SetItemSliderCollectionViewCell.swift */; };
-		1147B7601F223820004EF296 /* SetItemSliderCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1147B75D1F223820004EF296 /* SetItemSliderCollectionViewCell.xib */; };
-		1147B7611F223820004EF296 /* SetItemSliderCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1147B75D1F223820004EF296 /* SetItemSliderCollectionViewCell.xib */; };
 		1147B7631F224198004EF296 /* SetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7621F224198004EF296 /* SetViewController.swift */; };
 		1147B7641F224198004EF296 /* SetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7621F224198004EF296 /* SetViewController.swift */; };
 		1147B7661F224874004EF296 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7651F224874004EF296 /* SettingsViewController.swift */; };
@@ -96,12 +97,11 @@
 		113661581F2F912500DCBB41 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = "<group>"; };
 		113A6B0C1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DynamicHeightTableViewCell.swift; sourceTree = "<group>"; };
 		113A6B0D1F385D1700C68FF9 /* DynamicHeightTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DynamicHeightTableViewCell.xib; sourceTree = "<group>"; };
-		1147B7471F21F340004EF296 /* SliderTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SliderTableViewCell.swift; sourceTree = "<group>"; };
-		1147B7481F21F340004EF296 /* SliderTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SliderTableViewCell.xib; sourceTree = "<group>"; };
+		1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		1140F0CB1F42CA500023E107 /* FCCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FCCard.swift; sourceTree = "<group>"; };
+		1140F0D01F42CC020023E107 /* FirebaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		1147B7561F223607004EF296 /* SetsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetsViewController.swift; sourceTree = "<group>"; };
 		1147B7591F22379F004EF296 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
-		1147B75C1F223820004EF296 /* SetItemSliderCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetItemSliderCollectionViewCell.swift; sourceTree = "<group>"; };
-		1147B75D1F223820004EF296 /* SetItemSliderCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SetItemSliderCollectionViewCell.xib; sourceTree = "<group>"; };
 		1147B7621F224198004EF296 /* SetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetViewController.swift; sourceTree = "<group>"; };
 		1147B7651F224874004EF296 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		1147B7681F226143004EF296 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
@@ -187,11 +187,14 @@
 		110BB4F81F207C6400086841 /* ManaGuide */ = {
 			isa = PBXGroup;
 			children = (
+				1140F0CF1F42CBD80023E107 /* Utilities */,
 				110BB4F91F207C6400086841 /* AppDelegate.swift */,
 				110BB5001F207C6400086841 /* Assets.xcassets */,
 				110BB5281F2084E100086841 /* Controller */,
 				113661581F2F912500DCBB41 /* data */,
+				1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */,
 				110BB5051F207C6400086841 /* Info.plist */,
+				1140F0CA1F42CA150023E107 /* Model */,
 				1147B7681F226143004EF296 /* Settings.bundle */,
 				110BB5271F2084D600086841 /* View */,
 			);
@@ -225,10 +228,6 @@
 				113A6B0D1F385D1700C68FF9 /* DynamicHeightTableViewCell.xib */,
 				110BB5021F207C6400086841 /* LaunchScreen.storyboard */,
 				110BB4FD1F207C6400086841 /* Main.storyboard */,
-				1147B75C1F223820004EF296 /* SetItemSliderCollectionViewCell.swift */,
-				1147B75D1F223820004EF296 /* SetItemSliderCollectionViewCell.xib */,
-				1147B7471F21F340004EF296 /* SliderTableViewCell.swift */,
-				1147B7481F21F340004EF296 /* SliderTableViewCell.xib */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -250,6 +249,22 @@
 				1147B7621F224198004EF296 /* SetViewController.swift */,
 			);
 			name = Controller;
+			sourceTree = "<group>";
+		};
+		1140F0CA1F42CA150023E107 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				1140F0CB1F42CA500023E107 /* FCCard.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		1140F0CF1F42CBD80023E107 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				1140F0D01F42CC020023E107 /* FirebaseManager.swift */,
+			);
+			name = Utilities;
 			sourceTree = "<group>";
 		};
 		CCCF4703A6CA69F4288EC386 /* Pods */ = {
@@ -387,12 +402,11 @@
 				110BB5041F207C6400086841 /* LaunchScreen.storyboard in Resources */,
 				113A6B101F385D1700C68FF9 /* DynamicHeightTableViewCell.xib in Resources */,
 				110BB5011F207C6400086841 /* Assets.xcassets in Resources */,
-				1147B74B1F21F340004EF296 /* SliderTableViewCell.xib in Resources */,
 				110BB4FF1F207C6400086841 /* Main.storyboard in Resources */,
 				11E4374C1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */,
 				1147B7691F226143004EF296 /* Settings.bundle in Resources */,
+				1140F0C71F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
 				113661591F2F912500DCBB41 /* data in Resources */,
-				1147B7601F223820004EF296 /* SetItemSliderCollectionViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,6 +414,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1140F0C81F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -408,10 +423,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				11E4374D1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */,
-				1147B74C1F21F340004EF296 /* SliderTableViewCell.xib in Resources */,
 				1147B76A1F226143004EF296 /* Settings.bundle in Resources */,
 				113A6B111F385D1700C68FF9 /* DynamicHeightTableViewCell.xib in Resources */,
-				1147B7611F223820004EF296 /* SetItemSliderCollectionViewCell.xib in Resources */,
+				1140F0C91F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -424,9 +438,14 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-ManaGuideUITests/Pods-ManaGuideUITests-resources.sh",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterKitResources.bundle",
+				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterShareExtensionUIResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -440,9 +459,19 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-ManaGuideTests/Pods-ManaGuideTests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
 				"${BUILT_PRODUCTS_DIR}/DATASource/DATASource.framework",
 				"${BUILT_PRODUCTS_DIR}/DATAStack/DATAStack.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKShareKit/FBSDKShareKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FacebookCore/FacebookCore.framework",
+				"${BUILT_PRODUCTS_DIR}/FacebookLogin/FacebookLogin.framework",
+				"${BUILT_PRODUCTS_DIR}/FacebookShare/FacebookShare.framework",
 				"${BUILT_PRODUCTS_DIR}/FontAwesome.swift/FontAwesome_swift.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/InAppSettingsKit/InAppSettingsKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Kanna/Kanna.framework",
 				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
@@ -452,14 +481,28 @@
 				"${BUILT_PRODUCTS_DIR}/Networking/Networking.framework",
 				"${BUILT_PRODUCTS_DIR}/RATreeView/RATreeView.framework",
 				"${BUILT_PRODUCTS_DIR}/ReachabilitySwift/ReachabilitySwift.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
+				"${BUILT_PRODUCTS_DIR}/SimulatorStatusMagic/SimulatorStatusMagic.framework",
 				"${BUILT_PRODUCTS_DIR}/Sync/Sync.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DATASource.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DATAStack.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKLoginKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKShareKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookLogin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookShare.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FontAwesome_swift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMOAuth2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/InAppSettingsKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kanna.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
@@ -469,8 +512,12 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Networking.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RATreeView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReachabilitySwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SimulatorStatusMagic.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sync.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -538,9 +585,19 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-ManaGuideUITests/Pods-ManaGuideUITests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
 				"${BUILT_PRODUCTS_DIR}/DATASource/DATASource.framework",
 				"${BUILT_PRODUCTS_DIR}/DATAStack/DATAStack.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKShareKit/FBSDKShareKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FacebookCore/FacebookCore.framework",
+				"${BUILT_PRODUCTS_DIR}/FacebookLogin/FacebookLogin.framework",
+				"${BUILT_PRODUCTS_DIR}/FacebookShare/FacebookShare.framework",
 				"${BUILT_PRODUCTS_DIR}/FontAwesome.swift/FontAwesome_swift.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/InAppSettingsKit/InAppSettingsKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Kanna/Kanna.framework",
 				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
@@ -550,14 +607,28 @@
 				"${BUILT_PRODUCTS_DIR}/Networking/Networking.framework",
 				"${BUILT_PRODUCTS_DIR}/RATreeView/RATreeView.framework",
 				"${BUILT_PRODUCTS_DIR}/ReachabilitySwift/ReachabilitySwift.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
+				"${BUILT_PRODUCTS_DIR}/SimulatorStatusMagic/SimulatorStatusMagic.framework",
 				"${BUILT_PRODUCTS_DIR}/Sync/Sync.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DATASource.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DATAStack.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKLoginKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKShareKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookLogin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookShare.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FontAwesome_swift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMOAuth2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/InAppSettingsKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kanna.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
@@ -567,8 +638,12 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Networking.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RATreeView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReachabilitySwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SimulatorStatusMagic.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sync.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -581,9 +656,14 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-ManaGuideTests/Pods-ManaGuideTests-resources.sh",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterKitResources.bundle",
+				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterShareExtensionUIResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -596,9 +676,14 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-ManaGuide/Pods-ManaGuide-resources.sh",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterKitResources.bundle",
+				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterShareExtensionUIResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -612,9 +697,19 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-ManaGuide/Pods-ManaGuide-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
 				"${BUILT_PRODUCTS_DIR}/DATASource/DATASource.framework",
 				"${BUILT_PRODUCTS_DIR}/DATAStack/DATAStack.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKShareKit/FBSDKShareKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FacebookCore/FacebookCore.framework",
+				"${BUILT_PRODUCTS_DIR}/FacebookLogin/FacebookLogin.framework",
+				"${BUILT_PRODUCTS_DIR}/FacebookShare/FacebookShare.framework",
 				"${BUILT_PRODUCTS_DIR}/FontAwesome.swift/FontAwesome_swift.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/InAppSettingsKit/InAppSettingsKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Kanna/Kanna.framework",
 				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
@@ -624,14 +719,28 @@
 				"${BUILT_PRODUCTS_DIR}/Networking/Networking.framework",
 				"${BUILT_PRODUCTS_DIR}/RATreeView/RATreeView.framework",
 				"${BUILT_PRODUCTS_DIR}/ReachabilitySwift/ReachabilitySwift.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
+				"${BUILT_PRODUCTS_DIR}/SimulatorStatusMagic/SimulatorStatusMagic.framework",
 				"${BUILT_PRODUCTS_DIR}/Sync/Sync.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DATASource.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DATAStack.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKLoginKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKShareKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookLogin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookShare.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FontAwesome_swift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMOAuth2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/InAppSettingsKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kanna.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
@@ -641,8 +750,12 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Networking.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RATreeView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReachabilitySwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SimulatorStatusMagic.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sync.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -664,15 +777,15 @@
 				113A6B0E1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */,
 				1165CD791F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
 				110BB52D1F20892B00086841 /* SearchViewController.swift in Sources */,
-				1147B75E1F223820004EF296 /* SetItemSliderCollectionViewCell.swift in Sources */,
+				1140F0D11F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
+				1140F0CC1F42CA500023E107 /* FCCard.swift in Sources */,
 				11AF054B1F397EA8003B8A6D /* GlossaryViewController.swift in Sources */,
 				11AF054E1F39ED18003B8A6D /* GlossaryDetailsViewController.swift in Sources */,
 				1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */,
 				11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */,
 				1165CD731F377395006CC433 /* MoreViewController.swift in Sources */,
 				110BB52A1F20891D00086841 /* FeaturedViewController.swift in Sources */,
-				1147B7491F21F340004EF296 /* SliderTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -680,6 +793,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */,
+				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -691,13 +806,13 @@
 				110BB52E1F20892B00086841 /* SearchViewController.swift in Sources */,
 				1147B7581F223607004EF296 /* SetsViewController.swift in Sources */,
 				110BB51A1F207C6400086841 /* ManaGuideUITests.swift in Sources */,
-				1147B74A1F21F340004EF296 /* SliderTableViewCell.swift in Sources */,
 				1165CD771F377F58006CC433 /* BannedListViewController.swift in Sources */,
 				113A6B0F1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */,
 				1165CD7A1F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
 				1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */,
-				1147B75F1F223820004EF296 /* SetItemSliderCollectionViewCell.swift in Sources */,
+				1140F0D31F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11E4374B1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
+				1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */,
 				11AF054C1F397EA8003B8A6D /* GlossaryViewController.swift in Sources */,
 				11AF054F1F39ED18003B8A6D /* GlossaryDetailsViewController.swift in Sources */,
 				1147B7641F224198004EF296 /* SetViewController.swift in Sources */,
