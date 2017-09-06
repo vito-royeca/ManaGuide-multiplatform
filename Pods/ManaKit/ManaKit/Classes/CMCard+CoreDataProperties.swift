@@ -43,6 +43,7 @@ extension CMCard {
     @NSManaged public var power: String?
     @NSManaged public var printings: Data?
     @NSManaged public var rarity: String?
+    @NSManaged public var rating: Double
     @NSManaged public var releaseDate: String?
     @NSManaged public var reserved: Bool
     @NSManaged public var rulings: Data?
@@ -57,6 +58,7 @@ extension CMCard {
     @NSManaged public var types: Data?
     @NSManaged public var typeSection: String?
     @NSManaged public var variations: Data?
+    @NSManaged public var views: Int64
     @NSManaged public var watermark: String?
     @NSManaged public var artist_: CMArtist?
     @NSManaged public var border_: CMBorder?
