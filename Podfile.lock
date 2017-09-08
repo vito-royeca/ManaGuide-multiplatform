@@ -127,9 +127,9 @@ PODS:
   - SimulatorStatusMagic (1.9.5)
   - SSZipArchive (2.0.4)
   - Sync (3.3.0)
-  - TwitterCore (3.0.0)
-  - TwitterKit (3.1.0):
-    - TwitterCore (>= 3.0.0)
+  - TwitterCore (3.0.1)
+  - TwitterKit (3.1.1):
+    - TwitterCore (>= 3.0.1)
 
 DEPENDENCIES:
   - Cosmos (~> 11.0)
@@ -207,8 +207,8 @@ SPEC CHECKSUMS:
   SimulatorStatusMagic: b3b4c5c49a07e8b1c452cc0327275e267a865fea
   SSZipArchive: c77fc6ec8194f4e6d57876da1348e46cd63b90ba
   Sync: 7bf0699de46e470d68dc5f1f8408e4c19536c71f
-  TwitterCore: 8ce250be1eb34633a0e6acc89520d4165ec52c10
-  TwitterKit: 21d0b22d67cb9a568cd8053972d0da7df2e0e9a0
+  TwitterCore: 6856288a1c25e5281363250681f33b42fce1da42
+  TwitterKit: 313bf02baee8427f7649b3640169178e5a8b5a99
 
 PODFILE CHECKSUM: 03ef857cadf578c42b9c9a2aed57b99e67ad74e2
 

@@ -19,7 +19,7 @@ FOUNDATION_EXPORT NSString *const TWTRSDKRedirectHost;
 
 #pragma mark - Paths
 FOUNDATION_EXPORT NSString *const TWTRTwitterRequestTokenPath;
-FOUNDATION_EXPORT NSString *const TWTRTwitterAuthenticatePath;
+FOUNDATION_EXPORT NSString *const TWTRTwitterAuthorizePath;
 FOUNDATION_EXPORT NSString *const TWTRTwitterAccessTokenPath;
 FOUNDATION_EXPORT NSString *const TWTRAppAuthTokenPath;
 FOUNDATION_EXPORT NSString *const TWTRGuestAuthTokenPath;
