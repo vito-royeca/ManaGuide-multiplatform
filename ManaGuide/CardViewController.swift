@@ -24,9 +24,6 @@ enum CardViewControllerDetailsSection: Int {
     case information, printings, rulings, legalities
 }
 
-let kNotificationCardViewsUpdated  = "kNotificationCardViewsUpdated"
-let kNotificationCardRatingUpdated = "kNotificationCardRatingUpdated"
-
 class CardViewController: BaseViewController {
     // MARK: Variables
     var cardIndex = 0
@@ -112,7 +109,6 @@ class CardViewController: BaseViewController {
             title = card.name
             
             FirebaseManager.sharedInstance.incrementCardViews(card.id!)
-            NotificationCenter.default.post(name: Notification.Name(rawValue: kNotificationCardViewsUpdated), object: nil, userInfo: ["card": card])
         }
     }
     

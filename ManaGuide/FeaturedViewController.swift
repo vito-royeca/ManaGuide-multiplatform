@@ -15,9 +15,9 @@ import MBProgressHUD
 
 let kSliderTableViewCellHeight = CGFloat(140)
 let kSliderTableViewCellContentHeight = CGFloat(112)
-let kFeaturedTopRatedTag  = 100
-let kFeaturedTopViewedTag = 200
-let kFeaturedAllSetsTag   = 300
+//let kFeaturedTopRatedTag  = 100
+//let kFeaturedTopViewedTag = 200
+//let kFeaturedAllSetsTag   = 300
 
 class FeaturedViewController: BaseViewController {
 
@@ -25,6 +25,9 @@ class FeaturedViewController: BaseViewController {
     var topRated: [CMCard]?
     var topViewed: [CMCard]?
     var latestSets: [CMSet]?
+    var topRatedCollectionView: UICollectionView?
+    var topViewedCollectionView: UICollectionView?
+    var latestSetsCollectionView: UICollectionView?
     
     // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
@@ -34,24 +37,27 @@ class FeaturedViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kNotificationCardViewsUpdated), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateTopCharts), name: NSNotification.Name(rawValue: kNotificationCardViewsUpdated), object: nil)
-        
-        fetchTopCharts()
-        fetchLatestSets()
+        updateTopRated()
+        updateTopViewed()
+        updateLatestSets()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        fetchTopRated()
+        fetchTopViewed()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         
-        updateTopCharts()
+        FirebaseManager.sharedInstance.demonitorTopCharts()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showCard" {
             if let dest = segue.destination as? CardViewController,
                 let dict = sender as? [String: Any] {
-                
                 dest.cardIndex = dict["cardIndex"] as! Int
                 dest.cards = dict["cards"] as? [CMCard]
             }
@@ -79,16 +85,24 @@ class FeaturedViewController: BaseViewController {
     }
 
     // MARK: Custom methods
-    func fetchTopCharts() {
+    func fetchTopRated() {
         FirebaseManager.sharedInstance.monitorTopRated(completion: { (cards) in
-            FirebaseManager.sharedInstance.monitorTopViewed(completion: { (cards) in
-                self.updateTopCharts()
-            })
+            DispatchQueue.main.async {
+                self.updateTopRated()
+            }
         })
     }
     
-    func updateTopCharts() {
-        var request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+    func fetchTopViewed() {
+        FirebaseManager.sharedInstance.monitorTopViewed(completion: { (cards) in
+            DispatchQueue.main.async {
+                self.updateTopViewed()
+            }
+        })
+    }
+    
+    func updateTopRated() {
+        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
         request.predicate = NSPredicate(format: "rating > 0")
         request.fetchLimit = Int(kMaxFetchTopRated)
         request.sortDescriptors = [NSSortDescriptor(key: "rating", ascending: false),
@@ -96,19 +110,10 @@ class FeaturedViewController: BaseViewController {
                                    NSSortDescriptor(key: "name", ascending: true)]
         if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
             topRated = result
+            if let topRatedCollectionView = topRatedCollectionView {
+                topRatedCollectionView.reloadData()
+            }
         }
-        
-        request = NSFetchRequest(entityName: "CMCard")
-        request.predicate = NSPredicate(format: "views > 0")
-        request.fetchLimit = Int(kMaxFetchTopViewed)
-        request.sortDescriptors = [NSSortDescriptor(key: "views", ascending: false),
-                                   NSSortDescriptor(key: "set.releaseDate", ascending: false),
-                                   NSSortDescriptor(key: "name", ascending: true)]
-        if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
-            topViewed = result
-        }
-
-        tableView.reloadData()
     }
     
     func updateTopViewed() {
@@ -118,24 +123,27 @@ class FeaturedViewController: BaseViewController {
         request.sortDescriptors = [NSSortDescriptor(key: "views", ascending: false),
                                    NSSortDescriptor(key: "set.releaseDate", ascending: false),
                                    NSSortDescriptor(key: "name", ascending: true)]
-        
         if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
             topViewed = result
-            tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
-        }
-    }
-
-    func fetchLatestSets() {
-        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMSet")
-        request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
-        request.fetchLimit = 10
-
-        if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMSet] {
-            latestSets = result
-            tableView.reloadRows(at: [IndexPath(row: 2, section: 0)], with: .none)
+            if let topViewedCollectionView = topViewedCollectionView {
+                topViewedCollectionView.reloadData()
+            }
         }
     }
     
+    func updateLatestSets() {
+        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMSet")
+        request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
+        request.fetchLimit = 10
+        
+        if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMSet] {
+            latestSets = result
+            if let latestSetsCollectionView = latestSetsCollectionView {
+                latestSetsCollectionView.reloadData()
+            }
+        }
+    }
+
     func showAllSets(_ sender: UIButton) {
         performSegue(withIdentifier: "showSets", sender: nil)
     }
@@ -174,7 +182,7 @@ extension FeaturedViewController : UITableViewDataSource {
                     
                     collectionView.dataSource = self
                     collectionView.delegate = self
-                    collectionView.tag = kFeaturedTopRatedTag
+                    topRatedCollectionView = collectionView
                 }
                 cell = c
             }
@@ -198,7 +206,7 @@ extension FeaturedViewController : UITableViewDataSource {
                     
                     collectionView.dataSource = self
                     collectionView.delegate = self
-                    collectionView.tag = kFeaturedTopViewedTag
+                    topViewedCollectionView = collectionView
                 }
                 cell = c
             }
@@ -222,7 +230,7 @@ extension FeaturedViewController : UITableViewDataSource {
                     
                     collectionView.dataSource = self
                     collectionView.delegate = self
-                    collectionView.tag = kFeaturedAllSetsTag
+                    latestSetsCollectionView = collectionView
                 }
                 
                 cell = c
@@ -258,15 +266,15 @@ extension FeaturedViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var count = 0
         
-        if collectionView.tag == kFeaturedTopRatedTag {
+        if collectionView == topRatedCollectionView {
             if let topRated = topRated {
                 count = topRated.count
             }
-        } else if collectionView.tag == kFeaturedTopViewedTag {
+        } else if collectionView == topViewedCollectionView {
             if let topViewed = topViewed {
                 count = topViewed.count
             }
-        } else if collectionView.tag == kFeaturedAllSetsTag {
+        } else if collectionView == latestSetsCollectionView {
             if let latestSets = latestSets {
                 count = latestSets.count
             }
@@ -278,7 +286,7 @@ extension FeaturedViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: UICollectionViewCell?
         
-        if collectionView.tag == kFeaturedTopRatedTag {
+        if collectionView == topRatedCollectionView {
             let card = topRated![indexPath.row]
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TopRatedItemCell", for: indexPath)
@@ -319,7 +327,7 @@ extension FeaturedViewController : UICollectionViewDataSource {
                 ratingView.settings.fillMode = .precise
             }
             
-        } else if collectionView.tag == kFeaturedTopViewedTag {
+        } else if collectionView == topViewedCollectionView {
             let card = topViewed![indexPath.row]
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TopViewedItemCell", for: indexPath)
@@ -363,7 +371,7 @@ extension FeaturedViewController : UICollectionViewDataSource {
                 viewsLabel.text = "\(card.views)"
             }
             
-        } else if collectionView.tag == kFeaturedAllSetsTag {
+        } else if collectionView == latestSetsCollectionView {
             let set = latestSets![indexPath.row]
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SetItemCell", for: indexPath)
@@ -383,7 +391,7 @@ extension FeaturedViewController : UICollectionViewDataSource {
 // MARK: UICollectionViewDelegate
 extension FeaturedViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView.tag == kFeaturedTopRatedTag {
+        if collectionView == topRatedCollectionView {
             let card = topRated![indexPath.row]
             let cardIndex = 0
             
@@ -394,7 +402,7 @@ extension FeaturedViewController : UICollectionViewDelegate {
                 performSegue(withIdentifier: "showCardModal", sender: ["cardIndex": cardIndex as Any,
                                                                        "cards": [card]])
             }
-        } else if collectionView.tag == kFeaturedTopViewedTag {
+        } else if collectionView == topViewedCollectionView {
             let card = topViewed![indexPath.row]
             let cardIndex = 0
             
@@ -405,7 +413,7 @@ extension FeaturedViewController : UICollectionViewDelegate {
                 performSegue(withIdentifier: "showCardModal", sender: ["cardIndex": cardIndex as Any,
                                                                        "cards": [card]])
             }
-        } else if collectionView.tag == kFeaturedAllSetsTag {
+        } else if collectionView == latestSetsCollectionView {
             let set = latestSets![indexPath.row]
             performSegue(withIdentifier: "showSet", sender: set)
         }

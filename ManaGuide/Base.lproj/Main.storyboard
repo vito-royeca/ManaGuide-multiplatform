@@ -448,6 +448,22 @@
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="139.66666666666666"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" tag="100" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TWQ-qU-Iqr">
+                                                    <rect key="frame" x="8" y="8" width="230" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="230" id="6yD-0P-Uvk"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <button opaque="NO" tag="200" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9l8-aN-ILA">
+                                                    <rect key="frame" x="341" y="4" width="65" height="30"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="65" id="XzX-RO-tO5"/>
+                                                    </constraints>
+                                                    <state key="normal" title="See All &gt;"/>
+                                                </button>
                                                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" tag="300" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="54Y-BC-s5w">
                                                     <rect key="frame" x="0.0" y="28" width="414" height="112"/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -608,22 +624,6 @@
                                                         </collectionViewCell>
                                                     </cells>
                                                 </collectionView>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="100" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TWQ-qU-Iqr">
-                                                    <rect key="frame" x="8" y="8" width="230" height="21"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="230" id="6yD-0P-Uvk"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <button opaque="NO" tag="200" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9l8-aN-ILA">
-                                                    <rect key="frame" x="341" y="4" width="65" height="30"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="65" id="XzX-RO-tO5"/>
-                                                    </constraints>
-                                                    <state key="normal" title="See All &gt;"/>
-                                                </button>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="TWQ-qU-Iqr" firstAttribute="top" secondItem="xIZ-V6-vsg" secondAttribute="topMargin" id="Dyf-vr-pQH"/>
@@ -1337,7 +1337,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="611-iq-DQy" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" systemItem="featured" id="Vux-9U-ydJ"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="E6l-rT-Hay">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="E6l-rT-Hay">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1355,7 +1355,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="zfj-Ad-6ED" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="UVG-am-LSK">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="UVG-am-LSK">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1408,7 +1408,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="d2D-SE-tyi" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" systemItem="search" id="x9F-Cw-Krq"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="NH5-bG-kYa">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="NH5-bG-kYa">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1426,7 +1426,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="t4B-nz-Ide" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="wij-Y7-kZI">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="wij-Y7-kZI">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1445,7 +1445,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="dPU-5D-1Fg" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" systemItem="more" id="hdh-CF-dSJ"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="sgb-i5-SZ1">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="sgb-i5-SZ1">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
