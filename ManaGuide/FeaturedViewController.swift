@@ -37,8 +37,6 @@ class FeaturedViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        updateTopRated()
-        updateTopViewed()
         updateLatestSets()
     }
 

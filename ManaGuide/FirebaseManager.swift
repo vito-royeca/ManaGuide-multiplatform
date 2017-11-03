@@ -44,11 +44,11 @@ class FirebaseManager: NSObject {
         }
     }
     
-    func monitorTopRated(completion: @escaping ([FCCard]) -> Void) {
+    func monitorTopRated(completion: @escaping ([CMCard]) -> Void) {
         let ref = Database.database().reference().child("cards")
         let query = ref.queryOrdered(byChild: FCCard.Keys.Rating).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopRated)
         query.observe(.value, with: { snapshot in
-            var cards = [FCCard]()
+            var cards = [CMCard]()
             
             for child in snapshot.children {
                 if let c = child as? DataSnapshot {
@@ -58,26 +58,26 @@ class FirebaseManager: NSObject {
                     
                     if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
                         if let card = result.first {
-                            card.rating = fcard.rating == nil ? 1 : fcard.rating!
+                            card.rating = fcard.rating == nil ? 0 : fcard.rating!
+                            cards.append(card)
                         }
                     }
-                    
-                    cards.append(fcard)
                 }
             }
             
             try! ManaKit.sharedInstance.dataStack!.mainContext.save()
-            completion(cards.reversed())
+            
+            completion(cards)
         })
         
         queries["topRated"] = query
     }
 
-    func monitorTopViewed(completion: @escaping ([FCCard]) -> Void) {
+    func monitorTopViewed(completion: @escaping ([CMCard]) -> Void) {
         let ref = Database.database().reference().child("cards")
         let query = ref.queryOrdered(byChild: FCCard.Keys.Views).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopViewed)
         query.observe(.value, with: { snapshot in
-            var cards = [FCCard]()
+            var cards = [CMCard]()
             
             for child in snapshot.children {
                 if let c = child as? DataSnapshot {
@@ -87,16 +87,15 @@ class FirebaseManager: NSObject {
                     
                     if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
                         if let card = result.first {
-                            card.views = Int64(fcard.views == nil ? 1 : fcard.views!)
+                            card.views = Int64(fcard.views == nil ? 0 : fcard.views!)
+                            cards.append(card)
                         }
                     }
-                    
-                    cards.append(fcard)
                 }
             }
             
             try! ManaKit.sharedInstance.dataStack!.mainContext.save()
-            completion(cards.reversed())
+            completion(cards)
         })
         
         queries["topViewed"] = query

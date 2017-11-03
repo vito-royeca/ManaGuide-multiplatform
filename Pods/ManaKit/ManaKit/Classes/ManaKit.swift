@@ -12,7 +12,7 @@ import SSZipArchive
 import Sync
 
 
-public let kMTGJSONVersion      = "3.11.5"
+public let kMTGJSONVersion      = "3.11.7"
 public let kMTGJSONVersionKey   = "kMTGJSONVersionKey"
 public let kImagesVersionKey    = "kImagesVersionKey"
 public let kCardImageSource     = "http://magiccards.info"
@@ -126,8 +126,9 @@ open class ManaKit: NSObject {
         var prefix = "C"
         
         if let rarity = rarity {
-            let index = rarity.name!.index(rarity.name!.startIndex, offsetBy: 1)
-            prefix = rarity.name!.substring(to: index)
+//            let index = rarity.name!.index(rarity.name!.startIndex, offsetBy: 1)
+//            prefix = rarity.name!.substring(to: index)
+            prefix = String(rarity.name![..<rarity.name!.endIndex])
             
             if rarity.name == "Basic Land" {
                 prefix = "C"
@@ -325,15 +326,19 @@ open class ManaKit: NSObject {
                 for url in urls {
                     let data = try! Data(contentsOf: url)
                     let error: UnsafeMutablePointer<Unmanaged<CFError>?>? = nil
-                    guard let provider = CGDataProvider(data: data as CFData) else { return }
-                    let font = CGFont(provider)
-                    
-                    if !CTFontManagerRegisterGraphicsFont(font, error) {
-                        if let unmanagedError = error?.pointee {
-                            if let errorDescription = CFErrorCopyDescription(unmanagedError.takeUnretainedValue()) {
-                                print("Failed to load font: \(errorDescription)")
+
+                    if let provider = CGDataProvider(data: data as CFData) {
+                        let font = CGFont(provider)
+                        
+//                        if let font = font {
+                            if !CTFontManagerRegisterGraphicsFont(font, error) {
+                                if let unmanagedError = error?.pointee {
+                                    if let errorDescription = CFErrorCopyDescription(unmanagedError.takeUnretainedValue()) {
+                                        print("Failed to load font: \(errorDescription)")
+                                    }
+                                }
                             }
-                        }
+//                        }
                     }
                 }
             }

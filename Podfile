@@ -22,7 +22,7 @@ def default_pods
     pod 'MMDrawerController+Storyboard'
     pod 'Networking'
     pod 'RATreeView', '~> 2.1.2'
-    pod 'ReachabilitySwift'
+    pod 'Reachability'
     pod 'SimulatorStatusMagic', :configurations => ['Debug']
     pod 'SSZipArchive'
     pod 'Sync'
