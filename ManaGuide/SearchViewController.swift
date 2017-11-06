@@ -54,7 +54,7 @@ class SearchViewController: BaseViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
         
-        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
@@ -239,7 +239,7 @@ class SearchViewController: BaseViewController {
             case "typeSection"?:
                 for card in cards {
                     if let typeSection = card.typeSection {
-                        let prefix = String(typeSection.characters.prefix(1))
+                        let prefix = String(typeSection.prefix(1))
                         
                         if !sectionIndexTitles.contains(prefix) {
                             sectionIndexTitles.append(prefix)
@@ -250,7 +250,7 @@ class SearchViewController: BaseViewController {
                 let cardLegalities = dataSource.all() as [CMCardLegality]
                 for cardLegality in cardLegalities {
                     if let legality = cardLegality.legality {
-                        let prefix = String(legality.name!.characters.prefix(1))
+                        let prefix = String(legality.name!.prefix(1))
                         
                         if !sectionIndexTitles.contains(prefix) {
                             sectionIndexTitles.append(prefix)
@@ -798,7 +798,7 @@ extension SearchViewController : UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchBar.text?.characters.count == 0 {
+        if searchBar.text?.count == 0 {
             doSearch()
         }
     }

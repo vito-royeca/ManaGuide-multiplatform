@@ -67,6 +67,7 @@ extension CMCard {
     @NSManaged public var colors_: NSSet?
     @NSManaged public var foreignNames_: NSSet?
     @NSManaged public var layout_: CMLayout?
+    @NSManaged public var pricings_: NSSet?
     @NSManaged public var printings_: NSSet?
     @NSManaged public var rarity_: CMRarity?
     @NSManaged public var rulings_: NSSet?
@@ -146,6 +147,23 @@ extension CMCard {
     @objc(removeForeignNames_:)
     @NSManaged public func removeFromForeignNames_(_ values: NSSet)
 
+}
+
+// MARK: Generated accessors for pricings_
+extension CMCard {
+    
+    @objc(addPricings_Object:)
+    @NSManaged public func addToPricings_(_ value: CMCardPricing)
+    
+    @objc(removePricings_Object:)
+    @NSManaged public func removeFromPricings_(_ value: CMCardPricing)
+    
+    @objc(addPricings_:)
+    @NSManaged public func addToPricings_(_ values: NSSet)
+    
+    @objc(removePricings_:)
+    @NSManaged public func removeFromPricings_(_ values: NSSet)
+    
 }
 
 // MARK: Generated accessors for printings_

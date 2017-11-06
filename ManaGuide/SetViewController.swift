@@ -39,12 +39,17 @@ class SetViewController: BaseViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
         
-        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         tableView.register(UINib(nibName: "BrowserTableViewCell", bundle: nil), forCellReuseIdentifier: "SetInfoCell")
         
         updateDataDisplay()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        tableView.reloadData()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -195,7 +200,7 @@ class SetViewController: BaseViewController {
             case "typeSection":
                 for card in cards {
                     if let typeSection = card.typeSection {
-                        let prefix = String(typeSection.characters.prefix(1))
+                        let prefix = String(typeSection.prefix(1))
                         
                         if !sectionIndexTitles.contains(prefix) {
                             sectionIndexTitles.append(prefix)
@@ -205,7 +210,7 @@ class SetViewController: BaseViewController {
             case "rarity_.name":
                 for card in cards {
                     if let rarity = card.rarity_ {
-                        let prefix = String(rarity.name!.characters.prefix(1))
+                        let prefix = String(rarity.name!.prefix(1))
                         
                         if !sectionIndexTitles.contains(prefix) {
                             sectionIndexTitles.append(prefix)
@@ -215,7 +220,7 @@ class SetViewController: BaseViewController {
             case "artist_.name":
                 for card in cards {
                     if let artist = card.artist_ {
-                        let prefix = String(artist.name!.characters.prefix(1))
+                        let prefix = String(artist.name!.prefix(1))
                         
                         if !sectionIndexTitles.contains(prefix) {
                             sectionIndexTitles.append(prefix)

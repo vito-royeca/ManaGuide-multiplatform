@@ -59,7 +59,7 @@ class CardViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
@@ -204,7 +204,7 @@ class CardViewController: BaseViewController {
         if let colors_ = card.colors_ {
             if let s = colors_.allObjects as? [CMColor] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
-                html = html.replacingOccurrences(of: "{{colors}}", with: string.characters.count > 0 ? string : "&mdash;")
+                html = html.replacingOccurrences(of: "{{colors}}", with: string.count > 0 ? string : "&mdash;")
             } else {
                 html = html.replacingOccurrences(of: "{{colors}}", with: "&mdash;")
             }
@@ -215,7 +215,7 @@ class CardViewController: BaseViewController {
         if let colorIdentities_ = card.colorIdentities_ {
             if let s = colorIdentities_.allObjects as? [CMColor] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
-                html = html.replacingOccurrences(of: "{{colorIdentities}}", with: string.characters.count > 0 ? string : "&mdash;")
+                html = html.replacingOccurrences(of: "{{colorIdentities}}", with: string.count > 0 ? string : "&mdash;")
             } else {
                 html = html.replacingOccurrences(of: "{{colorIdentities}}", with: "&mdash;")
             }
@@ -250,7 +250,7 @@ class CardViewController: BaseViewController {
         if let subtypes_ = card.subtypes_ {
             if let s = subtypes_.allObjects as? [CMCardType] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
-                html = html.replacingOccurrences(of: "{{subtypes}}", with: string.characters.count > 0 ? string : "&mdash;")
+                html = html.replacingOccurrences(of: "{{subtypes}}", with: string.count > 0 ? string : "&mdash;")
             } else {
                 html = html.replacingOccurrences(of: "{{subtypes}}", with: "&mdash;")
             }
@@ -261,7 +261,7 @@ class CardViewController: BaseViewController {
         if let supertypes_ = card.supertypes_ {
             if let s = supertypes_.allObjects as? [CMCardType] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
-                html = html.replacingOccurrences(of: "{{supertypes}}", with: string.characters.count > 0 ? string : "&mdash;")
+                html = html.replacingOccurrences(of: "{{supertypes}}", with: string.count > 0 ? string : "&mdash;")
             } else {
                 html = html.replacingOccurrences(of: "{{supertypes}}", with: "&mdash;")
             }
@@ -507,7 +507,7 @@ extension CardViewController : UITableViewDataSource {
                                 contents.append(date)
                             }
                             if let text = ruling.text {
-                                if contents.characters.count > 0 {
+                                if contents.count > 0 {
                                     contents.append("\n\n")
                                 }
                                 contents.append(text)
@@ -727,7 +727,7 @@ extension CardViewController : UICollectionViewDataSource {
                     ratingView.isHidden = cardIndex != indexPath.row
                 }
                 if let viewedImage = cell!.viewWithTag(300) as? UIImageView {
-                    let image = UIImage.fontAwesomeIcon(name: .eye, textColor: UIColor(red:0.00, green:0.48, blue:1.00, alpha:1.0), size: CGSize(width: 20, height: 20))
+                    let image = UIImage.fontAwesomeIcon(name: .eye, textColor: UIColor.white, size: CGSize(width: 20, height: 20))
                     viewedImage.image = image
                     viewedImage.isHidden = cardIndex != indexPath.row
                 }

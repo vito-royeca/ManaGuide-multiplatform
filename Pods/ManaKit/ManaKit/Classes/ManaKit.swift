@@ -8,15 +8,18 @@
 
 import UIKit
 import DATASource
+import Kanna
 import SSZipArchive
 import Sync
 
 
-public let kMTGJSONVersion      = "3.11.7"
+public let kMTGJSONVersion      = "3.11.7B"
 public let kMTGJSONVersionKey   = "kMTGJSONVersionKey"
 public let kImagesVersionKey    = "kImagesVersionKey"
 public let kCardImageSource     = "http://magiccards.info"
 public let kEightEditionRelease = "2003-07-28"
+
+public let kTCGPlayerPricingAge = 24*3 // 3 days
 
 // Notification events
 public let kNotificationCardImageDownloaded = "kNotificationCardImageDownloaded"
@@ -106,6 +109,10 @@ open class ManaKit: NSObject {
         }
     }
     
+    fileprivate var tcgPlayerPartnerKey: String?
+    fileprivate var tcgPlayerPublicKey: String?
+    fileprivate var tcgPlayerPrivateKey: String?
+    
     // MARK: Resource methods
     /*
      * Example path: "/images/set/2ED/C/48.png"
@@ -126,9 +133,7 @@ open class ManaKit: NSObject {
         var prefix = "C"
         
         if let rarity = rarity {
-//            let index = rarity.name!.index(rarity.name!.startIndex, offsetBy: 1)
-//            prefix = rarity.name!.substring(to: index)
-            prefix = String(rarity.name![..<rarity.name!.endIndex])
+            prefix = String(rarity.name!.prefix(1))
             
             if rarity.name == "Basic Land" {
                 prefix = "C"
@@ -162,7 +167,7 @@ open class ManaKit: NSObject {
             let manaArray = mc.components(separatedBy: " ")
 
             for mana in manaArray {
-                if mana.characters.count == 0 {
+                if mana.count == 0 {
                     continue
                 }
                 
@@ -170,8 +175,8 @@ open class ManaKit: NSObject {
                 
                 // fix for dual manas
                 if image == nil {
-                    if mana.characters.count > 1 {
-                        let reversedMana = String(mana.characters.reversed())
+                    if mana.count > 1 {
+                        let reversedMana = String(mana.reversed())
 
                         image = UIImage(named: "mana-\(reversedMana)", in: resourceBundle, compatibleWith: nil)
                     }
@@ -497,5 +502,80 @@ open class ManaKit: NSObject {
         }
         
         return nil
+    }
+    
+    // MARK: TCGPlayer
+    open func configureTCGPlayer(partnerKey: String, publicKey: String?, privateKey: String?) {
+        tcgPlayerPartnerKey = partnerKey
+        tcgPlayerPublicKey = publicKey
+        tcgPlayerPrivateKey = privateKey
+    }
+    
+    open func fetchTCGPlayerPricing(card: CMCard, completion: @escaping (_ cardPricing: CMCardPricing?, _ error: Error?) -> Void) {
+        if let pricing = findOrCreateObject("CMCardPricing", objectFinder: ["card.id": card.id as AnyObject]) as? CMCardPricing {
+            var willFetch = false
+            
+            if let lastUpdate = pricing.lastUpdate {
+                if let diff = Calendar.current.dateComponents([.hour], from: lastUpdate as Date, to: Date()).hour, diff >= kTCGPlayerPricingAge {
+                    willFetch = true
+                }
+            } else {
+                willFetch = true
+            }
+            
+            if willFetch {
+                if let tcgPlayerPartnerKey = tcgPlayerPartnerKey,
+                    let tcgPlayerSetName = card.set?.tcgPlayerName,
+                    let cardName = card.name {
+                    
+                    if let urlString = "http://partner.tcgplayer.com/x3/phl.asmx/p?pk=\(tcgPlayerPartnerKey)&s=\(tcgPlayerSetName)&p=\(cardName)".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                        if let url = URL(string: urlString) {
+                                //var closureName: (ParameterTypes) -> ReturnType
+                            
+                            
+                            NetworkingManager.sharedInstance.downloadFile(url, completionHandler: { (_ data: Data?, _ error: NSError?) in
+                                if let error = error {
+                                    completion(nil, error)
+                                } else {
+                                    if let data = data {
+                                        if let xml = XML(xml: data, encoding: .utf8) {
+                                            for product in xml.xpath("//product") {
+                                                if let id = product.xpath("id").first?.text,
+                                                    let hiprice = product.xpath("hiprice").first?.text,
+                                                    let lowprice = product.xpath("lowprice").first?.text,
+                                                    let avgprice = product.xpath("avgprice").first?.text,
+                                                    let foilavgprice = product.xpath("foilavgprice").first?.text,
+                                                    let link = product.xpath("link").first?.text {
+                                                    pricing.id = Int64(id)!
+                                                    pricing.high = Double(hiprice)!
+                                                    pricing.low = Double(lowprice)!
+                                                    pricing.average = Double(avgprice)!
+                                                    pricing.foil = Double(foilavgprice)!
+                                                    pricing.link = link
+                                                }
+                                            }
+                                            
+                                            pricing.lastUpdate = NSDate()
+                                            try! self.dataStack?.mainContext.save()
+                                            completion(pricing, nil)
+                                            
+                                        } else {
+                                            try! self.dataStack?.mainContext.save()
+                                            completion(pricing, nil)
+                                        }
+                                    }
+                                }
+                                
+                            })
+                        }
+                    }
+                }
+            } else {
+                completion(pricing, nil)
+            }
+        } else {
+            completion(nil, nil)
+        }
+
     }
 }

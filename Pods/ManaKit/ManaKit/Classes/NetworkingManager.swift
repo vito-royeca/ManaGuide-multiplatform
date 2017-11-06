@@ -146,7 +146,11 @@ class NetworkingManager: NSObject {
     
     func downloadFile(_ url: URL, completionHandler: @escaping (Data?, NSError?) -> Void) {
         let networker = networking(forUrl: url)
-        let path = url.path
+        var path = url.path
+        
+        if let query = url.query {
+            path += "?\(query)"
+        }
         
         networker.downloadData(path, cacheName: nil, completion: {(result) in
             switch result {

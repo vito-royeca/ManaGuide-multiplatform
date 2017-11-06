@@ -27,7 +27,7 @@ extension CMSet {
     @NSManaged public var oldCode: String?
     @NSManaged public var onlineOnly: Bool
     @NSManaged public var releaseDate: String?
-    @NSManaged public var tcgPlayerCode: String?
+    @NSManaged public var tcgPlayerName: String?
     @NSManaged public var type: String?
     @NSManaged public var block_: CMBlock?
     @NSManaged public var border_: CMBorder?

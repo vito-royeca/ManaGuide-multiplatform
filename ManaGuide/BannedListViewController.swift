@@ -77,7 +77,7 @@ class BannedListViewController: UIViewController {
             sectionTitles = [String]()
             
             for format in formats {
-                let prefix = String(format.name!.characters.prefix(1))
+                let prefix = String(format.name!.prefix(1))
                 
                 if !sectionIndexTitles.contains(prefix) {
                     sectionIndexTitles.append(prefix)

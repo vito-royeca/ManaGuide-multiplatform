@@ -36,7 +36,7 @@ class SetsViewController: BaseViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
         
-        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .gear, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
         
         updateDataDisplay()
@@ -125,7 +125,7 @@ class SetsViewController: BaseViewController {
             case "typeSection":
                 for set in sets {
                     if let type_ = set.type_ {
-                        let prefix = String(type_.name!.characters.prefix(1)).uppercased()
+                        let prefix = String(type_.name!.prefix(1)).uppercased()
                     
                         if !sectionIndexTitles.contains(prefix) {
                             sectionIndexTitles.append(prefix)

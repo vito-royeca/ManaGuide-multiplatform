@@ -89,7 +89,7 @@ class GlossaryViewController: UIViewController {
             sectionTitles = [String]()
             
             for glossary in glossaries {
-                let prefix = String(glossary.term!.characters.prefix(1))
+                let prefix = String(glossary.term!.prefix(1))
                 
                 if !sectionIndexTitles.contains(prefix) {
                     sectionIndexTitles.append(prefix)
@@ -117,7 +117,7 @@ class GlossaryViewController: UIViewController {
         dataSource = getDataSource(nil)
         
         if let text = searchController.searchBar.text {
-            let count = text.characters.count
+            let count = text.count
             let sets = dataSource!.all() as! [CMGlossary]
             
             if count > 0 {

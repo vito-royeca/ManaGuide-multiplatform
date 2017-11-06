@@ -30,7 +30,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // ManaKit
         ManaKit.sharedInstance.setupResources()
-        
+        ManaKit.sharedInstance.configureTCGPlayer(partnerKey: "ManaGuide", publicKey: nil, privateKey: nil)
+
         return true
     }
 

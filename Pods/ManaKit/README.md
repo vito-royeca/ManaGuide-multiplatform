@@ -18,6 +18,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
     
     // Override point for customization after application launch.
     ManaKit.sharedInstance.setupResources()
+    ManaKit.sharedInstance.configureTCGPlayer(partnerKey: "Your_Partner_Key", publicKey: nil, privateKey: nil)
         
     return true
 }
@@ -53,6 +54,12 @@ Card image:
 
 ```
 open func downloadCardImage(_ card: CMCard, cropImage: Bool, completion: @escaping (_ card: CMCard, _ image: UIImage?, _ croppedImage: UIImage?, _ error: NSError?) -> Void)
+```
+
+`TCG Player` Hi-Mid-Low Pricing API.
+
+```
+open func fetchTCGPlayerPricing(card: CMCard, completion: @escaping (_ cardPricing: CMCardPricing?, _ error: Error?) -> Void)
 ```
 
 ## Example
