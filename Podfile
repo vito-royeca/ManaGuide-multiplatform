@@ -12,7 +12,7 @@ def default_pods
     pod 'Firebase/Database'
     pod 'Firebase/Auth'
     pod 'FirebaseUI/Storage'
-    pod 'FontAwesome.swift'
+    pod 'Font-Awesome-Swift', :git => 'https://github.com/Vaberer/Font-Awesome-Swift', :branch => 'swift-3'
     pod 'GoogleSignIn'
     pod 'InAppSettingsKit'
     pod 'Kanna', '~> 2.1.0'

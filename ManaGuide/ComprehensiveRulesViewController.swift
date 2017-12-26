@@ -8,7 +8,7 @@
 
 import UIKit
 import DATASource
-import FontAwesome_swift
+import Font_Awesome_Swift
 import ManaKit
 import RATreeView
 
@@ -121,7 +121,7 @@ extension ComprehensiveRulesViewController : RATreeViewDataSource {
                 if text == data[3] { // Glossary
                     c.accessoryType = .disclosureIndicator
                 } else {
-                    image = UIImage.fontAwesomeIcon(name: .plusSquare, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+                    image = UIImage.init(icon: .FAPlusSquare, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
                 }
                 
             } else if let item = item as? CMRule {
@@ -139,7 +139,7 @@ extension ComprehensiveRulesViewController : RATreeViewDataSource {
                         text = "\(tabs)\(item.number!). \(item.text!)"
                         
                         if children.count > 0 {
-                            image = UIImage.fontAwesomeIcon(name: .plusSquare, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+                            image = UIImage.init(icon: .FAPlusSquare, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
                         }
                     }
                 }

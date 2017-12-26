@@ -11,5 +11,5 @@ import CoreData
 
 @objc(CMSet)
 open class CMSet: NSManagedObject {
-
+    
 }

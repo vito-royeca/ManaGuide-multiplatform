@@ -13,7 +13,8 @@ import SSZipArchive
 import Sync
 
 
-public let kMTGJSONVersion      = "3.11.7B"
+public let kMTGJSONVersion      = "3.12.4"
+public let kMTGJSONDate         = "Dec 5, 2017"
 public let kMTGJSONVersionKey   = "kMTGJSONVersionKey"
 public let kImagesVersionKey    = "kImagesVersionKey"
 public let kCardImageSource     = "http://magiccards.info"
@@ -288,7 +289,7 @@ open class ManaKit: NSObject {
                 willCopy = !FileManager.default.fileExists(atPath: targetPath)
                 
                 // Check if we saved the version number
-                if let version = UserDefaults.standard.object(forKey: kMTGJSONVersionKey) as? String {
+                if let version = databaseVersion() /*UserDefaults.standard.object(forKey: kMTGJSONVersionKey) as? String*/ {
                     willCopy = version != kMTGJSONVersion
                 }
                 
@@ -335,15 +336,13 @@ open class ManaKit: NSObject {
                     if let provider = CGDataProvider(data: data as CFData) {
                         let font = CGFont(provider)
                         
-//                        if let font = font {
-                            if !CTFontManagerRegisterGraphicsFont(font, error) {
-                                if let unmanagedError = error?.pointee {
-                                    if let errorDescription = CFErrorCopyDescription(unmanagedError.takeUnretainedValue()) {
-                                        print("Failed to load font: \(errorDescription)")
-                                    }
+                        if !CTFontManagerRegisterGraphicsFont(font, error) {
+                            if let unmanagedError = error?.pointee {
+                                if let errorDescription = CFErrorCopyDescription(unmanagedError.takeUnretainedValue()) {
+                                    print("Failed to load font: \(errorDescription)")
                                 }
                             }
-//                        }
+                        }
                     }
                 }
             }
@@ -386,6 +385,17 @@ open class ManaKit: NSObject {
         }
         
         return object
+    }
+    
+    open func databaseVersion() -> String? {
+        var version:String?
+        
+        let objectFinder = ["version": kMTGJSONVersion] as [String: AnyObject]
+        if let object = ManaKit.sharedInstance.findOrCreateObject("CMSystem", objectFinder: objectFinder) as? CMSystem {
+            version = object.version
+        }
+        
+        return version
     }
     
     // MARK: Miscellaneous methods
@@ -448,7 +458,7 @@ open class ManaKit: NSObject {
                 } else {
                     let width = image.size.width * 3/4
                     let rect = CGRect(x: (image.size.width-width) / 2,
-                                      y: isModern(card) ? 45 : 40,
+                                      y: isModern(card) ? 47 : 40,
                                       width: width,
                                       height: width-60)
                     
@@ -556,6 +566,7 @@ open class ManaKit: NSObject {
                                             }
                                             
                                             pricing.lastUpdate = NSDate()
+                                            pricing.card = card
                                             try! self.dataStack?.mainContext.save()
                                             completion(pricing, nil)
                                             
@@ -576,6 +587,66 @@ open class ManaKit: NSObject {
         } else {
             completion(nil, nil)
         }
-
+    }
+    
+    // MARK: Keyrune
+    open func keyruneUnicode(forSet set: CMSet) -> String? {
+        var unicode:String?
+        
+        if let keyruneCode = set.keyruneCode {
+            let charAsInt = Int(keyruneCode, radix: 16)!
+            let uScalar = UnicodeScalar(charAsInt)!
+            unicode = "\(uScalar)"
+        } else {
+            let charAsInt = Int("e684", radix: 16)!
+            let uScalar = UnicodeScalar(charAsInt)!
+            unicode = "\(uScalar)"
+        }
+        
+        return unicode
+    }
+        
+    open func keyruneColor(forRarity rarity: CMRarity) -> UIColor? {
+        var color:UIColor?
+        
+        if rarity.name == "Common" {
+            color = hexStringToUIColor(hex: "1A1718")
+        } else if rarity.name == "Uncommon" {
+            color = hexStringToUIColor(hex: "707883")
+        } else if rarity.name == "Rare" {
+            color = hexStringToUIColor(hex: "A58E4A")
+        } else if rarity.name == "Mythic Rare" {
+            color = hexStringToUIColor(hex: "BF4427")
+        } else if rarity.name == "Special" {
+            color = hexStringToUIColor(hex: "BF4427")
+        } else if rarity.name == "Timeshifted" {
+            color = hexStringToUIColor(hex: "652978")
+        } else if rarity.name == "Basic Land" {
+            color = hexStringToUIColor(hex: "000000")
+        }
+        
+        return color
+    }
+        
+    open func hexStringToUIColor (hex:String) -> UIColor {
+        var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        
+        if (cString.hasPrefix("#")) {
+            cString.remove(at: cString.startIndex)
+        }
+        
+        if ((cString.characters.count) != 6) {
+            return UIColor.gray
+        }
+        
+        var rgbValue:UInt32 = 0
+        Scanner(string: cString).scanHexInt32(&rgbValue)
+        
+        return UIColor(
+            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+            alpha: CGFloat(1.0)
+        )
     }
 }

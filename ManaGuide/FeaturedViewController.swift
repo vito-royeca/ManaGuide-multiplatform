@@ -9,7 +9,7 @@
 import UIKit
 import Cosmos
 import DATASource
-import FontAwesome_swift
+import Font_Awesome_Swift
 import ManaKit
 import MBProgressHUD
 
@@ -362,7 +362,7 @@ extension FeaturedViewController : UICollectionViewDataSource {
                 nameLabel.text = card.name
             }
             if let viewedImage = cell?.viewWithTag(400) as? UIImageView {
-                let image = UIImage.fontAwesomeIcon(name: .eye, textColor: UIColor.black, size: CGSize(width: 20, height: 20))
+                let image = UIImage.init(icon: .FAEye, size: CGSize(width: 20, height: 20), textColor: .black, backgroundColor: .clear)
                 viewedImage.image = image
             }
             if let viewsLabel = cell?.viewWithTag(500) as? UILabel {

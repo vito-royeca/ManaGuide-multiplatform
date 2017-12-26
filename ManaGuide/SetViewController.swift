@@ -8,7 +8,7 @@
 
 import UIKit
 import DATASource
-import FontAwesome_swift
+import Font_Awesome_Swift
 import InAppSettingsKit
 import ManaKit
 import MBProgressHUD
@@ -39,7 +39,7 @@ class SetViewController: BaseViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
         
-        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+        rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         tableView.register(UINib(nibName: "BrowserTableViewCell", bundle: nil), forCellReuseIdentifier: "SetInfoCell")

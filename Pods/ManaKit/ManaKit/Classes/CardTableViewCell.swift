@@ -24,8 +24,9 @@ open class CardTableViewCell: UITableViewCell {
     // MARK: Outlets
     @IBOutlet weak var thumbnailImage: UIImageView!
     @IBOutlet weak var nameAndCCView: UIView!
-    @IBOutlet weak var rarityImage: UIImageView!
-    @IBOutlet weak var setLabel: UILabel!
+    @IBOutlet weak var symbolImage: UIImageView!
+    @IBOutlet weak var typeLabel: UILabel!
+    @IBOutlet weak var setImage: UILabel!
     @IBOutlet weak var lowPriceLabel: UILabel!
     @IBOutlet weak var midPriceLabel: UILabel!
     @IBOutlet weak var highProceLabel: UILabel!
@@ -40,8 +41,8 @@ open class CardTableViewCell: UITableViewCell {
         thumbnailImage.layer.cornerRadius = thumbnailImage.frame.height / 6
         thumbnailImage.layer.masksToBounds = true
         
-        rarityImage.layer.cornerRadius = rarityImage.frame.height / 2
-        rarityImage.layer.masksToBounds = true
+        setImage.layer.cornerRadius = setImage.frame.height / 2
+        setImage.layer.masksToBounds = true
     }
 
     override open func setSelected(_ selected: Bool, animated: Bool) {
@@ -55,7 +56,9 @@ open class CardTableViewCell: UITableViewCell {
             c.removeFromSuperview()
         }
         thumbnailImage.image = UIImage(named: ImageName.cardBackCropped.rawValue)
-        rarityImage.image = nil
+        symbolImage.image = nil
+        typeLabel.text = nil
+        setImage.text = nil
         lowPriceLabel.text = "NA"
         midPriceLabel.text = "NA"
         highProceLabel.text = "NA"
@@ -109,10 +112,6 @@ open class CardTableViewCell: UITableViewCell {
                         imageView.contentMode = .scaleAspectFit
                         
                         nameAndCCView.addSubview(imageView)
-//                        NSLayoutConstraint(item: imageView, attribute: .top, relatedBy: .equal, toItem: nameAndCCView, attribute: .top, multiplier: 1.0, constant: 0.0).isActive = true
-//                        NSLayoutConstraint(item: imageView, attribute: .bottom, relatedBy: .equal, toItem: nameAndCCView, attribute: .bottom, multiplier: 1.0, constant: 0.0).isActive = true
-//                        NSLayoutConstraint(item: imageView, attribute: .trailing, relatedBy: .equal, toItem: nameAndCCView, attribute: .trailing, multiplier: 1.0, constant: 0.0).isActive = true
-                        
                         x -= width
                     }
                 }
@@ -149,19 +148,60 @@ open class CardTableViewCell: UITableViewCell {
                     nameLabel.shadowOffset = shadowOffset
                 }
             }
-
             nameAndCCView.addSubview(nameLabel)
-//            NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: nameAndCCView, attribute: .topMargin, multiplier: 1.0, constant: 0.0).isActive = true
-//            NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: nameAndCCView, attribute: .leadingMargin, multiplier: 1.0, constant: 0.0).isActive = true
             
-            // rarity and set
+            // set symbol
             if let rarity = card.rarity_,
                 let set = card.set {
-                rarityImage.image = ManaKit.sharedInstance.setImage(set: set, rarity: rarity)
-                setLabel.text = set.name
-                setLabel.font = isModern ? eightEditionFontSmall : preEightEditionFontSmall
+                setImage.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+                setImage.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: rarity)
             }
-            
+
+            // type symbol
+            var cardType: CMCardType?
+            if let types = card.types_ {
+                if types.count > 1 {
+                    symbolImage.image = ManaKit.sharedInstance.symbolImage(name: "Multiple")
+                    cardType = types.allObjects.first as? CMCardType
+                    
+                    for t in types.allObjects {
+                        if let t = t as? CMCardType {
+                            if t.name == "Creature" {
+                                cardType = t
+                            }
+                        }
+                    }
+                } else {
+                    if let type = types.allObjects.first as? CMCardType {
+                        cardType = type
+                    }
+                }
+            }
+
+            if let cardType = cardType {
+                if let name = cardType.name {
+                    symbolImage.image = ManaKit.sharedInstance.symbolImage(name: name)
+                }
+            }
+            // type
+            if let type = card.type_,
+                let cardType = cardType {
+                var typeText = ""
+                
+                if let name = type.name {
+                    typeText.append(name)
+                }
+                if let name = cardType.name {
+                    if name == "Creature" {
+                        if let power = card.power,
+                            let toughness = card.toughness {
+                            typeText.append(" (\(power)/\(toughness))")
+                        }
+                    }
+                }
+                typeLabel.text = typeText
+            }
+
             // pricing
             ManaKit.sharedInstance.fetchTCGPlayerPricing(card: card, completion: {(cardPricing: CMCardPricing?, error: Error?) in
                 if let cardPricing = cardPricing {

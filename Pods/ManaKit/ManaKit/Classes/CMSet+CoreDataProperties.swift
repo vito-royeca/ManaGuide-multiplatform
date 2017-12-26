@@ -21,6 +21,7 @@ extension CMSet {
     @NSManaged public var border: String?
     @NSManaged public var code: String?
     @NSManaged public var gathererCode: String?
+    @NSManaged public var keyruneCode: String?
     @NSManaged public var magicCardsInfoCode: String?
     @NSManaged public var name: String?
     @NSManaged public var nameSection: String?

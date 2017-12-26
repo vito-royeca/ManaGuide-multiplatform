@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import FontAwesome_swift
+import Font_Awesome_Swift
 import ManaKit
 
 protocol DynamicHeightTableViewCellDelegate : NSObjectProtocol {
@@ -53,9 +53,9 @@ class DynamicHeightTableViewCell: UITableViewCell {
         var image: UIImage?
         
         if expanded  {
-            image = UIImage.fontAwesomeIcon(name: .minusSquare, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+            image = UIImage.init(icon: .FAMinusSquare, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         } else {
-            image = UIImage.fontAwesomeIcon(name: .plusSquare, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+            image = UIImage.init(icon: .FAPlusSquare, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         }
         
         expandButton.setImage(image, for: .normal)

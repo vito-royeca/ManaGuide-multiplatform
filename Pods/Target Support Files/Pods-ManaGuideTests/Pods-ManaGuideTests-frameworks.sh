@@ -65,6 +65,15 @@ install_dsym() {
     echo "rsync --delete -av "${RSYNC_PROTECT_TMP_FILES[@]}" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${source}\" \"${DWARF_DSYM_FOLDER_PATH}\""
     rsync --delete -av "${RSYNC_PROTECT_TMP_FILES[@]}" --filter "- CVS/" --filter "- .svn/" --filter "- .git/" --filter "- .hg/" --filter "- Headers" --filter "- PrivateHeaders" --filter "- Modules" "${source}" "${DWARF_DSYM_FOLDER_PATH}"
   fi
+
+  local basename
+  basename="$(basename -s .framework.dSYM "$source")"
+  binary="${DWARF_DSYM_FOLDER_PATH}/${basename}.framework.dSYM/Contents/Resources/DWARF/${basename}"
+
+  # Strip invalid architectures so "fat" simulator / device frameworks work on device
+  if [[ "$(file "$binary")" == *"Mach-O dSYM companion"* ]]; then
+    strip_invalid_archs "$binary"
+  fi
 }
 
 # Signs a framework with the provided identity
@@ -112,11 +121,12 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/FacebookCore/FacebookCore.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/FacebookLogin/FacebookLogin.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/FacebookShare/FacebookShare.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/FontAwesome.swift/FontAwesome_swift.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/Font-Awesome-Swift/Font_Awesome_Swift.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/InAppSettingsKit/InAppSettingsKit.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/KXHtmlLabel/KXHtmlLabel.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Kanna/Kanna.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/MMDrawerController/MMDrawerController.framework"
@@ -129,6 +139,8 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SimulatorStatusMagic/SimulatorStatusMagic.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Sync/Sync.framework"
+  install_framework "${PODS_ROOT}/TwitterCore/iOS/TwitterCore.framework"
+  install_framework "${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework"
 fi
@@ -143,11 +155,12 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/FacebookCore/FacebookCore.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/FacebookLogin/FacebookLogin.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/FacebookShare/FacebookShare.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/FontAwesome.swift/FontAwesome_swift.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/Font-Awesome-Swift/Font_Awesome_Swift.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/InAppSettingsKit/InAppSettingsKit.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/KXHtmlLabel/KXHtmlLabel.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Kanna/Kanna.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/MMDrawerController/MMDrawerController.framework"
@@ -159,6 +172,8 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Sync/Sync.framework"
+  install_framework "${PODS_ROOT}/TwitterCore/iOS/TwitterCore.framework"
+  install_framework "${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework"
 fi

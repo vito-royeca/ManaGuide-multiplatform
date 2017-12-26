@@ -9,7 +9,7 @@
 import UIKit
 import Cosmos
 import DATASource
-import FontAwesome_swift
+import Font_Awesome_Swift
 import ManaKit
 
 enum CardViewControllerSegmentedIndex: Int {
@@ -59,7 +59,7 @@ class CardViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars, textColor: UIColor.white, size: CGSize(width: 30, height: 30))
+        rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
@@ -727,7 +727,7 @@ extension CardViewController : UICollectionViewDataSource {
                     ratingView.isHidden = cardIndex != indexPath.row
                 }
                 if let viewedImage = cell!.viewWithTag(300) as? UIImageView {
-                    let image = UIImage.fontAwesomeIcon(name: .eye, textColor: UIColor.white, size: CGSize(width: 20, height: 20))
+                    let image = UIImage.init(icon: .FAEye, size: CGSize(width: 20, height: 20), textColor: .white, backgroundColor: .clear)
                     viewedImage.image = image
                     viewedImage.isHidden = cardIndex != indexPath.row
                 }
