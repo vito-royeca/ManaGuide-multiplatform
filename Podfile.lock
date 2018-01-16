@@ -1,10 +1,10 @@
 PODS:
-  - Bolts (1.8.4):
-    - Bolts/AppLinks (= 1.8.4)
-    - Bolts/Tasks (= 1.8.4)
-  - Bolts/AppLinks (1.8.4):
+  - Bolts (1.9.0):
+    - Bolts/AppLinks (= 1.9.0)
+    - Bolts/Tasks (= 1.9.0)
+  - Bolts/AppLinks (1.9.0):
     - Bolts/Tasks
-  - Bolts/Tasks (1.8.4)
+  - Bolts/Tasks (1.9.0)
   - Cosmos (11.0.3)
   - DATASource (7.0.1)
   - DATAStack (6.2.0)
@@ -60,7 +60,7 @@ PODS:
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
     - GTMSessionFetcher/Core (~> 1.1)
-  - FirebaseUI/Storage (4.5.0):
+  - FirebaseUI/Storage (4.5.1):
     - Firebase/Storage (~> 4.0)
     - SDWebImage (~> 4.0)
   - Font-Awesome-Swift (1.6.4)
@@ -86,15 +86,14 @@ PODS:
   - GTMSessionFetcher/Core (1.1.12)
   - GTMSessionFetcher/Full (1.1.12):
     - GTMSessionFetcher/Core (= 1.1.12)
-  - InAppSettingsKit (2.8.1)
+  - iCarousel (1.8.3)
+  - InAppSettingsKit (2.9)
   - Kanna (2.1.1)
-  - KXHtmlLabel (0.8.1)
   - leveldb-library (1.20)
-  - ManaKit (2.1.0):
+  - ManaKit (2.1.1):
     - DATASource
     - DATAStack (~> 6)
     - Kanna
-    - KXHtmlLabel
     - Networking
     - Reachability
     - SSZipArchive
@@ -122,10 +121,10 @@ PODS:
   - Networking (4.1.1)
   - RATreeView (2.1.2)
   - Reachability (3.2)
-  - SDWebImage (4.2.2):
-    - SDWebImage/Core (= 4.2.2)
-  - SDWebImage/Core (4.2.2)
-  - SimulatorStatusMagic (2.0)
+  - SDWebImage (4.2.3):
+    - SDWebImage/Core (= 4.2.3)
+  - SDWebImage/Core (4.2.3)
+  - SimulatorStatusMagic (2.1)
   - SSZipArchive (2.1.1)
   - Sync (4.0.3)
   - TwitterCore (3.1.0)
@@ -145,6 +144,7 @@ DEPENDENCIES:
   - FirebaseUI/Storage
   - Font-Awesome-Swift (from `https://github.com/Vaberer/Font-Awesome-Swift`, branch `swift-3`)
   - GoogleSignIn
+  - iCarousel
   - InAppSettingsKit
   - Kanna (~> 2.1.0)
   - ManaKit
@@ -176,7 +176,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/Vaberer/Font-Awesome-Swift
 
 SPEC CHECKSUMS:
-  Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
+  Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   Cosmos: eb506859929f4add2d2aec822a27efb2f718a95d
   DATASource: 8cc3060d145b8b1855859f92fbff52b1b1930c7e
   DATAStack: 06d6a00f4fe84f11afdae2a6f47558f1087000e5
@@ -193,17 +193,17 @@ SPEC CHECKSUMS:
   FirebaseDatabase: 7088bfc4af2cc00231bb36e1404fc2d7509eb4dc
   FirebaseInstanceID: 81df5805a08001e69138664bdd02c6719a9ac80f
   FirebaseStorage: ab08d1c93a2feffa038fdd6693088b310ab1e6c6
-  FirebaseUI: 883482fea73b73bbb488c55176f4c6ad128957eb
+  FirebaseUI: 1dc9c8a87a776b488a28a28541f029e60c824cfd
   Font-Awesome-Swift: 4820aea879741d76968a89653715b375ec0cf99e
   GoogleSignIn: 3fdaa34a2ba04dbd7a25d7db39aecb0da98d5bdc
   GoogleToolboxForMac: 2501e2ad72a52eb3dfe7bd9aee7dad11b858bd20
   GTMOAuth2: c77fe325e4acd453837e72d91e3b5f13116857b2
   GTMSessionFetcher: ebaa1f79a5366922c1735f1566901f50beba23b7
-  InAppSettingsKit: 94d2fba3ccd700fc4e32c6d09fabcc0af2426744
+  iCarousel: d782f635afac190c49bb8ee455882284cff8b85f
+  InAppSettingsKit: fc3dea21846535b76b8289b119dbfdbe2505b2b2
   Kanna: 9b4b086c218703f2b94f5b21a466217dd2f9332e
-  KXHtmlLabel: 292f4f33a7a2b42ac66bcca1eb4c4502e33e0903
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
-  ManaKit: 82c01eaeaed554909c240aa00f8953158631b5ec
+  ManaKit: 45bda727ca47e860ccc34558a88308760e100009
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MMDrawerController: e3a54a5570388463ad3b36975251575b50c4e1a0
   MMDrawerController+Storyboard: c98f86c0f32cdef1d466d19a7da3ad2fc6c6ac00
@@ -211,13 +211,13 @@ SPEC CHECKSUMS:
   Networking: ffde5754883907f90f9f751e183eba4a75dc4b89
   RATreeView: 380cde0090cfde21dc6ac29137f49d3b768fdd28
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SDWebImage: 89a9d32cd520bbb46eb14e541d5109b3564af198
-  SimulatorStatusMagic: c8e958d70e0e0cd2d7cf33bb95014a222ddecf0a
+  SDWebImage: 791bb72962b3492327ddcac4b1880bd1b5458431
+  SimulatorStatusMagic: 481558caf2b9ccb2ceba2cc193728d4db3dcac07
   SSZipArchive: 14401ade5f8e82aba1ff03e9f88e9de60937ae60
   Sync: 0490b72e3322ba86095f603d7230bec36749f249
   TwitterCore: 644d59e75abccb26cf0a9050d2c4dea0e5412241
   TwitterKit: a2e60ddcedbf54091eac6f27685ca7a87681e1d7
 
-PODFILE CHECKSUM: b90fbf718798a64e3f0292819e8bd115b034195c
+PODFILE CHECKSUM: 14346039ce848d1220db22c14362d1d23ac36a8e
 
 COCOAPODS: 1.4.0.beta.2

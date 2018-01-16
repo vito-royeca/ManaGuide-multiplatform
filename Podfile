@@ -15,6 +15,7 @@ def default_pods
     pod 'Font-Awesome-Swift', :git => 'https://github.com/Vaberer/Font-Awesome-Swift', :branch => 'swift-3'
     pod 'GoogleSignIn'
     pod 'InAppSettingsKit'
+    pod 'iCarousel'
     pod 'Kanna', '~> 2.1.0'
     pod 'ManaKit'
     pod 'MBProgressHUD'

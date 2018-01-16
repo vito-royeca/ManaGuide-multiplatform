@@ -26,13 +26,13 @@ public let kTCGPlayerPricingAge = 24*3 // 3 days
 public let kNotificationCardImageDownloaded = "kNotificationCardImageDownloaded"
 
 public enum ImageName: String {
-    case cardCircles       = "Card_Circles",
-    cardBackCropped        = "cardback-crop-hq",
-    cardBack               = "cardback-hq",
-    collectorsCardBack     = "collectorscardback-hq",
-    cropBack               = "cropback-hq",
-    grayPatterned          = "Gray_Patterned_BG",
-    intlCollectorsCardBack = "internationalcollectorscardback-hq"
+    case cardCircles       = "images/Card_Circles",
+    cardBackCropped        = "images/cardback-crop-hq",
+    cardBack               = "images/cardback-hq",
+    collectorsCardBack     = "images/collectorscardback-hq",
+    cropBack               = "images/cropback-hq",
+    grayPatterned          = "images/Gray_Patterned_BG",
+    intlCollectorsCardBack = "images/internationalcollectorscardback-hq"
 }
 
 public let Symbols = [
@@ -328,7 +328,7 @@ open class ManaKit: NSObject {
         if let bundleURL = bundle.resourceURL?.appendingPathComponent("ManaKit.bundle") {
             let resourceBundle = Bundle(url: bundleURL)
             
-            if let urls = resourceBundle?.urls(forResourcesWithExtension: "ttf", subdirectory: nil/*"fonts"*/) {
+            if let urls = resourceBundle?.urls(forResourcesWithExtension: "ttf", subdirectory: "fonts") {
                 for url in urls {
                     let data = try! Data(contentsOf: url)
                     let error: UnsafeMutablePointer<Unmanaged<CFError>?>? = nil
