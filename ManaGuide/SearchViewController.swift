@@ -160,11 +160,14 @@ class SearchViewController: BaseViewController {
                             imageView.image = ManaKit.sharedInstance.cardImage(card)
                             
                             // TODO: fix multiple image loading if scrolling fast
-                            if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.cardBack) {
+                            if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.cardBack) ||
+                                imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.collectorsCardBack) ||
+                                imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.intlCollectorsCardBack) {
                                 ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
                                     if error == nil {
-                                        if c == self.dataSource!.object(indexPath) {
-                                            if let image = image {
+                                        if let card = self.dataSource!.object(indexPath) as? CMCard,
+                                            let image = image {
+                                            if card.id == c.id {
                                                 UIView.transition(with: imageView,
                                                                   duration: 1.0,
                                                                   options: .transitionFlipFromLeft,
@@ -183,7 +186,9 @@ class SearchViewController: BaseViewController {
                             imageView.image = ManaKit.sharedInstance.cardImage(cardLegality.card!)
                             
                             // TODO: fix multiple image loading if scrolling fast
-                            if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.cardBack) {
+                            if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.cardBack) ||
+                                imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.collectorsCardBack) ||
+                                imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.intlCollectorsCardBack) {
                                 ManaKit.sharedInstance.downloadCardImage(cardLegality.card!, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
                                     if error == nil {
                                         if let cl = self.dataSource!.object(indexPath) as? CMCardLegality,
@@ -781,13 +786,10 @@ extension SearchViewController : UICollectionViewDelegate {
             cardIndex = cardLegalities.index(of: c)!
         }
         
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
-                                                              "cards": cards])
-        } else if UIDevice.current.userInterfaceIdiom == .pad {
-            performSegue(withIdentifier: "showCardModal", sender: ["cardIndex": cardIndex as Any,
-                                                                   "cards": cards])
-        }
+        let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
+        let sender = ["cardIndex": cardIndex as Any,
+                      "cards": cards]
+        performSegue(withIdentifier: identifier, sender: sender)
     }
 }
 

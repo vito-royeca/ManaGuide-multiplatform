@@ -10,14 +10,11 @@ import UIKit
 import Cosmos
 import DATASource
 import Font_Awesome_Swift
+import iCarousel
 import ManaKit
 
 enum CardViewControllerSegmentedIndex: Int {
-    case image, details, discussion, lists
-}
-
-enum CardViewControllerImageSection: Int {
-    case pricing, segmented, cards
+    case image, details
 }
 
 enum CardViewControllerDetailsSection: Int {
@@ -30,7 +27,6 @@ class CardViewController: BaseViewController {
     var cards: [CMCard]?
     var variations: [CMCard]?
     var printings: [CMCard]?
-    var cardsCollectionView: UICollectionView?
     var printingsCollectionView: UICollectionView?
     var segmentedIndex: CardViewControllerSegmentedIndex = .image
     var webViewSize: CGSize?
@@ -40,18 +36,18 @@ class CardViewController: BaseViewController {
     let pricingSections = ["Low", "Mid", "High", "Foil", "Buy this card at TCGPlayer.com"]
     
     // MARK: Outlets
-    @IBOutlet weak var rightMenuButton: UIBarButtonItem!
+    @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
 
     // MARK: Actions
-    @IBAction func rightMenuAction(_ sender: UIBarButtonItem) {
-        // TODO: fix this in iPad
-//        showSettingsMenu(file: "Card")
-    }
-    
-    @IBAction func segmentedAction(_ sender: UISegmentedControl) {
+    @IBAction func contentAction(_ sender: UISegmentedControl) {
         segmentedIndex = CardViewControllerSegmentedIndex(rawValue: sender.selectedSegmentIndex)!
+        
+        if segmentedIndex == .image {
+            webViewSize = nil
+        }
         tableView.reloadData()
+        tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
     }
     
     // MARK: Overrides
@@ -59,21 +55,13 @@ class CardViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
-        rightMenuButton.title = nil
+        contentSegmentedControl.setFAIcon(icon: .FAImage, forSegmentAtIndex: 0)
+        contentSegmentedControl.setFAIcon(icon: .FAInfoCircle, forSegmentAtIndex: 1)
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
-        updateCardViews()
+        incrementCardViews()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        if let cardsCollectionView = cardsCollectionView {
-            cardsCollectionView.scrollToItem(at: IndexPath(item: cardIndex, section: 0), at: .centeredHorizontally, animated: false)
-        }
-    }
-    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         tableView.reloadData()
     }
@@ -103,7 +91,7 @@ class CardViewController: BaseViewController {
     }
     
     // MARK: Custom methods
-    func updateCardViews() {
+    func incrementCardViews() {
         if let cards = cards {
             let card = cards[cardIndex]
             title = card.name
@@ -138,6 +126,7 @@ class CardViewController: BaseViewController {
             css = css.replacingOccurrences(of: "fonts/", with: "\(bundleURL.path)/fonts/")
             css = css.replacingOccurrences(of: "images/", with: "\(bundleURL.path)/images/")
             html = html.replacingOccurrences(of: "{{css}}", with: css)
+            html = html.replacingOccurrences(of: "{{keyruneCss}}", with: "\(bundleURL.path)/css/keyrune.min.css")
         }
         
         var nameHeader: String?
@@ -270,12 +259,15 @@ class CardViewController: BaseViewController {
         }
         
         if let rarity = card.rarity_ {
+            let keyruneRarity = (rarity.name! == "Mythic Rare" || rarity.name! == "Special") ? "mythic" : rarity.name!.lowercased()
             html = html.replacingOccurrences(of: "{{rarity}}", with: rarity.name!)
+            html = html.replacingOccurrences(of: "{{setRarity}}", with: keyruneRarity)
         } else {
             html = html.replacingOccurrences(of: "{{rarity}}", with: "&mdash;")
         }
         
         if let set = card.set {
+            html = html.replacingOccurrences(of: "{{setIcon}}", with: set.code!.lowercased())
             html = html.replacingOccurrences(of: "{{set}}", with: set.name!)
             html = html.replacingOccurrences(of: "{{setOnlineOnly}}", with: set.onlineOnly ? "Yes" : "No")
         } else {
@@ -318,12 +310,10 @@ extension CardViewController : UITableViewDataSource {
         
         switch segmentedIndex {
         case .image:
-            rows = 3
+            rows = 1
         case .details:
             switch section {
-            case 0:
-                rows = 2
-            case CardViewControllerDetailsSection.rulings.rawValue + 1:
+            case CardViewControllerDetailsSection.rulings.rawValue:
                 if let cards = cards {
                     let card = cards[cardIndex]
                     
@@ -331,7 +321,7 @@ extension CardViewController : UITableViewDataSource {
                         rows = rulings_.allObjects.count >= 1 ? rulings_.allObjects.count : 1
                     }
                 }
-            case CardViewControllerDetailsSection.legalities.rawValue + 1:
+            case CardViewControllerDetailsSection.legalities.rawValue:
                 if let cards = cards {
                     let card = cards[cardIndex]
                     
@@ -342,30 +332,22 @@ extension CardViewController : UITableViewDataSource {
             default:
                 rows = 1
             }
-        case .discussion:
-            rows = 2
-        case .lists:
-            rows = 2
         }
         
         return rows
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        var rows = 0
+        var sections = 0
         
         switch segmentedIndex {
         case .image:
-            rows = 1
+            sections = 1
         case .details:
-            rows = detailsSections.count + 1
-        case .discussion:
-            rows = 1
-        case .lists:
-            rows = 1
+            sections = detailsSections.count
         }
         
-        return rows
+        return sections
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -373,65 +355,25 @@ extension CardViewController : UITableViewDataSource {
         
         switch segmentedIndex {
         case .image:
-            switch indexPath.row {
-            case CardViewControllerImageSection.pricing.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell"),
-                    let cards = cards {
-                    let card = cards[cardIndex]
-                    // TODO: Fetch price from TCGPlayer
-                    cell = c
-                }
-            case CardViewControllerImageSection.segmented.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "SegmentedCell") {
-                    cell = c
-                }
-            case CardViewControllerImageSection.cards.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "CardsCell") {
-                    if let collectionView = c.viewWithTag(100) as? UICollectionView {
-                        cardsCollectionView = collectionView
-                        
-                        if let bgImage = ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.grayPatterned) {
-                            collectionView.backgroundColor = UIColor(patternImage: bgImage)
-                        }
-                        
-                        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                            let width = tableView.frame.size.width
-                            let height = tableView.frame.size.height - (CGFloat(44) * 2)// 2x CGFloat(44) for Pricing and Segmented cells
-  
-                            flowLayout.itemSize = CGSize(width: width * 0.74, height: height * 0.9)
-                            flowLayout.sectionInset = UIEdgeInsets(top: height * 0.05, left: width * 0.13, bottom: height * 0.05, right: width * 0.13)
-                            flowLayout.minimumInteritemSpacing = CGFloat(0)
-                        }
-                        
-                        collectionView.dataSource = self
-                        collectionView.delegate = self
+            if let c = tableView.dequeueReusableCell(withIdentifier: "CarouselCell") {
+                if let carouselView = c.viewWithTag(100) as? iCarousel {
+                    carouselView.dataSource = self
+                    carouselView.delegate = self
+                    carouselView.type = .coverFlow2
+                    carouselView.isPagingEnabled = true
+                    carouselView.currentItemIndex = cardIndex
+                    
+                    if let bgImage = ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.grayPatterned) {
+                        carouselView.backgroundColor = UIColor(patternImage: bgImage)
                     }
-                    cell = c
                 }
-            default:
-                ()
+                
+                cell = c
             }
-            cell!.detailTextLabel?.textColor = UIColor.black
             
         case .details:
             switch indexPath.section {
-            case 0:
-                switch indexPath.row {
-                case 0:
-                    if let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell"),
-                        let cards = cards {
-                        let card = cards[cardIndex]
-                        // TODO: Fetch price from TCGPlayer
-                        cell = c
-                    }
-                case 1:
-                    if let c = tableView.dequeueReusableCell(withIdentifier: "SegmentedCell") {
-                        cell = c
-                    }
-                default:
-                    ()
-                }
-            case CardViewControllerDetailsSection.information.rawValue + 1:
+            case CardViewControllerDetailsSection.information.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "WebViewCell") {
                     if let webView = c.viewWithTag(100) as? UIWebView,
                         let cards = cards {
@@ -448,7 +390,7 @@ extension CardViewController : UITableViewDataSource {
                     }
                     cell = c
                 }
-            case CardViewControllerDetailsSection.printings.rawValue + 1:
+            case CardViewControllerDetailsSection.printings.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") {
                     if let collectionView = c.viewWithTag(100) as? UICollectionView,
                         let cards = cards  {
@@ -481,7 +423,7 @@ extension CardViewController : UITableViewDataSource {
                     
                     cell = c
                 }
-            case CardViewControllerDetailsSection.rulings.rawValue + 1:
+            case CardViewControllerDetailsSection.rulings.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
                     let cards = cards {
                     
@@ -521,7 +463,7 @@ extension CardViewController : UITableViewDataSource {
                     
                     cell = c
                 }
-            case CardViewControllerDetailsSection.legalities.rawValue + 1:
+            case CardViewControllerDetailsSection.legalities.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
                     let cards = cards {
                     
@@ -544,39 +486,6 @@ extension CardViewController : UITableViewDataSource {
             default:
                 ()
             }
-            cell!.detailTextLabel?.textColor = UIColor.black
-        case .discussion:
-            switch indexPath.row {
-            case 0:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell"),
-                    let cards = cards {
-                    let card = cards[cardIndex]
-                    // TODO: Fetch price from TCGPlayer
-                    cell = c
-                }
-            case 1:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "SegmentedCell") {
-                    cell = c
-                }
-            default:
-                ()
-            }
-        case .lists:
-            switch indexPath.row {
-            case 0:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell"),
-                    let cards = cards {
-                    let card = cards[cardIndex]
-                    // TODO: Fetch price from TCGPlayer
-                    cell = c
-                }
-            case 1:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "SegmentedCell") {
-                    cell = c
-                }
-            default:
-                ()
-            }
         }
         
         return cell!
@@ -588,11 +497,9 @@ extension CardViewController : UITableViewDataSource {
         switch segmentedIndex {
         case .details:
             switch section {
-            case 0:
+            case CardViewControllerDetailsSection.information.rawValue:
                 ()
-            case CardViewControllerDetailsSection.information.rawValue + 1:
-                ()
-            case CardViewControllerDetailsSection.rulings.rawValue + 1:
+            case CardViewControllerDetailsSection.rulings.rawValue:
                 headerTitle = detailsSections[CardViewControllerDetailsSection.rulings.rawValue]
                 
                 if let cards = cards {
@@ -602,13 +509,13 @@ extension CardViewController : UITableViewDataSource {
                         headerTitle?.append(": \(rulings_.count)")
                     }
                 }
-            case CardViewControllerDetailsSection.printings.rawValue + 1:
+            case CardViewControllerDetailsSection.printings.rawValue:
                 headerTitle = detailsSections[CardViewControllerDetailsSection.printings.rawValue]
                 
                 if let printings = printings {
                     headerTitle?.append(": \(printings.count)")
                 }
-            case CardViewControllerDetailsSection.legalities.rawValue + 1:
+            case CardViewControllerDetailsSection.legalities.rawValue:
                 headerTitle = detailsSections[CardViewControllerDetailsSection.legalities.rawValue]
                 
                 if let cards = cards {
@@ -619,7 +526,7 @@ extension CardViewController : UITableViewDataSource {
                     }
                 }
             default:
-                headerTitle = detailsSections[section - 1]
+                headerTitle = detailsSections[section]
             }
         default:
             ()
@@ -636,45 +543,22 @@ extension CardViewController : UITableViewDelegate {
         
         switch segmentedIndex {
         case .image:
-            switch indexPath.row {
-            case 0:
-                height = CGFloat(44)
-            case CardViewControllerImageSection.cards.rawValue:
-                height = tableView.frame.size.height - (CGFloat(44) * 2) // 2x CGFloat(44) for Pricing and Segmented cells
-            default:
-                height = UITableViewAutomaticDimension
-            }
-            
+            height = tableView.frame.size.height
         case .details:
             switch indexPath.section {
-            case 0:
-                height = CGFloat(44)
-            case CardViewControllerDetailsSection.information.rawValue + 1:
+            case CardViewControllerDetailsSection.information.rawValue:
                 if let webViewSize = webViewSize {
                     height = webViewSize.height
+                } else {
+                    height = CGFloat(88)
                 }
-            case CardViewControllerDetailsSection.printings.rawValue + 1:
+            case CardViewControllerDetailsSection.printings.rawValue:
                 height = CGFloat(88)
-            default:
-                height = UITableViewAutomaticDimension
-            }
-        case .discussion:
-            switch indexPath.row {
-            case 0:
-                height = CGFloat(44)
-            default:
-                height = UITableViewAutomaticDimension
-            }
-        case .lists:
-            switch indexPath.row {
-            case 0:
-                height = CGFloat(44)
             default:
                 height = UITableViewAutomaticDimension
             }
         }
         
-//        print("Section: \(indexPath.section), Row: \(indexPath.row)")
         return height
     }
     
@@ -688,90 +572,44 @@ extension CardViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var items = 0
         
-        switch segmentedIndex {
-        case .image:
-            if let cards = cards {
-                items = cards.count
-            }
-            
-        case .details:
-            if let printings = printings {
-                items = printings.count
-            }
-        case .discussion:
-            ()
-        case .lists:
-            ()
+        if let printings = printings {
+            items = printings.count
         }
 
         return items
     }
     
-    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        var cell:UICollectionViewCell?
-        
-        switch segmentedIndex {
-        case .image:
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardItemCell", for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ThumbnailItemCell", for: indexPath)
             
-            if let cards = cards {
-                let card = cards[indexPath.row]
-                if let imageView = cell!.viewWithTag(100) as? UIImageView {
-                    imageView.image = ManaKit.sharedInstance.cardImage(card)
-                }
-                
-                if let ratingView = cell!.viewWithTag(200) as? CosmosView {
-                    ratingView.settings.fillMode = .precise
-                    ratingView.rating = card.rating
-                    ratingView.isHidden = cardIndex != indexPath.row
-                }
-                if let viewedImage = cell!.viewWithTag(300) as? UIImageView {
-                    let image = UIImage.init(icon: .FAEye, size: CGSize(width: 20, height: 20), textColor: .white, backgroundColor: .clear)
-                    viewedImage.image = image
-                    viewedImage.isHidden = cardIndex != indexPath.row
-                }
-                if let viewsLabel = cell!.viewWithTag(400) as? UILabel {
-                    viewsLabel.text = "\(card.views)"
-                    viewsLabel.isHidden = cardIndex != indexPath.row
-                }
-            }
-        case .details:
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ThumbnailItemCell", for: indexPath)
+        if let printings = printings,
+            let thumbnailImage = cell.viewWithTag(100) as? UIImageView,
+            let setImage = cell.viewWithTag(200) as? UILabel {
+            let printing = printings[indexPath.row]
             
-            if let printings = printings,
-                let thumbnailImage = cell!.viewWithTag(100) as? UIImageView,
-                let setImage = cell!.viewWithTag(200) as? UIImageView {
-                let printing = printings[indexPath.row]
-                
-                if let croppedImage = ManaKit.sharedInstance.croppedImage(printing) {
-                    thumbnailImage.image = croppedImage
-                } else {
-                    thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
-                    ManaKit.sharedInstance.downloadCardImage(printing, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
-                        if error == nil {
-                            if printing == c {
-                                UIView.transition(with: thumbnailImage,
-                                                  duration: 1.0,
-                                                  options: .transitionCrossDissolve,
-                                                  animations: {
-                                                    thumbnailImage.image = croppedImage
-                                },
-                                                  completion: nil)
-                            }
-                        }
-                    })
-                }
-                
-                setImage.image = ManaKit.sharedInstance.setImage(set: printing.set!, rarity: printing.rarity_)
+            if let croppedImage = ManaKit.sharedInstance.croppedImage(printing) {
+                UIView.transition(with: thumbnailImage,
+                                  duration: 1.0,
+                                  options: .transitionCrossDissolve,
+                                  animations: {
+                                    thumbnailImage.image = croppedImage
+                                  },
+                                  completion: nil)
+            } else {
+                thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
+                ManaKit.sharedInstance.downloadCardImage(printing, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
+                    if error == nil {
+                        collectionView.reloadItems(at: [IndexPath(item: indexPath.row, section: 0)])
+                    }
+                })
             }
-        case .discussion:
-            ()
-        case .lists:
-            ()
+            
+            setImage.layer.cornerRadius = setImage.frame.height / 2
+            setImage.text = ManaKit.sharedInstance.keyruneUnicode(forSet: printing.set!)
+            setImage.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: printing.rarity_!)
         }
         
-        return cell!
+        return cell
     }
 }
 
@@ -780,7 +618,7 @@ extension CardViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if collectionView == printingsCollectionView {
             if let thumbnailImage = cell.viewWithTag(100) as? UIImageView {
-                thumbnailImage.layer.cornerRadius = thumbnailImage.frame.height / 6
+                thumbnailImage.layer.cornerRadius = 10
                 thumbnailImage.layer.masksToBounds = true
             }
         }
@@ -791,82 +629,50 @@ extension CardViewController : UICollectionViewDelegate {
 extension CardViewController : UIWebViewDelegate {
     func webViewDidFinishLoad(_ webView: UIWebView) {
         webViewSize = webView.scrollView.contentSize
-//        tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerDetailsSection.information.rawValue + 1)], with: .none)
         tableView.reloadData()
     }
 }
 
-// MARK: UIScrollViewDelegate
-extension CardViewController : UIScrollViewDelegate {
-    func scrollToNearestVisibleCollectionViewCell() {
-        if let collectionView = cardsCollectionView {
-            let visibleCenterPositionOfScrollView = Float(collectionView.contentOffset.x + (collectionView.bounds.size.width / 2))
-            var closestCellIndex = -1
-            var closestDistance: Float = .greatestFiniteMagnitude
-            
-            for i in 0..<collectionView.visibleCells.count {
-                let cell = collectionView.visibleCells[i]
-                let cellWidth = cell.bounds.size.width
-                let cellCenter = Float(cell.frame.origin.x + cellWidth / 2)
-                
-                // Now calculate closest cell
-                let distance: Float = fabsf(visibleCenterPositionOfScrollView - cellCenter)
-                if distance < closestDistance {
-                    closestDistance = distance
-                    closestCellIndex = collectionView.indexPath(for: cell)!.row
-                }
-            }
-            if closestCellIndex != -1 {
-                let indexPath = IndexPath(item: closestCellIndex, section: 0)
-                collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
-                
-                // update the pricing cell and download the image
-                cardIndex = closestCellIndex
-                webViewSize = nil
-                if let cell = collectionView.cellForItem(at: indexPath) {
-                    if let imageView = cell.viewWithTag(100) as? UIImageView,
-                        let cards = cards {
-                        
-                        if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: .cardBack) {
-                            ManaKit.sharedInstance.downloadCardImage(cards[cardIndex], cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
-                                
-                                if error == nil {
-                                    let card = cards[self.cardIndex]
-                                    
-                                    if c == card {
-                                        UIView.transition(with: imageView,
-                                                          duration: 1.0,
-                                                          options: .transitionFlipFromLeft,
-                                                          animations: {
-                                                            imageView.image = image
-                                        },
-                                                          completion: nil)
-                                        
-                                    }
-                                }
-                            })
-                        }
-                    }
-                }
-                collectionView.reloadData()
-                updateCardViews()
-                
-                // TODO: fetch pricing at TCGPlayer
-                // ...
-            }
+extension CardViewController : iCarouselDataSource {
+    func numberOfItems(in carousel: iCarousel) -> Int {
+        var items = 0
+        
+        if let cards = cards {
+            items = cards.count
         }
+        return items
     }
     
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        if scrollView == cardsCollectionView {
-            scrollToNearestVisibleCollectionViewCell()
+    func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
+        var cardView: UIView?
+        
+        //reuse view if available, otherwise create a new view
+        if let cards = cards {
+            if let carouselItemView = view as? CarouselItemView {
+                carouselItemView.card = cards[index]
+                carouselItemView.showCard()
+                cardView = carouselItemView
+                
+            } else {
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let vc = storyboard.instantiateViewController(withIdentifier: "CarouselItemViewController")
+                let height = tableView.frame.size.height
+                
+                vc.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width-40, height: height)
+                if let carouselItemView = vc.view as? CarouselItemView {
+                    carouselItemView.card = cards[index]
+                    carouselItemView.showCard()
+                    cardView = carouselItemView
+                }
+            }
         }
+        return cardView!
     }
-    
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if scrollView == cardsCollectionView && !decelerate {
-            scrollToNearestVisibleCollectionViewCell()
-        }
+}
+
+extension CardViewController : iCarouselDelegate {
+    func carouselCurrentItemIndexDidChange(_ carousel: iCarousel) {
+        cardIndex = carousel.currentItemIndex
     }
 }
 

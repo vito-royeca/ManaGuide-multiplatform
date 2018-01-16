@@ -289,24 +289,22 @@ extension FeaturedViewController : UICollectionViewDataSource {
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TopRatedItemCell", for: indexPath)
             if let thumbnailImage = cell?.viewWithTag(100) as? UIImageView {
-                thumbnailImage.layer.cornerRadius = thumbnailImage.frame.height / 6
-                thumbnailImage.layer.masksToBounds = true
+                thumbnailImage.layer.cornerRadius = 10
                 
                 if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
-                    thumbnailImage.image = croppedImage
+                    UIView.transition(with: thumbnailImage,
+                                      duration: 1.0,
+                                      options: .transitionCrossDissolve,
+                                      animations: {
+                                        thumbnailImage.image = croppedImage
+                                      },
+                                      completion: nil)
+                    
                 } else {
                     thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
                     ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
                         if error == nil {
-                            if self.topViewed![indexPath.row] == c {
-                                UIView.transition(with: thumbnailImage,
-                                                  duration: 1.0,
-                                                  options: .transitionCrossDissolve,
-                                                  animations: {
-                                                    thumbnailImage.image = croppedImage
-                                },
-                                                  completion: nil)
-                            }
+                            collectionView.reloadItems(at: [IndexPath(item: indexPath.row, section: 0)])
                         }
                     })
                 }
@@ -316,9 +314,8 @@ extension FeaturedViewController : UICollectionViewDataSource {
                 let set = card.set {
                 setImage.image = ManaKit.sharedInstance.setImage(set: set, rarity: rarity)
             }
-            if let nameLabel = cell?.viewWithTag(300) as? UILabel {
-                nameLabel.adjustsFontSizeToFitWidth = true
-                nameLabel.text = card.name
+            if let label = cell?.viewWithTag(300) as? UILabel {
+                label.text = card.name
             }
             if let ratingView = cell?.viewWithTag(400) as? CosmosView {
                 ratingView.rating = card.rating
@@ -330,58 +327,57 @@ extension FeaturedViewController : UICollectionViewDataSource {
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TopViewedItemCell", for: indexPath)
             if let thumbnailImage = cell?.viewWithTag(100) as? UIImageView {
-                thumbnailImage.layer.cornerRadius = thumbnailImage.frame.height / 6
-                thumbnailImage.layer.masksToBounds = true
+                thumbnailImage.layer.cornerRadius = 10
                 
                 if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
-                    thumbnailImage.image = croppedImage
+                    UIView.transition(with: thumbnailImage,
+                                      duration: 1.0,
+                                      options: .transitionCrossDissolve,
+                                      animations: {
+                                        thumbnailImage.image = croppedImage
+                                      },
+                                      completion: nil)
                 } else {
                     thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
                     ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
                         if error == nil {
-                            if self.topViewed![indexPath.row] == c {
-                                UIView.transition(with: thumbnailImage,
-                                                  duration: 1.0,
-                                                  options: .transitionCrossDissolve,
-                                                  animations: {
-                                                    thumbnailImage.image = croppedImage
-                                },
-                                                  completion: nil)
-                            }
+                            collectionView.reloadItems(at: [IndexPath(item: indexPath.row, section: 0)])
                         }
                     })
                 }
             }
-            if let setImage = cell?.viewWithTag(200) as? UIImageView,
+            if let label = cell?.viewWithTag(200) as? UILabel,
                 let rarity = card.rarity_,
                 let set = card.set {
-                setImage.image = ManaKit.sharedInstance.setImage(set: set, rarity: rarity)
+                label.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+                label.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: rarity)
+                label.layer.cornerRadius = label.frame.height / 2
             }
-            if let nameLabel = cell?.viewWithTag(300) as? UILabel {
-                nameLabel.adjustsFontSizeToFitWidth = true
-                nameLabel.text = card.name
+            if let label = cell?.viewWithTag(300) as? UILabel {
+                label.text = card.name
             }
-            if let viewedImage = cell?.viewWithTag(400) as? UIImageView {
-                let image = UIImage.init(icon: .FAEye, size: CGSize(width: 20, height: 20), textColor: .black, backgroundColor: .clear)
-                viewedImage.image = image
+            if let label = cell?.viewWithTag(400) as? UILabel {
+                label.FAIcon = .FAEye
             }
-            if let viewsLabel = cell?.viewWithTag(500) as? UILabel {
-                viewsLabel.text = "\(card.views)"
+            if let label = cell?.viewWithTag(500) as? UILabel {
+                label.text = "\(card.views)"
             }
             
         } else if collectionView == latestSetsCollectionView {
             let set = latestSets![indexPath.row]
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SetItemCell", for: indexPath)
-            if let iconView = cell?.viewWithTag(100) as? UIImageView {
-                iconView.image = ManaKit.sharedInstance.setImage(set: set, rarity: nil)
+            if let label = cell?.viewWithTag(100) as? UILabel {
+                label.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
             }
-            if let nameLabel = cell?.viewWithTag(200) as? UILabel {
-                nameLabel.adjustsFontSizeToFitWidth = true
-                nameLabel.text = set.name
+            if let label = cell?.viewWithTag(200) as? UILabel {
+                label.text = set.name
             }
         }
         
+        if let cell = cell {
+            cell.setNeedsLayout()
+        }
         return cell!
     }
 }
@@ -389,31 +385,29 @@ extension FeaturedViewController : UICollectionViewDataSource {
 // MARK: UICollectionViewDelegate
 extension FeaturedViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        var identifier = ""
+        var sender: Any?
+        
         if collectionView == topRatedCollectionView {
             let card = topRated![indexPath.row]
             let cardIndex = 0
             
-            if UIDevice.current.userInterfaceIdiom == .phone {
-                performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
-                                                                  "cards": [card]])
-            } else if UIDevice.current.userInterfaceIdiom == .pad {
-                performSegue(withIdentifier: "showCardModal", sender: ["cardIndex": cardIndex as Any,
-                                                                       "cards": [card]])
-            }
+            identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
+            sender = ["cardIndex": cardIndex as Any,
+                      "cards": [card]]
         } else if collectionView == topViewedCollectionView {
             let card = topViewed![indexPath.row]
             let cardIndex = 0
             
-            if UIDevice.current.userInterfaceIdiom == .phone {
-                performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
-                                                                  "cards": [card]])
-            } else if UIDevice.current.userInterfaceIdiom == .pad {
-                performSegue(withIdentifier: "showCardModal", sender: ["cardIndex": cardIndex as Any,
-                                                                       "cards": [card]])
-            }
+            identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
+            sender = ["cardIndex": cardIndex as Any,
+                      "cards": [card]]
         } else if collectionView == latestSetsCollectionView {
             let set = latestSets![indexPath.row]
-            performSegue(withIdentifier: "showSet", sender: set)
+            identifier = "showSet"
+            sender = set
         }
+        
+        performSegue(withIdentifier: identifier, sender: sender)
     }
 }
