@@ -13,6 +13,7 @@ import ManaKit
 
 let kMaxFetchTopViewed = UInt(15)
 let kMaxFetchTopRated  = UInt(15)
+let kCardViewUpdatedNotification = "kCardViewUpdatedNotification"
 
 class FirebaseManager: NSObject {
     var queries = [String: DatabaseQuery]()
@@ -38,8 +39,18 @@ class FirebaseManager: NSObject {
             
             return TransactionResult.success(withValue: currentData)
         }) { (error, committed, snapshot) in
-            if let error = error {
-                print(error.localizedDescription)
+            if let snapshot = snapshot {
+                let fcard = FCCard(snapshot: snapshot)
+                let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                request.predicate = NSPredicate(format: "id == %@", snapshot.key)
+                
+                if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
+                    if let card = result.first {
+                        card.views = Int64(fcard.views == nil ? 0 : fcard.views!)
+                        try! ManaKit.sharedInstance.dataStack!.mainContext.save()
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: kCardViewUpdatedNotification), object: nil, userInfo: ["card": card])
+                    }
+                }
             }
         }
     }

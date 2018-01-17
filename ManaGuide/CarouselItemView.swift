@@ -16,10 +16,16 @@ class CarouselItemView: UIView {
     var card: CMCard?
     
     // Outlets
+    @IBOutlet var lowPriceLabel: UILabel!
+    @IBOutlet var midPriceLabel: UILabel!
+    @IBOutlet var highPriceLabel: UILabel!
+    @IBOutlet var foilPriceLabel: UILabel!
     @IBOutlet var cardImage: UIImageView!
     @IBOutlet var ratingView: CosmosView!
     @IBOutlet var viewsLabel: UILabel!
-    
+    @IBOutlet weak var labelWidthConstraint: NSLayoutConstraint!
+    @IBOutlet weak var priceWidthConstraint: NSLayoutConstraint!
+
     // Custom methods
     func showCard() {
         if let bgImage = ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.grayPatterned) {
@@ -49,46 +55,25 @@ class CarouselItemView: UIView {
                     }
                 })
             }
+            
+            ManaKit.sharedInstance.fetchTCGPlayerPricing(card: card, completion: {(cardPricing: CMCardPricing?, error: Error?) in
+                if let cardPricing = cardPricing,
+                    let c = self.card {
+                    
+                    if c.id == cardPricing.card?.id {
+                        self.lowPriceLabel.text = cardPricing.low > 0 ? "$\(cardPricing.low)" : "NA"
+                        self.midPriceLabel.text = cardPricing.average > 0 ? "$\(cardPricing.average)" : "NA"
+                        self.highPriceLabel.text = cardPricing.high > 0 ? "$\(cardPricing.high)" : "NA"
+                        self.foilPriceLabel.text = cardPricing.foil > 0 ? "$\(cardPricing.foil)" : "NA"
+                    }
+                }
+            })
         }
     }
     
-    func showPricing() {
-//        if let cards = cards {
-//            let card = cards[indexPath.row]
-//
-//            if let label = cell!.viewWithTag(100) as? UILabel {
-//                label.text = "Low\n100"
-//                label.textColor = UIColor.red
-//            }
-//            if let label = cell!.viewWithTag(200) as? UILabel {
-//                label.text = "Mid\n100"
-//                label.textColor = UIColor.blue
-//            }
-//            if let label = cell!.viewWithTag(300) as? UILabel {
-//                label.text = "High\n100"
-//                label.textColor = ManaKit.sharedInstance.hexStringToUIColor(hex: "008000")
-//            }
-//            if let label = cell!.viewWithTag(400) as? UILabel {
-//                label.text = "Foil\n100"
-//                label.textColor = ManaKit.sharedInstance.hexStringToUIColor(hex: "998100")
-//            }
-//            if let imageView = cell!.viewWithTag(500) as? UIImageView {
-//                imageView.image = ManaKit.sharedInstance.cardImage(card)
-//            }
-//            if let ratingView = cell!.viewWithTag(600) as? CosmosView {
-//                ratingView.settings.fillMode = .precise
-//                ratingView.rating = card.rating
-//                ratingView.isHidden = cardIndex != indexPath.row
-//            }
-//            if let viewedImage = cell!.viewWithTag(700) as? UIImageView {
-//                let image = UIImage.init(icon: .FAEye, size: CGSize(width: 20, height: 20), textColor: .white, backgroundColor: .clear)
-//                viewedImage.image = image
-//                viewedImage.isHidden = cardIndex != indexPath.row
-//            }
-//            if let viewsLabel = cell!.viewWithTag(800) as? UILabel {
-//                viewsLabel.text = "\(card.views)"
-//                viewsLabel.isHidden = cardIndex != indexPath.row
-//            }
-//        }
+    func showCardViews() {
+        if let card = card {
+            viewsLabel.text = "\u{f06e} \(card.views)"
+        }
     }
 }

@@ -59,6 +59,8 @@ class CardViewController: BaseViewController {
         contentSegmentedControl.setFAIcon(icon: .FAInfoCircle, forSegmentAtIndex: 1)
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kCardViewUpdatedNotification), object:nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateCardViews(_:)), name: NSNotification.Name(rawValue: kCardViewUpdatedNotification), object: nil)
         incrementCardViews()
     }
 
@@ -100,6 +102,23 @@ class CardViewController: BaseViewController {
         }
     }
     
+    func updateCardViews(_ notification: Notification) {
+        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) {
+            if let carouselView = cell.viewWithTag(100) as? iCarousel,
+                let userInfo = notification.userInfo {
+                
+                if let card = userInfo["card"] as? CMCard,
+                    let carouselItemView = carouselView.itemView(at: cardIndex) as? CarouselItemView {
+                    
+                    if card.id == carouselItemView.card?.id {
+                        carouselItemView.card = card
+                        carouselItemView.showCardViews()
+                    }
+                }
+            }
+        }
+    }
+
     func replaceSymbols(inText text: String) -> String {
         var newText = text
         newText = newText.replacingOccurrences(of: "\n", with:"<br/> ")
@@ -375,52 +394,10 @@ extension CardViewController : UITableViewDataSource {
             switch indexPath.section {
             case CardViewControllerDetailsSection.information.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "WebViewCell") {
-                    if let webView = c.viewWithTag(100) as? UIWebView,
-                        let cards = cards {
-                        
-                        if webViewSize == nil {
-                            let card = cards[cardIndex]
-                            let html = composeHTMLInformation(forCard: card)
-                            
-                            webView.delegate = self
-                            webView.scrollView.isScrollEnabled = false
-                            webView.scrollView.bounces = false
-                            webView.loadHTMLString(html, baseURL: URL(fileURLWithPath: "\(Bundle.main.bundlePath)/data/web"))
-                        }
-                    }
                     cell = c
                 }
             case CardViewControllerDetailsSection.printings.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") {
-                    if let collectionView = c.viewWithTag(100) as? UICollectionView,
-                        let cards = cards  {
-                        let card = cards[cardIndex]
-                        
-                        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                            let width = CGFloat(100)
-                            let height = CGFloat(72)
-                            flowLayout.itemSize = CGSize(width: width, height: height)
-                            flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
-                        }
-                        
-                        collectionView.dataSource = self
-                        collectionView.delegate = self
-                        
-                        printingsCollectionView = collectionView
-                        
-                        if let printings_ = card.printings_ {
-                            let array = printings_.allObjects as! [CMSet]
-                            let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-                            request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                                                       NSSortDescriptor(key: "number", ascending: true),
-                                                       NSSortDescriptor(key: "mciNumber", ascending: true)]
-                            request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, array.map({$0.code}))
-                            
-                            printings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMCard]
-                        }
-                        collectionView.reloadData()
-                    }
-                    
                     cell = c
                 }
             case CardViewControllerDetailsSection.rulings.rawValue:
@@ -538,6 +515,62 @@ extension CardViewController : UITableViewDataSource {
 
 // MARK: UITableViewDelegate
 extension CardViewController : UITableViewDelegate {
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        switch segmentedIndex {
+        case .details:
+            switch indexPath.section {
+            case CardViewControllerDetailsSection.information.rawValue:
+                    if let webView = cell.viewWithTag(100) as? UIWebView,
+                        let cards = cards {
+                        
+                        if webViewSize == nil {
+                            let card = cards[cardIndex]
+                            let html = composeHTMLInformation(forCard: card)
+                            
+                            webView.delegate = self
+                            webView.scrollView.isScrollEnabled = false
+                            webView.scrollView.bounces = false
+                            webView.loadHTMLString(html, baseURL: URL(fileURLWithPath: "\(Bundle.main.bundlePath)/data/web"))
+                        }
+                    }
+            case CardViewControllerDetailsSection.printings.rawValue:
+                if let collectionView = cell.viewWithTag(100) as? UICollectionView,
+                    let cards = cards  {
+                    let card = cards[cardIndex]
+                    
+                    if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                        let width = CGFloat(100)
+                        let height = CGFloat(72)
+                        flowLayout.itemSize = CGSize(width: width, height: height)
+                        flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
+                    }
+                    
+                    collectionView.dataSource = self
+                    collectionView.delegate = self
+                    
+                    printingsCollectionView = collectionView
+                    
+                    if let printings_ = card.printings_ {
+                        let array = printings_.allObjects as! [CMSet]
+                        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                        request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                                   NSSortDescriptor(key: "number", ascending: true),
+                                                   NSSortDescriptor(key: "mciNumber", ascending: true)]
+                        request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, array.map({$0.code}))
+                        
+                        printings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMCard]
+                    }
+                    collectionView.reloadData()
+                }
+                
+            default:
+                ()
+            }
+        default:
+            ()
+        }
+    }
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         var height = CGFloat(0)
         
@@ -629,6 +662,7 @@ extension CardViewController : UICollectionViewDelegate {
 extension CardViewController : UIWebViewDelegate {
     func webViewDidFinishLoad(_ webView: UIWebView) {
         webViewSize = webView.scrollView.contentSize
+//        tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         tableView.reloadData()
     }
 }
@@ -660,6 +694,8 @@ extension CardViewController : iCarouselDataSource {
                 
                 vc.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width-40, height: height)
                 if let carouselItemView = vc.view as? CarouselItemView {
+                    carouselItemView.labelWidthConstraint.constant = carouselItemView.frame.size.width / 4
+                    carouselItemView.priceWidthConstraint.constant = carouselItemView.frame.size.width / 4
                     carouselItemView.card = cards[index]
                     carouselItemView.showCard()
                     cardView = carouselItemView
@@ -673,6 +709,7 @@ extension CardViewController : iCarouselDataSource {
 extension CardViewController : iCarouselDelegate {
     func carouselCurrentItemIndexDidChange(_ carousel: iCarousel) {
         cardIndex = carousel.currentItemIndex
+        incrementCardViews()
     }
 }
 

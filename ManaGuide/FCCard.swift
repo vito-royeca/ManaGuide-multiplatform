@@ -32,11 +32,16 @@ struct FCCard {
     }
     
     init(snapshot: DataSnapshot) {
-        let value = snapshot.value as! [String: Any]
-        self.key = snapshot.key
-        self.ref = snapshot.ref
-        
-        self.rating = value[Keys.Rating] as? Double
-        self.views = value[Keys.Views] as? Int
+        if let value = snapshot.value as? [String: Any] {
+            self.key = snapshot.key
+            self.ref = snapshot.ref
+            self.rating = value[Keys.Rating] as? Double
+            self.views = value[Keys.Views] as? Int
+        } else {
+            self.key = nil
+            self.ref = nil
+            self.rating = nil
+            self.views = nil
+        }
     }
 }
