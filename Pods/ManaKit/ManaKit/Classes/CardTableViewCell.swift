@@ -39,10 +39,7 @@ open class CardTableViewCell: UITableViewCell {
         
         // add round corners
         thumbnailImage.layer.cornerRadius = thumbnailImage.frame.height / 6
-        thumbnailImage.layer.masksToBounds = true
-        
         setImage.layer.cornerRadius = setImage.frame.height / 2
-        setImage.layer.masksToBounds = true
     }
 
     override open func setSelected(_ selected: Bool, animated: Bool) {
@@ -59,8 +56,8 @@ open class CardTableViewCell: UITableViewCell {
         symbolImage.image = nil
         typeLabel.text = nil
         setImage.text = nil
-        lowPriceLabel.text = "NA"
-        midPriceLabel.text = "NA"
+        lowPriceLabel.text  = "NA"
+        midPriceLabel.text  = "NA"
         highProceLabel.text = "NA"
         foilPriceLabel.text = "NA"
     }
@@ -68,16 +65,16 @@ open class CardTableViewCell: UITableViewCell {
     // MARK: Custom methods
     open func updateDataDisplay() {
         if let card = card {
-            let isModern = ManaKit.sharedInstance.isModern(card)
-        
             // thumbnail image
             if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
                 thumbnailImage.image = croppedImage
             } else {
                 thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
+                
                 ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
+                    
                     if error == nil {
-                        if self.card?.id == c.id {
+                        if c.id == self.card?.id  {
                             UIView.transition(with: self.thumbnailImage,
                                               duration: 1.0,
                                               options: .transitionCrossDissolve,

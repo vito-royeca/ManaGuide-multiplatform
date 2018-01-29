@@ -29,6 +29,9 @@
                             <constraint firstAttribute="height" constant="66" id="DbN-om-4G1"/>
                             <constraint firstAttribute="width" constant="100" id="eL2-GB-hNR"/>
                         </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                        </userDefinedRuntimeAttributes>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kbw-1w-5Bx">
                         <rect key="frame" x="91" y="57" width="20" height="20"/>
@@ -40,6 +43,9 @@
                         <fontDescription key="fontDescription" name="Keyrune" family="Keyrune" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                        </userDefinedRuntimeAttributes>
                     </label>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="y9M-ig-dNi">
                         <rect key="frame" x="124" y="8" width="180" height="20"/>

@@ -21,42 +21,42 @@ PODS:
     - FacebookCore (~> 0.2)
     - FBSDKCoreKit (~> 4.21)
     - FBSDKShareKit (~> 4.21)
-  - FBSDKCoreKit (4.29.0):
+  - FBSDKCoreKit (4.30.0):
     - Bolts (~> 1.7)
-  - FBSDKLoginKit (4.29.0):
+  - FBSDKLoginKit (4.30.0):
     - FBSDKCoreKit
-  - FBSDKShareKit (4.29.0):
-    - FBSDKCoreKit
-  - Firebase/Auth (4.8.0):
+  - FBSDKShareKit (4.30.0):
+    - FBSDKCoreKit (~> 4.30.0)
+  - Firebase/Auth (4.8.2):
     - Firebase/Core
-    - FirebaseAuth (= 4.4.1)
-  - Firebase/Core (4.8.0):
-    - FirebaseAnalytics (= 4.0.5)
-    - FirebaseCore (= 4.0.13)
-  - Firebase/Database (4.8.0):
+    - FirebaseAuth (= 4.4.2)
+  - Firebase/Core (4.8.2):
+    - FirebaseAnalytics (= 4.0.9)
+    - FirebaseCore (= 4.0.14)
+  - Firebase/Database (4.8.2):
     - Firebase/Core
-    - FirebaseDatabase (= 4.1.3)
-  - Firebase/Storage (4.8.0):
+    - FirebaseDatabase (= 4.1.4)
+  - Firebase/Storage (4.8.2):
     - Firebase/Core
-    - FirebaseStorage (= 2.1.1)
-  - FirebaseAnalytics (4.0.5):
+    - FirebaseStorage (= 2.1.2)
+  - FirebaseAnalytics (4.0.9):
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
     - nanopb (~> 0.3)
-  - FirebaseAuth (4.4.1):
+  - FirebaseAuth (4.4.2):
     - FirebaseAnalytics (~> 4.0)
     - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
     - GTMSessionFetcher/Core (~> 1.1)
-  - FirebaseCore (4.0.13):
+  - FirebaseCore (4.0.14):
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
-  - FirebaseDatabase (4.1.3):
+  - FirebaseDatabase (4.1.4):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
     - leveldb-library (~> 1.18)
   - FirebaseInstanceID (2.0.8):
     - FirebaseCore (~> 4.0)
-  - FirebaseStorage (2.1.1):
+  - FirebaseStorage (2.1.2):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
     - GTMSessionFetcher/Core (~> 1.1)
@@ -90,7 +90,7 @@ PODS:
   - InAppSettingsKit (2.9)
   - Kanna (2.1.1)
   - leveldb-library (1.20)
-  - ManaKit (2.1.1):
+  - ManaKit (2.2.1):
     - DATASource
     - DATAStack (~> 6)
     - Kanna
@@ -183,16 +183,16 @@ SPEC CHECKSUMS:
   FacebookCore: 3ffa190a3f1f96cec0e44d3fc221bc322c595ffa
   FacebookLogin: 0af839ea858faef99550d16596b87b4a8e8906e6
   FacebookShare: d086f7a4610bbbca9cec5e774de450a9b3e1a20b
-  FBSDKCoreKit: 6f139173dc63a1deaff4430a55f2fe5bb222d2af
-  FBSDKLoginKit: 56a057ca6822535ea0faa25f57a7c41edb697fd4
-  FBSDKShareKit: 18a2cd118aef11dd657fe7e8b64bae5c719088b2
-  Firebase: 710decbbc6d9d48530e9a5dba3209740c3532e05
-  FirebaseAnalytics: 5b02a63ead2c3f0259cfc7f15e053e440587ecf8
-  FirebaseAuth: dc0dd403beca5b2b016aac89c2d0b8dad1c81926
-  FirebaseCore: 3c02ec652db3d03fdc8bc6d9154af3e20d64b6f5
-  FirebaseDatabase: 7088bfc4af2cc00231bb36e1404fc2d7509eb4dc
+  FBSDKCoreKit: 7c4bba2877781a131ab5d54c0a78c405d4307b62
+  FBSDKLoginKit: fe7a7e82373dc5daad92e1623219e86224ab1fb1
+  FBSDKShareKit: a9427574b51bde4f437262c3f118c4ccfddeef6c
+  Firebase: 7d3b8cd837ad9fcd391657734c0d56dab8e9a5a3
+  FirebaseAnalytics: 388b630c15713f5dbf364071f5f3d6077fb52f4e
+  FirebaseAuth: bd2738c5c1e92b108ba5f7f7335908097a4e50bb
+  FirebaseCore: 2e0b98fb2d64ca8140136beff15772bdd14d2dd7
+  FirebaseDatabase: de4446507ccd3257fca37d16f40e1540324571fd
   FirebaseInstanceID: 81df5805a08001e69138664bdd02c6719a9ac80f
-  FirebaseStorage: ab08d1c93a2feffa038fdd6693088b310ab1e6c6
+  FirebaseStorage: 181bb543d39ee3c53e0558de7ba86b1286a0427f
   FirebaseUI: 1dc9c8a87a776b488a28a28541f029e60c824cfd
   Font-Awesome-Swift: 4820aea879741d76968a89653715b375ec0cf99e
   GoogleSignIn: 3fdaa34a2ba04dbd7a25d7db39aecb0da98d5bdc
@@ -203,7 +203,7 @@ SPEC CHECKSUMS:
   InAppSettingsKit: fc3dea21846535b76b8289b119dbfdbe2505b2b2
   Kanna: 9b4b086c218703f2b94f5b21a466217dd2f9332e
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
-  ManaKit: 45bda727ca47e860ccc34558a88308760e100009
+  ManaKit: 86385674288ce4bcb181cfd2229d9e90cf3bbc6b
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MMDrawerController: e3a54a5570388463ad3b36975251575b50c4e1a0
   MMDrawerController+Storyboard: c98f86c0f32cdef1d466d19a7da3ad2fc6c6ac00
