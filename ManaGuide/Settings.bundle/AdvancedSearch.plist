@@ -80,7 +80,7 @@
 			<key>Key</key>
 			<string>searchKeywordMatch</string>
 			<key>DefaultValue</key>
-			<string>contains</string>
+			<string>begins</string>
 			<key>Values</key>
 			<array>
 				<string>begins</string>

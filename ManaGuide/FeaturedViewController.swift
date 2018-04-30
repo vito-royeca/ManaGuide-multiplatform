@@ -302,7 +302,7 @@ extension FeaturedViewController : UICollectionViewDataSource {
                     
                 } else {
                     thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
-                    ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
+                    ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
                         if error == nil {
                             collectionView.reloadItems(at: [IndexPath(item: indexPath.row, section: 0)])
                         }
@@ -339,7 +339,7 @@ extension FeaturedViewController : UICollectionViewDataSource {
                                       completion: nil)
                 } else {
                     thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
-                    ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
+                    ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
                         if error == nil {
                             collectionView.reloadItems(at: [IndexPath(item: indexPath.row, section: 0)])
                         }

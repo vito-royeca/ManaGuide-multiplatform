@@ -77,8 +77,9 @@ class SetsViewController: BaseViewController {
         
         let ds = DATASource(tableView: tableView, cellIdentifier: "SetCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setsSectionName, configuration: { cell, item, indexPath in
             if let set = item as? CMSet {
-                if let setIconView = cell.contentView.viewWithTag(100) as? UIImageView {
-                    setIconView.image = ManaKit.sharedInstance.setImage(set: set, rarity: nil)
+                if let label = cell.contentView.viewWithTag(100) as? UILabel {
+                    label.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+                    label.textColor = UIColor.black
                 }
                 if let label = cell.contentView.viewWithTag(200) as? UILabel {
                     label.text = set.name

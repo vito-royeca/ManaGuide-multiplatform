@@ -163,7 +163,7 @@ class SearchViewController: BaseViewController {
                             if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.cardBack) ||
                                 imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.collectorsCardBack) ||
                                 imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.intlCollectorsCardBack) {
-                                ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
+                                ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
                                     if error == nil {
                                         if let card = self.dataSource!.object(indexPath) as? CMCard,
                                             let image = image {
@@ -189,7 +189,7 @@ class SearchViewController: BaseViewController {
                             if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.cardBack) ||
                                 imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.collectorsCardBack) ||
                                 imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.intlCollectorsCardBack) {
-                                ManaKit.sharedInstance.downloadCardImage(cardLegality.card!, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
+                                ManaKit.sharedInstance.downloadCardImage(cardLegality.card!, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
                                     if error == nil {
                                         if let cl = self.dataSource!.object(indexPath) as? CMCardLegality,
                                             let image = image {

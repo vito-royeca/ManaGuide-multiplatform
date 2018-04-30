@@ -131,8 +131,6 @@ class CardViewController: BaseViewController {
             }
         }
         
-        
-        
         return newText
     }
     
@@ -181,26 +179,35 @@ class CardViewController: BaseViewController {
         
         if let originalText = card.originalText {
             if card.text != originalText {
-                html = html.replacingOccurrences(of: "{{originalText}}", with: replaceSymbols(inText: originalText))
+                html = html.replacingOccurrences(of: "{{originalText}}", with:
+                "<tr><td colspan=\"2\" class='detailHeader'>Original Text</td></tr>" +
+                "<tr><td colspan=\"2\" class='originalText'>\(replaceSymbols(inText: originalText))</td></tr>" +
+                "<tr><td colspan=\"2\">&nbsp;</td></tr>")
             } else {
-                html = html.replacingOccurrences(of: "{{originalText}}", with: "&mdash;")
+                html = html.replacingOccurrences(of: "{{originalText}}", with: "")
             }
         } else {
-            html = html.replacingOccurrences(of: "{{originalText}}", with: "&mdash;")
-        }
-        
-        if let flavorText = card.flavor {
-            html = html.replacingOccurrences(of: "{{flavorText}}", with:  replaceSymbols(inText: flavorText))
-        } else {
-            html = html.replacingOccurrences(of: "{{flavorText}}", with: "&mdash;")
+            html = html.replacingOccurrences(of: "{{originalText}}", with: "")
         }
         
         if let oracleText = card.text {
-            html = html.replacingOccurrences(of: "{{text}}", with: replaceSymbols(inText: oracleText))
+            html = html.replacingOccurrences(of: "{{text}}", with:
+                "<tr><td colspan=\"2\" class='detailHeader'>Text</td></tr>" +
+                    "<tr><td colspan=\"2\">\(replaceSymbols(inText: oracleText))</td></tr>" +
+                "<tr><td colspan=\"2\">&nbsp;</td></tr>")
         } else {
-            html = html.replacingOccurrences(of: "{{text}}", with: "&nbsp;")
+            html = html.replacingOccurrences(of: "{{text}}", with: "")
         }
-
+        
+        if let flavorText = card.flavor {
+            html = html.replacingOccurrences(of: "{{flavorText}}", with:
+                "<tr><td colspan=\"2\" class='detailHeader'>Flavor</td></tr>" +
+                "<tr><td colspan=\"2\" class='flavorText'>\(replaceSymbols(inText: flavorText))</td></tr>" +
+                "<tr><td colspan=\"2\">&nbsp;</td></tr>")
+        } else {
+            html = html.replacingOccurrences(of: "{{flavorText}}", with: "")
+        }
+        
         if let manaCost = card.manaCost {
             html = html.replacingOccurrences(of: "{{manaCost}}", with: replaceSymbols(inText: manaCost))
         } else {
@@ -381,10 +388,6 @@ extension CardViewController : UITableViewDataSource {
                     carouselView.type = .coverFlow2
                     carouselView.isPagingEnabled = true
                     carouselView.currentItemIndex = cardIndex
-                    
-                    if let bgImage = ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.grayPatterned) {
-                        carouselView.backgroundColor = UIColor(patternImage: bgImage)
-                    }
                 }
                 
                 cell = c
@@ -630,7 +633,7 @@ extension CardViewController : UICollectionViewDataSource {
                                   completion: nil)
             } else {
                 thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
-                ManaKit.sharedInstance.downloadCardImage(printing, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
+                ManaKit.sharedInstance.downloadCardImage(printing, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
                     if error == nil {
                         collectionView.reloadItems(at: [IndexPath(item: indexPath.row, section: 0)])
                     }

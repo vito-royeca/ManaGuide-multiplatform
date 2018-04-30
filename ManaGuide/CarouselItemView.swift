@@ -28,19 +28,17 @@ class CarouselItemView: UIView {
 
     // Custom methods
     func showCard() {
-        if let bgImage = ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.grayPatterned) {
-            backgroundColor = UIColor(patternImage: bgImage)
-        }
-        
         if let card = card {
             cardImage.image = ManaKit.sharedInstance.cardImage(card)
+            // TODO: fetch card.rating from Firebase
             ratingView.rating = Double(arc4random_uniform(5) + 1); //card.rating
+            
             viewsLabel.text = "\u{f06e} \(card.views)"
             
-            if cardImage.image == ManaKit.sharedInstance.imageFromFramework(imageName: .cardBack) ||
-                cardImage.image == ManaKit.sharedInstance.imageFromFramework(imageName: .collectorsCardBack) ||
-                cardImage.image == ManaKit.sharedInstance.imageFromFramework(imageName: .intlCollectorsCardBack) {
-                ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
+            if cardImage.image == nil {
+                cardImage.image = ManaKit.sharedInstance.cardBack(card)
+                
+                ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
                     
                     if error == nil {
                         if c.id == card.id {

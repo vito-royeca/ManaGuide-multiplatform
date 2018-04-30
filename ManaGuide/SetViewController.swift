@@ -145,11 +145,10 @@ class SetViewController: BaseViewController {
                             imageView.image = ManaKit.sharedInstance.cardImage(card)
                             
                             // TODO: fix multiple image loading if scrolling fast
-                            if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.cardBack) ||
-                                imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.collectorsCardBack) ||
-                                imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.intlCollectorsCardBack) {
+                            if imageView.image == nil {
+                                imageView.image = ManaKit.sharedInstance.cardBack(card)
                                 
-                                ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: NSError?) in
+                                ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
                                     if error == nil {
                                         if let card = self.dataSource!.object(indexPath) as? CMCard,
                                             let image = image {
@@ -406,10 +405,6 @@ extension SetViewController : UITableViewDataSource {
                         self.collectionView = collectionView
                         collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "Header")
                         collectionView.delegate = self
-                        
-                        if let bgImage = ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.grayPatterned) {
-                            collectionView.backgroundColor = UIColor(patternImage: bgImage)
-                        }
                         
                         if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                             let width = tableView.frame.size.width

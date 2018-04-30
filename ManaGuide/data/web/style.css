@@ -19,7 +19,7 @@
 body, td
 {
     font-family: Helvetica;
-    font-size: 20pt;
+    font-size: 22pt;
 }
 
 html, body
@@ -49,21 +49,21 @@ html, body
 .th_player, .th_rank
 {
 	font-family: Magic;
-    font-size: 24pt;
+    font-size: 26pt;
     color: #ffffff;
 }
 
 .td_player, .td_rank
 {
 	font-family: Magic;
-    font-size: 20pt;
+    font-size: 22pt;
     color: #ffffff;
 }
 
 .td_score
 {
     font-family: Magic;
-    font-size: 18pt;
+    font-size: 20pt;
     color: #ffffff;
     text-align: right;
 }
@@ -71,7 +71,7 @@ html, body
 .td_totalCMC
 {
 	font-family: Magic;
-    font-size: 20pt;
+    font-size: 22pt;
     color: #ffffff;
     text-align: right;
 }
@@ -79,63 +79,63 @@ html, body
 .cardNamePreEightEdition
 {
     font-family: Magic;
-    font-size: 36pt;
+    font-size: 38pt;
 }
 
 .cardNameEightEdition
 {
     font-family: Matrix;
-    font-size: 36pt;
+    font-size: 38pt;
 }
 
 .cardNameMagic2015
 {
     font-family: Beleren;
-    font-size: 36pt;
+    font-size: 38pt;
 }
 
 .detailHeader
 {
     font-family: Helvetica;
-    font-size: 20pt;
+    font-size: 22pt;
     font-weight: bold;
 }
 
 .detailHeaderSmall
 {
     font-family: Helvetica;
-    font-size: 18pt;
+    font-size: 20pt;
     color: silver;
 }
 
 .detailTextSmall
 {
     font-family: Helvetica;
-    font-size: 18pt;
+    font-size: 20pt;
 }
 
 .originalType
 {
     font-family : MPlantin;
-    font-size: 24pt;
+    font-size: 26pt;
 }
 
 .originalText
 {
     font-family : MPlantin;
-    font-size: 26pt;
+    font-size: 28pt;
 }
 
 .flavorText
 {
     font-family : "Times New Roman";
     font-style: italic;
-    font-size: 26pt;
+    font-size: 28pt;
 }
 
 .textBox
 {
-    padding: 18px;
+    padding: 20px;
     width: 100%;
     border: 1px solid gray;
 }
@@ -143,6 +143,6 @@ html, body
 .powerToughness
 {
     font-family : MPlantin;
-    font-size: 22pt;
+    font-size: 24pt;
     text-align: right;
 }
