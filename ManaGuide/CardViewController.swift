@@ -18,7 +18,7 @@ enum CardViewControllerSegmentedIndex: Int {
 }
 
 enum CardViewControllerDetailsSection: Int {
-    case information, printings, rulings, legalities
+    case information, originalText, oracleText, flavorText, printings, rulings, legalities
 }
 
 class CardViewController: BaseViewController {
@@ -33,7 +33,7 @@ class CardViewController: BaseViewController {
     var cardViewIncremented = false
     
     // MARK: Constants
-    let detailsSections = ["Information", "Printings", "Rulings", "Legalities"]
+    let detailsSections = ["Information", "Original Text", "Oracle Text", "Flavor Text", "Printings", "Rulings", "Legalities"]
     let pricingSections = ["Low", "Mid", "High", "Foil", "Buy this card at TCGPlayer.com"]
     
     // MARK: Outlets
@@ -121,6 +121,81 @@ class CardViewController: BaseViewController {
         return newText
     }
     
+    func addSymbols(toText text: String?, withPointSize pointSize: CGFloat) -> NSAttributedString {
+        let newText = NSMutableAttributedString()
+        
+        if let text = text {
+            var fragmentText = NSMutableString()
+            var offset = 0
+            
+            repeat {
+                for i in offset...text.count - 1 {
+                    let c = text[text.index(text.startIndex, offsetBy: i)]
+                    
+                    if c == "{" {
+                        let symbol = NSMutableString()
+                        
+                        for j in i...text.count - 1 {
+                            let cc = text[text.index(text.startIndex, offsetBy: j)]
+                            
+                            if cc == "}" {
+                                offset = j + 1
+                                break
+                            } else {
+                                symbol.append(String(cc))
+                            }
+                        }
+                        
+                        let cleanSymbol = symbol.replacingOccurrences(of: "{", with: "")
+                            .replacingOccurrences(of: "}", with: "")
+                            .replacingOccurrences(of: "/", with: "")
+                        
+                        if let image = ManaKit.sharedInstance.symbolImage(name: cleanSymbol as String) {
+                            let imageAttachment =  NSTextAttachment()
+                            imageAttachment.image = image
+                            
+                            var width = CGFloat(16)
+                            let height = CGFloat(16)
+                            var imageOffsetY = CGFloat(0)
+                            
+                            if cleanSymbol == "100" {
+                                width = 35
+                            } else if symbol == "1000000" {
+                                width = 60
+                            }
+                            
+                            if height > pointSize {
+                                imageOffsetY = -(height - pointSize) / 2.0
+                            } else {
+                                imageOffsetY = -(pointSize - height) / 2.0
+                            }
+                            
+                            imageAttachment.bounds = CGRect(x: 0, y: imageOffsetY, width: width, height: height)
+                            
+                            let attachmentString = NSAttributedString(attachment: imageAttachment)
+                            let attributedString = NSMutableAttributedString(string: fragmentText as String)
+                            attributedString.append(attachmentString)
+                            
+                            newText.append(attributedString)
+                            fragmentText = NSMutableString()
+                            break
+                        }
+                        
+                    } else {
+                        fragmentText.append(String(c))
+                        offset = i
+                    }
+                    
+                }
+            } while offset != text.count - 1
+        
+            let attributedString = NSMutableAttributedString(string: fragmentText as String)
+            newText.append(attributedString)
+        }
+        
+        return newText
+    }
+    
     func composeHTMLInformation(forCard card: CMCard) -> String {
         var html = try! String(contentsOfFile: "\(Bundle.main.bundlePath)/data/web/cardtext.html", encoding: String.Encoding.utf8)
         var css = try! String(contentsOfFile: "\(Bundle.main.bundlePath)/data/web/style.css", encoding: String.Encoding.utf8)
@@ -162,37 +237,6 @@ class CardViewController: BaseViewController {
             html = html.replacingOccurrences(of: "{{name}}", with: name)
         } else {
             html = html.replacingOccurrences(of: "{{name}}", with: "&nbsp;")
-        }
-        
-        if let originalText = card.originalText {
-            if card.text != originalText {
-                html = html.replacingOccurrences(of: "{{originalText}}", with:
-                "<tr><td colspan=\"2\" class='detailHeader'>Original Text</td></tr>" +
-                "<tr><td colspan=\"2\" class='originalText'>\(replaceSymbols(inText: originalText))</td></tr>" +
-                "<tr><td colspan=\"2\">&nbsp;</td></tr>")
-            } else {
-                html = html.replacingOccurrences(of: "{{originalText}}", with: "")
-            }
-        } else {
-            html = html.replacingOccurrences(of: "{{originalText}}", with: "")
-        }
-        
-        if let oracleText = card.text {
-            html = html.replacingOccurrences(of: "{{text}}", with:
-                "<tr><td colspan=\"2\" class='detailHeader'>Text</td></tr>" +
-                    "<tr><td colspan=\"2\">\(replaceSymbols(inText: oracleText))</td></tr>" +
-                "<tr><td colspan=\"2\">&nbsp;</td></tr>")
-        } else {
-            html = html.replacingOccurrences(of: "{{text}}", with: "")
-        }
-        
-        if let flavorText = card.flavor {
-            html = html.replacingOccurrences(of: "{{flavorText}}", with:
-                "<tr><td colspan=\"2\" class='detailHeader'>Flavor</td></tr>" +
-                "<tr><td colspan=\"2\" class='flavorText'>\(replaceSymbols(inText: flavorText))</td></tr>" +
-                "<tr><td colspan=\"2\">&nbsp;</td></tr>")
-        } else {
-            html = html.replacingOccurrences(of: "{{flavorText}}", with: "")
         }
         
         if let manaCost = card.manaCost {
@@ -394,6 +438,39 @@ extension CardViewController : UITableViewDataSource {
                 if let c = tableView.dequeueReusableCell(withIdentifier: "WebViewCell") {
                     cell = c
                 }
+            case CardViewControllerDetailsSection.originalText.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
+                    let cards = cards {
+                    
+                    let card = cards[cardIndex]
+                    if let label = c.viewWithTag(100) as? UILabel {
+                        label.attributedText = addSymbols(toText: card.originalText, withPointSize: label.font.pointSize)
+                    }
+                    
+                    cell = c
+                }
+            case CardViewControllerDetailsSection.oracleText.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
+                    let cards = cards {
+                    
+                    let card = cards[cardIndex]
+                    if let label = c.viewWithTag(100) as? UILabel {
+                        label.attributedText = addSymbols(toText: card.text, withPointSize: label.font.pointSize)
+                    }
+                    
+                    cell = c
+                }
+            case CardViewControllerDetailsSection.flavorText.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
+                    let cards = cards {
+                    
+                    let card = cards[cardIndex]
+                    if let label = c.viewWithTag(100) as? UILabel {
+                        label.text = card.flavor != nil ? card.flavor : " "
+                    }
+                    
+                    cell = c
+                }
             case CardViewControllerDetailsSection.printings.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") {
                     cell = c
@@ -433,7 +510,7 @@ extension CardViewController : UITableViewDataSource {
                             contents = " "
                         }
                         
-                        label.text = contents
+                        label.attributedText = addSymbols(toText: contents, withPointSize: label.font.pointSize)//contents
                     }
                     
                     cell = c
