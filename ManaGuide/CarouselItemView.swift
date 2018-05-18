@@ -29,31 +29,6 @@ class CarouselItemView: UIView {
     // Custom methods
     func showCard() {
         if let card = card {
-            cardImage.image = ManaKit.sharedInstance.cardImage(card)
-            // TODO: fetch card.rating from Firebase
-            ratingView.rating = Double(arc4random_uniform(5) + 1); //card.rating
-            
-            viewsLabel.text = "\u{f06e} \(card.views)"
-            
-            if cardImage.image == nil {
-                cardImage.image = ManaKit.sharedInstance.cardBack(card)
-                
-                ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
-                    
-                    if error == nil {
-                        if c.id == card.id {
-                            UIView.transition(with: self.cardImage,
-                                              duration: 1.0,
-                                              options: .transitionCrossDissolve,
-                                              animations: {
-                                                self.cardImage.image = image
-                                              },
-                                              completion: nil)
-                        }
-                    }
-                })
-            }
-            
             ManaKit.sharedInstance.fetchTCGPlayerPricing(card: card, completion: {(cardPricing: CMCardPricing?, error: Error?) in
                 if let cardPricing = cardPricing,
                     let c = self.card {
@@ -66,6 +41,31 @@ class CarouselItemView: UIView {
                     }
                 }
             })
+            
+            if let image = ManaKit.sharedInstance.cardImage(card) {
+                cardImage.image = image
+            } else {
+                cardImage.image = ManaKit.sharedInstance.cardBack(card)
+                
+                ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
+                    
+                    if error == nil {
+                        if c.id == card.id {
+                            UIView.transition(with: self.cardImage,
+                                              duration: 1.0,
+                                              options: .transitionCrossDissolve,
+                                              animations: {
+                                                self.cardImage.image = image
+                            },
+                                              completion: nil)
+                        }
+                    }
+                })
+            }
+            
+            // TODO: fetch card.rating from Firebase
+            ratingView.rating = Double(arc4random_uniform(5) + 1); //card.rating
+            showCardViews()
         }
     }
     

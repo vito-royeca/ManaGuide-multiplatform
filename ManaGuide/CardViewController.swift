@@ -30,6 +30,7 @@ class CardViewController: BaseViewController {
     var printingsCollectionView: UICollectionView?
     var segmentedIndex: CardViewControllerSegmentedIndex = .image
     var webViewSize: CGSize?
+    var cardViewIncremented = false
     
     // MARK: Constants
     let detailsSections = ["Information", "Printings", "Rulings", "Legalities"]
@@ -43,9 +44,16 @@ class CardViewController: BaseViewController {
     @IBAction func contentAction(_ sender: UISegmentedControl) {
         segmentedIndex = CardViewControllerSegmentedIndex(rawValue: sender.selectedSegmentIndex)!
         
+        
         if segmentedIndex == .image {
             webViewSize = nil
+        } else if segmentedIndex == .details {
+            if !cardViewIncremented {
+                cardViewIncremented = true
+                incrementCardViews()
+            }
         }
+        
         tableView.reloadData()
         tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
     }
@@ -58,10 +66,6 @@ class CardViewController: BaseViewController {
         contentSegmentedControl.setFAIcon(icon: .FAImage, forSegmentAtIndex: 0)
         contentSegmentedControl.setFAIcon(icon: .FAInfoCircle, forSegmentAtIndex: 1)
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
-        
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kCardViewUpdatedNotification), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateCardViews(_:)), name: NSNotification.Name(rawValue: kCardViewUpdatedNotification), object: nil)
-        incrementCardViews()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -102,23 +106,6 @@ class CardViewController: BaseViewController {
         }
     }
     
-    func updateCardViews(_ notification: Notification) {
-        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) {
-            if let carouselView = cell.viewWithTag(100) as? iCarousel,
-                let userInfo = notification.userInfo {
-                
-                if let card = userInfo["card"] as? CMCard,
-                    let carouselItemView = carouselView.itemView(at: cardIndex) as? CarouselItemView {
-                    
-                    if card.id == carouselItemView.card?.id {
-                        carouselItemView.card = card
-                        carouselItemView.showCardViews()
-                    }
-                }
-            }
-        }
-    }
-
     func replaceSymbols(inText text: String) -> String {
         var newText = text
         newText = newText.replacingOccurrences(of: "\n", with:"<br/> ")
@@ -388,6 +375,14 @@ extension CardViewController : UITableViewDataSource {
                     carouselView.type = .coverFlow2
                     carouselView.isPagingEnabled = true
                     carouselView.currentItemIndex = cardIndex
+                    
+                    if let carouselItemView = carouselView.itemView(at: cardIndex) as? CarouselItemView,
+                        let cards = cards {
+                        
+                        let card = cards[cardIndex]
+                        carouselItemView.card = card
+                        carouselItemView.showCardViews()
+                    }
                 }
                 
                 cell = c
@@ -705,6 +700,7 @@ extension CardViewController : iCarouselDataSource {
                 }
             }
         }
+        
         return cardView!
     }
 }
@@ -712,7 +708,7 @@ extension CardViewController : iCarouselDataSource {
 extension CardViewController : iCarouselDelegate {
     func carouselCurrentItemIndexDidChange(_ carousel: iCarousel) {
         cardIndex = carousel.currentItemIndex
-        incrementCardViews()
+        cardViewIncremented = false
     }
 }
 
