@@ -10,13 +10,13 @@ import UIKit
 import DATASource
 
 enum MoreViewControllerRows: Int {
-    case basicRules, comprehensiveRules, bannedList, reservedList
+    case basicRules, comprehensiveRules, bannedList, reservedList, artists
 }
 
 class MoreViewController: UIViewController {
 
     // Constants:
-    let rowTitles = ["Basic Rules", "Comprehensive Rules", "Banned and Restricted List", "Reserved List"]
+    let rowTitles = ["Basic Rules", "Comprehensive Rules", "Banned and Restricted List", "Reserved List", "Artists"]
     
     // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
@@ -37,11 +37,6 @@ class MoreViewController: UIViewController {
                 dest.title = dict["title"] as? String
                 dest.customSectionName = "nameSection"
             }
-        } else if segue.identifier == "showComprehensiveRules" {
-//            if let dest = segue.destination as? ComprehensiveRulesViewController {
-//                
-//                
-//            }
         }
     }
 
@@ -81,6 +76,8 @@ extension MoreViewController : UITableViewDelegate {
                                        NSSortDescriptor(key: "set.releaseDate", ascending: true)]
             performSegue(withIdentifier: "showSearch", sender: ["title": "Reserved List",
                                                                 "request": request])
+        case MoreViewControllerRows.artists.rawValue:
+            performSegue(withIdentifier: "showArtists", sender: nil)
         default:
             ()
         }

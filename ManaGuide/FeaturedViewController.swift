@@ -15,9 +15,25 @@ import MBProgressHUD
 
 let kSliderTableViewCellHeight = CGFloat(140)
 let kSliderTableViewCellContentHeight = CGFloat(112)
-//let kFeaturedTopRatedTag  = 100
-//let kFeaturedTopViewedTag = 200
-//let kFeaturedAllSetsTag   = 300
+
+enum FeaturedViewControllerSection: Int {
+    case latestSets
+    case topRated
+    case topViewed
+    
+    var description : String {
+        switch self {
+        // Use Internationalization, as appropriate.
+        case .latestSets: return "Latest Sets"
+        case .topRated: return "Top Rated"
+        case .topViewed: return "Top Viewed"
+        }
+    }
+    
+    static var count: Int {
+        return 3
+    }
+}
 
 class FeaturedViewController: BaseViewController {
 
@@ -25,9 +41,6 @@ class FeaturedViewController: BaseViewController {
     var topRated: [CMCard]?
     var topViewed: [CMCard]?
     var latestSets: [CMSet]?
-    var topRatedCollectionView: UICollectionView?
-    var topViewedCollectionView: UICollectionView?
-    var latestSetsCollectionView: UICollectionView?
     
     // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
@@ -37,11 +50,11 @@ class FeaturedViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        updateLatestSets()
+        showLatestSets()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         fetchTopRated()
         fetchTopViewed()
     }
@@ -86,7 +99,7 @@ class FeaturedViewController: BaseViewController {
     func fetchTopRated() {
         FirebaseManager.sharedInstance.monitorTopRated(completion: { (cards) in
             DispatchQueue.main.async {
-                self.updateTopRated()
+                self.showTopRated()
             }
         })
     }
@@ -94,12 +107,12 @@ class FeaturedViewController: BaseViewController {
     func fetchTopViewed() {
         FirebaseManager.sharedInstance.monitorTopViewed(completion: { (cards) in
             DispatchQueue.main.async {
-                self.updateTopViewed()
+                self.showTopViewed()
             }
         })
     }
     
-    func updateTopRated() {
+    func showTopRated() {
         let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
         request.predicate = NSPredicate(format: "rating > 0")
         request.fetchLimit = Int(kMaxFetchTopRated)
@@ -108,13 +121,19 @@ class FeaturedViewController: BaseViewController {
                                    NSSortDescriptor(key: "name", ascending: true)]
         if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
             topRated = result
-            if let topRatedCollectionView = topRatedCollectionView {
-                topRatedCollectionView.reloadData()
+            
+            if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topRated.rawValue, section: 0)) {
+                for v in cell.contentView.subviews {
+                    if let collectionView = v as? UICollectionView {
+                        collectionView.reloadData()
+                        break
+                    }
+                }
             }
         }
     }
     
-    func updateTopViewed() {
+    func showTopViewed() {
         let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
         request.predicate = NSPredicate(format: "views > 0")
         request.fetchLimit = Int(kMaxFetchTopViewed)
@@ -123,21 +142,33 @@ class FeaturedViewController: BaseViewController {
                                    NSSortDescriptor(key: "name", ascending: true)]
         if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
             topViewed = result
-            if let topViewedCollectionView = topViewedCollectionView {
-                topViewedCollectionView.reloadData()
+            
+            if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topViewed.rawValue, section: 0)) {
+                for v in cell.contentView.subviews {
+                    if let collectionView = v as? UICollectionView {
+                        collectionView.reloadData()
+                        break
+                    }
+                }
             }
         }
     }
     
-    func updateLatestSets() {
+    func showLatestSets() {
         let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMSet")
         request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
         request.fetchLimit = 10
         
         if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMSet] {
             latestSets = result
-            if let latestSetsCollectionView = latestSetsCollectionView {
-                latestSetsCollectionView.reloadData()
+            
+            if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.latestSets.rawValue, section: 0)) {
+                for v in cell.contentView.subviews {
+                    if let collectionView = v as? UICollectionView {
+                        collectionView.reloadData()
+                        break
+                    }
+                }
             }
         }
     }
@@ -150,9 +181,7 @@ class FeaturedViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension FeaturedViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let rows = 3
-        
-        return rows
+        return FeaturedViewControllerSection.count
     }
     
     
@@ -160,17 +189,25 @@ extension FeaturedViewController : UITableViewDataSource {
         var cell:UITableViewCell?
         
         switch indexPath.row {
-        case 0:
+        case FeaturedViewControllerSection.topRated.rawValue:
             if let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell") {
                 if let titleLabel = c.viewWithTag(100) as? UILabel {
-                    titleLabel.text = "Top Rated"
+                    titleLabel.text = FeaturedViewControllerSection.topRated.description
                 }
                 
                 if let showAllButton = c.viewWithTag(200) as? UIButton {
                     showAllButton.isHidden = true
                 }
                 
-                if let collectionView = c.viewWithTag(300) as? UICollectionView {
+                var collectionView: UICollectionView?
+                for v in c.contentView.subviews {
+                    if let cv = v as? UICollectionView {
+                        collectionView = cv
+                        break
+                    }
+                }
+                
+                if let collectionView = collectionView {
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                         flowLayout.itemSize = CGSize(width: (collectionView.frame.size.width / 2) - 20, height: (kSliderTableViewCellContentHeight * 2) - 5)
                         flowLayout.scrollDirection = .horizontal
@@ -180,21 +217,29 @@ extension FeaturedViewController : UITableViewDataSource {
                     
                     collectionView.dataSource = self
                     collectionView.delegate = self
-                    topRatedCollectionView = collectionView
+                    collectionView.tag = FeaturedViewControllerSection.topRated.rawValue
                 }
                 cell = c
             }
-        case 1:
+        case FeaturedViewControllerSection.topViewed.rawValue:
             if let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell") {
                 if let titleLabel = c.viewWithTag(100) as? UILabel {
-                    titleLabel.text = "Top Viewed"
+                    titleLabel.text = FeaturedViewControllerSection.topViewed.description
                 }
                 
                 if let showAllButton = c.viewWithTag(200) as? UIButton {
                     showAllButton.isHidden = true
                 }
                 
-                if let collectionView = c.viewWithTag(300) as? UICollectionView {
+                var collectionView: UICollectionView?
+                for v in c.contentView.subviews {
+                    if let cv = v as? UICollectionView {
+                        collectionView = cv
+                        break
+                    }
+                }
+                
+                if let collectionView = collectionView {
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                         flowLayout.itemSize = CGSize(width: (collectionView.frame.size.width / 2) - 20, height: (kSliderTableViewCellContentHeight * 2) - 5)
                         flowLayout.scrollDirection = .horizontal
@@ -204,21 +249,29 @@ extension FeaturedViewController : UITableViewDataSource {
                     
                     collectionView.dataSource = self
                     collectionView.delegate = self
-                    topViewedCollectionView = collectionView
+                    collectionView.tag = FeaturedViewControllerSection.topViewed.rawValue
                 }
                 cell = c
             }
-        case 2:
+        case FeaturedViewControllerSection.latestSets.rawValue:
             if let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell") {
                 if let titleLabel = c.viewWithTag(100) as? UILabel {
-                    titleLabel.text = "Latest Sets"
+                    titleLabel.text = FeaturedViewControllerSection.latestSets.description
                 }
                 
                 if let showAllButton = c.viewWithTag(200) as? UIButton {
                     showAllButton.addTarget(self, action: #selector(self.showAllSets(_:)), for: .touchUpInside)
                 }
                 
-                if let collectionView = c.viewWithTag(300) as? UICollectionView {
+                var collectionView: UICollectionView?
+                for v in c.contentView.subviews {
+                    if let cv = v as? UICollectionView {
+                        collectionView = cv
+                        break
+                    }
+                }
+                
+                if let collectionView = collectionView {
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                         flowLayout.itemSize = CGSize(width: (collectionView.frame.size.width / 3) - 20, height: kSliderTableViewCellContentHeight - 5)
                         flowLayout.scrollDirection = .horizontal
@@ -228,7 +281,7 @@ extension FeaturedViewController : UITableViewDataSource {
                     
                     collectionView.dataSource = self
                     collectionView.delegate = self
-                    latestSetsCollectionView = collectionView
+                    collectionView.tag = FeaturedViewControllerSection.latestSets.rawValue
                 }
                 
                 cell = c
@@ -247,9 +300,10 @@ extension FeaturedViewController : UITableViewDelegate {
         var height = CGFloat(0)
         
         switch indexPath.row {
-        case 0, 1:
+        case FeaturedViewControllerSection.topRated.rawValue,
+             FeaturedViewControllerSection.topViewed.rawValue:
             height = kSliderTableViewCellHeight * 2
-        case 2:
+        case FeaturedViewControllerSection.latestSets.rawValue:
             height = kSliderTableViewCellHeight
         default:
             height = UITableViewAutomaticDimension
@@ -264,18 +318,21 @@ extension FeaturedViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var count = 0
         
-        if collectionView == topRatedCollectionView {
+        switch collectionView.tag {
+        case FeaturedViewControllerSection.topRated.rawValue:
             if let topRated = topRated {
                 count = topRated.count
             }
-        } else if collectionView == topViewedCollectionView {
+        case FeaturedViewControllerSection.topViewed.rawValue:
             if let topViewed = topViewed {
                 count = topViewed.count
             }
-        } else if collectionView == latestSetsCollectionView {
+        case FeaturedViewControllerSection.latestSets.rawValue:
             if let latestSets = latestSets {
                 count = latestSets.count
             }
+        default:
+            ()
         }
         
         return count
@@ -284,7 +341,8 @@ extension FeaturedViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: UICollectionViewCell?
         
-        if collectionView == topRatedCollectionView {
+        switch collectionView.tag {
+        case FeaturedViewControllerSection.topRated.rawValue:
             let card = topRated![indexPath.row]
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TopRatedItemCell", for: indexPath)
@@ -322,7 +380,7 @@ extension FeaturedViewController : UICollectionViewDataSource {
                 ratingView.settings.fillMode = .precise
             }
             
-        } else if collectionView == topViewedCollectionView {
+        case FeaturedViewControllerSection.topViewed.rawValue:
             let card = topViewed![indexPath.row]
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TopViewedItemCell", for: indexPath)
@@ -363,7 +421,7 @@ extension FeaturedViewController : UICollectionViewDataSource {
                 label.text = "\(card.views)"
             }
             
-        } else if collectionView == latestSetsCollectionView {
+        case FeaturedViewControllerSection.latestSets.rawValue:
             let set = latestSets![indexPath.row]
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SetItemCell", for: indexPath)
@@ -373,6 +431,9 @@ extension FeaturedViewController : UICollectionViewDataSource {
             if let label = cell?.viewWithTag(200) as? UILabel {
                 label.text = set.name
             }
+            
+        default:
+            ()
         }
         
         if let cell = cell {
@@ -388,24 +449,28 @@ extension FeaturedViewController : UICollectionViewDelegate {
         var identifier = ""
         var sender: Any?
         
-        if collectionView == topRatedCollectionView {
+        switch collectionView.tag {
+        case FeaturedViewControllerSection.topRated.rawValue:
             let card = topRated![indexPath.row]
             let cardIndex = 0
             
             identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
             sender = ["cardIndex": cardIndex as Any,
                       "cards": [card]]
-        } else if collectionView == topViewedCollectionView {
+        case FeaturedViewControllerSection.topViewed.rawValue:
             let card = topViewed![indexPath.row]
             let cardIndex = 0
             
             identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
             sender = ["cardIndex": cardIndex as Any,
                       "cards": [card]]
-        } else if collectionView == latestSetsCollectionView {
+        case FeaturedViewControllerSection.latestSets.rawValue:
             let set = latestSets![indexPath.row]
             identifier = "showSet"
             sender = set
+            
+        default:
+            ()
         }
         
         performSegue(withIdentifier: identifier, sender: sender)

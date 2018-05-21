@@ -21,6 +21,7 @@ class SearchViewController: BaseViewController {
     var collectionView: UICollectionView?
     var request:NSFetchRequest<NSFetchRequestResult>?
     var customSectionName: String?
+    var firstLoad = false
     
     // MARK: Outlets
     @IBOutlet weak var leftMenuButton: UIBarButtonItem!
@@ -65,14 +66,24 @@ class SearchViewController: BaseViewController {
             }
         }
 
-        // we have a custom search result, so remove the searchBar and rightMenuButton
+        // we have a custom search result, so remove the searchBar
         if request != nil {
             tableView.viewWithTag(100)?.removeFromSuperview()
             tableView.tableHeaderView = nil
         }
-        updateDataDisplay()
+        
+        statusLabel.text = "  Loading..."
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if !firstLoad {
+            firstLoad = true
+            updateDataDisplay()
+        }
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showCard" {
             if let dest = segue.destination as? CardViewController,
@@ -155,58 +166,37 @@ class SearchViewController: BaseViewController {
         case "grid":
             if let collectionView = collectionView {
                 ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: searchSectionName, configuration: { cell, item, indexPath in
-                    if let card = item as? CMCard {
-                        if let imageView = cell.viewWithTag(100) as? UIImageView {
-                            imageView.image = ManaKit.sharedInstance.cardImage(card)
+                    var card: CMCard?
+                    
+                    if let item = item as? CMCard {
+                        card = item
+                    } else if let item = item as? CMCardLegality {
+                        card = item.card
+                    }
+                    
+                    if let card = card,
+                        let imageView = cell.viewWithTag(100) as? UIImageView {
+                        
+                        
+                        if let image = ManaKit.sharedInstance.cardImage(card) {
+                            imageView.image = image
+                        } else {
+                            imageView.image = ManaKit.sharedInstance.cardBack(card)
                             
-                            // TODO: fix multiple image loading if scrolling fast
-                            if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.cardBack) ||
-                                imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.collectorsCardBack) ||
-                                imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.intlCollectorsCardBack) {
-                                ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
-                                    if error == nil {
-                                        if let card = self.dataSource!.object(indexPath) as? CMCard,
-                                            let image = image {
-                                            if card.id == c.id {
-                                                UIView.transition(with: imageView,
-                                                                  duration: 1.0,
-                                                                  options: .transitionFlipFromLeft,
-                                                                  animations: {
-                                                                    imageView.image = image
-                                                },
-                                                                  completion: nil)
-                                            }
-                                        }
+                            ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
+                                
+                                if error == nil {
+                                    if c.id == card.id {
+                                        UIView.transition(with: imageView,
+                                                          duration: 1.0,
+                                                          options: .transitionFlipFromLeft,
+                                                          animations: {
+                                                            imageView.image = image
+                                        },
+                                                          completion: nil)
                                     }
-                                })
-                            }
-                        }
-                    } else if let cardLegality = item as? CMCardLegality {
-                        if let imageView = cell.viewWithTag(100) as? UIImageView {
-                            imageView.image = ManaKit.sharedInstance.cardImage(cardLegality.card!)
-                            
-                            // TODO: fix multiple image loading if scrolling fast
-                            if imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.cardBack) ||
-                                imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.collectorsCardBack) ||
-                                imageView.image == ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.intlCollectorsCardBack) {
-                                ManaKit.sharedInstance.downloadCardImage(cardLegality.card!, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
-                                    if error == nil {
-                                        if let cl = self.dataSource!.object(indexPath) as? CMCardLegality,
-                                            let image = image {
-                                            
-                                            if cl.card == c {
-                                                UIView.transition(with: imageView,
-                                                                  duration: 1.0,
-                                                                  options: .transitionFlipFromLeft,
-                                                                  animations: {
-                                                                    imageView.image = image
-                                                },
-                                                                  completion: nil)
-                                            }
-                                        }
-                                    }
-                                })
-                            }
+                                }
+                            })
                         }
                     }
                 })
@@ -217,7 +207,7 @@ class SearchViewController: BaseViewController {
         
         if let ds = ds {
             ds.delegate = self
-            statusLabel.text = "  \(ds.all().count) results"
+            statusLabel.text = "  \(ds.all().count) items"
             return ds
         }
         return nil
@@ -617,10 +607,6 @@ extension SearchViewController : UITableViewDataSource {
                     self.collectionView = collectionView
                     collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "Header")
                     collectionView.delegate = self
-                    
-                    if let bgImage = ManaKit.sharedInstance.imageFromFramework(imageName: ImageName.grayPatterned) {
-                        collectionView.backgroundColor = UIColor(patternImage: bgImage)
-                    }
                     
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                         let width = tableView.frame.size.width

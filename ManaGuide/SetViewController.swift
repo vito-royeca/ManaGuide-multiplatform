@@ -21,6 +21,7 @@ class SetViewController: BaseViewController {
     var sectionIndexTitles = [String]()
     var sectionTitles = [String]()
     var collectionView: UICollectionView?
+    var firstLoad = false
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
@@ -49,7 +50,11 @@ class SetViewController: BaseViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        tableView.reloadData()
+        
+        if !firstLoad {
+            firstLoad = true
+            updateDataDisplay()
+        }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

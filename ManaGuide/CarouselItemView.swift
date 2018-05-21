@@ -34,10 +34,10 @@ class CarouselItemView: UIView {
                     let c = self.card {
                     
                     if c.id == cardPricing.card?.id {
-                        self.lowPriceLabel.text = cardPricing.low > 0 ? "$\(cardPricing.low)" : "NA"
-                        self.midPriceLabel.text = cardPricing.average > 0 ? "$\(cardPricing.average)" : "NA"
-                        self.highPriceLabel.text = cardPricing.high > 0 ? "$\(cardPricing.high)" : "NA"
-                        self.foilPriceLabel.text = cardPricing.foil > 0 ? "$\(cardPricing.foil)" : "NA"
+                        self.lowPriceLabel.text = cardPricing.low > 0 ? String(format: "$%.2f", cardPricing.low) : "NA"
+                        self.midPriceLabel.text = cardPricing.average > 0 ? String(format: "$%.2f", cardPricing.average) : "NA"
+                        self.highPriceLabel.text = cardPricing.high > 0 ? String(format: "$%.2f", cardPricing.high) : "NA"
+                        self.foilPriceLabel.text = cardPricing.foil > 0 ? String(format: "$%.2f", cardPricing.foil) : "NA"
                     }
                 }
             })

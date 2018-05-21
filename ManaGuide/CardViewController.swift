@@ -14,11 +14,49 @@ import iCarousel
 import ManaKit
 
 enum CardViewControllerSegmentedIndex: Int {
-    case image, details
+    case image
+    case details
+    
+    var description : String {
+        switch self {
+        // Use Internationalization, as appropriate.
+        case .image: return "Image"
+        case .details: return "Details"
+        }
+    }
+    
+    static var count: Int {
+        return 2
+    }
 }
 
-enum CardViewControllerDetailsSection: Int {
-    case information, originalText, oracleText, flavorText, printings, rulings, legalities
+enum CardViewControllerDetailsSection : Int {
+    case information
+    case originalText
+    case oracleText
+    case flavorText
+    case artist
+    case printings
+    case rulings
+    case legalities
+    
+    var description : String {
+        switch self {
+        // Use Internationalization, as appropriate.
+        case .information: return "Information"
+        case .originalText: return "Original Text"
+        case .oracleText: return "Oracle Text"
+        case .flavorText: return "Flavor Text"
+        case .artist: return "Artist"
+        case .printings: return "Printings"
+        case .rulings: return "Rulings"
+        case .legalities: return "Legalities"
+        }
+    }
+    
+    static var count: Int {
+        return 8
+    }
 }
 
 class CardViewController: BaseViewController {
@@ -31,10 +69,6 @@ class CardViewController: BaseViewController {
     var segmentedIndex: CardViewControllerSegmentedIndex = .image
     var webViewSize: CGSize?
     var cardViewIncremented = false
-    
-    // MARK: Constants
-    let detailsSections = ["Information", "Original Text", "Oracle Text", "Flavor Text", "Printings", "Rulings", "Legalities"]
-    let pricingSections = ["Low", "Mid", "High", "Foil", "Buy this card at TCGPlayer.com"]
     
     // MARK: Outlets
     @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
@@ -92,6 +126,13 @@ class CardViewController: BaseViewController {
                 }
                 
                 dest.cardIndex = 0
+            }
+        } else if segue.identifier == "showSearch" {
+            if let dest = segue.destination as? SearchViewController,
+                let dict = sender as? [String: Any] {
+                
+                dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
+                dest.title = dict["title"] as? String
             }
         }
     }
@@ -344,12 +385,6 @@ class CardViewController: BaseViewController {
             html = html.replacingOccurrences(of: "{{source}}", with: "&mdash;")
         }
         
-        if let artist = card.artist_ {
-            html = html.replacingOccurrences(of: "{{artist}}", with: artist.name!)
-        } else {
-            html = html.replacingOccurrences(of: "{{artist}}", with: "&mdash;")
-        }
-        
         if let number = card.number ?? card.mciNumber {
             html = html.replacingOccurrences(of: "{{number}}", with: number)
         } else {
@@ -401,7 +436,7 @@ extension CardViewController : UITableViewDataSource {
         case .image:
             sections = 1
         case .details:
-            sections = detailsSections.count
+            sections = CardViewControllerDetailsSection.count
         }
         
         return sections
@@ -428,7 +463,7 @@ extension CardViewController : UITableViewDataSource {
                         carouselItemView.showCardViews()
                     }
                 }
-                
+                c.selectionStyle = .none
                 cell = c
             }
             
@@ -436,6 +471,7 @@ extension CardViewController : UITableViewDataSource {
             switch indexPath.section {
             case CardViewControllerDetailsSection.information.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "WebViewCell") {
+                    c.selectionStyle = .none
                     cell = c
                 }
             case CardViewControllerDetailsSection.originalText.rawValue:
@@ -443,10 +479,14 @@ extension CardViewController : UITableViewDataSource {
                     let cards = cards {
                     
                     let card = cards[cardIndex]
-                    if let label = c.viewWithTag(100) as? UILabel {
-                        label.attributedText = addSymbols(toText: card.originalText, withPointSize: label.font.pointSize)
+                    if let label = c.viewWithTag(100) as? UILabel{
+                        if let text = card.originalText {
+                            label.attributedText = addSymbols(toText: "\n\(text)\n", withPointSize: label.font.pointSize)
+                        } else {
+                            label.text = " "
+                        }
                     }
-                    
+                    c.selectionStyle = .none
                     cell = c
                 }
             case CardViewControllerDetailsSection.oracleText.rawValue:
@@ -455,9 +495,13 @@ extension CardViewController : UITableViewDataSource {
                     
                     let card = cards[cardIndex]
                     if let label = c.viewWithTag(100) as? UILabel {
-                        label.attributedText = addSymbols(toText: card.text, withPointSize: label.font.pointSize)
+                        if let text = card.text {
+                            label.attributedText = addSymbols(toText: "\n\(text)\n", withPointSize: label.font.pointSize)
+                        } else {
+                            label.text = " "
+                        }
                     }
-                    
+                    c.selectionStyle = .none
                     cell = c
                 }
             case CardViewControllerDetailsSection.flavorText.rawValue:
@@ -466,13 +510,31 @@ extension CardViewController : UITableViewDataSource {
                     
                     let card = cards[cardIndex]
                     if let label = c.viewWithTag(100) as? UILabel {
-                        label.text = card.flavor != nil ? card.flavor : " "
+                        if let text = card.flavor {
+                            label.text = "\n\(text)\n"
+                        } else {
+                            label.text = " "
+                        }
                     }
+                    c.selectionStyle = .none
+                    cell = c
+                }
+            case CardViewControllerDetailsSection.artist.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                    let cards = cards {
                     
+                    let card = cards[cardIndex]
+                    if let artist = card.artist_ {
+                        c.textLabel?.text = artist.name
+                    } else {
+                        c.textLabel?.text = " "
+                    }
+                    c.selectionStyle = .default
                     cell = c
                 }
             case CardViewControllerDetailsSection.printings.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") {
+                    c.selectionStyle = .none
                     cell = c
                 }
             case CardViewControllerDetailsSection.rulings.rawValue:
@@ -512,7 +574,7 @@ extension CardViewController : UITableViewDataSource {
                         
                         label.attributedText = addSymbols(toText: contents, withPointSize: label.font.pointSize)//contents
                     }
-                    
+                    c.selectionStyle = .none
                     cell = c
                 }
             case CardViewControllerDetailsSection.legalities.rawValue:
@@ -532,7 +594,7 @@ extension CardViewController : UITableViewDataSource {
                             c.detailTextLabel?.text = " "
                         }
                     }
-                    
+                    c.selectionStyle = .none
                     cell = c
                 }
             default:
@@ -549,10 +611,22 @@ extension CardViewController : UITableViewDataSource {
         switch segmentedIndex {
         case .details:
             switch section {
-            case CardViewControllerDetailsSection.information.rawValue:
-                ()
+            case CardViewControllerDetailsSection.originalText.rawValue:
+                headerTitle = CardViewControllerDetailsSection.originalText.description
+            case CardViewControllerDetailsSection.oracleText.rawValue:
+                headerTitle = CardViewControllerDetailsSection.oracleText.description
+            case CardViewControllerDetailsSection.flavorText.rawValue:
+                headerTitle = CardViewControllerDetailsSection.flavorText.description
+            case CardViewControllerDetailsSection.artist.rawValue:
+                headerTitle = CardViewControllerDetailsSection.artist.description
+            case CardViewControllerDetailsSection.printings.rawValue:
+                headerTitle = CardViewControllerDetailsSection.printings.description
+                
+                if let printings = printings {
+                    headerTitle?.append(": \(printings.count)")
+                }
             case CardViewControllerDetailsSection.rulings.rawValue:
-                headerTitle = detailsSections[CardViewControllerDetailsSection.rulings.rawValue]
+                headerTitle = CardViewControllerDetailsSection.rulings.description
                 
                 if let cards = cards {
                     let card = cards[cardIndex]
@@ -561,14 +635,9 @@ extension CardViewController : UITableViewDataSource {
                         headerTitle?.append(": \(rulings_.count)")
                     }
                 }
-            case CardViewControllerDetailsSection.printings.rawValue:
-                headerTitle = detailsSections[CardViewControllerDetailsSection.printings.rawValue]
-                
-                if let printings = printings {
-                    headerTitle?.append(": \(printings.count)")
-                }
+            
             case CardViewControllerDetailsSection.legalities.rawValue:
-                headerTitle = detailsSections[CardViewControllerDetailsSection.legalities.rawValue]
+                headerTitle = CardViewControllerDetailsSection.legalities.description
                 
                 if let cards = cards {
                     let card = cards[cardIndex]
@@ -578,7 +647,7 @@ extension CardViewController : UITableViewDataSource {
                     }
                 }
             default:
-                headerTitle = detailsSections[section]
+                ()
             }
         default:
             ()
@@ -672,6 +741,51 @@ extension CardViewController : UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return CGFloat(44)
+    }
+    
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        switch segmentedIndex {
+        case .details:
+            switch indexPath.section {
+            case CardViewControllerDetailsSection.artist.rawValue:
+                return indexPath
+                
+            default:
+                return nil
+            }
+        default:
+            return nil
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch segmentedIndex {
+        case .details:
+            switch indexPath.section {
+            case CardViewControllerDetailsSection.artist.rawValue:
+                if let cards = cards  {
+                    let card = cards[cardIndex]
+                    
+                    if let artist = card.artist_ {
+                        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                        let predicate = NSPredicate(format: "artist_.name = %@", artist.name!)
+                        
+                        request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                                   NSSortDescriptor(key: "name", ascending: true),
+                                                   NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+                        request.predicate = predicate
+                        
+                        performSegue(withIdentifier: "showSearch", sender: ["request": request,
+                                                                            "title": artist.name!])
+                    }
+                }
+                
+            default:
+                ()
+            }
+        default:
+            ()
+        }
     }
 }
 

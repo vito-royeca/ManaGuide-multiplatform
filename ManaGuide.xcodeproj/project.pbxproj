@@ -17,6 +17,9 @@
 		110BB52B1F20891D00086841 /* FeaturedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB5291F20891D00086841 /* FeaturedViewController.swift */; };
 		110BB52D1F20892B00086841 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB52C1F20892B00086841 /* SearchViewController.swift */; };
 		110BB52E1F20892B00086841 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB52C1F20892B00086841 /* SearchViewController.swift */; };
+		111D5A6C20AF57590046285B /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D5A6B20AF57590046285B /* ArtistsViewController.swift */; };
+		111D5A6D20AF57590046285B /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D5A6B20AF57590046285B /* ArtistsViewController.swift */; };
+		111D5A6E20AF57590046285B /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D5A6B20AF57590046285B /* ArtistsViewController.swift */; };
 		113661591F2F912500DCBB41 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 113661581F2F912500DCBB41 /* data */; };
 		113A6B0E1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113A6B0C1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift */; };
 		113A6B0F1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113A6B0C1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift */; };
@@ -96,6 +99,7 @@
 		110BB51B1F207C6400086841 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		110BB5291F20891D00086841 /* FeaturedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeaturedViewController.swift; sourceTree = "<group>"; };
 		110BB52C1F20892B00086841 /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		111D5A6B20AF57590046285B /* ArtistsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistsViewController.swift; sourceTree = "<group>"; };
 		113661581F2F912500DCBB41 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = "<group>"; };
 		113A6B0C1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DynamicHeightTableViewCell.swift; sourceTree = "<group>"; };
 		113A6B0D1F385D1700C68FF9 /* DynamicHeightTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DynamicHeightTableViewCell.xib; sourceTree = "<group>"; };
@@ -239,6 +243,7 @@
 		110BB5281F2084E100086841 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				111D5A6B20AF57590046285B /* ArtistsViewController.swift */,
 				1165CD751F377F58006CC433 /* BannedListViewController.swift */,
 				1147B7591F22379F004EF296 /* BaseViewController.swift */,
 				11B2AA321F29DE490067E833 /* CardViewController.swift */,
@@ -824,6 +829,7 @@
 				11AF054E1F39ED18003B8A6D /* GlossaryDetailsViewController.swift in Sources */,
 				11C2F9B720061988002BED50 /* CarouselItemView.swift in Sources */,
 				1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */,
+				111D5A6C20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */,
 				1165CD731F377395006CC433 /* MoreViewController.swift in Sources */,
 				110BB52A1F20891D00086841 /* FeaturedViewController.swift in Sources */,
@@ -837,6 +843,7 @@
 				1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
+				111D5A6D20AF57590046285B /* ArtistsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -859,6 +866,7 @@
 				11AF054F1F39ED18003B8A6D /* GlossaryDetailsViewController.swift in Sources */,
 				1147B7641F224198004EF296 /* SetViewController.swift in Sources */,
 				11B2AA341F29DE490067E833 /* CardViewController.swift in Sources */,
+				111D5A6E20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				1165CD741F377395006CC433 /* MoreViewController.swift in Sources */,
 				1147B75B1F22379F004EF296 /* BaseViewController.swift in Sources */,
 				110BB52B1F20891D00086841 /* FeaturedViewController.swift in Sources */,
