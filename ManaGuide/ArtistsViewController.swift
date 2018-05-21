@@ -51,7 +51,9 @@ class ArtistsViewController: UIViewController {
         } else {
             request = NSFetchRequest(entityName: "CMArtist")
             
-            request!.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true)]
+            request!.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                        NSSortDescriptor(key: "lastName", ascending: true),
+                                        NSSortDescriptor(key: "firstName", ascending: true)]
         }
         
         ds = DATASource(tableView: tableView, cellIdentifier: "Cell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: "nameSection", configuration: { cell, item, indexPath in

@@ -826,7 +826,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="uA5-1d-p4e">
-                                <rect key="frame" x="0.0" y="64" width="414" height="623"/>
+                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardCell" rowHeight="88" id="xxb-st-kEj">
@@ -1129,6 +1129,7 @@
                         <outlet property="contentSegmentedControl" destination="2bC-Vj-fNr" id="ozL-jl-Es4"/>
                         <outlet property="tableView" destination="XTg-F2-G7x" id="zcJ-OQ-Zvg"/>
                         <segue destination="t1B-qF-FHV" kind="show" identifier="showSearch" id="whl-Hr-bZH"/>
+                        <segue destination="aOj-40-y9v" kind="show" identifier="showSet" id="xMx-O9-Y4N"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XRd-K3-nNu" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1519,9 +1520,9 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Ubl-6g-hH9"/>
-        <segue reference="sDJ-KE-8ls"/>
-        <segue reference="Mbq-CH-LY8"/>
+        <segue reference="X4a-uC-2tC"/>
+        <segue reference="J88-7q-TTb"/>
+        <segue reference="xMx-O9-Y4N"/>
         <segue reference="whl-Hr-bZH"/>
     </inferredMetricsTieBreakers>
 </document>

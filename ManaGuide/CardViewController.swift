@@ -36,6 +36,7 @@ enum CardViewControllerDetailsSection : Int {
     case oracleText
     case flavorText
     case artist
+    case set
     case printings
     case rulings
     case legalities
@@ -48,6 +49,7 @@ enum CardViewControllerDetailsSection : Int {
         case .oracleText: return "Oracle Text"
         case .flavorText: return "Flavor Text"
         case .artist: return "Artist"
+        case .set: return "Set"
         case .printings: return "Printings"
         case .rulings: return "Rulings"
         case .legalities: return "Legalities"
@@ -55,7 +57,7 @@ enum CardViewControllerDetailsSection : Int {
     }
     
     static var count: Int {
-        return 8
+        return 9
     }
 }
 
@@ -133,6 +135,13 @@ class CardViewController: BaseViewController {
                 
                 dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
                 dest.title = dict["title"] as? String
+            }
+        } else if segue.identifier == "showSet" {
+            if let dest = segue.destination as? SetViewController,
+                let set = sender as? CMSet {
+                
+                dest.title = set.name
+                dest.set = set
             }
         }
     }
@@ -365,11 +374,8 @@ class CardViewController: BaseViewController {
         }
         
         if let set = card.set {
-            html = html.replacingOccurrences(of: "{{setIcon}}", with: set.code!.lowercased())
-            html = html.replacingOccurrences(of: "{{set}}", with: set.name!)
             html = html.replacingOccurrences(of: "{{setOnlineOnly}}", with: set.onlineOnly ? "Yes" : "No")
         } else {
-            html = html.replacingOccurrences(of: "{{set}}", with: "&mdash;")
             html = html.replacingOccurrences(of: "{{setOnlineOnly}}", with: "&mdash;")
         }
         
@@ -540,6 +546,31 @@ extension CardViewController : UITableViewDataSource {
                     c.accessoryType = .disclosureIndicator
                     cell = c
                 }
+            case CardViewControllerDetailsSection.set.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
+                    let cards = cards {
+                    
+                    let card = cards[cardIndex]
+                    if let set = card.set,
+                        let label = c.textLabel {
+                        
+                        let attributedString = NSMutableAttributedString(string: "\(ManaKit.sharedInstance.keyruneUnicode(forSet: set)!)",
+                                                                   attributes: [NSFontAttributeName: UIFont(name: "Keyrune", size: 17)!,
+                                                                                NSForegroundColorAttributeName: ManaKit.sharedInstance.keyruneColor(forRarity: card.rarity_!)!])
+                        
+                        attributedString.append(NSMutableAttributedString(string: " \(set.name!)",
+                                                                    attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]))
+                        
+                        label.attributedText = attributedString
+                        c.detailTextLabel?.text = "More Cards"
+                    } else {
+                        c.textLabel?.text = " "
+                        c.detailTextLabel?.text = " "
+                    }
+                    c.selectionStyle = .default
+                    c.accessoryType = .disclosureIndicator
+                    cell = c
+                }
             case CardViewControllerDetailsSection.printings.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") {
                     c.selectionStyle = .none
@@ -630,6 +661,8 @@ extension CardViewController : UITableViewDataSource {
                 headerTitle = CardViewControllerDetailsSection.flavorText.description
             case CardViewControllerDetailsSection.artist.rawValue:
                 headerTitle = CardViewControllerDetailsSection.artist.description
+            case CardViewControllerDetailsSection.set.rawValue:
+                headerTitle = CardViewControllerDetailsSection.set.description
             case CardViewControllerDetailsSection.printings.rawValue:
                 headerTitle = CardViewControllerDetailsSection.printings.description
                 
@@ -758,7 +791,8 @@ extension CardViewController : UITableViewDelegate {
         switch segmentedIndex {
         case .details:
             switch indexPath.section {
-            case CardViewControllerDetailsSection.artist.rawValue:
+            case CardViewControllerDetailsSection.artist.rawValue,
+                 CardViewControllerDetailsSection.set.rawValue:
                 return indexPath
                 
             default:
@@ -790,7 +824,14 @@ extension CardViewController : UITableViewDelegate {
                                                                             "title": artist.name!])
                     }
                 }
-                
+            case CardViewControllerDetailsSection.set.rawValue:
+                if let cards = cards  {
+                    let card = cards[cardIndex]
+                    
+                    if let set = card.set {
+                        performSegue(withIdentifier: "showSet", sender: set)
+                    }
+                }
             default:
                 ()
             }
