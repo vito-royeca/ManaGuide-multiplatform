@@ -11,8 +11,8 @@ import CoreData
 import Firebase
 import ManaKit
 
-let kMaxFetchTopViewed = UInt(15)
-let kMaxFetchTopRated  = UInt(15)
+let kMaxFetchTopViewed = UInt(10)
+let kMaxFetchTopRated  = UInt(10)
 
 class FirebaseManager: NSObject {
     var queries = [String: DatabaseQuery]()

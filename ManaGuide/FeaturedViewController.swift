@@ -13,8 +13,10 @@ import Font_Awesome_Swift
 import ManaKit
 import MBProgressHUD
 
-let kSliderTableViewCellHeight = CGFloat(140)
-let kSliderTableViewCellContentHeight = CGFloat(112)
+let kSliderTableViewCellSetWidth = CGFloat(88)
+let kSliderTableViewCellSetHeight = CGFloat(112)
+let kSliderTableViewCellCardWidth  = CGFloat(100)
+let kSliderTableViewCellCardHeight = CGFloat(72)
 
 enum FeaturedViewControllerSection: Int {
     case latestSets
@@ -63,6 +65,10 @@ class FeaturedViewController: BaseViewController {
         super.viewWillDisappear(animated)
         
         FirebaseManager.sharedInstance.demonitorTopCharts()
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        tableView.reloadData()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -209,7 +215,9 @@ extension FeaturedViewController : UITableViewDataSource {
                 
                 if let collectionView = collectionView {
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        flowLayout.itemSize = CGSize(width: (collectionView.frame.size.width / 2) - 20, height: (kSliderTableViewCellContentHeight * 2) - 5)
+                        let height = (tableView.frame.size.height / 3) - 50
+                        let width = (height * kSliderTableViewCellCardWidth) / kSliderTableViewCellCardHeight
+                        flowLayout.itemSize = CGSize(width: width - 20, height: height - 5)
                         flowLayout.scrollDirection = .horizontal
                         flowLayout.minimumInteritemSpacing = CGFloat(5)
                         flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
@@ -241,7 +249,9 @@ extension FeaturedViewController : UITableViewDataSource {
                 
                 if let collectionView = collectionView {
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        flowLayout.itemSize = CGSize(width: (collectionView.frame.size.width / 2) - 20, height: (kSliderTableViewCellContentHeight * 2) - 5)
+                        let height = (tableView.frame.size.height / 3) - 50
+                        let width = (height * kSliderTableViewCellCardWidth) / kSliderTableViewCellCardHeight
+                        flowLayout.itemSize = CGSize(width: width - 20, height: height - 5)
                         flowLayout.scrollDirection = .horizontal
                         flowLayout.minimumInteritemSpacing = CGFloat(5)
                         flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
@@ -273,7 +283,9 @@ extension FeaturedViewController : UITableViewDataSource {
                 
                 if let collectionView = collectionView {
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        flowLayout.itemSize = CGSize(width: (collectionView.frame.size.width / 3) - 20, height: kSliderTableViewCellContentHeight - 5)
+                        let height = kSliderTableViewCellSetHeight
+                        let width = collectionView.frame.size.width / 3
+                        flowLayout.itemSize = CGSize(width: width - 20, height: height - 5)
                         flowLayout.scrollDirection = .horizontal
                         flowLayout.minimumInteritemSpacing = CGFloat(5)
                         flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
@@ -302,9 +314,9 @@ extension FeaturedViewController : UITableViewDelegate {
         switch indexPath.row {
         case FeaturedViewControllerSection.topRated.rawValue,
              FeaturedViewControllerSection.topViewed.rawValue:
-            height = kSliderTableViewCellHeight * 2
+            height = tableView.frame.size.height / 3
         case FeaturedViewControllerSection.latestSets.rawValue:
-            height = kSliderTableViewCellHeight
+            height = tableView.frame.size.height / 4
         default:
             height = UITableViewAutomaticDimension
         }
@@ -350,19 +362,22 @@ extension FeaturedViewController : UICollectionViewDataSource {
                 thumbnailImage.layer.cornerRadius = 10
                 
                 if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
-                    UIView.transition(with: thumbnailImage,
-                                      duration: 1.0,
-                                      options: .transitionCrossDissolve,
-                                      animations: {
-                                        thumbnailImage.image = croppedImage
-                                      },
-                                      completion: nil)
-                    
+                    thumbnailImage.image = croppedImage
                 } else {
                     thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
+                    
                     ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
                         if error == nil {
-                            collectionView.reloadItems(at: [IndexPath(item: indexPath.row, section: 0)])
+                            if c.id == card.id  {
+                                UIView.transition(with: thumbnailImage,
+                                                  duration: 1.0,
+                                                  options: .transitionCrossDissolve,
+                                                  animations: {
+                                                    thumbnailImage.image = croppedImage
+                                                  },
+                                                  completion: nil)
+                            }
+                            
                         }
                     })
                 }
@@ -388,18 +403,21 @@ extension FeaturedViewController : UICollectionViewDataSource {
                 thumbnailImage.layer.cornerRadius = 10
                 
                 if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
-                    UIView.transition(with: thumbnailImage,
-                                      duration: 1.0,
-                                      options: .transitionCrossDissolve,
-                                      animations: {
-                                        thumbnailImage.image = croppedImage
-                                      },
-                                      completion: nil)
+                    thumbnailImage.image = croppedImage
                 } else {
                     thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
+                    
                     ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
                         if error == nil {
-                            collectionView.reloadItems(at: [IndexPath(item: indexPath.row, section: 0)])
+                            if c.id == card.id  {
+                                UIView.transition(with: thumbnailImage,
+                                                  duration: 1.0,
+                                                  options: .transitionCrossDissolve,
+                                                  animations: {
+                                                    thumbnailImage.image = croppedImage
+                                                  },
+                                                  completion: nil)
+                            }
                         }
                     })
                 }
@@ -451,19 +469,13 @@ extension FeaturedViewController : UICollectionViewDelegate {
         
         switch collectionView.tag {
         case FeaturedViewControllerSection.topRated.rawValue:
-            let card = topRated![indexPath.row]
-            let cardIndex = 0
-            
             identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-            sender = ["cardIndex": cardIndex as Any,
-                      "cards": [card]]
+            sender = ["cardIndex": indexPath.row,
+                      "cards": topRated!]
         case FeaturedViewControllerSection.topViewed.rawValue:
-            let card = topViewed![indexPath.row]
-            let cardIndex = 0
-            
             identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-            sender = ["cardIndex": cardIndex as Any,
-                      "cards": [card]]
+            sender = ["cardIndex": indexPath.row,
+                      "cards": topViewed!]
         case FeaturedViewControllerSection.latestSets.rawValue:
             let set = latestSets![indexPath.row]
             identifier = "showSet"

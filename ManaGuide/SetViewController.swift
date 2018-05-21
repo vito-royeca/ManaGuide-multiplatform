@@ -44,8 +44,6 @@ class SetViewController: BaseViewController {
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         tableView.register(UINib(nibName: "BrowserTableViewCell", bundle: nil), forCellReuseIdentifier: "SetInfoCell")
-        
-        updateDataDisplay()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -147,26 +145,22 @@ class SetViewController: BaseViewController {
                 ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName == "numberOrder" ? nil : setSectionName, configuration: { cell, item, indexPath in
                     if let card = item as? CMCard {
                         if let imageView = cell.viewWithTag(100) as? UIImageView {
-                            imageView.image = ManaKit.sharedInstance.cardImage(card)
-                            
-                            // TODO: fix multiple image loading if scrolling fast
-                            if imageView.image == nil {
+                            if let image = ManaKit.sharedInstance.cardImage(card) {
+                                imageView.image = image
+                            } else {
                                 imageView.image = ManaKit.sharedInstance.cardBack(card)
                                 
+                                // TODO: fix multiple image loading if scrolling fast
                                 ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
                                     if error == nil {
-                                        if let card = self.dataSource!.object(indexPath) as? CMCard,
-                                            let image = image {
-                                        
-                                            if card.id == c.id {
-                                                UIView.transition(with: imageView,
-                                                                  duration: 1.0,
-                                                                  options: .transitionFlipFromLeft,
-                                                                  animations: {
-                                                                    imageView.image = image
-                                                },
-                                                                  completion: nil)
-                                            }
+                                        if c.id == card.id {
+                                            UIView.transition(with: imageView,
+                                                              duration: 1.0,
+                                                              options: .transitionFlipFromLeft,
+                                                              animations: {
+                                                                imageView.image = image
+                                                              },
+                                                              completion: nil)
                                         }
                                     }
                                 })

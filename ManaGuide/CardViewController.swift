@@ -464,6 +464,7 @@ extension CardViewController : UITableViewDataSource {
                     }
                 }
                 c.selectionStyle = .none
+                c.accessoryType = .none
                 cell = c
             }
             
@@ -472,6 +473,7 @@ extension CardViewController : UITableViewDataSource {
             case CardViewControllerDetailsSection.information.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "WebViewCell") {
                     c.selectionStyle = .none
+                    c.accessoryType = .none
                     cell = c
                 }
             case CardViewControllerDetailsSection.originalText.rawValue:
@@ -487,6 +489,7 @@ extension CardViewController : UITableViewDataSource {
                         }
                     }
                     c.selectionStyle = .none
+                    c.accessoryType = .none
                     cell = c
                 }
             case CardViewControllerDetailsSection.oracleText.rawValue:
@@ -502,6 +505,7 @@ extension CardViewController : UITableViewDataSource {
                         }
                     }
                     c.selectionStyle = .none
+                    c.accessoryType = .none
                     cell = c
                 }
             case CardViewControllerDetailsSection.flavorText.rawValue:
@@ -517,24 +521,29 @@ extension CardViewController : UITableViewDataSource {
                         }
                     }
                     c.selectionStyle = .none
+                    c.accessoryType = .none
                     cell = c
                 }
             case CardViewControllerDetailsSection.artist.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
                     let cards = cards {
                     
                     let card = cards[cardIndex]
                     if let artist = card.artist_ {
                         c.textLabel?.text = artist.name
+                        c.detailTextLabel?.text = "More Cards"
                     } else {
                         c.textLabel?.text = " "
+                        c.detailTextLabel?.text = " "
                     }
                     c.selectionStyle = .default
+                    c.accessoryType = .disclosureIndicator
                     cell = c
                 }
             case CardViewControllerDetailsSection.printings.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") {
                     c.selectionStyle = .none
+                    c.accessoryType = .none
                     cell = c
                 }
             case CardViewControllerDetailsSection.rulings.rawValue:
@@ -575,6 +584,7 @@ extension CardViewController : UITableViewDataSource {
                         label.attributedText = addSymbols(toText: contents, withPointSize: label.font.pointSize)//contents
                     }
                     c.selectionStyle = .none
+                    c.accessoryType = .none
                     cell = c
                 }
             case CardViewControllerDetailsSection.legalities.rawValue:
@@ -595,6 +605,7 @@ extension CardViewController : UITableViewDataSource {
                         }
                     }
                     c.selectionStyle = .none
+                    c.accessoryType = .none
                     cell = c
                 }
             default:
@@ -810,18 +821,21 @@ extension CardViewController : UICollectionViewDataSource {
             let printing = printings[indexPath.row]
             
             if let croppedImage = ManaKit.sharedInstance.croppedImage(printing) {
-                UIView.transition(with: thumbnailImage,
-                                  duration: 1.0,
-                                  options: .transitionCrossDissolve,
-                                  animations: {
-                                    thumbnailImage.image = croppedImage
-                                  },
-                                  completion: nil)
+                thumbnailImage.image = croppedImage
             } else {
                 thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
+                
                 ManaKit.sharedInstance.downloadCardImage(printing, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
                     if error == nil {
-                        collectionView.reloadItems(at: [IndexPath(item: indexPath.row, section: 0)])
+                        if c.id == printing.id {
+                            UIView.transition(with: thumbnailImage,
+                                              duration: 1.0,
+                                              options: .transitionCrossDissolve,
+                                              animations: {
+                                                thumbnailImage.image = croppedImage
+                                              },
+                                              completion: nil)
+                        }
                     }
                 })
             }
