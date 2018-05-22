@@ -80,7 +80,6 @@ class CardViewController: BaseViewController {
     @IBAction func contentAction(_ sender: UISegmentedControl) {
         segmentedIndex = CardViewControllerSegmentedIndex(rawValue: sender.selectedSegmentIndex)!
         
-        
         if segmentedIndex == .image {
             webViewSize = nil
         } else if segmentedIndex == .details {
@@ -102,6 +101,9 @@ class CardViewController: BaseViewController {
         contentSegmentedControl.setFAIcon(icon: .FAImage, forSegmentAtIndex: 0)
         contentSegmentedControl.setFAIcon(icon: .FAInfoCircle, forSegmentAtIndex: 1)
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kCardViewUpdatedNotification), object:nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateCardViews(_:)), name: NSNotification.Name(rawValue: kCardViewUpdatedNotification), object: nil)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -153,6 +155,15 @@ class CardViewController: BaseViewController {
             title = card.name
             
             FirebaseManager.sharedInstance.incrementCardViews(card.id!)
+        }
+    }
+    
+    func updateCardViews(_ notification: Notification) {
+        if let userInfo = notification.userInfo {
+            
+            if let card = userInfo["card"] as? CMCard {
+                cards?[cardIndex] = card
+            }
         }
     }
     
@@ -378,6 +389,8 @@ class CardViewController: BaseViewController {
         } else {
             html = html.replacingOccurrences(of: "{{setOnlineOnly}}", with: "&mdash;")
         }
+        
+        html = html.replacingOccurrences(of: "{{reserved}}", with: card.reserved ? "Yes" : "No")
         
         if let releaseDate = card.releaseDate ?? card.set!.releaseDate {
             html = html.replacingOccurrences(of: "{{releaseDate}}", with: releaseDate)

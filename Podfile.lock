@@ -89,7 +89,7 @@ PODS:
   - InAppSettingsKit (2.9)
   - Kanna (3.0.0)
   - leveldb-library (1.20)
-  - ManaKit (2.2.6):
+  - ManaKit (2.2.7):
     - DATASource
     - DATAStack
     - Kanna (~> 3)
@@ -261,7 +261,7 @@ SPEC CHECKSUMS:
   InAppSettingsKit: fc3dea21846535b76b8289b119dbfdbe2505b2b2
   Kanna: 93a9af3643d46425e48899a8b033a2da44af2b49
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
-  ManaKit: b8fe8075fc3060b0bddc7dc3948e0ffaadbbedfb
+  ManaKit: ab44878d79c21615fc6651fed0bb3d26ced8ffca
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MMDrawerController: e3a54a5570388463ad3b36975251575b50c4e1a0
   "MMDrawerController+Storyboard": c98f86c0f32cdef1d466d19a7da3ad2fc6c6ac00
