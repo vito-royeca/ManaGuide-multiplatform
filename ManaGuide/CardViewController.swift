@@ -30,6 +30,16 @@ enum CardViewControllerSegmentedIndex: Int {
     }
 }
 
+enum CardViewControllerImageSection : Int {
+    case pricing
+    case image
+    case ratingAndViews
+    
+    static var count: Int {
+        return 3
+    }
+}
+
 enum CardViewControllerDetailsSection : Int {
     case information
     case originalText
@@ -412,6 +422,29 @@ class CardViewController: BaseViewController {
         
         return html
     }
+    
+    func showImage(ofCard card: CMCard, inImageView imageView: UIImageView) {
+        if let image = ManaKit.sharedInstance.cardImage(card) {
+            imageView.image = image
+        } else {
+            imageView.image = ManaKit.sharedInstance.cardBack(card)
+            
+            ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
+                
+                if error == nil {
+                    if c.id == card.id {
+                        UIView.transition(with: imageView,
+                                          duration: 1.0,
+                                          options: .transitionCrossDissolve,
+                                          animations: {
+                                            imageView.image = image
+                        },
+                                          completion: nil)
+                    }
+                }
+            })
+        }
+    }
 }
 
 // MARK: UITableViewDataSource
@@ -453,7 +486,7 @@ extension CardViewController : UITableViewDataSource {
         
         switch segmentedIndex {
         case .image:
-            sections = 1
+            sections = CardViewControllerImageSection.count
         case .details:
             sections = CardViewControllerDetailsSection.count
         }
@@ -466,25 +499,88 @@ extension CardViewController : UITableViewDataSource {
         
         switch segmentedIndex {
         case .image:
-            if let c = tableView.dequeueReusableCell(withIdentifier: "CarouselCell") {
-                if let carouselView = c.viewWithTag(100) as? iCarousel {
-                    carouselView.dataSource = self
-                    carouselView.delegate = self
-                    carouselView.type = .coverFlow2
-                    carouselView.isPagingEnabled = true
-                    carouselView.currentItemIndex = cardIndex
+            switch indexPath.section {
+            case CardViewControllerImageSection.pricing.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell"),
+                    let cards = cards {
+                    let card = cards[cardIndex]
                     
-                    if let carouselItemView = carouselView.itemView(at: cardIndex) as? CarouselItemView,
-                        let cards = cards {
-                        
-                        let card = cards[cardIndex]
-                        carouselItemView.card = card
-                        carouselItemView.showCardViews()
+                    if let label = c.viewWithTag(100) as? UILabel {
+                        label.text = "NA"
                     }
+                    if let label = c.viewWithTag(200) as? UILabel {
+                        label.text = "NA"
+                    }
+                    if let label = c.viewWithTag(300) as? UILabel {
+                        label.text = "NA"
+                    }
+                    if let label = c.viewWithTag(400) as? UILabel {
+                        label.text = "NA"
+                    }
+                    
+                    ManaKit.sharedInstance.fetchTCGPlayerPricing(card: card, completion: {(cardPricing: CMCardPricing?, error: Error?) in
+                        if let cardPricing = cardPricing {
+                            
+                            if card.id == cardPricing.card?.id {
+                                if let label = c.viewWithTag(100) as? UILabel {
+                                    label.text = cardPricing.low > 0 ? String(format: "$%.2f", cardPricing.low) : "NA"
+                                }
+                                if let label = c.viewWithTag(200) as? UILabel {
+                                    label.text = cardPricing.average > 0 ? String(format: "$%.2f", cardPricing.average) : "NA"
+                                }
+                                if let label = c.viewWithTag(300) as? UILabel {
+                                    label.text = cardPricing.high > 0 ? String(format: "$%.2f", cardPricing.high) : "NA"
+                                }
+                                if let label = c.viewWithTag(400) as? UILabel {
+                                    label.text = cardPricing.foil > 0 ? String(format: "$%.2f", cardPricing.foil) : "NA"
+                                }
+                            }
+                        }
+                    })
+                    
+                    c.selectionStyle = .none
+                    c.accessoryType = .none
+                    cell = c
                 }
-                c.selectionStyle = .none
-                c.accessoryType = .none
-                cell = c
+            case CardViewControllerImageSection.image.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "CarouselCell") {
+                    if let carouselView = c.viewWithTag(100) as? iCarousel {
+                        carouselView.dataSource = self
+                        carouselView.delegate = self
+                        carouselView.type = .coverFlow2
+                        carouselView.isPagingEnabled = true
+                        carouselView.currentItemIndex = cardIndex
+                        
+                        if let imageView = carouselView.itemView(at: cardIndex) as? UIImageView,
+                            let cards = cards {
+                            let card = cards[cardIndex]
+                            showImage(ofCard: card, inImageView: imageView)
+                        }
+                    }
+                    
+                    c.selectionStyle = .none
+                    c.accessoryType = .none
+                    cell = c
+                }
+            case CardViewControllerImageSection.ratingAndViews.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "RatingAndViewsCell"),
+                    let cards = cards {
+                    let card = cards[cardIndex]
+                    
+                    if let ratingView = c.viewWithTag(100) as? CosmosView {
+                        ratingView.rating = Double(arc4random_uniform(5) + 1); //card.rating
+                    }
+                    if let label = c.viewWithTag(200) as? UILabel {
+                        label.text = "\u{f06e} \(card.views)"
+                    }
+                    
+                    c.selectionStyle = .none
+                    c.accessoryType = .none
+                    cell = c
+                }
+                
+            default:
+                ()
             }
             
         case .details:
@@ -500,7 +596,7 @@ extension CardViewController : UITableViewDataSource {
                     let cards = cards {
                     
                     let card = cards[cardIndex]
-                    if let label = c.viewWithTag(100) as? UILabel{
+                    if let label = c.viewWithTag(100) as? UILabel {
                         if let text = card.originalText {
                             label.attributedText = addSymbols(toText: "\n\(text)\n", withPointSize: label.font.pointSize)
                         } else {
@@ -777,7 +873,17 @@ extension CardViewController : UITableViewDelegate {
         
         switch segmentedIndex {
         case .image:
-            height = tableView.frame.size.height
+            switch indexPath.section {
+            case CardViewControllerImageSection.pricing.rawValue:
+                height = 44
+            case CardViewControllerImageSection.image.rawValue:
+                height = tableView.frame.size.height - 88
+            case CardViewControllerImageSection.ratingAndViews.rawValue:
+                height = 44
+            default:
+                ()
+            }
+            
         case .details:
             switch indexPath.section {
             case CardViewControllerDetailsSection.information.rawValue:
@@ -919,7 +1025,6 @@ extension CardViewController : UICollectionViewDelegate {
 extension CardViewController : UIWebViewDelegate {
     func webViewDidFinishLoad(_ webView: UIWebView) {
         webViewSize = webView.scrollView.contentSize
-//        tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         tableView.reloadData()
     }
 }
@@ -935,32 +1040,26 @@ extension CardViewController : iCarouselDataSource {
     }
     
     func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
-        var cardView: UIView?
+        var imageView: UIImageView?
         
         //reuse view if available, otherwise create a new view
-        if let cards = cards {
-            if let carouselItemView = view as? CarouselItemView {
-                carouselItemView.card = cards[index]
-                carouselItemView.showCard()
-                cardView = carouselItemView
-                
-            } else {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let vc = storyboard.instantiateViewController(withIdentifier: "CarouselItemViewController")
-                let height = tableView.frame.size.height
-                
-                vc.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width-40, height: height)
-                if let carouselItemView = vc.view as? CarouselItemView {
-                    carouselItemView.labelWidthConstraint.constant = carouselItemView.frame.size.width / 4
-                    carouselItemView.priceWidthConstraint.constant = carouselItemView.frame.size.width / 4
-                    carouselItemView.card = cards[index]
-                    carouselItemView.showCard()
-                    cardView = carouselItemView
-                }
-            }
+        if let v = view as? UIImageView {
+            imageView = v
+            
+        } else {
+            let height = tableView.frame.size.height - 88
+            let width = tableView.frame.size.width - 40
+            imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+            imageView!.contentMode = .scaleAspectFit
         }
         
-        return cardView!
+        if let imageView = imageView,
+            let cards = cards {
+            let card = cards[index]
+            showImage(ofCard: card, inImageView: imageView)
+        }
+        
+        return imageView!
     }
 }
 
@@ -968,6 +1067,11 @@ extension CardViewController : iCarouselDelegate {
     func carouselCurrentItemIndexDidChange(_ carousel: iCarousel) {
         cardIndex = carousel.currentItemIndex
         cardViewIncremented = false
+        
+        if segmentedIndex == .image {
+            tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.pricing.rawValue),
+                                      IndexPath(row: 0, section: CardViewControllerImageSection.ratingAndViews.rawValue)], with: .automatic)
+        }
     }
 }
 

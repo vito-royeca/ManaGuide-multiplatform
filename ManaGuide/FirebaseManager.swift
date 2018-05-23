@@ -48,6 +48,7 @@ class FirebaseManager: NSObject {
                     if let card = result.first {
                         card.views = Int64(fcard.views == nil ? 0 : fcard.views!)
                         try! ManaKit.sharedInstance.dataStack!.mainContext.save()
+
                         NotificationCenter.default.post(name: Notification.Name(rawValue: kCardViewUpdatedNotification), object: nil, userInfo: ["card": card])
                     }
                 }
