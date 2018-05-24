@@ -59,18 +59,6 @@ class SearchViewController: BaseViewController {
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
-        
-
-        // we have a custom search result, so remove the searchBar
-        if request == nil {
-            navigationItem.titleView = searchBar
-            if #available(iOS 11.0, *) {
-                navigationController?.navigationBar.prefersLargeTitles = false
-            } else {
-                // Fallback on earlier versions
-            }
-        }
-        
         statusLabel.text = "  Loading..."
     }
 
@@ -80,6 +68,27 @@ class SearchViewController: BaseViewController {
         if !firstLoad {
             firstLoad = true
             updateDataDisplay()
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        // we have a custom search result, so remove the searchBar
+        if request == nil {
+            navigationItem.titleView = searchBar
+            if #available(iOS 11.0, *) {
+                navigationController?.navigationBar.prefersLargeTitles = false
+            }
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        navigationItem.titleView = nil
+        if #available(iOS 11.0, *) {
+            navigationController?.navigationBar.prefersLargeTitles = true
         }
     }
     
