@@ -52,8 +52,6 @@
 		1165CD7A1F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */; };
 		11AF054B1F397EA8003B8A6D /* GlossaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AF054A1F397EA8003B8A6D /* GlossaryViewController.swift */; };
 		11AF054C1F397EA8003B8A6D /* GlossaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AF054A1F397EA8003B8A6D /* GlossaryViewController.swift */; };
-		11AF054E1F39ED18003B8A6D /* GlossaryDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AF054D1F39ED18003B8A6D /* GlossaryDetailsViewController.swift */; };
-		11AF054F1F39ED18003B8A6D /* GlossaryDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AF054D1F39ED18003B8A6D /* GlossaryDetailsViewController.swift */; };
 		11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
 		11B2AA341F29DE490067E833 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
 		11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */; };
@@ -113,7 +111,6 @@
 		1165CD751F377F58006CC433 /* BannedListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannedListViewController.swift; sourceTree = "<group>"; };
 		1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComprehensiveRulesViewController.swift; sourceTree = "<group>"; };
 		11AF054A1F397EA8003B8A6D /* GlossaryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlossaryViewController.swift; sourceTree = "<group>"; };
-		11AF054D1F39ED18003B8A6D /* GlossaryDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlossaryDetailsViewController.swift; sourceTree = "<group>"; };
 		11B2AA321F29DE490067E833 /* CardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserTableViewCell.swift; sourceTree = "<group>"; };
 		11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BrowserTableViewCell.xib; sourceTree = "<group>"; };
@@ -245,7 +242,6 @@
 				11B2AA321F29DE490067E833 /* CardViewController.swift */,
 				1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */,
 				110BB5291F20891D00086841 /* FeaturedViewController.swift */,
-				11AF054D1F39ED18003B8A6D /* GlossaryDetailsViewController.swift */,
 				11AF054A1F397EA8003B8A6D /* GlossaryViewController.swift */,
 				1165CD721F377395006CC433 /* MoreViewController.swift */,
 				110BB52C1F20892B00086841 /* SearchViewController.swift */,
@@ -488,7 +484,6 @@
 				"${BUILT_PRODUCTS_DIR}/ManaKit/ManaKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Networking/Networking.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
-				"${BUILT_PRODUCTS_DIR}/RATreeView/RATreeView.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
@@ -524,7 +519,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ManaKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Networking.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RATreeView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
@@ -624,7 +618,6 @@
 				"${BUILT_PRODUCTS_DIR}/ManaKit/ManaKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Networking/Networking.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
-				"${BUILT_PRODUCTS_DIR}/RATreeView/RATreeView.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
@@ -660,7 +653,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ManaKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Networking.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RATreeView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
@@ -750,7 +742,6 @@
 				"${BUILT_PRODUCTS_DIR}/ManaKit/ManaKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Networking/Networking.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
-				"${BUILT_PRODUCTS_DIR}/RATreeView/RATreeView.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
@@ -786,7 +777,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ManaKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Networking.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RATreeView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
@@ -822,7 +812,6 @@
 				11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
 				1140F0CC1F42CA500023E107 /* FCCard.swift in Sources */,
 				11AF054B1F397EA8003B8A6D /* GlossaryViewController.swift in Sources */,
-				11AF054E1F39ED18003B8A6D /* GlossaryDetailsViewController.swift in Sources */,
 				1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */,
 				111D5A6C20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */,
@@ -857,7 +846,6 @@
 				11E4374B1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
 				1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */,
 				11AF054C1F397EA8003B8A6D /* GlossaryViewController.swift in Sources */,
-				11AF054F1F39ED18003B8A6D /* GlossaryDetailsViewController.swift in Sources */,
 				1147B7641F224198004EF296 /* SetViewController.swift in Sources */,
 				11B2AA341F29DE490067E833 /* CardViewController.swift in Sources */,
 				111D5A6E20AF57590046285B /* ArtistsViewController.swift in Sources */,

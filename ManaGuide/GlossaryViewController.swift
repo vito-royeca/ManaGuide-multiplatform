@@ -23,7 +23,6 @@ class GlossaryViewController: UIViewController {
     // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
     
-    
     // MARK: Overrides
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,17 +39,6 @@ class GlossaryViewController: UIViewController {
         tableView.reloadData()
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showDetails" {
-            if let dest = segue.destination as? GlossaryDetailsViewController,
-                let glossary = sender as? CMGlossary {
-                
-                dest.glossary = glossary
-                dest.title = glossary.term
-            }
-        }
-    }
-
     // MARK: Custom methods
     func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
         var request:NSFetchRequest<NSFetchRequestResult>?
@@ -65,13 +53,20 @@ class GlossaryViewController: UIViewController {
                                         NSSortDescriptor(key: "term", ascending: true)]
         }
         
-        ds = DATASource(tableView: tableView, cellIdentifier: "PreviewCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: "termSection", configuration: { cell, item, indexPath in
-            if let glossary = item as? CMGlossary {
-                if let termLabel = cell.contentView.viewWithTag(100) as? UILabel,
-                    let definitionLabel = cell.contentView.viewWithTag(200) as? UILabel {
-                    termLabel.text = glossary.term
-                    definitionLabel.text = glossary.definition
+        ds = DATASource(tableView: tableView, cellIdentifier: "DynamicHeightCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: "termSection", configuration: { cell, item, indexPath in
+            if let glossary = item as? CMGlossary,
+                let label = cell.viewWithTag(100) as? UILabel {
+                
+                let attributedString = NSMutableAttributedString(string: "")
+                if let term = glossary.term {
+                    attributedString.append(NSMutableAttributedString(string: term,
+                                                                      attributes: [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 17)]))
                 }
+                if let definition = glossary.definition {
+                    attributedString.append(NSMutableAttributedString(string: "\n\n\(definition)",
+                        attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 14)]))
+                }
+                label.attributedText = attributedString
             }
         })
         
@@ -156,13 +151,11 @@ class GlossaryViewController: UIViewController {
 // MARK: UITableViewDelegate
 extension GlossaryViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return CGFloat(88)
+        return UITableViewAutomaticDimension
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let glossary = dataSource!.object(indexPath)
-        
-        performSegue(withIdentifier: "showDetails", sender: glossary)
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return CGFloat(44)
     }
 }
 

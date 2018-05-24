@@ -23,7 +23,6 @@ def default_pods
     pod 'MMDrawerController+Storyboard'
     pod 'Networking'
     pod 'PromiseKit', '~> 6.0'
-    pod 'RATreeView', '~> 2.1.2'
     pod 'Reachability'
     pod 'SimulatorStatusMagic', :configurations => ['Debug']
     pod 'SSZipArchive'

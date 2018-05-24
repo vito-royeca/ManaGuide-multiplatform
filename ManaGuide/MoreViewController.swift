@@ -9,14 +9,30 @@
 import UIKit
 import DATASource
 
-enum MoreViewControllerRows: Int {
-    case basicRules, comprehensiveRules, bannedList, reservedList, artists
+enum MoreViewControllerRow: Int {
+    case basicRules
+    case comprehensiveRules
+    case bannedList
+    case reservedList
+    case artists
+    
+    var description : String {
+        switch self {
+        // Use Internationalization, as appropriate.
+        case .basicRules: return "Basic Rules"
+        case .comprehensiveRules: return "Comprehensive Rules"
+        case .bannedList: return "Banned and Restricted List"
+        case .reservedList: return "Reserved List"
+        case .artists: return "Artists"
+        }
+    }
+    
+    static var count: Int {
+        return 5
+    }
 }
 
 class MoreViewController: UIViewController {
-
-    // Constants:
-    let rowTitles = ["Basic Rules", "Comprehensive Rules", "Banned and Restricted List", "Reserved List", "Artists"]
     
     // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
@@ -45,14 +61,30 @@ class MoreViewController: UIViewController {
 // MARK: UITableViewDataSource
 extension MoreViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return rowTitles.count
+        return MoreViewControllerRow.count
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell")
+        var text: String? = nil
         
-        cell!.textLabel?.text = rowTitles[indexPath.row]
+        switch indexPath.row {
+        case MoreViewControllerRow.basicRules.rawValue:
+            text = MoreViewControllerRow.basicRules.description
+        case MoreViewControllerRow.comprehensiveRules.rawValue:
+            text = MoreViewControllerRow.comprehensiveRules.description
+        case MoreViewControllerRow.bannedList.rawValue:
+            text = MoreViewControllerRow.bannedList.description
+        case MoreViewControllerRow.reservedList.rawValue:
+            text = MoreViewControllerRow.reservedList.description
+        case MoreViewControllerRow.artists.rawValue:
+            text = MoreViewControllerRow.artists.description
+        default:
+            ()
+        }
+        
+        cell!.textLabel?.text = text
         
         return cell!
     }
@@ -62,13 +94,13 @@ extension MoreViewController : UITableViewDataSource {
 extension MoreViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
-        case MoreViewControllerRows.basicRules.rawValue:
+        case MoreViewControllerRow.basicRules.rawValue:
             ()
-        case MoreViewControllerRows.comprehensiveRules.rawValue:
+        case MoreViewControllerRow.comprehensiveRules.rawValue:
             performSegue(withIdentifier: "showComprehensiveRules", sender: nil)
-        case MoreViewControllerRows.bannedList.rawValue:
+        case MoreViewControllerRow.bannedList.rawValue:
             performSegue(withIdentifier: "showBannedList", sender: nil)
-        case MoreViewControllerRows.reservedList.rawValue:
+        case MoreViewControllerRow.reservedList.rawValue:
             let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
             request.predicate = NSPredicate(format: "reserved = true")
             request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
@@ -76,7 +108,7 @@ extension MoreViewController : UITableViewDelegate {
                                        NSSortDescriptor(key: "set.releaseDate", ascending: true)]
             performSegue(withIdentifier: "showSearch", sender: ["title": "Reserved List",
                                                                 "request": request])
-        case MoreViewControllerRows.artists.rawValue:
+        case MoreViewControllerRow.artists.rawValue:
             performSegue(withIdentifier: "showArtists", sender: nil)
         default:
             ()

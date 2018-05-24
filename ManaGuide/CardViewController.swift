@@ -109,7 +109,7 @@ class CardViewController: BaseViewController {
 
         // Do any additional setup after loading the view.
         contentSegmentedControl.setFAIcon(icon: .FAImage, forSegmentAtIndex: 0)
-        contentSegmentedControl.setFAIcon(icon: .FAInfoCircle, forSegmentAtIndex: 1)
+        contentSegmentedControl.setFAIcon(icon: .FAEye, forSegmentAtIndex: 1)
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kCardViewUpdatedNotification), object:nil)
@@ -499,6 +499,8 @@ extension CardViewController : UITableViewDataSource {
         
         switch segmentedIndex {
         case .image:
+            tableView.separatorStyle = .none
+            
             switch indexPath.section {
             case CardViewControllerImageSection.pricing.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell"),
@@ -571,7 +573,7 @@ extension CardViewController : UITableViewDataSource {
                         ratingView.rating = Double(arc4random_uniform(5) + 1); //card.rating
                     }
                     if let label = c.viewWithTag(200) as? UILabel {
-                        label.text = "\u{f06e} \(card.views)"
+                        label.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
                     }
                     
                     c.selectionStyle = .none
@@ -584,6 +586,8 @@ extension CardViewController : UITableViewDataSource {
             }
             
         case .details:
+            tableView.separatorStyle = .singleLine
+            
             switch indexPath.section {
             case CardViewControllerDetailsSection.information.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "WebViewCell") {
@@ -664,11 +668,11 @@ extension CardViewController : UITableViewDataSource {
                         let label = c.textLabel {
                         
                         let attributedString = NSMutableAttributedString(string: "\(ManaKit.sharedInstance.keyruneUnicode(forSet: set)!)",
-                                                                   attributes: [NSFontAttributeName: UIFont(name: "Keyrune", size: 17)!,
-                                                                                NSForegroundColorAttributeName: ManaKit.sharedInstance.keyruneColor(forRarity: card.rarity_!)!])
+                            attributes: [NSFontAttributeName: UIFont(name: "Keyrune", size: 17)!,
+                                         NSForegroundColorAttributeName: ManaKit.sharedInstance.keyruneColor(forRarity: card.rarity_!)!])
                         
                         attributedString.append(NSMutableAttributedString(string: " \(set.name!)",
-                                                                    attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]))
+                            attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]))
                         
                         label.attributedText = attributedString
                         c.detailTextLabel?.text = "More Cards"

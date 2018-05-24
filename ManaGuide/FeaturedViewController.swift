@@ -316,7 +316,7 @@ extension FeaturedViewController : UITableViewDelegate {
              FeaturedViewControllerSection.topViewed.rawValue:
             height = tableView.frame.size.height / 3
         case FeaturedViewControllerSection.latestSets.rawValue:
-            height = tableView.frame.size.height / 4
+            height = tableView.frame.size.height / 3
         default:
             height = UITableViewAutomaticDimension
         }
@@ -354,6 +354,17 @@ extension FeaturedViewController : UICollectionViewDataSource {
         var cell: UICollectionViewCell?
         
         switch collectionView.tag {
+        case FeaturedViewControllerSection.latestSets.rawValue:
+            let set = latestSets![indexPath.row]
+            
+            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SetItemCell", for: indexPath)
+            if let label = cell?.viewWithTag(100) as? UILabel {
+                label.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+            }
+            if let label = cell?.viewWithTag(200) as? UILabel {
+                label.text = set.name
+            }
+
         case FeaturedViewControllerSection.topRated.rawValue:
             let card = topRated![indexPath.row]
             
@@ -433,23 +444,8 @@ extension FeaturedViewController : UICollectionViewDataSource {
                 label.text = card.name
             }
             if let label = cell?.viewWithTag(400) as? UILabel {
-                label.FAIcon = .FAEye
+                label.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
             }
-            if let label = cell?.viewWithTag(500) as? UILabel {
-                label.text = "\(card.views)"
-            }
-            
-        case FeaturedViewControllerSection.latestSets.rawValue:
-            let set = latestSets![indexPath.row]
-            
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SetItemCell", for: indexPath)
-            if let label = cell?.viewWithTag(100) as? UILabel {
-                label.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-            }
-            if let label = cell?.viewWithTag(200) as? UILabel {
-                label.text = set.name
-            }
-            
         default:
             ()
         }
