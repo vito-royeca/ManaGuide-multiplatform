@@ -59,17 +59,16 @@ class SearchViewController: BaseViewController {
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
-        // set statusBar's color to searchBar's background color
-        if let imageView = searchBar.subviews.first?.subviews.first as? UIImageView {
-            if let image = imageView.image {
-                statusLabel.backgroundColor = UIColor.init(patternImage: image)
-            }
-        }
+        
 
         // we have a custom search result, so remove the searchBar
-        if request != nil {
-            tableView.viewWithTag(100)?.removeFromSuperview()
-            tableView.tableHeaderView = nil
+        if request == nil {
+            navigationItem.titleView = searchBar
+            if #available(iOS 11.0, *) {
+                navigationController?.navigationBar.prefersLargeTitles = false
+            } else {
+                // Fallback on earlier versions
+            }
         }
         
         statusLabel.text = "  Loading..."

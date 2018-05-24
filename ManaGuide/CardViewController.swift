@@ -41,7 +41,6 @@ enum CardViewControllerImageSection : Int {
 }
 
 enum CardViewControllerDetailsSection : Int {
-    case information
     case originalText
     case oracleText
     case flavorText
@@ -50,11 +49,11 @@ enum CardViewControllerDetailsSection : Int {
     case printings
     case rulings
     case legalities
+    case details
     
     var description : String {
         switch self {
         // Use Internationalization, as appropriate.
-        case .information: return "Information"
         case .originalText: return "Original Text"
         case .oracleText: return "Oracle Text"
         case .flavorText: return "Flavor Text"
@@ -63,6 +62,7 @@ enum CardViewControllerDetailsSection : Int {
         case .printings: return "Printings"
         case .rulings: return "Rulings"
         case .legalities: return "Legalities"
+        case .details: return "Details"
         }
     }
     
@@ -114,6 +114,11 @@ class CardViewController: BaseViewController {
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kCardViewUpdatedNotification), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateCardViews(_:)), name: NSNotification.Name(rawValue: kCardViewUpdatedNotification), object: nil)
+        
+        if let cards = cards {
+            let card = cards[cardIndex]
+            title = card.name
+        }
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -162,8 +167,6 @@ class CardViewController: BaseViewController {
     func incrementCardViews() {
         if let cards = cards {
             let card = cards[cardIndex]
-            title = card.name
-            
             FirebaseManager.sharedInstance.incrementCardViews(card.id!)
         }
     }
@@ -277,37 +280,6 @@ class CardViewController: BaseViewController {
             css = css.replacingOccurrences(of: "images/", with: "\(bundleURL.path)/images/")
             html = html.replacingOccurrences(of: "{{css}}", with: css)
             html = html.replacingOccurrences(of: "{{keyruneCss}}", with: "\(bundleURL.path)/css/keyrune.min.css")
-        }
-        
-        var nameHeader: String?
-        if let releaseDate = card.set!.releaseDate {
-            let isModern = ManaKit.sharedInstance.isModern(card)
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd"
-            
-            if let m15Date = formatter.date(from: "2014-07-18"),
-                let setReleaseDate = formatter.date(from: releaseDate) {
-                
-                if setReleaseDate.compare(m15Date) == .orderedSame ||
-                    setReleaseDate.compare(m15Date) == .orderedDescending {
-                    nameHeader = "cardNameMagic2015"
-                    
-                } else {
-                    nameHeader = isModern ? "cardNameEightEdition" : "cardNamePreEightEdition"
-                }
-            }
-        }
-
-        if let nameHeader = nameHeader {
-            html = html.replacingOccurrences(of: "{{nameHeader}}", with: nameHeader)
-        } else {
-            html = html.replacingOccurrences(of: "{{nameHeader}}", with: "&nbsp;")
-        }
-        
-        if let name = card.name {
-            html = html.replacingOccurrences(of: "{{name}}", with: name)
-        } else {
-            html = html.replacingOccurrences(of: "{{name}}", with: "&nbsp;")
         }
         
         if let manaCost = card.manaCost {
@@ -589,12 +561,6 @@ extension CardViewController : UITableViewDataSource {
             tableView.separatorStyle = .singleLine
             
             switch indexPath.section {
-            case CardViewControllerDetailsSection.information.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "WebViewCell") {
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
-                }
             case CardViewControllerDetailsSection.originalText.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
                     let cards = cards {
@@ -752,6 +718,12 @@ extension CardViewController : UITableViewDataSource {
                     c.accessoryType = .none
                     cell = c
                 }
+            case CardViewControllerDetailsSection.details.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "WebViewCell") {
+                    c.selectionStyle = .none
+                    c.accessoryType = .none
+                    cell = c
+                }
             default:
                 ()
             }
@@ -803,6 +775,8 @@ extension CardViewController : UITableViewDataSource {
                         headerTitle?.append(": \(cardLegalities_.count)")
                     }
                 }
+            case CardViewControllerDetailsSection.details.rawValue:
+                headerTitle = CardViewControllerDetailsSection.details.description
             default:
                 ()
             }
@@ -820,20 +794,6 @@ extension CardViewController : UITableViewDelegate {
         switch segmentedIndex {
         case .details:
             switch indexPath.section {
-            case CardViewControllerDetailsSection.information.rawValue:
-                    if let webView = cell.viewWithTag(100) as? UIWebView,
-                        let cards = cards {
-                        
-                        if webViewSize == nil {
-                            let card = cards[cardIndex]
-                            let html = composeHTMLInformation(forCard: card)
-                            
-                            webView.delegate = self
-                            webView.scrollView.isScrollEnabled = false
-                            webView.scrollView.bounces = false
-                            webView.loadHTMLString(html, baseURL: URL(fileURLWithPath: "\(Bundle.main.bundlePath)/data/web"))
-                        }
-                    }
             case CardViewControllerDetailsSection.printings.rawValue:
                 if let collectionView = cell.viewWithTag(100) as? UICollectionView,
                     let cards = cards  {
@@ -863,7 +823,20 @@ extension CardViewController : UITableViewDelegate {
                     }
                     collectionView.reloadData()
                 }
-                
+            case CardViewControllerDetailsSection.details.rawValue:
+                if let webView = cell.viewWithTag(100) as? UIWebView,
+                    let cards = cards {
+                    
+                    if webViewSize == nil {
+                        let card = cards[cardIndex]
+                        let html = composeHTMLInformation(forCard: card)
+                        
+                        webView.delegate = self
+                        webView.scrollView.isScrollEnabled = false
+                        webView.scrollView.bounces = false
+                        webView.loadHTMLString(html, baseURL: URL(fileURLWithPath: "\(Bundle.main.bundlePath)/data/web"))
+                    }
+                }
             default:
                 ()
             }
@@ -890,14 +863,14 @@ extension CardViewController : UITableViewDelegate {
             
         case .details:
             switch indexPath.section {
-            case CardViewControllerDetailsSection.information.rawValue:
+            case CardViewControllerDetailsSection.printings.rawValue:
+                height = CGFloat(88)
+            case CardViewControllerDetailsSection.details.rawValue:
                 if let webViewSize = webViewSize {
                     height = webViewSize.height
                 } else {
                     height = CGFloat(88)
                 }
-            case CardViewControllerDetailsSection.printings.rawValue:
-                height = CGFloat(88)
             default:
                 height = UITableViewAutomaticDimension
             }
@@ -1071,6 +1044,11 @@ extension CardViewController : iCarouselDelegate {
     func carouselCurrentItemIndexDidChange(_ carousel: iCarousel) {
         cardIndex = carousel.currentItemIndex
         cardViewIncremented = false
+        
+        if let cards = cards {
+            let card = cards[cardIndex]
+            title = card.name
+        }
         
         if segmentedIndex == .image {
             tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.pricing.rawValue),

@@ -11,6 +11,7 @@ import Firebase
 import FBSDKCoreKit
 import GoogleSignIn
 import ManaKit
+import MMDrawerController
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -32,6 +33,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ManaKit.sharedInstance.setupResources()
         ManaKit.sharedInstance.configureTCGPlayer(partnerKey: "ManaGuide", publicKey: "A49D81FB-5A76-4634-9152-E1FB5A657720", privateKey: nil)
 
+        // change the account icon
+        if let rootVC = window?.rootViewController as? MMDrawerController {
+            if let tabBarVC = rootVC.centerViewController as? UITabBarController {
+                tabBarVC.tabBar.items![2].image = UIImage(bgIcon: .FAUser, orientation: UIImageOrientation.up, bgTextColor: UIColor.blue, bgBackgroundColor: UIColor.clear, topIcon: .FAUser, topTextColor: UIColor.clear, bgLarge: false, size: CGSize(width: 30, height: 30))
+            }
+        }
+        
         return true
     }
 

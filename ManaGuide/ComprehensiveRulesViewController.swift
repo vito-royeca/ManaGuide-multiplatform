@@ -28,20 +28,6 @@ class ComprehensiveRulesViewController: UIViewController {
         // Do any additional setup after loading the view.
         dataSource = getDataSource(fetchRequest)
         tableView.reloadData()
-        
-        if let currentRule = currentRule {
-            var string = ""
-            if let number = currentRule.number {
-                string.append("\(number)")
-            }
-            if let text = currentRule.text {
-                if string.count > 0 {
-                    string.append(". ")
-                }
-                string.append(text)
-            }
-            title = string
-        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -60,6 +46,19 @@ class ComprehensiveRulesViewController: UIViewController {
                 
                 dest.fetchRequest = fetchRequest
                 dest.currentRule = currentRule
+                if let currentRule = currentRule {
+                    var string = ""
+                    if let number = currentRule.number {
+                        string.append("\(number)")
+                    }
+                    if let text = currentRule.text {
+                        if string.count > 0 {
+                            string.append(". ")
+                        }
+                        string.append(text)
+                    }
+                    dest.title = string
+                }
             }
         }
     }

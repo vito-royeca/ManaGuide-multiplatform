@@ -32,8 +32,14 @@ class GlossaryViewController: UIViewController {
         
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
-        definesPresentationContext = true
-        tableView.tableHeaderView = searchController.searchBar
+        searchController.searchBar.backgroundColor = UIColor.white
+        
+        if #available(iOS 11.0, *) {
+            navigationItem.searchController = searchController
+        } else {
+            definesPresentationContext = true
+            tableView.tableHeaderView = searchController.searchBar
+        }
         
         updateSections()
         tableView.reloadData()
@@ -109,14 +115,12 @@ class GlossaryViewController: UIViewController {
         var filteredGlossaries:[CMGlossary]?
         var request:NSFetchRequest<NSFetchRequestResult>?
         
-        dataSource = getDataSource(nil)
-        
         if let text = searchController.searchBar.text {
             let count = text.count
-            let sets = dataSource!.all() as! [CMGlossary]
+            let glossaries = dataSource!.all() as! [CMGlossary]
             
             if count > 0 {
-                filteredGlossaries = sets.filter({
+                filteredGlossaries = glossaries.filter({
                     let termLower = $0.term!.lowercased()
                     let definitionLower = $0.definition!.lowercased()
                     let textLower = text.lowercased()

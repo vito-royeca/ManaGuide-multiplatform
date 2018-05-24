@@ -10,7 +10,7 @@ import UIKit
 import DATASource
 
 enum MoreViewControllerRow: Int {
-    case basicRules
+//    case basicRules
     case comprehensiveRules
     case bannedList
     case reservedList
@@ -19,7 +19,7 @@ enum MoreViewControllerRow: Int {
     var description : String {
         switch self {
         // Use Internationalization, as appropriate.
-        case .basicRules: return "Basic Rules"
+//        case .basicRules: return "Basic Rules"
         case .comprehensiveRules: return "Comprehensive Rules"
         case .bannedList: return "Banned and Restricted List"
         case .reservedList: return "Reserved List"
@@ -28,7 +28,7 @@ enum MoreViewControllerRow: Int {
     }
     
     static var count: Int {
-        return 5
+        return 4
     }
 }
 
@@ -70,8 +70,8 @@ extension MoreViewController : UITableViewDataSource {
         var text: String? = nil
         
         switch indexPath.row {
-        case MoreViewControllerRow.basicRules.rawValue:
-            text = MoreViewControllerRow.basicRules.description
+//        case MoreViewControllerRow.basicRules.rawValue:
+//            text = MoreViewControllerRow.basicRules.description
         case MoreViewControllerRow.comprehensiveRules.rawValue:
             text = MoreViewControllerRow.comprehensiveRules.description
         case MoreViewControllerRow.bannedList.rawValue:
@@ -94,8 +94,8 @@ extension MoreViewController : UITableViewDataSource {
 extension MoreViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
-        case MoreViewControllerRow.basicRules.rawValue:
-            ()
+//        case MoreViewControllerRow.basicRules.rawValue:
+//            ()
         case MoreViewControllerRow.comprehensiveRules.rawValue:
             performSegue(withIdentifier: "showComprehensiveRules", sender: nil)
         case MoreViewControllerRow.bannedList.rawValue:

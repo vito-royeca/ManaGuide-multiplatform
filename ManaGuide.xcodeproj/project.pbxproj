@@ -50,6 +50,9 @@
 		1165CD771F377F58006CC433 /* BannedListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD751F377F58006CC433 /* BannedListViewController.swift */; };
 		1165CD791F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */; };
 		1165CD7A1F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */; };
+		118281B120B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
+		118281B220B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
+		118281B320B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
 		11AF054B1F397EA8003B8A6D /* GlossaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AF054A1F397EA8003B8A6D /* GlossaryViewController.swift */; };
 		11AF054C1F397EA8003B8A6D /* GlossaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AF054A1F397EA8003B8A6D /* GlossaryViewController.swift */; };
 		11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
@@ -110,6 +113,7 @@
 		1165CD721F377395006CC433 /* MoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreViewController.swift; sourceTree = "<group>"; };
 		1165CD751F377F58006CC433 /* BannedListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannedListViewController.swift; sourceTree = "<group>"; };
 		1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComprehensiveRulesViewController.swift; sourceTree = "<group>"; };
+		118281B020B67FA500865172 /* AccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewController.swift; sourceTree = "<group>"; };
 		11AF054A1F397EA8003B8A6D /* GlossaryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlossaryViewController.swift; sourceTree = "<group>"; };
 		11B2AA321F29DE490067E833 /* CardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserTableViewCell.swift; sourceTree = "<group>"; };
@@ -236,6 +240,7 @@
 		110BB5281F2084E100086841 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				118281B020B67FA500865172 /* AccountViewController.swift */,
 				111D5A6B20AF57590046285B /* ArtistsViewController.swift */,
 				1165CD751F377F58006CC433 /* BannedListViewController.swift */,
 				1147B7591F22379F004EF296 /* BaseViewController.swift */,
@@ -808,6 +813,7 @@
 				113A6B0E1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */,
 				1165CD791F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
 				110BB52D1F20892B00086841 /* SearchViewController.swift in Sources */,
+				118281B120B67FA500865172 /* AccountViewController.swift in Sources */,
 				1140F0D11F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
 				1140F0CC1F42CA500023E107 /* FCCard.swift in Sources */,
@@ -825,6 +831,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */,
+				118281B220B67FA500865172 /* AccountViewController.swift in Sources */,
 				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
 				111D5A6D20AF57590046285B /* ArtistsViewController.swift in Sources */,
@@ -843,6 +850,7 @@
 				1165CD7A1F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
 				1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */,
 				1140F0D31F42CC020023E107 /* FirebaseManager.swift in Sources */,
+				118281B320B67FA500865172 /* AccountViewController.swift in Sources */,
 				11E4374B1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
 				1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */,
 				11AF054C1F397EA8003B8A6D /* GlossaryViewController.swift in Sources */,
