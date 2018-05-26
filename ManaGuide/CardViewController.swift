@@ -41,6 +41,8 @@ enum CardViewControllerImageSection : Int {
 }
 
 enum CardViewControllerDetailsSection : Int {
+    case manaCost
+    case type
     case originalText
     case oracleText
     case flavorText
@@ -54,6 +56,8 @@ enum CardViewControllerDetailsSection : Int {
     var description : String {
         switch self {
         // Use Internationalization, as appropriate.
+        case .manaCost: return "Mana Cost"
+        case .type: return "Type"
         case .originalText: return "Original Text"
         case .oracleText: return "Oracle Text"
         case .flavorText: return "Flavor Text"
@@ -67,7 +71,7 @@ enum CardViewControllerDetailsSection : Int {
     }
     
     static var count: Int {
-        return 9
+        return 11
     }
 }
 
@@ -195,6 +199,83 @@ class CardViewController: BaseViewController {
         return newText
     }
     
+    func composeType(of card: CMCard, pointSize: CGFloat) -> NSAttributedString {
+        let attributedString = NSMutableAttributedString()
+        var cardType: CMCardType?
+        var image: UIImage?
+        var text:String?
+        
+        if let types = card.types_ {
+            if types.count > 1 {
+                image = ManaKit.sharedInstance.symbolImage(name: "Multiple")
+                cardType = types.allObjects.first as? CMCardType
+                
+                for t in types.allObjects {
+                    if let t = t as? CMCardType {
+                        if t.name == "Creature" {
+                            cardType = t
+                        }
+                    }
+                }
+            } else {
+                if let type = types.allObjects.first as? CMCardType {
+                    cardType = type
+                }
+            }
+        }
+        
+        if let cardType = cardType {
+            if let name = cardType.name {
+                image = ManaKit.sharedInstance.symbolImage(name: name)
+            }
+        }
+        // type
+        if let type = card.type_,
+            let cardType = cardType {
+            
+            text = " "
+            if let name = type.name {
+                text!.append(name)
+            }
+            if let name = cardType.name {
+                if name == "Creature" {
+                    if let power = card.power,
+                        let toughness = card.toughness {
+                        text!.append(" (\(power)/\(toughness))")
+                    }
+                }
+            }
+        }
+        
+        
+        if let image = image,
+            let text = text {
+            
+            let imageAttachment =  NSTextAttachment()
+            imageAttachment.image = image
+            
+            let width = CGFloat(16)
+            let height = CGFloat(16)
+            var imageOffsetY = CGFloat(0)
+            
+            
+            if height > pointSize {
+                imageOffsetY = -(height - pointSize) / 2.0
+            } else {
+                imageOffsetY = -(pointSize - height) / 2.0
+            }
+            
+            imageAttachment.bounds = CGRect(x: 0, y: imageOffsetY, width: width, height: height)
+            
+            let attachmentString = NSAttributedString(attachment: imageAttachment)
+            attributedString.append(attachmentString)
+            attributedString.append(NSAttributedString(string: text))
+            
+        }
+        
+        return attributedString
+    }
+    
     func addSymbols(toText text: String?, withPointSize pointSize: CGFloat) -> NSAttributedString {
         let newText = NSMutableAttributedString()
         
@@ -282,12 +363,6 @@ class CardViewController: BaseViewController {
             html = html.replacingOccurrences(of: "{{keyruneCss}}", with: "\(bundleURL.path)/css/keyrune.min.css")
         }
         
-        if let manaCost = card.manaCost {
-            html = html.replacingOccurrences(of: "{{manaCost}}", with: replaceSymbols(inText: manaCost))
-        } else {
-            html = html.replacingOccurrences(of: "{{manaCost}}", with: "&mdash;")
-        }
-        
         html = html.replacingOccurrences(of: "{{cmc}}", with: String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))
         
         if let colors_ = card.colors_ {
@@ -312,30 +387,12 @@ class CardViewController: BaseViewController {
             html = html.replacingOccurrences(of: "{{subtypes}}", with: "&mdash;")
         }
         
-        if let power = card.power {
-            html = html.replacingOccurrences(of: "{{power}}", with: power)
-        } else {
-            html = html.replacingOccurrences(of: "{{power}}", with: "&mdash;")
-        }
-        
-        if let toughness = card.toughness {
-            html = html.replacingOccurrences(of: "{{toughness}}", with: toughness)
-        } else {
-            html = html.replacingOccurrences(of: "{{toughness}}", with: "&mdash;")
-        }
-
         if let originalType = card.originalType {
             html = html.replacingOccurrences(of: "{{originalType}}", with: originalType)
         } else {
             html = html.replacingOccurrences(of: "{{originalType}}", with: "&mdash;")
         }
 
-        if let type_ = card.type_ {
-            html = html.replacingOccurrences(of: "{{type}}", with: type_.name!)
-        } else {
-            html = html.replacingOccurrences(of: "{{type}}", with: "&mdash;")
-        }
-        
         if let subtypes_ = card.subtypes_ {
             if let s = subtypes_.allObjects as? [CMCardType] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
@@ -561,6 +618,41 @@ extension CardViewController : UITableViewDataSource {
             tableView.separatorStyle = .singleLine
             
             switch indexPath.section {
+            case CardViewControllerDetailsSection.manaCost.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                    let cards = cards {
+                    
+                    let card = cards[cardIndex]
+                    if let label = c.textLabel {
+                        if let text = card.manaCost {
+                            label.attributedText = addSymbols(toText: "\(text) (CMC \(Int(card.cmc)))", withPointSize: label.font.pointSize)
+                        } else {
+                            label.text = " "
+                        }
+                    }
+                    c.selectionStyle = .none
+                    c.accessoryType = .none
+                    cell = c
+                }
+            case CardViewControllerDetailsSection.type.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                    let cards = cards {
+                    let card = cards[cardIndex]
+                    
+                    if let label = c.textLabel {
+                        if let _ = card.type_ {
+                            label.attributedText = composeType(of: card, pointSize: label.font.pointSize)
+                            label.adjustsFontSizeToFitWidth = true
+                        } else {
+                            label.text = " "
+                            label.adjustsFontSizeToFitWidth = false
+                        }
+                        
+                    }
+                    c.selectionStyle = .none
+                    c.accessoryType = .none
+                    cell = c
+                }
             case CardViewControllerDetailsSection.originalText.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
                     let cards = cards {
@@ -738,6 +830,10 @@ extension CardViewController : UITableViewDataSource {
         switch segmentedIndex {
         case .details:
             switch section {
+            case CardViewControllerDetailsSection.manaCost.rawValue:
+                headerTitle = CardViewControllerDetailsSection.manaCost.description
+            case CardViewControllerDetailsSection.type.rawValue:
+                headerTitle = CardViewControllerDetailsSection.type.description
             case CardViewControllerDetailsSection.originalText.rawValue:
                 headerTitle = CardViewControllerDetailsSection.originalText.description
             case CardViewControllerDetailsSection.oracleText.rawValue:

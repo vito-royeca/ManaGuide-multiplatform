@@ -10,11 +10,17 @@ import UIKit
 
 class AccountViewController: UIViewController {
 
+    // MARK Outlets
+    @IBOutlet weak var loginButton: UIBarButtonItem!
+    @IBOutlet weak var tableView: UITableView!
+    
     // MARK: Overrides
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        loginButton.image = UIImage.init(icon: .FAArrowCircleRight, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
+        loginButton.title = nil
     }
 
     override func didReceiveMemoryWarning() {

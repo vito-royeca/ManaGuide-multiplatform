@@ -17,6 +17,7 @@ def default_pods
     pod 'InAppSettingsKit'
     pod 'iCarousel'
     pod 'Kanna', :git => 'https://github.com/tid-kijyun/Kanna', :branch => 'feature/v3.0.0'
+    pod 'KeychainAccess'
     pod 'ManaKit'
     pod 'MBProgressHUD'
     pod 'MMDrawerController'
