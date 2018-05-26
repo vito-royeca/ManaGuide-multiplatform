@@ -44,6 +44,9 @@
 		1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7651F224874004EF296 /* SettingsViewController.swift */; };
 		1147B7691F226143004EF296 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1147B7681F226143004EF296 /* Settings.bundle */; };
 		1147B76A1F226143004EF296 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1147B7681F226143004EF296 /* Settings.bundle */; };
+		1150BCEE20B92E4700A36FCD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1150BCED20B92E4700A36FCD /* LoginViewController.swift */; };
+		1150BCEF20B92E4700A36FCD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1150BCED20B92E4700A36FCD /* LoginViewController.swift */; };
+		1150BCF020B92E4700A36FCD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1150BCED20B92E4700A36FCD /* LoginViewController.swift */; };
 		1165CD731F377395006CC433 /* MoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD721F377395006CC433 /* MoreViewController.swift */; };
 		1165CD741F377395006CC433 /* MoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD721F377395006CC433 /* MoreViewController.swift */; };
 		1165CD761F377F58006CC433 /* BannedListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD751F377F58006CC433 /* BannedListViewController.swift */; };
@@ -110,6 +113,7 @@
 		1147B7621F224198004EF296 /* SetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetViewController.swift; sourceTree = "<group>"; };
 		1147B7651F224874004EF296 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		1147B7681F226143004EF296 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		1150BCED20B92E4700A36FCD /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		1165CD721F377395006CC433 /* MoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreViewController.swift; sourceTree = "<group>"; };
 		1165CD751F377F58006CC433 /* BannedListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannedListViewController.swift; sourceTree = "<group>"; };
 		1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComprehensiveRulesViewController.swift; sourceTree = "<group>"; };
@@ -253,6 +257,7 @@
 				1147B7561F223607004EF296 /* SetsViewController.swift */,
 				1147B7651F224874004EF296 /* SettingsViewController.swift */,
 				1147B7621F224198004EF296 /* SetViewController.swift */,
+				1150BCED20B92E4700A36FCD /* LoginViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -489,6 +494,7 @@
 				"${BUILT_PRODUCTS_DIR}/MMDrawerController+Storyboard/MMDrawerController_Storyboard.framework",
 				"${BUILT_PRODUCTS_DIR}/ManaKit/ManaKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Networking/Networking.framework",
+				"${BUILT_PRODUCTS_DIR}/OAuthSwift/OAuthSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
@@ -525,6 +531,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MMDrawerController_Storyboard.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ManaKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Networking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OAuthSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
@@ -625,6 +632,7 @@
 				"${BUILT_PRODUCTS_DIR}/MMDrawerController+Storyboard/MMDrawerController_Storyboard.framework",
 				"${BUILT_PRODUCTS_DIR}/ManaKit/ManaKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Networking/Networking.framework",
+				"${BUILT_PRODUCTS_DIR}/OAuthSwift/OAuthSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
@@ -661,6 +669,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MMDrawerController_Storyboard.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ManaKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Networking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OAuthSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
@@ -751,6 +760,7 @@
 				"${BUILT_PRODUCTS_DIR}/MMDrawerController+Storyboard/MMDrawerController_Storyboard.framework",
 				"${BUILT_PRODUCTS_DIR}/ManaKit/ManaKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Networking/Networking.framework",
+				"${BUILT_PRODUCTS_DIR}/OAuthSwift/OAuthSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
@@ -787,6 +797,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MMDrawerController_Storyboard.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ManaKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Networking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OAuthSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
@@ -815,6 +826,7 @@
 				1147B7661F224874004EF296 /* SettingsViewController.swift in Sources */,
 				1147B7631F224198004EF296 /* SetViewController.swift in Sources */,
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
+				1150BCEE20B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				1165CD761F377F58006CC433 /* BannedListViewController.swift in Sources */,
 				113A6B0E1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */,
 				1165CD791F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
@@ -836,6 +848,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1150BCEF20B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				118281B220B67FA500865172 /* AccountViewController.swift in Sources */,
 				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
@@ -852,6 +865,7 @@
 				1147B7581F223607004EF296 /* SetsViewController.swift in Sources */,
 				110BB51A1F207C6400086841 /* ManaGuideUITests.swift in Sources */,
 				1165CD771F377F58006CC433 /* BannedListViewController.swift in Sources */,
+				1150BCF020B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				113A6B0F1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */,
 				1165CD7A1F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
 				1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */,

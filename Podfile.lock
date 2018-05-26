@@ -120,6 +120,7 @@ PODS:
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
   - Networking (4.1.1)
+  - OAuthSwift (1.1.2)
   - PromiseKit (6.2.8):
     - PromiseKit/CorePromise (= 6.2.8)
     - PromiseKit/Foundation (= 6.2.8)
@@ -162,6 +163,7 @@ DEPENDENCIES:
   - MMDrawerController
   - "MMDrawerController+Storyboard"
   - Networking
+  - OAuthSwift (~> 1.1.2)
   - PromiseKit (~> 6.0)
   - Reachability
   - SimulatorStatusMagic
@@ -203,6 +205,7 @@ SPEC REPOS:
     - "MMDrawerController+Storyboard"
     - nanopb
     - Networking
+    - OAuthSwift
     - PromiseKit
     - Reachability
     - SDWebImage
@@ -268,6 +271,7 @@ SPEC CHECKSUMS:
   "MMDrawerController+Storyboard": c98f86c0f32cdef1d466d19a7da3ad2fc6c6ac00
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Networking: ffde5754883907f90f9f751e183eba4a75dc4b89
+  OAuthSwift: 5aa5659984d3ca3206ba636a9e7a9c6626b2e8bd
   PromiseKit: 6788ce1a0ed5448b83d4aaf56b9fc49fb7647d32
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: de4d90b5bff3571eae7bd16202b1f43135409fa5
@@ -277,6 +281,6 @@ SPEC CHECKSUMS:
   TwitterCore: 644d59e75abccb26cf0a9050d2c4dea0e5412241
   TwitterKit: a2e60ddcedbf54091eac6f27685ca7a87681e1d7
 
-PODFILE CHECKSUM: c16fbcf8859966ab6192d803b547f980ed48367c
+PODFILE CHECKSUM: 192bc473ca7a8c9e122c79bd79f78b8f119ce6d0
 
 COCOAPODS: 1.5.0

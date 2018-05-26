@@ -14,6 +14,11 @@ class AccountViewController: UIViewController {
     @IBOutlet weak var loginButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
     
+    // MARK: Actions
+    @IBAction func loginAction(_ sender: UIBarButtonItem) {
+        performSegue(withIdentifier: "showLogin", sender: nil)
+    }
+    
     // MARK: Overrides
     override func viewDidLoad() {
         super.viewDidLoad()
