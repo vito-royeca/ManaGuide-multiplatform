@@ -254,10 +254,10 @@ class CardViewController: BaseViewController {
             let imageAttachment =  NSTextAttachment()
             imageAttachment.image = image
             
-            let width = CGFloat(16)
-            let height = CGFloat(16)
+            let ratio = image.size.width / image.size.height
+            let height = CGFloat(17)
+            let width = ratio * height
             var imageOffsetY = CGFloat(0)
-            
             
             if height > pointSize {
                 imageOffsetY = -(height - pointSize) / 2.0
@@ -270,7 +270,6 @@ class CardViewController: BaseViewController {
             let attachmentString = NSAttributedString(attachment: imageAttachment)
             attributedString.append(attachmentString)
             attributedString.append(NSAttributedString(string: text))
-            
         }
         
         return attributedString
@@ -707,6 +706,7 @@ extension CardViewController : UITableViewDataSource {
                     
                     let card = cards[cardIndex]
                     if let artist = card.artist_ {
+                        c.textLabel?.adjustsFontSizeToFitWidth = true
                         c.textLabel?.text = artist.name
                         c.detailTextLabel?.text = "More Cards"
                     } else {
@@ -733,6 +733,7 @@ extension CardViewController : UITableViewDataSource {
                             attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]))
                         
                         label.attributedText = attributedString
+                        label.adjustsFontSizeToFitWidth = true
                         c.detailTextLabel?.text = "More Cards"
                     } else {
                         c.textLabel?.text = " "
