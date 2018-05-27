@@ -38,7 +38,7 @@ class ComprehensiveRulesViewController: UIViewController {
                 if let indexPath = tableView.indexPath(for: cell) {
                     if let rule = dataSource!.object(indexPath) as? CMRule {
                         fetchRequest = NSFetchRequest(entityName: "CMRule")
-                        fetchRequest!.sortDescriptors = [NSSortDescriptor(key: "numberOrder", ascending: true)]
+                        fetchRequest!.sortDescriptors = [NSSortDescriptor(key: "number", ascending: true)]
                         fetchRequest!.predicate = NSPredicate(format: "parent = %@", rule)
                         currentRule = rule
                     }

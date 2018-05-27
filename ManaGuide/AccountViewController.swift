@@ -24,8 +24,6 @@ class AccountViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        loginButton.image = UIImage.init(icon: .FAArrowCircleRight, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
-        loginButton.title = nil
     }
 
     override func didReceiveMemoryWarning() {

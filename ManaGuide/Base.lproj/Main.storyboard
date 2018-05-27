@@ -1678,7 +1678,7 @@
                         <barButtonItem key="backBarButtonItem" title=" " id="yeV-j1-QSZ">
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="JOc-Ku-cUc">
+                        <barButtonItem key="rightBarButtonItem" title="Login" id="JOc-Ku-cUc">
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
                                 <action selector="loginAction:" destination="xiT-xW-PPD" id="R0b-t9-v4M"/>
