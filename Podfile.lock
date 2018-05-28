@@ -6,8 +6,11 @@ PODS:
     - Bolts/Tasks
   - Bolts/Tasks (1.9.0)
   - Cosmos (11.0.3)
+  - Crashlytics (3.10.2):
+    - Fabric (~> 1.7.7)
   - DATASource (7.0.2)
   - DATAStack (8.0.2)
+  - Fabric (1.7.7)
   - FacebookCore (0.3.0):
     - Bolts (~> 1.8)
     - FBSDKCoreKit (~> 4.27)
@@ -143,8 +146,10 @@ PODS:
 
 DEPENDENCIES:
   - Cosmos (~> 11.0)
+  - Crashlytics
   - DATASource
   - DATAStack
+  - Fabric
   - FacebookCore
   - FacebookLogin
   - FacebookShare (from `https://github.com/1amageek/facebook-sdk-swift`)
@@ -176,8 +181,10 @@ SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - Bolts
     - Cosmos
+    - Crashlytics
     - DATASource
     - DATAStack
+    - Fabric
     - FacebookCore
     - FacebookLogin
     - FBSDKCoreKit
@@ -239,8 +246,10 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   Cosmos: eb506859929f4add2d2aec822a27efb2f718a95d
+  Crashlytics: 0360624eea1c978a743feddb2fb1ef8b37fb7a0d
   DATASource: b86db74542b5b27d4d2af43ae698022f19507379
   DATAStack: 9c415f6e7733eafb9cf5c076613bfb5958c407cb
+  Fabric: bda89e242bce1b7b8ab264248cf3407774ce0095
   FacebookCore: 3ffa190a3f1f96cec0e44d3fc221bc322c595ffa
   FacebookLogin: 0af839ea858faef99550d16596b87b4a8e8906e6
   FacebookShare: d086f7a4610bbbca9cec5e774de450a9b3e1a20b
@@ -281,6 +290,6 @@ SPEC CHECKSUMS:
   TwitterCore: 644d59e75abccb26cf0a9050d2c4dea0e5412241
   TwitterKit: a2e60ddcedbf54091eac6f27685ca7a87681e1d7
 
-PODFILE CHECKSUM: 192bc473ca7a8c9e122c79bd79f78b8f119ce6d0
+PODFILE CHECKSUM: 8af03c5be70235db6491e4d30c8219a2201ebdc4
 
 COCOAPODS: 1.5.0

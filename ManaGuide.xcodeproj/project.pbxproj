@@ -64,6 +64,9 @@
 		11E4374B1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */; };
 		11E4374C1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */; };
 		11E4374D1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */; };
+		11F336B220BBB47B0007552F /* PDFViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F336B120BBB47B0007552F /* PDFViewerViewController.swift */; };
+		11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F336B120BBB47B0007552F /* PDFViewerViewController.swift */; };
+		11F336B420BBB47B0007552F /* PDFViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F336B120BBB47B0007552F /* PDFViewerViewController.swift */; };
 		74354F476842033081184C2B /* Pods_ManaGuide.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBC4619D8E82345F50B95062 /* Pods_ManaGuide.framework */; };
 		C6B3BF0EAEFDFD7753AABDCA /* Pods_ManaGuideUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D468E164F8FD81E252338DF /* Pods_ManaGuideUITests.framework */; };
 		CF25780178833B6EA5E11C6F /* Pods_ManaGuideTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5D11A42B4FA676E10149FA9 /* Pods_ManaGuideTests.framework */; };
@@ -122,6 +125,7 @@
 		11B2AA321F29DE490067E833 /* CardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserTableViewCell.swift; sourceTree = "<group>"; };
 		11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BrowserTableViewCell.xib; sourceTree = "<group>"; };
+		11F336B120BBB47B0007552F /* PDFViewerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFViewerViewController.swift; sourceTree = "<group>"; };
 		16CE1263B7BD598033CE1752 /* Pods-ManaGuideUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ManaGuideUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ManaGuideUITests/Pods-ManaGuideUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		24D1EA6B21F1DF4EBD57196F /* Pods-ManaGuide.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ManaGuide.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ManaGuide/Pods-ManaGuide.debug.xcconfig"; sourceTree = "<group>"; };
 		2C8C1EAFD37CC486643EE4F2 /* Pods-ManaGuideUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ManaGuideUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ManaGuideUITests/Pods-ManaGuideUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -248,16 +252,17 @@
 				111D5A6B20AF57590046285B /* ArtistsViewController.swift */,
 				1165CD751F377F58006CC433 /* BannedListViewController.swift */,
 				1147B7591F22379F004EF296 /* BaseViewController.swift */,
+				11F336B120BBB47B0007552F /* PDFViewerViewController.swift */,
 				11B2AA321F29DE490067E833 /* CardViewController.swift */,
 				1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */,
 				110BB5291F20891D00086841 /* FeaturedViewController.swift */,
 				11AF054A1F397EA8003B8A6D /* GlossaryViewController.swift */,
+				1150BCED20B92E4700A36FCD /* LoginViewController.swift */,
 				1165CD721F377395006CC433 /* MoreViewController.swift */,
 				110BB52C1F20892B00086841 /* SearchViewController.swift */,
 				1147B7561F223607004EF296 /* SetsViewController.swift */,
 				1147B7651F224874004EF296 /* SettingsViewController.swift */,
 				1147B7621F224198004EF296 /* SetViewController.swift */,
-				1150BCED20B92E4700A36FCD /* LoginViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -304,6 +309,7 @@
 				110BB4F41F207C6400086841 /* Resources */,
 				DD119EE3221F00201FB8B75A /* [CP] Embed Pods Frameworks */,
 				C84A2E2EEA8DBA304B266881 /* [CP] Copy Pods Resources */,
+				117E521C20BB0FC0007CB64F /* Fabric Run Script */,
 			);
 			buildRules = (
 			);
@@ -548,6 +554,20 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ManaGuideTests/Pods-ManaGuideTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		117E521C20BB0FC0007CB64F /* Fabric Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Fabric Run Script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Fabric/run\" 114b3dd82452ec2f4024140ec862698d331b8f3f e633393678a7e8c4f2e8be609515f7ad0ff6dd85c474c001fea74fde0273c2e4";
 		};
 		196EB69E6D6D3B988C04F612 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -823,6 +843,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1147B7571F223607004EF296 /* SetsViewController.swift in Sources */,
+				11F336B220BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				1147B7661F224874004EF296 /* SettingsViewController.swift in Sources */,
 				1147B7631F224198004EF296 /* SetViewController.swift in Sources */,
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
@@ -850,6 +871,7 @@
 			files = (
 				1150BCEF20B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */,
+				11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				118281B220B67FA500865172 /* AccountViewController.swift in Sources */,
 				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
@@ -862,6 +884,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				110BB52E1F20892B00086841 /* SearchViewController.swift in Sources */,
+				11F336B420BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				1147B7581F223607004EF296 /* SetsViewController.swift in Sources */,
 				110BB51A1F207C6400086841 /* ManaGuideUITests.swift in Sources */,
 				1165CD771F377F58006CC433 /* BannedListViewController.swift in Sources */,
@@ -1020,6 +1043,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 43CD66539H;
 				INFOPLIST_FILE = ManaGuide/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jovitoroyeca.ManaGuide;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1035,6 +1059,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 43CD66539H;
 				INFOPLIST_FILE = ManaGuide/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jovitoroyeca.ManaGuide;
 				PRODUCT_NAME = "$(TARGET_NAME)";

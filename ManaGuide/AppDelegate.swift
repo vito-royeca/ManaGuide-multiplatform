@@ -7,11 +7,14 @@
 //
 
 import UIKit
+import Fabric
+import Crashlytics
 import Firebase
 import FBSDKCoreKit
 import GoogleSignIn
 import ManaKit
 import MMDrawerController
+import TwitterKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,6 +26,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         print("docsPath = \(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])")
 
+        // Fabric
+        Fabric.with([Crashlytics.self])
+        
+        // Twitter
+        TWTRTwitter.sharedInstance().start(withConsumerKey: "saMFOtPPU7OPGofIYoVYEmzFx", consumerSecret: "6QtePMvphlWKjxToaoFmGNpYWhvIaCQ4zQGh6GD3xGfcLbY1GN")
+        
         // Firebase
         FirebaseApp.configure()
         Database.database().isPersistenceEnabled = true
@@ -66,5 +75,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 
+    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+        var handled = false
+        
+        if url.absoluteString.hasPrefix("fb") {
+            handled = FBSDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
+        }
+        
+        return handled
+    }
 }
 

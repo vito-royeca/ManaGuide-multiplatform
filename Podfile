@@ -5,6 +5,8 @@ def default_pods
     pod 'Cosmos', '~> 11.0'
     pod 'DATASource'
     pod 'DATAStack'
+    pod 'Fabric'
+    pod 'Crashlytics'
     pod 'FacebookCore'
     pod 'FacebookLogin'
     pod 'FacebookShare', :git => 'https://github.com/1amageek/facebook-sdk-swift'
