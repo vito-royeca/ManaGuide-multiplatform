@@ -393,10 +393,12 @@ extension FeaturedViewController : UICollectionViewDataSource {
                     })
                 }
             }
-            if let setImage = cell?.viewWithTag(200) as? UIImageView,
+            if let label = cell?.viewWithTag(200) as? UILabel,
                 let rarity = card.rarity_,
                 let set = card.set {
-                setImage.image = ManaKit.sharedInstance.setImage(set: set, rarity: rarity)
+                label.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+                label.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: rarity)
+                label.layer.cornerRadius = label.frame.height / 2
             }
             if let label = cell?.viewWithTag(300) as? UILabel {
                 label.text = card.name

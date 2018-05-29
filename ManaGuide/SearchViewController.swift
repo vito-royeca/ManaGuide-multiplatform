@@ -58,8 +58,14 @@ class SearchViewController: BaseViewController {
         rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
+//        if request == nil {
+//            tableView.tableHeaderView = searchBar
+//        }
         
         statusLabel.text = "  Loading..."
+        
+        
+        
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -77,15 +83,17 @@ class SearchViewController: BaseViewController {
         // we have a custom search result, so remove the searchBar
         if request == nil {
             navigationItem.titleView = searchBar
+//            searchBar.backgroundColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
+            
             if #available(iOS 11.0, *) {
                 navigationController?.navigationBar.prefersLargeTitles = false
             }
         }
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+
         navigationItem.titleView = nil
         if #available(iOS 11.0, *) {
             navigationController?.navigationBar.prefersLargeTitles = true
@@ -475,6 +483,7 @@ class SearchViewController: BaseViewController {
                 }
             }
         }
+        
         if subpredicates.count > 0 {
             if searchKeywordBoolean == "and" {
                 predicate = NSCompoundPredicate(andPredicateWithSubpredicates: subpredicates)
