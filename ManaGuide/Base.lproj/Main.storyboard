@@ -132,7 +132,6 @@
                     </navigationItem>
                     <connections>
                         <outlet property="rightMenuButton" destination="pW4-Bt-JMi" id="wDL-rT-NXN"/>
-                        <outlet property="searchBar" destination="DYz-gj-UW1" id="rPM-W1-xE0"/>
                         <outlet property="statusLabel" destination="le4-0f-D97" id="0Ot-Me-iWW"/>
                         <outlet property="tableView" destination="c6Y-yF-szq" id="vRR-sF-ktr"/>
                         <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="sDJ-KE-8ls"/>
@@ -140,14 +139,6 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JVP-zd-oMU" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <searchBar contentMode="redraw" placeholder="Search" id="DYz-gj-UW1">
-                    <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <textInputTraits key="textInputTraits"/>
-                    <connections>
-                        <outlet property="delegate" destination="t1B-qF-FHV" id="YhE-Jw-WZ3"/>
-                    </connections>
-                </searchBar>
             </objects>
             <point key="canvasLocation" x="1430.4347826086957" y="366.84782608695656"/>
         </scene>
@@ -555,32 +546,17 @@
                     <view key="view" contentMode="scaleToFill" id="Dbo-ns-pp2">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="620"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jph-au-mAu" customClass="PDFView">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="620"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </view>
-                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="Jph-au-mAu" secondAttribute="trailing" id="2xD-7j-llQ"/>
-                            <constraint firstItem="Jph-au-mAu" firstAttribute="leading" secondItem="Dbo-ns-pp2" secondAttribute="leading" id="A6d-21-qao"/>
-                            <constraint firstItem="Jph-au-mAu" firstAttribute="bottom" secondItem="efH-Ff-D6Q" secondAttribute="top" id="MeB-zY-dr1"/>
-                            <constraint firstItem="Jph-au-mAu" firstAttribute="top" secondItem="SlR-yT-v1A" secondAttribute="bottom" id="nOg-Wc-dO9"/>
-                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="PDF Viewer" id="l0k-m6-C5d">
                         <barButtonItem key="backBarButtonItem" title=" " id="Z7l-Xm-qpO">
                             <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
                         </barButtonItem>
                     </navigationItem>
-                    <connections>
-                        <outlet property="pdfView" destination="Jph-au-mAu" id="vfk-y2-dSs"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qKa-4H-Xpu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2751" y="1474"/>
+            <point key="canvasLocation" x="2750.7246376811595" y="1473.913043478261"/>
         </scene>
         <!--Featured-->
         <scene sceneID="Qng-H5-Uwz">
