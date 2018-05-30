@@ -80,6 +80,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if url.absoluteString.hasPrefix("fb") {
             handled = FBSDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
+        } else if url.absoluteString.hasPrefix("com.googleusercontent.apps") {
+            handled = GIDSignIn.sharedInstance().handle(url, sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String, annotation: options[UIApplicationOpenURLOptionsKey.annotation])
         }
         
         return handled

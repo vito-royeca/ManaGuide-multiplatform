@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Font_Awesome_Swift
 
 class BrowserTableViewCell: UITableViewCell {
 
@@ -42,6 +43,9 @@ class BrowserTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        backButton.image = UIImage(bgIcon: .FAArrowCircleLeft, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAArrowCircleLeft, topTextColor: UIColor.clear, bgLarge: true, size: CGSize(width: 20, height: 20))
+        forwardButton.image = UIImage(bgIcon: .FAArrowRight, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAArrowRight, topTextColor: UIColor.clear, bgLarge: true, size: CGSize(width: 20, height: 20))
+        refreshButton.image = UIImage(bgIcon: .FARefresh, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FARefresh, topTextColor: UIColor.clear, bgLarge: true, size: CGSize(width: 20, height: 20))
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

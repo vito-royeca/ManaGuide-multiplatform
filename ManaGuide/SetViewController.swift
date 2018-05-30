@@ -580,9 +580,10 @@ extension SetViewController : UIWebViewDelegate {
         var willLoad = false
         if let url = request.url {
             if let host = url.host {
-                if host.hasPrefix("mtg.gamepedia.com") {
+                if host.contains("gamepedia.com") {
                     willLoad = true
-                } else if host.hasPrefix("www.magiccards.info") {
+                } else if host.contains("magiccards.info") ||
+                    host.contains("scryfall.com") {
                     // Show the card instead opening the link!!!
                     let urlComponents = URLComponents(string: url.absoluteString)
                     let queryItems = urlComponents?.queryItems
@@ -590,6 +591,7 @@ extension SetViewController : UIWebViewDelegate {
                     if let value = q?.value {
                         let r = value.index(value.startIndex, offsetBy: 1)
                         let cardName = value.substring(from: r).replacingOccurrences(of: "+", with: " ")
+                                       .replacingOccurrences(of: "\"", with: "")
                         
                         let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
                         request.predicate = NSPredicate(format: "name = %@", cardName)

@@ -95,7 +95,11 @@ extension AccountViewController : UITableViewDataSource {
                     imageView.layer.cornerRadius = imageView.frame.height / 2
                     
                     if let user = Auth.auth().currentUser {
-                        imageView.sd_setImage(with: user.photoURL, completed: nil)
+                        imageView.sd_setImage(with: user.photoURL, completed: {(image: UIImage?, error: Error?, cacheType: SDImageCacheType, imageURL: URL?) in
+                            if image == nil {
+                                imageView.image = UIImage(bgIcon: .FAUserCircle, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAUserCircle, topTextColor: UIColor.clear, bgLarge: true, size: CGSize(width: 60, height: 60))
+                            }
+                        })
                         label.text = user.displayName
                     } else {
                         imageView.image = UIImage(bgIcon: .FAUserCircle, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAUserCircle, topTextColor: UIColor.clear, bgLarge: true, size: CGSize(width: 60, height: 60))

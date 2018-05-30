@@ -19,6 +19,45 @@ class FirebaseManager: NSObject {
     var queries = [String: DatabaseQuery]()
     var online = false
     
+    func updateUser(email: String?, photoURL: URL?, displayName: String?, completion: @escaping (_ error: Error?) -> Void) {
+        if let user = Auth.auth().currentUser {
+            let changeRequest = user.createProfileChangeRequest()
+            changeRequest.displayName = displayName
+            changeRequest.photoURL = photoURL
+            changeRequest.commitChanges { (error) in
+                if let error = error {
+                    print(error.localizedDescription)
+                } else {
+                    let ref = Database.database().reference().child("users").child(user.uid)
+                    
+                    ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+                        var providerData = [String]()
+                        for pd in user.providerData {
+                            providerData.append(pd.providerID)
+                        }
+                        
+                        if var post = currentData.value as? [String : Any] {
+                            post["displayName"] = displayName ?? ""
+                            
+                            // Set value and report transaction success
+                            currentData.value = post
+                            return TransactionResult.success(withValue: currentData)
+                            
+                        } else {
+                            ref.setValue(["displayName": displayName ?? ""])
+                            return TransactionResult.success(withValue: currentData)
+                        }
+                        
+                    }) { (error, committed, snapshot) in
+                        completion(error)
+                    }
+                }
+            }
+        } else {
+            completion(nil)
+        }
+    }
+
     func incrementCardViews(_ key: String) {
         let ref = Database.database().reference().child("cards").child(key)
         
@@ -35,9 +74,9 @@ class FirebaseManager: NSObject {
             } else {
                 ref.setValue([FCCard.Keys.Rating: Double(0),
                               FCCard.Keys.Views: 1])
+                return TransactionResult.success(withValue: currentData)
             }
             
-            return TransactionResult.success(withValue: currentData)
         }) { (error, committed, snapshot) in
             if let snapshot = snapshot {
                 let fcard = FCCard(snapshot: snapshot)

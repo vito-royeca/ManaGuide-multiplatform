@@ -43,7 +43,7 @@ class SetsViewController: BaseViewController {
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.tintColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
         definesPresentationContext = true
-
+        
         if #available(iOS 11.0, *) {
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = false

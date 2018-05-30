@@ -62,7 +62,7 @@ class SearchViewController: BaseViewController {
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = false
         } else {
-            navigationItem.titleView = searchController.searchBar
+            tableView.tableHeaderView = searchController.searchBar
         }
         
         rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
