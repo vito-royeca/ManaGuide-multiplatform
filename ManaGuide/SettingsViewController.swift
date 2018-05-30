@@ -18,6 +18,7 @@ class SettingsViewController: IASKAppSettingsViewController {
         // Do any additional setup after loading the view.
         if let backButton = navigationItem.backBarButtonItem {
             backButton.title = " "
+            backButton.tintColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
         }
     }
 

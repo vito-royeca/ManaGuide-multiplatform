@@ -14,6 +14,9 @@ import ManaKit
 
 class SetsViewController: BaseViewController {
 
+    // MARK: Constants
+    let searchController = UISearchController(searchResultsController: nil)
+
     // MARK: Variables
     var dataSource: DATASource?
     var sectionIndexTitles = [String]()
@@ -36,10 +39,30 @@ class SetsViewController: BaseViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
         
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchBar.tintColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
+        definesPresentationContext = true
+
+        if #available(iOS 11.0, *) {
+            navigationItem.searchController = searchController
+            navigationItem.hidesSearchBarWhenScrolling = false
+        } else {
+            tableView.tableHeaderView = searchController.searchBar
+        }
+        
         rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
         
         updateDataDisplay()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if #available(iOS 11.0, *) {
+            navigationItem.hidesSearchBarWhenScrolling = true
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -220,6 +243,35 @@ class SetsViewController: BaseViewController {
 
         return values
     }
+    
+    func doSearch() {
+        var newRequest:NSFetchRequest<NSFetchRequestResult>?
+        let defaults = defaultsValue()
+        let setsSectionName = defaults["setsSectionName"] as! String
+        let setsSecondSortBy = defaults["setsSecondSortBy"] as! String
+        let setsOrderBy = defaults["setsOrderBy"] as! Bool
+        
+        if let text = searchController.searchBar.text {
+            if text.count > 0 {
+                newRequest = NSFetchRequest(entityName: "CMSet")
+                
+                newRequest!.sortDescriptors = [NSSortDescriptor(key: setsSectionName, ascending: setsOrderBy),
+                                            NSSortDescriptor(key: setsSecondSortBy, ascending: setsOrderBy)]
+                
+                if text.count == 1 {
+                    newRequest!.predicate = NSPredicate(format: "name BEGINSWITH[cd] %@", text)
+                } else if text.count > 1 {
+                    newRequest!.predicate = NSPredicate(format: "name CONTAINS[cd] %@", text)
+                }
+                dataSource = getDataSource(newRequest)
+                tableView.reloadData()
+                
+            } else {
+                dataSource = getDataSource(nil)
+                tableView.reloadData()
+            }
+        }
+    }
 }
 
 // MARK: UITableViewDelegate
@@ -257,4 +309,12 @@ extension SetsViewController : DATASourceDelegate {
         return sectionIndex
     }
 }
+
+// MARK: UISearchResultsUpdating
+extension SetsViewController : UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        doSearch()
+    }
+}
+
 

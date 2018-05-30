@@ -14,6 +14,9 @@ import ManaKit
 
 class SearchViewController: BaseViewController {
 
+    // MARK: Constants
+    let searchController = UISearchController(searchResultsController: nil)
+
     // MARK: Variables
     var dataSource: DATASource?
     var sectionIndexTitles = [String]()
@@ -26,7 +29,6 @@ class SearchViewController: BaseViewController {
     // MARK: Outlets
     @IBOutlet weak var leftMenuButton: UIBarButtonItem!
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
-    @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet var statusLabel: UILabel!
     
@@ -36,10 +38,6 @@ class SearchViewController: BaseViewController {
     }
 
     @IBAction func rightMenuAction(_ sender: UIBarButtonItem) {
-        if let searchBar = searchBar {
-            searchBar.resignFirstResponder()
-        }
-
         if request != nil {
             showSettingsMenu(file: "SearchResults")
         } else {
@@ -55,48 +53,35 @@ class SearchViewController: BaseViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
         
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchBar.tintColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
+        definesPresentationContext = true
+        
+        if #available(iOS 11.0, *) {
+            navigationItem.searchController = searchController
+            navigationItem.hidesSearchBarWhenScrolling = false
+        } else {
+            navigationItem.titleView = searchController.searchBar
+        }
+        
         rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
-//        if request == nil {
-//            tableView.tableHeaderView = searchBar
-//        }
         
         statusLabel.text = "  Loading..."
-        
-        
-        
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        if #available(iOS 11.0, *) {
+            navigationItem.hidesSearchBarWhenScrolling = true
+        }
+
         if !firstLoad {
             firstLoad = true
             updateDataDisplay()
-        }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        // we have a custom search result, so remove the searchBar
-        if request == nil {
-            navigationItem.titleView = searchBar
-//            searchBar.backgroundColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
-            
-            if #available(iOS 11.0, *) {
-                navigationController?.navigationBar.prefersLargeTitles = false
-            }
-        }
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        navigationItem.titleView = nil
-        if #available(iOS 11.0, *) {
-            navigationController?.navigationBar.prefersLargeTitles = true
         }
     }
     
@@ -330,7 +315,7 @@ class SearchViewController: BaseViewController {
     }
 
     func doSearch() {
-        searchBar.resignFirstResponder()
+        statusLabel.text = "  Loading..."
         dataSource = getDataSource(createSearchRequeat())
         updateSections()
         tableView.reloadData()
@@ -369,6 +354,39 @@ class SearchViewController: BaseViewController {
             values["searchDisplayBy"] = value
         } else {
             values["searchDisplayBy"] = "list"
+        }
+        //
+        if let value = UserDefaults.standard.value(forKey: "searchKeywordName") as? Bool {
+            values["searchKeywordName"] = value
+        } else {
+            values["searchKeywordName"] = true
+        }
+        if let value = UserDefaults.standard.value(forKey: "searchKeywordText") as? Bool {
+            values["searchKeywordText"] = value
+        } else {
+            values["searchKeywordText"] = false
+        }
+        if let value = UserDefaults.standard.value(forKey: "searchKeywordFlavor") as? Bool {
+            values["searchKeywordFlavor"] = value
+        } else {
+            values["searchKeywordFlavor"] = false
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "searchKeywordBoolean") as? String {
+            values["searchKeywordBoolean"] = value
+        } else {
+            values["searchKeywordBoolean"] = "or"
+        }
+        if let value = UserDefaults.standard.value(forKey: "searchKeywordNot") as? Bool {
+            values["searchKeywordNot"] = value
+        } else {
+            values["searchKeywordNot"] = false
+        }
+        
+        if let value = UserDefaults.standard.value(forKey: "searchKeywordMatch") as? String {
+            values["searchKeywordMatch"] = value
+        } else {
+            values["searchKeywordMatch"] = "begins"
         }
         
         return values
@@ -414,44 +432,22 @@ class SearchViewController: BaseViewController {
     }
     
     func createKeywordPredicate() -> NSPredicate? {
+        let text = searchController.searchBar.text
+        let defaults = defaultsValue()
         var predicate: NSPredicate?
         var subpredicates = [NSPredicate]()
         
         // keyword filters
-        var searchKeywordName = true
-        var searchKeywordText = false
-        var searchKeywordFlavor = false
-        var searchKeywordBoolean = "or"
-        var searchKeywordNot = false
-        var searchKeywordMatch = "contains"
-        
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordName") as? Bool {
-            searchKeywordName = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordText") as? Bool {
-            searchKeywordText = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordFlavor") as? Bool {
-            searchKeywordFlavor = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordBoolean") as? String {
-            searchKeywordBoolean = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordNot") as? Bool {
-            searchKeywordNot = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordMatch") as? String {
-            searchKeywordMatch = value
-        }
+        let searchKeywordName = defaults["searchKeywordName"] as! Bool
+        let searchKeywordText = defaults["searchKeywordText"] as! Bool
+        let searchKeywordFlavor = defaults["searchKeywordFlavor"] as! Bool
+        let searchKeywordBoolean = defaults["searchKeywordBoolean"] as! String
+        let searchKeywordNot = defaults["searchKeywordNot"] as! Bool
+        let searchKeywordMatch = defaults["searchKeywordMatch"] as! String
         
         // process keyword filter
         if searchKeywordName {
-            if let text = searchBar?.text {
+            if let text = text {
                 if searchKeywordMatch == "begins" {
                     subpredicates.append(NSPredicate(format: "name BEGINSWITH[cd] %@", text))
                 } else if searchKeywordMatch == "contains" {
@@ -462,7 +458,7 @@ class SearchViewController: BaseViewController {
             }
         }
         if searchKeywordText {
-            if let text = searchBar?.text {
+            if let text = text {
                 if searchKeywordMatch == "begins" {
                     subpredicates.append(NSPredicate(format: "text BEGINSWITH[cd] %@ OR originalText BEGINSWITH[cd] %@", text, text))
                 } else if searchKeywordMatch == "contains" {
@@ -473,7 +469,7 @@ class SearchViewController: BaseViewController {
             }
         }
         if searchKeywordFlavor {
-            if let text = searchBar?.text {
+            if let text = text {
                 if searchKeywordMatch == "begins" {
                     subpredicates.append(NSPredicate(format: "flavor BEGINSWITH[cd] %@", text))
                 } else if searchKeywordMatch == "contains" {
@@ -808,4 +804,13 @@ extension SearchViewController : UISearchBarDelegate {
         }
     }
 }
+
+// MARK: UISearchResultsUpdating
+extension SearchViewController : UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
+        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
+    }
+}
+
 

@@ -17,8 +17,8 @@ class ComprehensiveRulesViewController: UIViewController {
 
     // MARK: Variables
     var dataSource: DATASource?
-    var fetchRequest: NSFetchRequest<NSFetchRequestResult>?
-    var currentRule: CMRule?
+    var request: NSFetchRequest<NSFetchRequestResult>?
+    var rule: CMRule?
     var sectionIndexTitles = [String]()
     var sectionTitles = [String]()
     
@@ -33,17 +33,31 @@ class ComprehensiveRulesViewController: UIViewController {
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.tintColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
-        
+        definesPresentationContext = true
+
         if #available(iOS 11.0, *) {
             navigationItem.searchController = searchController
+            navigationItem.hidesSearchBarWhenScrolling = false
         } else {
-            definesPresentationContext = true
             tableView.tableHeaderView = searchController.searchBar
         }
         
-        dataSource = getDataSource(fetchRequest)
+        if request == nil {
+            request = NSFetchRequest(entityName: "CMRule")
+            request!.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
+            request!.predicate = NSPredicate(format: "parent = nil")
+        }
+        dataSource = getDataSource(request)
         updateSections()
         tableView.reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if #available(iOS 11.0, *) {
+            navigationItem.hidesSearchBarWhenScrolling = true
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -52,28 +66,25 @@ class ComprehensiveRulesViewController: UIViewController {
                 let cell = sender as? UITableViewCell {
                 
                 if let indexPath = tableView.indexPath(for: cell) {
-                    if let rule = dataSource!.object(indexPath) as? CMRule {
-                        fetchRequest = NSFetchRequest(entityName: "CMRule")
-                        fetchRequest!.sortDescriptors = [NSSortDescriptor(key: "term", ascending: true)]
-                        fetchRequest!.predicate = NSPredicate(format: "parent = %@", rule)
-                        currentRule = rule
-                    }
-                }
-                
-                dest.fetchRequest = fetchRequest
-                dest.currentRule = currentRule
-                if let currentRule = currentRule {
-                    var string = ""
-                    if let term = currentRule.term {
-                        string.append("\(term)")
-                    }
-                    if let definition = currentRule.definition {
-                        if string.count > 0 {
-                            string.append(". ")
+                    if let r = dataSource!.object(indexPath) as? CMRule {
+                        let newRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMRule")
+                        newRequest.sortDescriptors = [NSSortDescriptor(key: "term", ascending: true)]
+                        newRequest.predicate = NSPredicate(format: "parent = %@", r)
+                        
+                        dest.request = newRequest
+                        dest.rule = r
+                        var string = ""
+                        if let term = r.term {
+                            string.append("\(term)")
                         }
-                        string.append(definition)
+                        if let definition = r.definition {
+                            if string.count > 0 {
+                                string.append(". ")
+                            }
+                            string.append(definition)
+                        }
+                        dest.title = string
                     }
-                    dest.title = string
                 }
             }
         }
@@ -81,34 +92,25 @@ class ComprehensiveRulesViewController: UIViewController {
     
     // MARK: Custom methods
     func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
-        var request:NSFetchRequest<NSFetchRequestResult>?
         var ds: DATASource?
-        
-        if let fetchRequest = fetchRequest {
-            request = fetchRequest
-        } else {
-            request = NSFetchRequest(entityName: "CMRule")
-            request!.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
-            request!.predicate = NSPredicate(format: "parent = nil")
-        }
-        
-        ds = DATASource(tableView: tableView, cellIdentifier: "DynamicHeightCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: "termSection", configuration: { cell, item, indexPath in
-            if let rule = item as? CMRule,
+
+        ds = DATASource(tableView: tableView, cellIdentifier: "DynamicHeightCell", fetchRequest: fetchRequest!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: "termSection", configuration: { cell, item, indexPath in
+            if let r = item as? CMRule,
                 let label = cell.viewWithTag(100) as? UILabel {
-                if let children = rule.children {
+                if let children = r.children {
                     if children.allObjects.count > 0 {
-                        label.text = self.textFor(rule: rule)
+                        label.text = self.textFor(rule: r)
                         cell.accessoryType = .disclosureIndicator
                         cell.selectionStyle = .default
                         
                     } else {
-                        if let _ = rule.parent {
+                        if let _ = r.parent {
                             let attributedString = NSMutableAttributedString(string: "")
-                            if let term = rule.term {
+                            if let term = r.term {
                                 attributedString.append(NSMutableAttributedString(string: term,
                                     attributes: [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 17)]))
                             }
-                            if let definition = rule.definition {
+                            if let definition = r.definition {
                                 attributedString.append(NSMutableAttributedString(string: "\n\n\(definition)",
                                     attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 14)]))
                             }
@@ -118,7 +120,7 @@ class ComprehensiveRulesViewController: UIViewController {
                             cell.selectionStyle = .none
                             
                         } else {
-                            label.text = self.textFor(rule: rule)
+                            label.text = self.textFor(rule: r)
                             cell.accessoryType = .disclosureIndicator
                             cell.selectionStyle = .default
                         }
@@ -137,9 +139,10 @@ class ComprehensiveRulesViewController: UIViewController {
     
     func updateSections() {
         if let dataSource = dataSource,
-            let currentRule = currentRule {
-            if currentRule.term == "Glossary" {
-                if let children = currentRule.children {
+            let rule = rule {
+            
+            if rule.term == "Glossary" {
+                if let children = rule.children {
                     if let glossaries = children.allObjects as? [CMRule] {
                         sectionIndexTitles = [String]()
                         sectionTitles = [String]()
@@ -185,37 +188,38 @@ class ComprehensiveRulesViewController: UIViewController {
     }
     
     func doSearch() {
-        var request:NSFetchRequest<NSFetchRequestResult>?
+        var newRequest:NSFetchRequest<NSFetchRequestResult>?
 
         if let text = searchController.searchBar.text {
-            
-            
             if text.count > 0 {
-                request = NSFetchRequest(entityName: "CMRule")
+                newRequest = NSFetchRequest(entityName: "CMRule")
                 
-                request!.sortDescriptors = [NSSortDescriptor(key: "termSection", ascending: true),
+                newRequest!.sortDescriptors = [NSSortDescriptor(key: "termSection", ascending: true),
                                             NSSortDescriptor(key: "term", ascending: true)]
                 
                 if text.count == 1 {
-                    request!.predicate = NSPredicate(format: "term BEGINSWITH[cd] %@", text)
+                    newRequest!.predicate = NSPredicate(format: "term BEGINSWITH[cd] %@", text)
                 } else if text.count > 1 {
                     let predicates = [NSPredicate(format: "term CONTAINS[cd] %@", text),
                                       NSPredicate(format: "definition CONTAINS[cd] %@", text)]
-                    request!.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+                    newRequest!.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
                 }
+                dataSource = getDataSource(newRequest)
+                tableView.reloadData()
+                
+            } else {
+                dataSource = getDataSource(request)
+                tableView.reloadData()
             }
         }
-        
-        dataSource = getDataSource(request)
-        tableView.reloadData()
     }
 }
 
 // MARK: UITableViewDelegate
 extension ComprehensiveRulesViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if let rule = dataSource!.object(indexPath) as? CMRule {
-            if let children = rule.children {
+        if let r = dataSource!.object(indexPath) as? CMRule {
+            if let children = r.children {
                 if children.allObjects.count > 0 {
                     return indexPath
                 }
