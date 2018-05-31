@@ -16,9 +16,9 @@ let kMaxFetchTopRated  = UInt(10)
 let kCardViewUpdatedNotification = "kCardViewUpdatedNotification"
 
 class FirebaseManager: NSObject {
-    var userRef: DatabaseReference?
-    var queries = [String: DatabaseQuery]()
-    var online = false
+    private var userRef: DatabaseReference?
+    private var queries = [String: DatabaseQuery]()
+    private var online = false
     
     // MARK: user data
     var favorites = [CMCard]()

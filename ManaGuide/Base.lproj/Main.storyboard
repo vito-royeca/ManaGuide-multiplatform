@@ -1214,13 +1214,13 @@
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="ulB-rF-Fxj">
+                                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="ulB-rF-Fxj">
                                                     <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
                                                     <subviews>
-                                                        <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gLn-3w-YqM">
-                                                            <rect key="frame" x="141" y="0.0" width="132" height="43.666666666666664"/>
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gLn-3w-YqM">
+                                                            <rect key="frame" x="0.0" y="0.0" width="138" height="43.666666666666664"/>
                                                             <subviews>
-                                                                <view tag="100" contentMode="scaleAspectFit" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vFr-mb-cVm" customClass="CosmosView" customModule="Cosmos">
+                                                                <view tag="100" contentMode="scaleAspectFit" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vFr-mb-cVm" customClass="CosmosView" customModule="Cosmos">
                                                                     <rect key="frame" x="0.0" y="10" width="132" height="23.666666666666664"/>
                                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <userDefinedRuntimeAttributes>
@@ -1256,8 +1256,8 @@
                                                                 <constraint firstItem="vFr-mb-cVm" firstAttribute="top" secondItem="gLn-3w-YqM" secondAttribute="top" constant="10" id="ZbS-Wx-Q7o"/>
                                                             </constraints>
                                                         </view>
-                                                        <label opaque="NO" tag="200" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zlv-oV-4Az">
-                                                            <rect key="frame" x="141" y="0.0" width="132" height="50"/>
+                                                        <label opaque="NO" tag="200" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zlv-oV-4Az">
+                                                            <rect key="frame" x="138" y="0.0" width="138" height="43.666666666666664"/>
                                                             <gestureRecognizers/>
                                                             <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="30"/>
                                                             <color key="textColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
@@ -1266,8 +1266,8 @@
                                                                 <outletCollection property="gestureRecognizers" destination="QoI-k3-gFp" appends="YES" id="gvj-2E-V5x"/>
                                                             </connections>
                                                         </label>
-                                                        <label opaque="NO" userInteractionEnabled="NO" tag="300" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text=" 100" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kkd-kM-zpB">
-                                                            <rect key="frame" x="141" y="0.0" width="132" height="50"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" tag="300" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" 100" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kkd-kM-zpB">
+                                                            <rect key="frame" x="276" y="0.0" width="138" height="43.666666666666664"/>
                                                             <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="13"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>

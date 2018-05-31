@@ -63,9 +63,14 @@ class AccountViewController: UIViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        updateDisplay()
+        
         // FirebaseManager
         FirebaseManager.sharedInstance.monitorUser()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateDisplay()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

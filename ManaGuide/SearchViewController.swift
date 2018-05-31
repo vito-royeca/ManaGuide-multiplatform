@@ -10,6 +10,7 @@ import UIKit
 import DATASource
 import Font_Awesome_Swift
 import InAppSettingsKit
+import MBProgressHUD
 import ManaKit
 
 class SearchViewController: BaseViewController {
@@ -25,6 +26,7 @@ class SearchViewController: BaseViewController {
     var request:NSFetchRequest<NSFetchRequestResult>?
     var customSectionName: String?
     var firstLoad = false
+    var searchQuery: String?
     
     // MARK: Outlets
     @IBOutlet weak var leftMenuButton: UIBarButtonItem!
@@ -64,6 +66,7 @@ class SearchViewController: BaseViewController {
         } else {
             tableView.tableHeaderView = searchController.searchBar
         }
+        searchController.searchBar.placeholder = "Keyword"
         
         rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
@@ -120,6 +123,7 @@ class SearchViewController: BaseViewController {
         case "list":
             dataSource = getDataSource(request != nil ? request : createSearchRequeat())
             updateSections()
+            statusLabel.text = "  \(dataSource!.all().count) items"
         case "grid":
             tableView.dataSource = self
         default:
@@ -208,7 +212,6 @@ class SearchViewController: BaseViewController {
         
         if let ds = ds {
             ds.delegate = self
-            statusLabel.text = "  \(ds.all().count) items"
             return ds
         }
         return nil
@@ -315,10 +318,25 @@ class SearchViewController: BaseViewController {
     }
 
     func doSearch() {
+        searchQuery = searchController.searchBar.text
         statusLabel.text = "  Loading..."
+        
         dataSource = getDataSource(createSearchRequeat())
         updateSections()
+        
         tableView.reloadData()
+        statusLabel.text = "  \(dataSource!.all().count) items"
+        
+        
+//        DispatchQueue.global(qos: .background).async {
+//            self.dataSource = self.getDataSource(self.createSearchRequeat())
+//            self.updateSections()
+//
+//            DispatchQueue.main.async {
+//                self.tableView.reloadData()
+//                self.statusLabel.text = "  \(self.dataSource!.all().count) items"
+//            }
+//        }
     }
 
     // MARK: Search filters
@@ -372,23 +390,6 @@ class SearchViewController: BaseViewController {
             values["searchKeywordFlavor"] = false
         }
         
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordBoolean") as? String {
-            values["searchKeywordBoolean"] = value
-        } else {
-            values["searchKeywordBoolean"] = "or"
-        }
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordNot") as? Bool {
-            values["searchKeywordNot"] = value
-        } else {
-            values["searchKeywordNot"] = false
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordMatch") as? String {
-            values["searchKeywordMatch"] = value
-        } else {
-            values["searchKeywordMatch"] = "begins"
-        }
-        
         return values
     }
     
@@ -432,7 +433,6 @@ class SearchViewController: BaseViewController {
     }
     
     func createKeywordPredicate() -> NSPredicate? {
-        let text = searchController.searchBar.text
         let defaults = defaultsValue()
         var predicate: NSPredicate?
         var subpredicates = [NSPredicate]()
@@ -441,54 +441,38 @@ class SearchViewController: BaseViewController {
         let searchKeywordName = defaults["searchKeywordName"] as! Bool
         let searchKeywordText = defaults["searchKeywordText"] as! Bool
         let searchKeywordFlavor = defaults["searchKeywordFlavor"] as! Bool
-        let searchKeywordBoolean = defaults["searchKeywordBoolean"] as! String
-        let searchKeywordNot = defaults["searchKeywordNot"] as! Bool
-        let searchKeywordMatch = defaults["searchKeywordMatch"] as! String
         
         // process keyword filter
         if searchKeywordName {
-            if let text = text {
-                if searchKeywordMatch == "begins" {
+            if let text = searchQuery {
+                if text.count == 1 {
                     subpredicates.append(NSPredicate(format: "name BEGINSWITH[cd] %@", text))
-                } else if searchKeywordMatch == "contains" {
+                } else {
                     subpredicates.append(NSPredicate(format: "name CONTAINS[cd] %@", text))
-                } else if searchKeywordMatch == "exact" {
-                    subpredicates.append(NSPredicate(format: "name ==[c] %@", text))
                 }
             }
         }
         if searchKeywordText {
-            if let text = text {
-                if searchKeywordMatch == "begins" {
+            if let text = searchQuery {
+                if text.count == 1 {
                     subpredicates.append(NSPredicate(format: "text BEGINSWITH[cd] %@ OR originalText BEGINSWITH[cd] %@", text, text))
-                } else if searchKeywordMatch == "contains" {
+                } else {
                     subpredicates.append(NSPredicate(format: "text CONTAINS[cd] %@ OR originalText CONTAINS[cd] %@", text, text))
-                } else if searchKeywordMatch == "exact" {
-                    subpredicates.append(NSPredicate(format: "text ==[c] %@ OR originalText ==[c] %@", text, text))
                 }
             }
         }
         if searchKeywordFlavor {
-            if let text = text {
-                if searchKeywordMatch == "begins" {
+            if let text = searchQuery {
+                if text.count == 1 {
                     subpredicates.append(NSPredicate(format: "flavor BEGINSWITH[cd] %@", text))
-                } else if searchKeywordMatch == "contains" {
+                } else {
                     subpredicates.append(NSPredicate(format: "flavor CONTAINS[cd] %@", text))
-                } else if searchKeywordMatch == "exact" {
-                    subpredicates.append(NSPredicate(format: "flavor ==[c] %@", text))
                 }
             }
         }
         
         if subpredicates.count > 0 {
-            if searchKeywordBoolean == "and" {
-                predicate = NSCompoundPredicate(andPredicateWithSubpredicates: subpredicates)
-            } else if searchKeywordBoolean == "or" {
-                predicate = NSCompoundPredicate(orPredicateWithSubpredicates: subpredicates)
-            }
-            if searchKeywordNot {
-                predicate = NSCompoundPredicate(notPredicateWithSubpredicate: predicate!)
-            }
+            predicate = NSCompoundPredicate(orPredicateWithSubpredicates: subpredicates)
         }
         
         return predicate
@@ -657,9 +641,6 @@ extension SearchViewController : UITableViewDelegate {
             height = kCardTableViewCellHeight
         case "grid":
             height = tableView.frame.size.height
-//            if let searchBar = searchBar {
-//                height -= searchBar.frame.size.height
-//            }
         default:
             ()
         }
@@ -793,23 +774,10 @@ extension SearchViewController : UICollectionViewDelegate {
 }
 
 // MARK: UISearchResultsUpdating
-extension SearchViewController : UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        doSearch()
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchBar.text?.count == 0 {
-            doSearch()
-        }
-    }
-}
-
-// MARK: UISearchResultsUpdating
 extension SearchViewController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
-        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
+        perform(#selector(doSearch), with: nil, afterDelay: 1.0)
     }
 }
 
