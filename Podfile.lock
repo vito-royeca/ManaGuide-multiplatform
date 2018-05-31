@@ -138,7 +138,7 @@ PODS:
     - SDWebImage/Core (= 4.3.3)
   - SDWebImage/Core (4.3.3)
   - SimulatorStatusMagic (2.1)
-  - SSZipArchive (2.1.2)
+  - SSZipArchive (2.1.3)
   - Sync (4.1.3)
   - TwitterCore (3.1.0)
   - TwitterKit (3.3.0):
@@ -285,7 +285,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: de4d90b5bff3571eae7bd16202b1f43135409fa5
   SimulatorStatusMagic: 481558caf2b9ccb2ceba2cc193728d4db3dcac07
-  SSZipArchive: d4009d2ce5520a421f231fd97028cc0e2667eed8
+  SSZipArchive: 51a800ebb77f95a8329b6ced1faaff394b47f509
   Sync: 3cd2b84622c964220d7c7ba6e29823e096f1c1cf
   TwitterCore: 644d59e75abccb26cf0a9050d2c4dea0e5412241
   TwitterKit: a2e60ddcedbf54091eac6f27685ca7a87681e1d7

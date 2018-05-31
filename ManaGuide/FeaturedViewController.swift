@@ -105,7 +105,7 @@ class FeaturedViewController: BaseViewController {
     func fetchTopRated() {
         FirebaseManager.sharedInstance.monitorTopRated(completion: { (cards) in
             DispatchQueue.main.async {
-                self.showTopRated()
+                self.showTopRated(cards: cards)
             }
         })
     }
@@ -113,48 +113,32 @@ class FeaturedViewController: BaseViewController {
     func fetchTopViewed() {
         FirebaseManager.sharedInstance.monitorTopViewed(completion: { (cards) in
             DispatchQueue.main.async {
-                self.showTopViewed()
+                self.showTopViewed(cards: cards)
             }
         })
     }
     
-    func showTopRated() {
-        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-        request.predicate = NSPredicate(format: "rating > 0")
-        request.fetchLimit = Int(kMaxFetchTopRated)
-        request.sortDescriptors = [NSSortDescriptor(key: "rating", ascending: false),
-                                   NSSortDescriptor(key: "set.releaseDate", ascending: false),
-                                   NSSortDescriptor(key: "name", ascending: true)]
-        if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
-            topRated = result
-            
-            if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topRated.rawValue, section: 0)) {
-                for v in cell.contentView.subviews {
-                    if let collectionView = v as? UICollectionView {
-                        collectionView.reloadData()
-                        break
-                    }
+    func showTopRated(cards: [CMCard]) {
+        topRated = cards
+        
+        if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topRated.rawValue, section: 0)) {
+            for v in cell.contentView.subviews {
+                if let collectionView = v as? UICollectionView {
+                    collectionView.reloadData()
+                    break
                 }
             }
         }
     }
     
-    func showTopViewed() {
-        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-        request.predicate = NSPredicate(format: "views > 0")
-        request.fetchLimit = Int(kMaxFetchTopViewed)
-        request.sortDescriptors = [NSSortDescriptor(key: "views", ascending: false),
-                                   NSSortDescriptor(key: "set.releaseDate", ascending: false),
-                                   NSSortDescriptor(key: "name", ascending: true)]
-        if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
-            topViewed = result
-            
-            if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topViewed.rawValue, section: 0)) {
-                for v in cell.contentView.subviews {
-                    if let collectionView = v as? UICollectionView {
-                        collectionView.reloadData()
-                        break
-                    }
+    func showTopViewed(cards: [CMCard]) {
+        topViewed = cards
+        
+        if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topViewed.rawValue, section: 0)) {
+            for v in cell.contentView.subviews {
+                if let collectionView = v as? UICollectionView {
+                    collectionView.reloadData()
+                    break
                 }
             }
         }

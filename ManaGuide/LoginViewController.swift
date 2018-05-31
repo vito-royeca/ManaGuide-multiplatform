@@ -13,7 +13,14 @@ import Firebase
 import GoogleSignIn
 import MBProgressHUD
 
+protocol LoginViewControllerDelegate: NSObjectProtocol {
+    func actionAfterLogin(success: Bool)
+}
+
 class LoginViewController: UIViewController {
+
+    // MARK: Variables
+    var delegate: LoginViewControllerDelegate?
 
     // MARK: Outlets
     @IBOutlet weak var usernameTextField: UITextField!
@@ -21,7 +28,11 @@ class LoginViewController: UIViewController {
     
     // MARK: Actions
     @IBAction func cancelAction(_ sender: UIBarButtonItem) {
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true, completion: {
+            if let delegate = self.delegate {
+                delegate.actionAfterLogin(success: false)
+            }
+        })
     }
 
     @IBAction func loginAction(_ sender: UIButton) {
@@ -42,33 +53,37 @@ class LoginViewController: UIViewController {
                 let alertController = UIAlertController(title: "Error", message: errors.joined(separator: "\n"), preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
                 self.present(alertController, animated: true, completion: nil)
-                return
-            }
-            
-            MBProgressHUD.showAdded(to: self.view, animated: true)
-            Auth.auth().signIn(withEmail: email, password: password,  completion: {(authResult: AuthDataResult?, error: Error?) in
-                if let error = error {
-                    MBProgressHUD.hide(for: self.view, animated: true)
-                    
-                    let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                    self.present(alertController, animated: true, completion: nil)
-                } else {
-                    if let authResult = authResult {
-                        self.updateUser(email: authResult.user.email, photoURL: authResult.user.photoURL, displayName: authResult.user.displayName, completion: {(error: Error?) in
-                            MBProgressHUD.hide(for: self.view, animated: true)
-                            
-                            if let error = error {
-                                let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                                alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                                self.present(alertController, animated: true, completion: nil)
-                            } else {
-                                self.dismiss(animated: true, completion: nil)
-                            }
-                        })
+                
+            } else {
+                MBProgressHUD.showAdded(to: self.view, animated: true)
+                Auth.auth().signIn(withEmail: email, password: password,  completion: {(authResult: AuthDataResult?, error: Error?) in
+                    if let error = error {
+                        MBProgressHUD.hide(for: self.view, animated: true)
+                        
+                        let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alertController, animated: true, completion: nil)
+                    } else {
+                        if let authResult = authResult {
+                            self.updateUser(email: authResult.user.email, photoURL: authResult.user.photoURL, displayName: authResult.user.displayName, completion: {(error: Error?) in
+                                MBProgressHUD.hide(for: self.view, animated: true)
+                                
+                                if let error = error {
+                                    let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+                                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                                    self.present(alertController, animated: true, completion: nil)
+                                } else {
+                                    self.dismiss(animated: true, completion: {
+                                        if let delegate = self.delegate {
+                                            delegate.actionAfterLogin(success: true)
+                                        }
+                                    })
+                                }
+                            })
+                        }
                     }
-                }
-            })
+                })
+            }
         }
     }
     
@@ -88,24 +103,24 @@ class LoginViewController: UIViewController {
                     let alertController = UIAlertController(title: "Error", message: errors.joined(separator: "\n"), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
                     self.present(alertController, animated: true, completion: nil)
-                    return
+                    
+                } else {
+                    MBProgressHUD.showAdded(to: self.view, animated: true)
+                    Auth.auth().sendPasswordReset(withEmail: email!, completion: { error in
+                        MBProgressHUD.hide(for: self.view, animated: true)
+                        var message:String?
+                        
+                        if let error = error {
+                            message = error.localizedDescription
+                        } else {
+                            message = "Check the email you provided for instructions."
+                        }
+                        
+                        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alertController, animated: true, completion: nil)
+                    })
                 }
-                
-                MBProgressHUD.showAdded(to: self.view, animated: true)
-                Auth.auth().sendPasswordReset(withEmail: email!, completion: { error in
-                    MBProgressHUD.hide(for: self.view, animated: true)
-                    var message:String?
-                    
-                    if let error = error {
-                        message = error.localizedDescription
-                    } else {
-                        message = "Check the email you provided for instructions."
-                    }
-                    
-                    let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                    self.present(alertController, animated: true, completion: nil)
-                })
             }
         }
         
@@ -142,41 +157,45 @@ class LoginViewController: UIViewController {
                     let alertController = UIAlertController(title: "Error", message: errors.joined(separator: "\n"), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
                     self.present(alertController, animated: true, completion: nil)
-                    return
-                }
-                
-                MBProgressHUD.showAdded(to: self.view, animated: true)
-                Auth.auth().createUser(withEmail: email!, password: password!) { user, error in
-                    if let error = error {
-                        MBProgressHUD.hide(for: self.view, animated: true)
-                        
-                        let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                        self.present(alertController, animated: true, completion: nil)
-                    } else {
-                        Auth.auth().signIn(withEmail: email!, password: password!,  completion: {(authResult: AuthDataResult?, error: Error?) in
-                            if let error = error {
-                                MBProgressHUD.hide(for: self.view, animated: true)
-                                
-                                let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                                alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                                self.present(alertController, animated: true, completion: nil)
-                            } else {
-                                if let authResult = authResult {
-                                    self.updateUser(email: authResult.user.email, photoURL: authResult.user.photoURL, displayName: name, completion: {(error: Error?) in
-                                        MBProgressHUD.hide(for: self.view, animated: true)
-                                        
-                                        if let error = error {
-                                            let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                                            alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                                            self.present(alertController, animated: true, completion: nil)
-                                        } else {
-                                            self.dismiss(animated: true, completion: nil)
-                                        }
-                                    })
+                    
+                } else {
+                    MBProgressHUD.showAdded(to: self.view, animated: true)
+                    Auth.auth().createUser(withEmail: email!, password: password!) { user, error in
+                        if let error = error {
+                            MBProgressHUD.hide(for: self.view, animated: true)
+                            
+                            let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+                            alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                            self.present(alertController, animated: true, completion: nil)
+                        } else {
+                            Auth.auth().signIn(withEmail: email!, password: password!,  completion: {(authResult: AuthDataResult?, error: Error?) in
+                                if let error = error {
+                                    MBProgressHUD.hide(for: self.view, animated: true)
+                                    
+                                    let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+                                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                                    self.present(alertController, animated: true, completion: nil)
+                                } else {
+                                    if let authResult = authResult {
+                                        self.updateUser(email: authResult.user.email, photoURL: authResult.user.photoURL, displayName: name, completion: {(error: Error?) in
+                                            MBProgressHUD.hide(for: self.view, animated: true)
+                                            
+                                            if let error = error {
+                                                let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+                                                alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                                                self.present(alertController, animated: true, completion: nil)
+                                            } else {
+                                                self.dismiss(animated: true, completion: {
+                                                    if let delegate = self.delegate {
+                                                        delegate.actionAfterLogin(success: true)
+                                                    }
+                                                })
+                                            }
+                                        })
+                                    }
                                 }
-                            }
-                        })
+                            })
+                        }
                     }
                 }
             }
@@ -231,7 +250,11 @@ class LoginViewController: UIViewController {
                                         alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
                                         self.present(alertController, animated: true, completion: nil)
                                     } else {
-                                        self.dismiss(animated: true, completion: nil)
+                                        self.dismiss(animated: true, completion: {
+                                            if let delegate = self.delegate {
+                                                delegate.actionAfterLogin(success: true)
+                                            }
+                                        })
                                     }
                                 })
                             }
@@ -294,6 +317,7 @@ class LoginViewController: UIViewController {
     
     func updateUser(email: String?, photoURL: URL?, displayName: String?, completion: @escaping (_ error: Error?) -> Void) {
         FirebaseManager.sharedInstance.updateUser(email: email, photoURL: photoURL, displayName: displayName, completion: completion)
+        FirebaseManager.sharedInstance.monitorUser()
     }
 }
 

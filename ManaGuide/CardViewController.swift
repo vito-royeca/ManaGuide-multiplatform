@@ -9,9 +9,11 @@
 import UIKit
 import Cosmos
 import DATASource
+import Firebase
 import Font_Awesome_Swift
 import iCarousel
 import ManaKit
+import MBProgressHUD
 
 enum CardViewControllerSegmentedIndex: Int {
     case image
@@ -33,7 +35,7 @@ enum CardViewControllerSegmentedIndex: Int {
 enum CardViewControllerImageSection : Int {
     case pricing
     case image
-    case ratingAndViews
+    case actions
     
     static var count: Int {
         return 3
@@ -107,6 +109,14 @@ class CardViewController: BaseViewController {
         tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
     }
     
+    @IBAction func favoriteAction(_ sender: UITapGestureRecognizer) {
+        if let _ = Auth.auth().currentUser {
+            toggleCardFavorite()
+        } else {
+            performSegue(withIdentifier: "showLogin", sender: nil)
+        }
+    }
+    
     // MARK: Overrides
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -164,6 +174,12 @@ class CardViewController: BaseViewController {
                 dest.title = set.name
                 dest.set = set
             }
+        } else if segue.identifier == "showLogin" {
+            if let dest = segue.destination as? UINavigationController {
+                if let loginVC = dest.childViewControllers.first as? LoginViewController {
+                    loginVC.delegate = self
+                }
+            }
         }
     }
     
@@ -181,6 +197,26 @@ class CardViewController: BaseViewController {
             if let card = userInfo["card"] as? CMCard {
                 cards?[cardIndex] = card
             }
+        }
+    }
+    
+    func toggleCardFavorite() {
+        if let cards = cards {
+            let card = cards[cardIndex]
+            var isFavorite = false
+            
+            for c in FirebaseManager.sharedInstance.favorites {
+                if c.id == card.id {
+                    isFavorite = true
+                    break
+                }
+            }
+            
+            MBProgressHUD.showAdded(to: view, animated: true)
+            FirebaseManager.sharedInstance.toggleCardFavorite(card.id!, favorite: !isFavorite, completion: {
+                MBProgressHUD.hide(for: self.view, animated: true)
+                self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
+            })
         }
     }
     
@@ -592,8 +628,8 @@ extension CardViewController : UITableViewDataSource {
                     c.accessoryType = .none
                     cell = c
                 }
-            case CardViewControllerImageSection.ratingAndViews.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "RatingAndViewsCell"),
+            case CardViewControllerImageSection.actions.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "ActionsCell"),
                     let cards = cards {
                     let card = cards[cardIndex]
                     
@@ -601,6 +637,21 @@ extension CardViewController : UITableViewDataSource {
                         ratingView.rating = Double(arc4random_uniform(5) + 1); //card.rating
                     }
                     if let label = c.viewWithTag(200) as? UILabel {
+                        var isFavorite = false
+                        
+                        for c in FirebaseManager.sharedInstance.favorites {
+                            if c.id == card.id {
+                                isFavorite = true
+                                break
+                            }
+                        }
+                        if isFavorite {
+                            label.setFAText(prefixText: "", icon: .FAHeart, postfixText: "", size: CGFloat(30))
+                        } else {
+                            label.setFAText(prefixText: "", icon: .FAHeartO, postfixText: "", size: CGFloat(30))
+                        }
+                    }
+                    if let label = c.viewWithTag(300) as? UILabel {
                         label.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
                     }
                     
@@ -952,7 +1003,7 @@ extension CardViewController : UITableViewDelegate {
                 height = 44
             case CardViewControllerImageSection.image.rawValue:
                 height = tableView.frame.size.height - 88
-            case CardViewControllerImageSection.ratingAndViews.rawValue:
+            case CardViewControllerImageSection.actions.rawValue:
                 height = 44
             default:
                 ()
@@ -1103,6 +1154,7 @@ extension CardViewController : UIWebViewDelegate {
     }
 }
 
+// MARK: iCarouselDataSource
 extension CardViewController : iCarouselDataSource {
     func numberOfItems(in carousel: iCarousel) -> Int {
         var items = 0
@@ -1137,6 +1189,7 @@ extension CardViewController : iCarouselDataSource {
     }
 }
 
+// MARK: iCarouselDelegate
 extension CardViewController : iCarouselDelegate {
     func carouselCurrentItemIndexDidChange(_ carousel: iCarousel) {
         cardIndex = carousel.currentItemIndex
@@ -1149,7 +1202,16 @@ extension CardViewController : iCarouselDelegate {
         
         if segmentedIndex == .image {
             tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.pricing.rawValue),
-                                      IndexPath(row: 0, section: CardViewControllerImageSection.ratingAndViews.rawValue)], with: .automatic)
+                                      IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
+        }
+    }
+}
+
+// MARK: LoginViewControllerDelegate
+extension CardViewController : LoginViewControllerDelegate {
+    func actionAfterLogin(success: Bool) {
+        if success {
+            toggleCardFavorite()
         }
     }
 }
