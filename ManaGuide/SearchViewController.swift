@@ -26,13 +26,14 @@ class SearchViewController: BaseViewController {
     var request:NSFetchRequest<NSFetchRequestResult>?
     var customSectionName: String?
     var firstLoad = false
-    var searchQuery: String?
+    var searchKeyword: String?
     
     // MARK: Outlets
     @IBOutlet weak var leftMenuButton: UIBarButtonItem!
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet var statusLabel: UILabel!
+    
     
     // MARK: Actions
     @IBAction func leftMenuAction(_ sender: UIBarButtonItem) {
@@ -70,7 +71,9 @@ class SearchViewController: BaseViewController {
         
         rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
+        
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
+        tableView.keyboardDismissMode = .onDrag
         
         statusLabel.text = "  Loading..."
     }
@@ -114,6 +117,11 @@ class SearchViewController: BaseViewController {
         }
     }
 
+//    - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+//    {
+//    [searchBar resignFirstResponder];
+//    }
+    
     // MARK: Custom methods
     func updateDataDisplay() {
         let defaults = defaultsValue()
@@ -318,7 +326,7 @@ class SearchViewController: BaseViewController {
     }
 
     func doSearch() {
-        searchQuery = searchController.searchBar.text
+        searchKeyword = searchController.searchBar.text
         statusLabel.text = "  Loading..."
         
         dataSource = getDataSource(createSearchRequeat())
@@ -444,7 +452,7 @@ class SearchViewController: BaseViewController {
         
         // process keyword filter
         if searchKeywordName {
-            if let text = searchQuery {
+            if let text = searchKeyword {
                 if text.count == 1 {
                     subpredicates.append(NSPredicate(format: "name BEGINSWITH[cd] %@", text))
                 } else {
@@ -453,7 +461,7 @@ class SearchViewController: BaseViewController {
             }
         }
         if searchKeywordText {
-            if let text = searchQuery {
+            if let text = searchKeyword {
                 if text.count == 1 {
                     subpredicates.append(NSPredicate(format: "text BEGINSWITH[cd] %@ OR originalText BEGINSWITH[cd] %@", text, text))
                 } else {
@@ -462,7 +470,7 @@ class SearchViewController: BaseViewController {
             }
         }
         if searchKeywordFlavor {
-            if let text = searchQuery {
+            if let text = searchKeyword {
                 if text.count == 1 {
                     subpredicates.append(NSPredicate(format: "flavor BEGINSWITH[cd] %@", text))
                 } else {

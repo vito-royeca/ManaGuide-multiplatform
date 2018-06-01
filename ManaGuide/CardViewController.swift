@@ -50,10 +50,12 @@ enum CardViewControllerDetailsSection : Int {
     case flavorText
     case artist
     case set
-    case printings
+    case otherPrintings
+    case otherNames
+    case variations
     case rulings
     case legalities
-    case details
+    case otherDetails
     
     var description : String {
         switch self {
@@ -65,15 +67,17 @@ enum CardViewControllerDetailsSection : Int {
         case .flavorText: return "Flavor Text"
         case .artist: return "Artist"
         case .set: return "Set"
-        case .printings: return "Printings"
+        case .otherPrintings: return "Other Printings"
+        case .otherNames: return "Other Names"
+        case .variations: return "Variations"
         case .rulings: return "Rulings"
         case .legalities: return "Legalities"
-        case .details: return "Details"
+        case .otherDetails: return "Other Details"
         }
     }
     
     static var count: Int {
-        return 11
+        return 13
     }
 }
 
@@ -81,27 +85,53 @@ class CardViewController: BaseViewController {
     // MARK: Variables
     var cardIndex = 0
     var cards: [CMCard]?
+    var otherPrintings: [CMCard]?
+    var otherPrintingsCollectionView: UICollectionView?
     var variations: [CMCard]?
-    var printings: [CMCard]?
-    var printingsCollectionView: UICollectionView?
+    var variationsCollectionView: UICollectionView?
     var segmentedIndex: CardViewControllerSegmentedIndex = .image
-    var webViewSize: CGSize?
     var cardViewIncremented = false
     
     // MARK: Outlets
     @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
-
+    @IBOutlet weak var favoriteTapGestureRecognizer: UITapGestureRecognizer!
+    
     // MARK: Actions
     @IBAction func contentAction(_ sender: UISegmentedControl) {
         segmentedIndex = CardViewControllerSegmentedIndex(rawValue: sender.selectedSegmentIndex)!
         
-        if segmentedIndex == .image {
-            webViewSize = nil
-        } else if segmentedIndex == .details {
+        if segmentedIndex == .details {
             if !cardViewIncremented {
                 cardViewIncremented = true
                 incrementCardViews()
+            }
+            
+            if let cards = cards {
+                let card = cards[cardIndex]
+            
+                if let printings_ = card.printings_ {
+                    let sets = printings_.allObjects as! [CMSet]
+                    var filteredSets = [CMSet]()
+                    let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                    
+                    if let set = card.set {
+                        filteredSets = sets.filter({ $0.code != set.code})
+                    }
+                    
+                    request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                               NSSortDescriptor(key: "number", ascending: true),
+                                               NSSortDescriptor(key: "mciNumber", ascending: true)]
+                    request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, filteredSets.map({$0.code}))
+                    
+                    otherPrintings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMCard]
+                }
+                
+                if let variations = card.variations_ {
+                    self.variations = variations.allObjects as? [CMCard]
+                } else {
+                    variations = [CMCard]()
+                }
             }
         }
         
@@ -141,23 +171,35 @@ class CardViewController: BaseViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showCard" {
-            if let dest = segue.destination as? CardViewController,
-                let cell = sender as? UICollectionViewCell {
+            if let dest = segue.destination as? CardViewController {
+                var cards: [CMCard]?
                 
-                var parentView = cell.superview
-                while parentView is UICollectionView != true {
-                    parentView = parentView?.superview
-                }
-                
-                if let parentView = parentView {
-                    if let printingsCollectionView = printingsCollectionView,
-                        let printings = printings {
-                        if parentView == printingsCollectionView {
-                            dest.cards = [printings[printingsCollectionView.indexPath(for: cell)!.item]]
+                if let cell = sender as? UICollectionViewCell {
+                    var parentView = cell.superview
+                    while parentView is UICollectionView != true {
+                        parentView = parentView?.superview
+                    }
+                    
+                    if let parentView = parentView {
+                        if parentView == otherPrintingsCollectionView {
+                            if let otherPrintingsCollectionView = otherPrintingsCollectionView,
+                                let otherPrintings = otherPrintings {
+                                cards = [otherPrintings[otherPrintingsCollectionView.indexPath(for: cell)!.item]]
+                            }
+                        } else if parentView == variationsCollectionView {
+                            if let variationsCollectionView = variationsCollectionView,
+                                let variations = variations {
+                                cards = [variations[variationsCollectionView.indexPath(for: cell)!.item]]
+                            }
                         }
+                    }
+                } else if let dict = sender as? [String: Any]  {
+                    if let card = dict["card"] as? CMCard {
+                        cards = [card]
                     }
                 }
                 
+                dest.cards = cards
                 dest.cardIndex = 0
             }
         } else if segue.identifier == "showSearch" {
@@ -386,105 +428,132 @@ class CardViewController: BaseViewController {
         return newText
     }
     
-    func composeHTMLInformation(forCard card: CMCard) -> String {
-        var html = try! String(contentsOfFile: "\(Bundle.main.bundlePath)/data/web/cardtext.html", encoding: String.Encoding.utf8)
-        var css = try! String(contentsOfFile: "\(Bundle.main.bundlePath)/data/web/style.css", encoding: String.Encoding.utf8)
+    func composeOtherDetails(forCard card: CMCard) -> NSAttributedString {
+        let attributedString = NSMutableAttributedString()
         
-        let bundle = Bundle(for: ManaKit.self)
-        if let bundleURL = bundle.resourceURL?.appendingPathComponent("ManaKit.bundle") {
-            css = css.replacingOccurrences(of: "fonts/", with: "\(bundleURL.path)/fonts/")
-            css = css.replacingOccurrences(of: "images/", with: "\(bundleURL.path)/images/")
-            html = html.replacingOccurrences(of: "{{css}}", with: css)
-            html = html.replacingOccurrences(of: "{{keyruneCss}}", with: "\(bundleURL.path)/css/keyrune.min.css")
+        let titleParagraphStyle = NSMutableParagraphStyle()
+        titleParagraphStyle.alignment = .left
+        
+        let attributes = [NSFontAttributeName: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
+                          NSParagraphStyleAttributeName: titleParagraphStyle]
+        
+        var text = "Layout: "
+        if let layout = card.layout {
+            text.append(layout)
+        } else {
+            text.append("\u{2014}")
         }
+        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
-        html = html.replacingOccurrences(of: "{{cmc}}", with: String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))
+        text = "\nConverted Mana Cost: "
+        text.append("\(String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))")
+        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
+        text = "\nColors: "
         if let colors_ = card.colors_ {
             if let s = colors_.allObjects as? [CMColor] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
-                html = html.replacingOccurrences(of: "{{colors}}", with: string.count > 0 ? string : "&mdash;")
+                text.append(string.count > 0 ? string : "\u{2014}")
             } else {
-                html = html.replacingOccurrences(of: "{{colors}}", with: "&mdash;")
+                text.append("\u{2014}")
             }
         } else {
-            html = html.replacingOccurrences(of: "{{colors}}", with: "&mdash;")
+            text.append("\u{2014}")
         }
+        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
+        text = "\nColors Identity: "
         if let colorIdentities_ = card.colorIdentities_ {
             if let s = colorIdentities_.allObjects as? [CMColor] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
-                html = html.replacingOccurrences(of: "{{colorIdentities}}", with: string.count > 0 ? string : "&mdash;")
+                text.append(string.count > 0 ? string : "\u{2014}")
             } else {
-                html = html.replacingOccurrences(of: "{{colorIdentities}}", with: "&mdash;")
+                text.append("\u{2014}")
             }
         } else {
-            html = html.replacingOccurrences(of: "{{subtypes}}", with: "&mdash;")
+            text.append("\u{2014}")
         }
+        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
+        text = "\nOriginal Type: "
         if let originalType = card.originalType {
-            html = html.replacingOccurrences(of: "{{originalType}}", with: originalType)
+            text.append(originalType)
         } else {
-            html = html.replacingOccurrences(of: "{{originalType}}", with: "&mdash;")
+            text.append("\u{2014}")
         }
-
+        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        
+        text = "\nSubtypes: "
         if let subtypes_ = card.subtypes_ {
             if let s = subtypes_.allObjects as? [CMCardType] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
-                html = html.replacingOccurrences(of: "{{subtypes}}", with: string.count > 0 ? string : "&mdash;")
+                text.append(string.count > 0 ? string : "\u{2014}")
             } else {
-                html = html.replacingOccurrences(of: "{{subtypes}}", with: "&mdash;")
+                text.append("\u{2014}")
             }
         } else {
-            html = html.replacingOccurrences(of: "{{subtypes}}", with: "&mdash;")
+            text.append("\u{2014}")
         }
+        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
+        text = "\nSupertypes: "
         if let supertypes_ = card.supertypes_ {
             if let s = supertypes_.allObjects as? [CMCardType] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
-                html = html.replacingOccurrences(of: "{{supertypes}}", with: string.count > 0 ? string : "&mdash;")
+                text.append(string.count > 0 ? string : "\u{2014}")
             } else {
-                html = html.replacingOccurrences(of: "{{supertypes}}", with: "&mdash;")
+                text.append("\u{2014}")
             }
         } else {
-            html = html.replacingOccurrences(of: "{{supertypes}}", with: "&mdash;")
+            text.append("\u{2014}")
         }
+        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
+        text = "\nRarity: "
         if let rarity = card.rarity_ {
-            let keyruneRarity = (rarity.name! == "Mythic Rare" || rarity.name! == "Special") ? "mythic" : rarity.name!.lowercased()
-            html = html.replacingOccurrences(of: "{{rarity}}", with: rarity.name!)
-            html = html.replacingOccurrences(of: "{{setRarity}}", with: keyruneRarity)
+            text.append(rarity.name!)
         } else {
-            html = html.replacingOccurrences(of: "{{rarity}}", with: "&mdash;")
+            text.append("\u{2014}")
         }
+        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
+        text = "\nSet Online Only: "
         if let set = card.set {
-            html = html.replacingOccurrences(of: "{{setOnlineOnly}}", with: set.onlineOnly ? "Yes" : "No")
+            text.append(set.onlineOnly ? "Yes" : "No")
         } else {
-            html = html.replacingOccurrences(of: "{{setOnlineOnly}}", with: "&mdash;")
+            text.append("\u{2014}")
         }
+        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
-        html = html.replacingOccurrences(of: "{{reserved}}", with: card.reserved ? "Yes" : "No")
+        text = "\nReserved List: "
+        text.append(card.reserved ? "Yes" : "No")
+        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
+        text = "\nRelease Date: "
         if let releaseDate = card.releaseDate ?? card.set!.releaseDate {
-            html = html.replacingOccurrences(of: "{{releaseDate}}", with: releaseDate)
+            text.append(releaseDate)
         } else {
-            html = html.replacingOccurrences(of: "{{releaseDate}}", with: "&mdash;")
+            text.append("\u{2014}")
         }
+        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
+        text = "\nSource: "
         if let source = card.source {
-            html = html.replacingOccurrences(of: "{{source}}", with: source)
+            text.append(source)
         } else {
-            html = html.replacingOccurrences(of: "{{source}}", with: "&mdash;")
+            text.append("\u{2014}")
         }
+        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
+        text = "\nNumber: "
         if let number = card.number ?? card.mciNumber {
-            html = html.replacingOccurrences(of: "{{number}}", with: number)
+            text.append(number)
         } else {
-            html = html.replacingOccurrences(of: "{{number}}", with: "&mdash;")
+            text.append("\u{2014}")
         }
+        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
-        return html
+        return attributedString
     }
     
     func showImage(ofCard card: CMCard, inImageView imageView: UIImageView) {
@@ -521,6 +590,19 @@ extension CardViewController : UITableViewDataSource {
             rows = 1
         case .details:
             switch section {
+            case CardViewControllerDetailsSection.otherNames.rawValue:
+                if let cards = cards {
+                    let card = cards[cardIndex]
+                    
+                    if let names_ = card.names_ {
+                        if let array = names_.allObjects as? [CMCard] {
+                            rows = array.filter({ $0.name != card.name}).count
+                        }
+                    }
+                    if rows == 0 {
+                        rows = 1
+                    }
+                }
             case CardViewControllerDetailsSection.rulings.rawValue:
                 if let cards = cards {
                     let card = cards[cardIndex]
@@ -650,6 +732,13 @@ extension CardViewController : UITableViewDataSource {
                         } else {
                             label.setFAText(prefixText: "", icon: .FAHeartO, postfixText: "", size: CGFloat(30))
                         }
+                        
+                        if let taps = label.gestureRecognizers {
+                            for tap in taps {
+                                label.removeGestureRecognizer(tap)
+                            }
+                        }
+                        label.addGestureRecognizer(favoriteTapGestureRecognizer)
                     }
                     if let label = c.viewWithTag(300) as? UILabel {
                         label.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
@@ -794,7 +883,43 @@ extension CardViewController : UITableViewDataSource {
                     c.accessoryType = .disclosureIndicator
                     cell = c
                 }
-            case CardViewControllerDetailsSection.printings.rawValue:
+            case CardViewControllerDetailsSection.otherPrintings.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") {
+                    c.selectionStyle = .none
+                    c.accessoryType = .none
+                    cell = c
+                }
+            case CardViewControllerDetailsSection.otherNames.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                    let cards = cards {
+                    
+                    let card = cards[cardIndex]
+                    if let label = c.textLabel {
+                        var otherCard: CMCard?
+                        
+                        if let names_ = card.names_ {
+                            if let array = names_.allObjects as? [CMCard] {
+                                let array2 = array.filter({ $0.name != card.name})
+                                if array2.count > 0 {
+                                    otherCard = array2[indexPath.row]
+                                }
+                            }
+                        }
+
+                        if let otherCard = otherCard {
+                            label.text = otherCard.name
+                            c.selectionStyle = .default
+                            c.accessoryType = .disclosureIndicator
+                        } else {
+                            label.text = " "
+                            c.selectionStyle = .none
+                            c.accessoryType = .none
+                        }
+                    }
+                    
+                    cell = c
+                }
+            case CardViewControllerDetailsSection.variations.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") {
                     c.selectionStyle = .none
                     c.accessoryType = .none
@@ -862,8 +987,15 @@ extension CardViewController : UITableViewDataSource {
                     c.accessoryType = .none
                     cell = c
                 }
-            case CardViewControllerDetailsSection.details.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "WebViewCell") {
+            case CardViewControllerDetailsSection.otherDetails.rawValue:
+                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
+                    let cards = cards {
+                    
+                    let card = cards[cardIndex]
+                    if let label = c.viewWithTag(100) as? UILabel {
+                        label.attributedText = composeOtherDetails(forCard: card)
+                    }
+                    
                     c.selectionStyle = .none
                     c.accessoryType = .none
                     cell = c
@@ -896,35 +1028,62 @@ extension CardViewController : UITableViewDataSource {
                 headerTitle = CardViewControllerDetailsSection.artist.description
             case CardViewControllerDetailsSection.set.rawValue:
                 headerTitle = CardViewControllerDetailsSection.set.description
-            case CardViewControllerDetailsSection.printings.rawValue:
-                headerTitle = CardViewControllerDetailsSection.printings.description
+            case CardViewControllerDetailsSection.otherPrintings.rawValue:
+                headerTitle = CardViewControllerDetailsSection.otherPrintings.description
+                var count = 0
                 
-                if let printings = printings {
-                    headerTitle?.append(": \(printings.count)")
+                if let otherPrintings = otherPrintings {
+                    count = otherPrintings.count
                 }
+                headerTitle?.append(": \(count)")
+            case CardViewControllerDetailsSection.otherNames.rawValue:
+                headerTitle = CardViewControllerDetailsSection.otherNames.description
+                var count = 0
+                
+                if let cards = cards {
+                    let card = cards[cardIndex]
+                    if let names_ = card.names_ {
+                        if let array = names_.allObjects as? [CMCard] {
+                            count = array.filter({ $0.name != card.name}).count
+                            
+                        }
+                    }
+                }
+                headerTitle?.append(": \(count)")
+            case CardViewControllerDetailsSection.variations.rawValue:
+                headerTitle = CardViewControllerDetailsSection.variations.description
+                var count = 0
+                
+                if let variations = variations {
+                    count = variations.count
+                }
+                headerTitle?.append(": \(count)")
             case CardViewControllerDetailsSection.rulings.rawValue:
                 headerTitle = CardViewControllerDetailsSection.rulings.description
+                var count = 0
                 
                 if let cards = cards {
                     let card = cards[cardIndex]
                     
                     if let rulings_ = card.rulings_ {
-                        headerTitle?.append(": \(rulings_.count)")
+                        count = rulings_.count
                     }
                 }
-            
+                headerTitle?.append(": \(count)")
             case CardViewControllerDetailsSection.legalities.rawValue:
                 headerTitle = CardViewControllerDetailsSection.legalities.description
+                var count = 0
                 
                 if let cards = cards {
                     let card = cards[cardIndex]
                     
                     if let cardLegalities_ = card.cardLegalities_ {
-                        headerTitle?.append(": \(cardLegalities_.count)")
+                        count = cardLegalities_.count
                     }
                 }
-            case CardViewControllerDetailsSection.details.rawValue:
-                headerTitle = CardViewControllerDetailsSection.details.description
+                headerTitle?.append(": \(count)")
+            case CardViewControllerDetailsSection.otherDetails.rawValue:
+                headerTitle = CardViewControllerDetailsSection.otherDetails.description
             default:
                 ()
             }
@@ -942,11 +1101,8 @@ extension CardViewController : UITableViewDelegate {
         switch segmentedIndex {
         case .details:
             switch indexPath.section {
-            case CardViewControllerDetailsSection.printings.rawValue:
-                if let collectionView = cell.viewWithTag(100) as? UICollectionView,
-                    let cards = cards  {
-                    let card = cards[cardIndex]
-                    
+            case CardViewControllerDetailsSection.otherPrintings.rawValue:
+                if let collectionView = cell.viewWithTag(100) as? UICollectionView{
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                         let width = CGFloat(100)
                         let height = CGFloat(72)
@@ -956,34 +1112,22 @@ extension CardViewController : UITableViewDelegate {
                     
                     collectionView.dataSource = self
                     collectionView.delegate = self
-                    
-                    printingsCollectionView = collectionView
-                    
-                    if let printings_ = card.printings_ {
-                        let array = printings_.allObjects as! [CMSet]
-                        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-                        request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                                                   NSSortDescriptor(key: "number", ascending: true),
-                                                   NSSortDescriptor(key: "mciNumber", ascending: true)]
-                        request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, array.map({$0.code}))
-                        
-                        printings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMCard]
-                    }
+                    otherPrintingsCollectionView = collectionView
                     collectionView.reloadData()
                 }
-            case CardViewControllerDetailsSection.details.rawValue:
-                if let webView = cell.viewWithTag(100) as? UIWebView,
-                    let cards = cards {
-                    
-                    if webViewSize == nil {
-                        let card = cards[cardIndex]
-                        let html = composeHTMLInformation(forCard: card)
-                        
-                        webView.delegate = self
-                        webView.scrollView.isScrollEnabled = false
-                        webView.scrollView.bounces = false
-                        webView.loadHTMLString(html, baseURL: URL(fileURLWithPath: "\(Bundle.main.bundlePath)/data/web"))
+            case CardViewControllerDetailsSection.variations.rawValue:
+                if let collectionView = cell.viewWithTag(100) as? UICollectionView {
+                    if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                        let width = CGFloat(100)
+                        let height = CGFloat(72)
+                        flowLayout.itemSize = CGSize(width: width, height: height)
+                        flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
                     }
+                    
+                    collectionView.dataSource = self
+                    collectionView.delegate = self
+                    variationsCollectionView = collectionView
+                    collectionView.reloadData()
                 }
             default:
                 ()
@@ -1011,14 +1155,9 @@ extension CardViewController : UITableViewDelegate {
             
         case .details:
             switch indexPath.section {
-            case CardViewControllerDetailsSection.printings.rawValue:
+            case CardViewControllerDetailsSection.otherPrintings.rawValue,
+                 CardViewControllerDetailsSection.variations.rawValue:
                 height = CGFloat(88)
-            case CardViewControllerDetailsSection.details.rawValue:
-                if let webViewSize = webViewSize {
-                    height = webViewSize.height
-                } else {
-                    height = CGFloat(88)
-                }
             default:
                 height = UITableViewAutomaticDimension
             }
@@ -1032,19 +1171,40 @@ extension CardViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        var path: IndexPath?
+        
         switch segmentedIndex {
         case .details:
             switch indexPath.section {
             case CardViewControllerDetailsSection.artist.rawValue,
                  CardViewControllerDetailsSection.set.rawValue:
-                return indexPath
-                
+                path = indexPath
+            case CardViewControllerDetailsSection.otherNames.rawValue:
+                if let cards = cards {
+                    let card = cards[cardIndex]
+                    var otherCard: CMCard?
+                    
+                    if let names_ = card.names_ {
+                        if let array = names_.allObjects as? [CMCard] {
+                            let array2 = array.filter({ $0.name != card.name})
+                            if array2.count > 0 {
+                                otherCard = array2[indexPath.row]
+                            }
+                        }
+                    }
+                    
+                    if let _ = otherCard {
+                        path = indexPath
+                    }
+                }
             default:
-                return nil
+                ()
             }
         default:
-            return nil
+            ()
         }
+            
+        return path
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -1076,6 +1236,24 @@ extension CardViewController : UITableViewDelegate {
                         performSegue(withIdentifier: "showSet", sender: set)
                     }
                 }
+            case CardViewControllerDetailsSection.otherNames.rawValue:
+                if let cards = cards  {
+                    let card = cards[cardIndex]
+                    var otherCard: CMCard?
+                    
+                    if let names_ = card.names_ {
+                        if let array = names_.allObjects as? [CMCard] {
+                            let array2 = array.filter({ $0.name != card.name})
+                            if array2.count > 0 {
+                                otherCard = array2[indexPath.row]
+                            }
+                        }
+                    }
+                    
+                    if let otherCard = otherCard {
+                        performSegue(withIdentifier: "showCard", sender: ["card": otherCard])
+                    }
+                }
             default:
                 ()
             }
@@ -1090,8 +1268,14 @@ extension CardViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var items = 0
         
-        if let printings = printings {
-            items = printings.count
+        if collectionView == otherPrintingsCollectionView {
+            if let otherPrintings = otherPrintings {
+                items = otherPrintings.count
+            }
+        } else if collectionView == variationsCollectionView {
+            if let variations = variations {
+                items = variations.count
+            }
         }
 
         return items
@@ -1099,20 +1283,30 @@ extension CardViewController : UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ThumbnailItemCell", for: indexPath)
-            
-        if let printings = printings,
+        var card: CMCard?
+        
+        if collectionView == otherPrintingsCollectionView {
+            if let otherPrintings = otherPrintings {
+                card = otherPrintings[indexPath.row]
+            }
+        } else if collectionView == variationsCollectionView {
+            if let variations = variations {
+                card = variations[indexPath.row]
+            }
+        }
+        
+        if let card = card,
             let thumbnailImage = cell.viewWithTag(100) as? UIImageView,
             let setImage = cell.viewWithTag(200) as? UILabel {
-            let printing = printings[indexPath.row]
             
-            if let croppedImage = ManaKit.sharedInstance.croppedImage(printing) {
+            if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
                 thumbnailImage.image = croppedImage
             } else {
                 thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
                 
-                ManaKit.sharedInstance.downloadCardImage(printing, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
+                ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
                     if error == nil {
-                        if c.id == printing.id {
+                        if c.id == card.id {
                             UIView.transition(with: thumbnailImage,
                                               duration: 1.0,
                                               options: .transitionCrossDissolve,
@@ -1126,8 +1320,8 @@ extension CardViewController : UICollectionViewDataSource {
             }
             
             setImage.layer.cornerRadius = setImage.frame.height / 2
-            setImage.text = ManaKit.sharedInstance.keyruneUnicode(forSet: printing.set!)
-            setImage.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: printing.rarity_!)
+            setImage.text = ManaKit.sharedInstance.keyruneUnicode(forSet: card.set!)
+            setImage.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: card.rarity_!)
         }
         
         return cell
@@ -1136,22 +1330,14 @@ extension CardViewController : UICollectionViewDataSource {
 
 // UICollectionViewDelegate
 extension CardViewController : UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if collectionView == printingsCollectionView {
-            if let thumbnailImage = cell.viewWithTag(100) as? UIImageView {
-                thumbnailImage.layer.cornerRadius = 10
-                thumbnailImage.layer.masksToBounds = true
-            }
-        }
-    }
-}
-
-// MARK: UIWebViewDelegate
-extension CardViewController : UIWebViewDelegate {
-    func webViewDidFinishLoad(_ webView: UIWebView) {
-        webViewSize = webView.scrollView.contentSize
-        tableView.reloadData()
-    }
+//    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+//        if collectionView == otherPrintingsCollectionView {
+//            if let thumbnailImage = cell.viewWithTag(100) as? UIImageView {
+//                thumbnailImage.layer.cornerRadius = 10
+//                thumbnailImage.layer.masksToBounds = true
+//            }
+//        }
+//    }
 }
 
 // MARK: iCarouselDataSource

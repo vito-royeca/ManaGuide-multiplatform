@@ -261,7 +261,7 @@ class SetsViewController: BaseViewController {
                 if text.count == 1 {
                     newRequest!.predicate = NSPredicate(format: "name BEGINSWITH[cd] %@", text)
                 } else if text.count > 1 {
-                    newRequest!.predicate = NSPredicate(format: "name CONTAINS[cd] %@", text)
+                    newRequest!.predicate = NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@", text, text)
                 }
                 dataSource = getDataSource(newRequest)
                 tableView.reloadData()

@@ -27,11 +27,11 @@
                         <viewControllerLayoutGuide type="bottom" id="bam-Dw-5q0"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="65g-4A-NuH">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="88" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="c6Y-yF-szq">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="sectionIndexColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
@@ -96,7 +96,7 @@
                                 </connections>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="le4-0f-D97">
-                                <rect key="frame" x="0.0" y="541" width="414" height="30"/>
+                                <rect key="frame" x="0.0" y="706" width="414" height="30"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="r9S-nb-s5A"/>
@@ -1262,9 +1262,6 @@
                                                             <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="30"/>
                                                             <color key="textColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
                                                             <nil key="highlightedColor"/>
-                                                            <connections>
-                                                                <outletCollection property="gestureRecognizers" destination="QoI-k3-gFp" appends="YES" id="gvj-2E-V5x"/>
-                                                            </connections>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" tag="300" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" 100" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kkd-kM-zpB">
                                                             <rect key="frame" x="276" y="0.0" width="138" height="43.666666666666664"/>
@@ -1376,6 +1373,12 @@
                                                                     <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8KJ-jr-D0q">
                                                                         <rect key="frame" x="0.0" y="0.0" width="100" height="72"/>
                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                                        <userDefinedRuntimeAttributes>
+                                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                                                <integer key="value" value="10"/>
+                                                                            </userDefinedRuntimeAttribute>
+                                                                        </userDefinedRuntimeAttributes>
                                                                     </imageView>
                                                                     <label opaque="NO" userInteractionEnabled="NO" tag="200" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MVg-Sh-McZ">
                                                                         <rect key="frame" x="80" y="52" width="20" height="20"/>
@@ -1424,12 +1427,16 @@
                             </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="XTg-F2-G7x" firstAttribute="bottom" secondItem="tqU-jq-t3l" secondAttribute="top" id="AtQ-DV-RMK"/>
                             <constraint firstAttribute="trailing" secondItem="XTg-F2-G7x" secondAttribute="trailing" id="HSq-z1-ywi"/>
                             <constraint firstItem="XTg-F2-G7x" firstAttribute="leading" secondItem="fcE-qX-xlo" secondAttribute="leading" id="JYH-s9-nR0"/>
                             <constraint firstItem="XTg-F2-G7x" firstAttribute="top" secondItem="tRB-T4-B73" secondAttribute="bottom" id="kV4-FX-M7J"/>
                         </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="jKI-Tm-ir5" appends="YES" id="ZUT-7s-AJE"/>
+                        </connections>
                     </view>
                     <navigationItem key="navigationItem" id="iPw-Is-cTc">
                         <nil key="title"/>
@@ -1451,6 +1458,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="contentSegmentedControl" destination="2bC-Vj-fNr" id="ozL-jl-Es4"/>
+                        <outlet property="favoriteTapGestureRecognizer" destination="jKI-Tm-ir5" id="hsu-Nx-AVX"/>
                         <outlet property="tableView" destination="XTg-F2-G7x" id="zcJ-OQ-Zvg"/>
                         <segue destination="t1B-qF-FHV" kind="show" identifier="showSearch" id="whl-Hr-bZH"/>
                         <segue destination="aOj-40-y9v" kind="show" identifier="showSet" id="xMx-O9-Y4N"/>
@@ -1458,9 +1466,9 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XRd-K3-nNu" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="QoI-k3-gFp">
+                <tapGestureRecognizer id="jKI-Tm-ir5">
                     <connections>
-                        <action selector="favoriteAction:" destination="v6L-wJ-qRt" id="Bxe-aJ-EUu"/>
+                        <action selector="favoriteAction:" destination="v6L-wJ-qRt" id="GwJ-WT-5Bd"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
@@ -1789,10 +1797,10 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="raG-Jp-fAl"/>
+        <segue reference="Vbm-cg-ye0"/>
         <segue reference="X4a-uC-2tC"/>
         <segue reference="J88-7q-TTb"/>
         <segue reference="xMx-O9-Y4N"/>
-        <segue reference="ad4-Pa-Oso"/>
+        <segue reference="whl-Hr-bZH"/>
     </inferredMetricsTieBreakers>
 </document>
