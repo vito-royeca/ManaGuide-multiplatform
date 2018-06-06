@@ -12,16 +12,13 @@ import FBSDKLoginKit
 import Firebase
 import GoogleSignIn
 import MBProgressHUD
-
-protocol LoginViewControllerDelegate: NSObjectProtocol {
-    func actionAfterLogin(success: Bool)
-}
+import PromiseKit
 
 class LoginViewController: UIViewController {
 
     // MARK: Variables
-    var delegate: LoginViewControllerDelegate?
-
+    var actionAfterLogin: ((Bool) -> Void)?
+    
     // MARK: Outlets
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
@@ -29,8 +26,8 @@ class LoginViewController: UIViewController {
     // MARK: Actions
     @IBAction func cancelAction(_ sender: UIBarButtonItem) {
         dismiss(animated: true, completion: {
-            if let delegate = self.delegate {
-                delegate.actionAfterLogin(success: false)
+            if let actionAfterLogin = self.actionAfterLogin {
+                actionAfterLogin(false)
             }
         })
     }
@@ -43,46 +40,34 @@ class LoginViewController: UIViewController {
             let password = password {
             
             var errors = [String]()
-            for error in validateEmail(email) {
+            for error in validate(email: email) {
                 errors.append(error)
             }
-            for error in validatePassword(password) {
+            for error in validate(password: password) {
                 errors.append(error)
             }
+            
             if errors.count > 0 {
-                let alertController = UIAlertController(title: "Error", message: errors.joined(separator: "\n"), preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                self.present(alertController, animated: true, completion: nil)
-                
+                showMessage(title: "Error", message: errors.joined(separator: "\n"))
             } else {
                 MBProgressHUD.showAdded(to: self.view, animated: true)
-                Auth.auth().signIn(withEmail: email, password: password,  completion: {(authResult: AuthDataResult?, error: Error?) in
-                    if let error = error {
-                        MBProgressHUD.hide(for: self.view, animated: true)
-                        
-                        let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                        self.present(alertController, animated: true, completion: nil)
-                    } else {
-                        if let authResult = authResult {
-                            self.updateUser(email: authResult.user.email, photoURL: authResult.user.photoURL, displayName: authResult.user.displayName, completion: {(error: Error?) in
-                                MBProgressHUD.hide(for: self.view, animated: true)
-                                
-                                if let error = error {
-                                    let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                                    self.present(alertController, animated: true, completion: nil)
-                                } else {
-                                    self.dismiss(animated: true, completion: {
-                                        if let delegate = self.delegate {
-                                            delegate.actionAfterLogin(success: true)
-                                        }
-                                    })
-                                }
-                            })
+                
+                firstly {
+                    authSignIn(with: email, password: password)
+                    }.then { (authResult: AuthDataResult?) in
+                    self.updateUser(email: authResult?.user.email, photoURL: authResult?.user.photoURL, displayName: authResult?.user.displayName)
+                }.done {
+                    MBProgressHUD.hide(for: self.view, animated: true)
+                    
+                    self.dismiss(animated: true, completion: {
+                        if let actionAfterLogin = self.actionAfterLogin {
+                            actionAfterLogin(true)
                         }
-                    }
-                })
+                    })
+                }.catch { error in
+                    MBProgressHUD.hide(for: self.view, animated: true)
+                    self.showMessage(title: "Error", message: error.localizedDescription)
+                }
             }
         }
     }
@@ -96,30 +81,24 @@ class LoginViewController: UIViewController {
                 let email = fields[0].text
                 
                 var errors = [String]()
-                for error in self.validateEmail(email!) {
+                for error in self.validate(email: email!) {
                     errors.append(error)
                 }
+
                 if errors.count > 0 {
-                    let alertController = UIAlertController(title: "Error", message: errors.joined(separator: "\n"), preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                    self.present(alertController, animated: true, completion: nil)
-                    
+                    self.showMessage(title: "Error", message: errors.joined(separator: "\n"))
                 } else {
                     MBProgressHUD.showAdded(to: self.view, animated: true)
-                    Auth.auth().sendPasswordReset(withEmail: email!, completion: { error in
+                    
+                    firstly {
+                        self.authSetPasswordReset(email: email!)
+                    }.done {
                         MBProgressHUD.hide(for: self.view, animated: true)
-                        var message:String?
-                        
-                        if let error = error {
-                            message = error.localizedDescription
-                        } else {
-                            message = "Check the email you provided for instructions."
-                        }
-                        
-                        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                        self.present(alertController, animated: true, completion: nil)
-                    })
+                        self.showMessage(title: "Success", message: "Check the email you provided for instructions.")
+                    }.catch { error in
+                            MBProgressHUD.hide(for: self.view, animated: true)
+                            self.showMessage(title: "Error", message: error.localizedDescription)
+                    }
                 }
             }
         }
@@ -144,58 +123,36 @@ class LoginViewController: UIViewController {
                 let password = fields[2].text
                 
                 var errors = [String]()
-                for error in self.validateName(name!) {
+                for error in self.validate(name: name!) {
                     errors.append(error)
                 }
-                for error in self.validateEmail(email!) {
+                for error in self.validate(email: email!) {
                     errors.append(error)
                 }
-                for error in self.validatePassword(password!) {
+                for error in self.validate(password: password!) {
                     errors.append(error)
                 }
+                
                 if errors.count > 0 {
-                    let alertController = UIAlertController(title: "Error", message: errors.joined(separator: "\n"), preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                    self.present(alertController, animated: true, completion: nil)
-                    
+                    self.showMessage(title: "Error", message: errors.joined(separator: "\n"))
                 } else {
                     MBProgressHUD.showAdded(to: self.view, animated: true)
-                    Auth.auth().createUser(withEmail: email!, password: password!) { user, error in
-                        if let error = error {
-                            MBProgressHUD.hide(for: self.view, animated: true)
-                            
-                            let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                            alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                            self.present(alertController, animated: true, completion: nil)
-                        } else {
-                            Auth.auth().signIn(withEmail: email!, password: password!,  completion: {(authResult: AuthDataResult?, error: Error?) in
-                                if let error = error {
-                                    MBProgressHUD.hide(for: self.view, animated: true)
-                                    
-                                    let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                                    self.present(alertController, animated: true, completion: nil)
-                                } else {
-                                    if let authResult = authResult {
-                                        self.updateUser(email: authResult.user.email, photoURL: authResult.user.photoURL, displayName: name, completion: {(error: Error?) in
-                                            MBProgressHUD.hide(for: self.view, animated: true)
-                                            
-                                            if let error = error {
-                                                let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                                                alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                                                self.present(alertController, animated: true, completion: nil)
-                                            } else {
-                                                self.dismiss(animated: true, completion: {
-                                                    if let delegate = self.delegate {
-                                                        delegate.actionAfterLogin(success: true)
-                                                    }
-                                                })
-                                            }
-                                        })
-                                    }
-                                }
-                            })
-                        }
+                    
+                    firstly {
+                        self.authCreateUser(email: email!, password: password!)
+                    }.then { (authResult: AuthDataResult?) in
+                        self.updateUser(email: authResult?.user.email, photoURL: authResult?.user.photoURL, displayName: name!)
+                    }.done {
+                        MBProgressHUD.hide(for: self.view, animated: true)
+                        
+                        self.dismiss(animated: true, completion: {
+                            if let actionAfterLogin = self.actionAfterLogin {
+                                actionAfterLogin(true)
+                            }
+                        })
+                    }.catch { error in
+                        MBProgressHUD.hide(for: self.view, animated: true)
+                        self.showMessage(title: "Error", message: error.localizedDescription)
                     }
                 }
             }
@@ -220,49 +177,26 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func facebookAction(_ sender: UIButton) {
-        let login = FBSDKLoginManager()
-
-        login.logIn(withReadPermissions: ["public_profile"], from: self, handler: {(result: FBSDKLoginManagerLoginResult?, error: Error?) in
-            if let error = error {
-                let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                self.present(alertController, animated: true, completion: nil)
-            } else {
-                if let current = FBSDKAccessToken.current() {
-                    MBProgressHUD.showAdded(to: self.view, animated: true)
-
-                    let credential = FacebookAuthProvider.credential(withAccessToken: current.tokenString)
-                    Auth.auth().signInAndRetrieveData(with: credential, completion: {(authResult: AuthDataResult?, error: Error?) in
-
-                        if let error = error {
-                            MBProgressHUD.hide(for: self.view, animated: true)
-                            
-                            let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                            alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                            self.present(alertController, animated: true, completion: nil)
-                        } else {
-                            if let authResult = authResult {
-                                self.updateUser(email: authResult.user.email, photoURL: authResult.user.photoURL, displayName: authResult.user.displayName, completion: {(error: Error?) in
-                                    MBProgressHUD.hide(for: self.view, animated: true)
-                                    
-                                    if let error = error {
-                                        let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                                        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                                        self.present(alertController, animated: true, completion: nil)
-                                    } else {
-                                        self.dismiss(animated: true, completion: {
-                                            if let delegate = self.delegate {
-                                                delegate.actionAfterLogin(success: true)
-                                            }
-                                        })
-                                    }
-                                })
-                            }
-                        }
-                    })
+        MBProgressHUD.showAdded(to: self.view, animated: true)
+        
+        firstly {
+            self.facebookLogin()
+        }.then { (credential: AuthCredential) in
+            self.authSignInandRetrieveData(credential: credential)
+        }.then { (authResult: AuthDataResult?) in
+            self.updateUser(email: authResult?.user.email, photoURL: authResult?.user.photoURL, displayName: authResult?.user.displayName)
+        }.done {
+            MBProgressHUD.hide(for: self.view, animated: true)
+            
+            self.dismiss(animated: true, completion: {
+                if let actionAfterLogin = self.actionAfterLogin {
+                    actionAfterLogin(true)
                 }
-            }
-        })
+            })
+        }.catch { error in
+            MBProgressHUD.hide(for: self.view, animated: true)
+            self.showMessage(title: "Error", message: error.localizedDescription)
+        }
     }
     
     @IBAction func googleAction(_ sender: UIButton) {
@@ -280,17 +214,23 @@ class LoginViewController: UIViewController {
 
 
     // MARK: Custom methods
-    func validateName(_ name: String) -> [String] {
+    func showMessage(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func validate(name: String) -> [String] {
         var errors = [String]()
         
         if name.count < 4 {
-            errors.append("Name must be at least 3 characters.")
+            errors.append("Name must be at least 4 characters.")
         }
         
         return errors
     }
     
-    func validateEmail(_ email: String) -> [String] {
+    func validate(email: String) -> [String] {
         var errors = [String]()
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}"
         
@@ -305,7 +245,7 @@ class LoginViewController: UIViewController {
         return errors
     }
     
-    func validatePassword(_ password: String) -> [String] {
+    func validate(password: String) -> [String] {
         var errors = [String]()
         
         if password.count == 0 {
@@ -319,15 +259,93 @@ class LoginViewController: UIViewController {
         FirebaseManager.sharedInstance.updateUser(email: email, photoURL: photoURL, displayName: displayName, completion: completion)
         FirebaseManager.sharedInstance.monitorUser()
     }
+    
+    // MARK: Promises
+    func authSignIn(with email: String, password: String) -> Promise<AuthDataResult?> {
+        return Promise { seal  in
+            Auth.auth().signIn(withEmail: email, password: password,  completion: {(authResult: AuthDataResult?, error: Error?) in
+                if let error = error {
+                    seal.reject(error)
+                } else {
+                    seal.fulfill(authResult)
+                }
+            })
+        }
+    }
+    
+    func authSetPasswordReset(email: String) -> Promise<Void> {
+        return Promise { seal  in
+            Auth.auth().sendPasswordReset(withEmail: email, completion: { error in
+                if let error = error {
+                    seal.reject(error)
+                } else {
+                    seal.fulfill()
+                }
+            })
+        }
+    }
+    
+    func authCreateUser(email: String, password: String) -> Promise<AuthDataResult?> {
+        return Promise { seal  in
+            Auth.auth().createUser(withEmail: email, password: password,  completion: {(authResult: AuthDataResult?, error: Error?) in
+                if let error = error {
+                    seal.reject(error)
+                } else {
+                    seal.fulfill(authResult)
+                }
+            })
+        }
+    }
+    
+    func authSignInandRetrieveData(credential: AuthCredential) -> Promise<AuthDataResult?> {
+        return Promise { seal  in
+            Auth.auth().signInAndRetrieveData(with: credential, completion: {(authResult: AuthDataResult?, error: Error?) in
+                if let error = error {
+                    seal.reject(error)
+                } else {
+                    seal.fulfill(authResult)
+                }
+            })
+        }
+    }
+    
+    func facebookLogin() -> Promise<AuthCredential> {
+        return Promise { seal in
+            let login = FBSDKLoginManager()
+            
+            login.logIn(withReadPermissions: ["public_profile"], from: self, handler: {(result: FBSDKLoginManagerLoginResult?, error: Error?) in
+                if let error = error {
+                    seal.reject(error)
+                } else {
+                    let credential = FacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
+                    seal.fulfill(credential)
+                }
+                
+            })
+        }
+    }
+    
+    func updateUser(email: String?, photoURL: URL?, displayName: String?) -> Promise<Void> {
+        return Promise { seal in
+            FirebaseManager.sharedInstance.updateUser(email: email, photoURL: photoURL, displayName: displayName, completion: {(error: Error?) in
+                if let error = error {
+                    FirebaseManager.sharedInstance.demonitorUser()
+                    seal.reject(error)
+                } else {
+                    FirebaseManager.sharedInstance.monitorUser()
+                    seal.fulfill()
+                }
+                
+            })
+        }
+    }
 }
 
 // MARK: GIDSignInDelegate
 extension LoginViewController : GIDSignInDelegate {
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         if let error = error {
-            let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-            self.present(alertController, animated: true, completion: nil)
+            self.showMessage(title: "Error", message: error.localizedDescription)
         } else {
             
             guard let authentication = user.authentication else { return }
@@ -335,30 +353,23 @@ extension LoginViewController : GIDSignInDelegate {
                                                            accessToken: authentication.accessToken)
             
             MBProgressHUD.showAdded(to: self.view, animated: true)
-            Auth.auth().signInAndRetrieveData(with: credential, completion: {(authResult: AuthDataResult?, error: Error?) in
+            
+            firstly {
+                self.authSignInandRetrieveData(credential: credential)
+            }.then { (authResult: AuthDataResult?) in
+                self.updateUser(email: authResult?.user.email, photoURL: authResult?.user.photoURL, displayName: authResult?.user.displayName)
+            }.done {
+                MBProgressHUD.hide(for: self.view, animated: true)
                 
-                if let error = error {
-                    MBProgressHUD.hide(for: self.view, animated: true)
-                    
-                    let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                    self.present(alertController, animated: true, completion: nil)
-                } else {
-                    if let authResult = authResult {
-                        self.updateUser(email: authResult.user.email, photoURL: authResult.user.photoURL, displayName: authResult.user.displayName, completion: {(error: Error?) in
-                            MBProgressHUD.hide(for: self.view, animated: true)
-                            
-                            if let error = error {
-                                let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                                alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                                self.present(alertController, animated: true, completion: nil)
-                            } else {
-                                self.dismiss(animated: true, completion: nil)
-                            }
-                        })
+                self.dismiss(animated: true, completion: {
+                    if let actionAfterLogin = self.actionAfterLogin {
+                        actionAfterLogin(true)
                     }
-                }
-            })
+                })
+            }.catch { error in
+                MBProgressHUD.hide(for: self.view, animated: true)
+                self.showMessage(title: "Error", message: error.localizedDescription)
+            }
         }
     }
     
@@ -374,15 +385,14 @@ extension LoginViewController : GIDSignInUIDelegate {
 //        myActivityIndicator.stopAnimating()
     }
     
-    func signIn(_ signIn: GIDSignIn!, present viewController: UIViewController!) {
-        //        sleep(1) // to fix blank white screen where Google SignIn view is not loaded
+    func sign(_ signIn: GIDSignIn!, present viewController: UIViewController!) {
+//        sleep(1) // to fix blank white screen where Google SignIn view is not loaded
         present(viewController, animated: true, completion: nil)
     }
 
 
     func sign(_ signIn: GIDSignIn!, dismiss viewController: UIViewController!) {
         viewController.dismiss(animated: true, completion: nil)
-//        self.updateUser()
     }
 }
 

@@ -143,7 +143,27 @@ class CardViewController: BaseViewController {
         if let _ = Auth.auth().currentUser {
             toggleCardFavorite()
         } else {
-            performSegue(withIdentifier: "showLogin", sender: nil)
+            let actionAfterLogin = {(success: Bool) in
+                if success {
+                    self.toggleCardFavorite()
+                }
+            }
+            performSegue(withIdentifier: "showLogin", sender: ["actionAfterLogin": actionAfterLogin])
+        }
+    }
+    
+    func ratingAction(rating: Double) {
+        if let _ = Auth.auth().currentUser {
+            update(rating: rating)
+        } else {
+            let actionAfterLogin = {(success: Bool) in
+                if success {
+                    self.update(rating: rating)
+                } else {
+                    self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
+                }
+            }
+            performSegue(withIdentifier: "showLogin", sender: ["actionAfterLogin": actionAfterLogin])
         }
     }
     
@@ -218,8 +238,11 @@ class CardViewController: BaseViewController {
             }
         } else if segue.identifier == "showLogin" {
             if let dest = segue.destination as? UINavigationController {
-                if let loginVC = dest.childViewControllers.first as? LoginViewController {
-                    loginVC.delegate = self
+                if let loginVC = dest.childViewControllers.first as? LoginViewController,
+                    let dict = sender as? [String: Any] {
+                    if let actionAfterLogin = dict["actionAfterLogin"] as? ((Bool) -> Void) {
+                        loginVC.actionAfterLogin = actionAfterLogin
+                    }
                 }
             }
         }
@@ -260,6 +283,22 @@ class CardViewController: BaseViewController {
                 self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
             })
         }
+    }
+    
+    func update(rating: Double) {
+        
+        
+        let alertController = UIAlertController(title: "Rate this Card", message: nil, preferredStyle: .alert)
+        let cosmosView = CosmosView(frame: CGRect(x: 0, y: 0, width: 200, height: 30))
+        let confirmAction = UIAlertAction(title: "Submit", style: .default) { (_) in }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in }
+        
+        alertController.view.addSubview(cosmosView)
+        alertController.addAction(confirmAction)
+        alertController.addAction(cancelAction)
+        self.present(alertController, animated: true, completion: nil)
+        
+//        tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
     }
     
     func replaceSymbols(inText text: String) -> String {
@@ -716,7 +755,10 @@ extension CardViewController : UITableViewDataSource {
                     let card = cards[cardIndex]
                     
                     if let ratingView = c.viewWithTag(100) as? CosmosView {
-                        ratingView.rating = Double(arc4random_uniform(5) + 1); //card.rating
+                        ratingView.rating = card.rating //Double(arc4random_uniform(5) + 1)
+                        ratingView.didFinishTouchingCosmos = { rating in
+                            self.ratingAction(rating: rating)
+                        }
                     }
                     if let label = c.viewWithTag(200) as? UILabel {
                         var isFavorite = false
@@ -1389,15 +1431,6 @@ extension CardViewController : iCarouselDelegate {
         if segmentedIndex == .image {
             tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.pricing.rawValue),
                                       IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
-        }
-    }
-}
-
-// MARK: LoginViewControllerDelegate
-extension CardViewController : LoginViewControllerDelegate {
-    func actionAfterLogin(success: Bool) {
-        if success {
-            toggleCardFavorite()
         }
     }
 }

@@ -41,7 +41,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // ManaKit
         ManaKit.sharedInstance.setupResources()
         ManaKit.sharedInstance.configureTCGPlayer(partnerKey: "ManaGuide", publicKey: "A49D81FB-5A76-4634-9152-E1FB5A657720", privateKey: nil)
-
+        FirebaseManager.sharedInstance.monitorUser()
+        
         // change the account icon
         if let rootVC = window?.rootViewController as? MMDrawerController {
             if let tabBarVC = rootVC.centerViewController as? UITabBarController {

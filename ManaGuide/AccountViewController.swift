@@ -54,7 +54,12 @@ class AccountViewController: UIViewController {
                 print("\(error)")
             }
         } else {
-            performSegue(withIdentifier: "showLogin", sender: nil)
+            let actionAfterLogin = {(success: Bool) in
+                if success {
+                    self.updateDisplay()
+                }
+            }
+            performSegue(withIdentifier: "showLogin", sender: ["actionAfterLogin": actionAfterLogin])
         }
     }
     
@@ -63,9 +68,6 @@ class AccountViewController: UIViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        
-        // FirebaseManager
-        FirebaseManager.sharedInstance.monitorUser()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -76,8 +78,11 @@ class AccountViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showLogin" {
             if let dest = segue.destination as? UINavigationController {
-                if let loginVC = dest.childViewControllers.first as? LoginViewController {
-                    loginVC.delegate = self
+                if let loginVC = dest.childViewControllers.first as? LoginViewController,
+                    let dict = sender as? [String: Any] {
+                    if let actionAfterLogin = dict["actionAfterLogin"] as? ((Bool) -> Void) {
+                        loginVC.actionAfterLogin = actionAfterLogin
+                    }
                 }
             }
         } else if segue.identifier == "showSearch" {
@@ -222,15 +227,6 @@ extension AccountViewController : UITableViewDelegate {
                                                                 "request": request])
         default:
             ()
-        }
-    }
-}
-
-// MARK: LoginViewControllerDelegate
-extension AccountViewController : LoginViewControllerDelegate {
-    func actionAfterLogin(success: Bool) {
-        if success {
-            updateDisplay()
         }
     }
 }
