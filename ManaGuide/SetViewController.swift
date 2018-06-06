@@ -12,6 +12,7 @@ import Font_Awesome_Swift
 import InAppSettingsKit
 import ManaKit
 import MBProgressHUD
+import PromiseKit
 
 class SetViewController: BaseViewController {
 
@@ -145,25 +146,24 @@ class SetViewController: BaseViewController {
                 ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName == "numberOrder" ? nil : setSectionName, configuration: { cell, item, indexPath in
                     if let card = item as? CMCard {
                         if let imageView = cell.viewWithTag(100) as? UIImageView {
-                            if let image = ManaKit.sharedInstance.cardImage(card) {
+                            if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
                                 imageView.image = image
                             } else {
                                 imageView.image = ManaKit.sharedInstance.cardBack(card)
                                 
-                                // TODO: fix multiple image loading if scrolling fast
-                                ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
-                                    if error == nil {
-                                        if c.id == card.id {
-                                            UIView.transition(with: imageView,
-                                                              duration: 1.0,
-                                                              options: .transitionFlipFromLeft,
-                                                              animations: {
-                                                                imageView.image = image
-                                                              },
-                                                              completion: nil)
-                                        }
-                                    }
-                                })
+                                firstly {
+                                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+                                }.done { (image: UIImage?) in
+                                    UIView.transition(with: imageView,
+                                                      duration: 1.0,
+                                                      options: .transitionFlipFromLeft,
+                                                      animations: {
+                                                          imageView.image = image
+                                                      },
+                                                      completion: nil)
+                                }.catch { error in
+                                        
+                                }
                             }
                         }
                     }

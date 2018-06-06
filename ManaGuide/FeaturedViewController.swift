@@ -12,6 +12,7 @@ import DATASource
 import Font_Awesome_Swift
 import ManaKit
 import MBProgressHUD
+import PromiseKit
 
 let kSliderTableViewCellSetWidth = CGFloat(88)
 let kSliderTableViewCellSetHeight = CGFloat(112)
@@ -360,21 +361,20 @@ extension FeaturedViewController : UICollectionViewDataSource {
                     thumbnailImage.image = croppedImage
                 } else {
                     thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
-                    
-                    ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
-                        if error == nil {
-                            if c.id == card.id  {
-                                UIView.transition(with: thumbnailImage,
-                                                  duration: 1.0,
-                                                  options: .transitionCrossDissolve,
-                                                  animations: {
-                                                    thumbnailImage.image = croppedImage
-                                                  },
-                                                  completion: nil)
-                            }
+
+                    firstly {
+                        ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
+                    }.done { (image: UIImage?) in
+                        UIView.transition(with: thumbnailImage,
+                                          duration: 1.0,
+                                          options: .transitionCrossDissolve,
+                                          animations: {
+                                              thumbnailImage.image = image
+                                          },
+                                          completion: nil)
+                    }.catch { error in
                             
-                        }
-                    })
+                    }
                 }
             }
             if let label = cell?.viewWithTag(200) as? UILabel,
@@ -404,19 +404,19 @@ extension FeaturedViewController : UICollectionViewDataSource {
                 } else {
                     thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
                     
-                    ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
-                        if error == nil {
-                            if c.id == card.id  {
-                                UIView.transition(with: thumbnailImage,
-                                                  duration: 1.0,
-                                                  options: .transitionCrossDissolve,
-                                                  animations: {
-                                                    thumbnailImage.image = croppedImage
-                                                  },
-                                                  completion: nil)
-                            }
-                        }
-                    })
+                    firstly {
+                        ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
+                    }.done { (image: UIImage?) in
+                        UIView.transition(with: thumbnailImage,
+                                          duration: 1.0,
+                                          options: .transitionCrossDissolve,
+                                          animations: {
+                                              thumbnailImage.image = image
+                                          },
+                                          completion: nil)
+                    }.catch { error in
+                            
+                    }
                 }
             }
             if let label = cell?.viewWithTag(200) as? UILabel,

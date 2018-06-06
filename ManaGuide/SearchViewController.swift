@@ -12,6 +12,7 @@ import Font_Awesome_Swift
 import InAppSettingsKit
 import MBProgressHUD
 import ManaKit
+import PromiseKit
 
 class SearchViewController: BaseViewController {
 
@@ -191,25 +192,24 @@ class SearchViewController: BaseViewController {
                         let imageView = cell.viewWithTag(100) as? UIImageView {
                         
                         
-                        if let image = ManaKit.sharedInstance.cardImage(card) {
+                        if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
                             imageView.image = image
                         } else {
                             imageView.image = ManaKit.sharedInstance.cardBack(card)
                             
-                            ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
-                                
-                                if error == nil {
-                                    if c.id == card.id {
-                                        UIView.transition(with: imageView,
-                                                          duration: 1.0,
-                                                          options: .transitionFlipFromLeft,
-                                                          animations: {
-                                                            imageView.image = image
-                                        },
-                                                          completion: nil)
-                                    }
-                                }
-                            })
+                            firstly {
+                                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+                            }.done { (image: UIImage?) in
+                                UIView.transition(with: imageView,
+                                                  duration: 1.0,
+                                                  options: .transitionFlipFromLeft,
+                                                  animations: {
+                                                      imageView.image = image
+                                                  },
+                                                  completion: nil)
+                            }.catch { error in
+                                    
+                            }
                         }
                     }
                 })

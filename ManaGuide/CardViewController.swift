@@ -14,6 +14,7 @@ import Font_Awesome_Swift
 import iCarousel
 import ManaKit
 import MBProgressHUD
+import PromiseKit
 
 enum CardViewControllerSegmentedIndex: Int {
     case image
@@ -45,8 +46,8 @@ enum CardViewControllerImageSection : Int {
 enum CardViewControllerDetailsSection : Int {
     case manaCost
     case type
-    case originalText
     case oracleText
+    case originalText
     case flavorText
     case artist
     case set
@@ -62,8 +63,8 @@ enum CardViewControllerDetailsSection : Int {
         // Use Internationalization, as appropriate.
         case .manaCost: return "Mana Cost"
         case .type: return "Type"
+        case .oracleText: return "Text"
         case .originalText: return "Original Text"
-        case .oracleText: return "Oracle Text"
         case .flavorText: return "Flavor Text"
         case .artist: return "Artist"
         case .set: return "Set"
@@ -596,25 +597,24 @@ class CardViewController: BaseViewController {
     }
     
     func showImage(ofCard card: CMCard, inImageView imageView: UIImageView) {
-        if let image = ManaKit.sharedInstance.cardImage(card) {
+        if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
             imageView.image = image
         } else {
             imageView.image = ManaKit.sharedInstance.cardBack(card)
             
-            ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
-                
-                if error == nil {
-                    if c.id == card.id {
-                        UIView.transition(with: imageView,
-                                          duration: 1.0,
-                                          options: .transitionCrossDissolve,
-                                          animations: {
-                                            imageView.image = image
-                        },
-                                          completion: nil)
-                    }
-                }
-            })
+            firstly {
+                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+            }.done { (image: UIImage?) in
+                UIView.transition(with: imageView,
+                                  duration: 1.0,
+                                  options: .transitionCrossDissolve,
+                                  animations: {
+                                    imageView.image = image
+                                  },
+                                  completion: nil)
+            }.catch { error in
+                    
+            }
         }
     }
 }
@@ -705,25 +705,26 @@ extension CardViewController : UITableViewDataSource {
                         label.text = "NA"
                     }
                     
-                    ManaKit.sharedInstance.fetchTCGPlayerPricing(card: card, completion: {(cardPricing: CMCardPricing?, error: Error?) in
-                        if let cardPricing = cardPricing {
-                            
-                            if card.id == cardPricing.card?.id {
-                                if let label = c.viewWithTag(100) as? UILabel {
-                                    label.text = cardPricing.low > 0 ? String(format: "$%.2f", cardPricing.low) : "NA"
-                                }
-                                if let label = c.viewWithTag(200) as? UILabel {
-                                    label.text = cardPricing.average > 0 ? String(format: "$%.2f", cardPricing.average) : "NA"
-                                }
-                                if let label = c.viewWithTag(300) as? UILabel {
-                                    label.text = cardPricing.high > 0 ? String(format: "$%.2f", cardPricing.high) : "NA"
-                                }
-                                if let label = c.viewWithTag(400) as? UILabel {
-                                    label.text = cardPricing.foil > 0 ? String(format: "$%.2f", cardPricing.foil) : "NA"
-                                }
+                    firstly {
+                        ManaKit.sharedInstance.fetchTCGPlayerPricing(card: card)
+                    }.done { (pricing: CMCardPricing?) in
+                        if let pricing = pricing {
+                            if let label = c.viewWithTag(100) as? UILabel {
+                                label.text = pricing.low > 0 ? String(format: "$%.2f", pricing.low) : "NA"
+                            }
+                            if let label = c.viewWithTag(200) as? UILabel {
+                                label.text = pricing.average > 0 ? String(format: "$%.2f", pricing.average) : "NA"
+                            }
+                            if let label = c.viewWithTag(300) as? UILabel {
+                                label.text = pricing.high > 0 ? String(format: "$%.2f", pricing.high) : "NA"
+                            }
+                            if let label = c.viewWithTag(400) as? UILabel {
+                                label.text = pricing.foil > 0 ? String(format: "$%.2f", pricing.foil) : "NA"
                             }
                         }
-                    })
+                    }.catch { error in
+                        
+                    }
                     
                     c.selectionStyle = .none
                     c.accessoryType = .none
@@ -834,13 +835,13 @@ extension CardViewController : UITableViewDataSource {
                     c.accessoryType = .none
                     cell = c
                 }
-            case CardViewControllerDetailsSection.originalText.rawValue:
+            case CardViewControllerDetailsSection.oracleText.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
                     let cards = cards {
                     
                     let card = cards[cardIndex]
                     if let label = c.viewWithTag(100) as? UILabel {
-                        if let text = card.originalText {
+                        if let text = card.text {
                             label.attributedText = addSymbols(toText: "\n\(text)\n", withPointSize: label.font.pointSize)
                         } else {
                             label.text = " "
@@ -850,13 +851,13 @@ extension CardViewController : UITableViewDataSource {
                     c.accessoryType = .none
                     cell = c
                 }
-            case CardViewControllerDetailsSection.oracleText.rawValue:
+            case CardViewControllerDetailsSection.originalText.rawValue:
                 if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
                     let cards = cards {
                     
                     let card = cards[cardIndex]
                     if let label = c.viewWithTag(100) as? UILabel {
-                        if let text = card.text {
+                        if let text = card.originalText {
                             label.attributedText = addSymbols(toText: "\n\(text)\n", withPointSize: label.font.pointSize)
                         } else {
                             label.text = " "
@@ -1060,10 +1061,10 @@ extension CardViewController : UITableViewDataSource {
                 headerTitle = CardViewControllerDetailsSection.manaCost.description
             case CardViewControllerDetailsSection.type.rawValue:
                 headerTitle = CardViewControllerDetailsSection.type.description
-            case CardViewControllerDetailsSection.originalText.rawValue:
-                headerTitle = CardViewControllerDetailsSection.originalText.description
             case CardViewControllerDetailsSection.oracleText.rawValue:
                 headerTitle = CardViewControllerDetailsSection.oracleText.description
+            case CardViewControllerDetailsSection.originalText.rawValue:
+                headerTitle = CardViewControllerDetailsSection.originalText.description
             case CardViewControllerDetailsSection.flavorText.rawValue:
                 headerTitle = CardViewControllerDetailsSection.flavorText.description
             case CardViewControllerDetailsSection.artist.rawValue:
@@ -1346,19 +1347,19 @@ extension CardViewController : UICollectionViewDataSource {
             } else {
                 thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
                 
-                ManaKit.sharedInstance.downloadCardImage(card, cropImage: true, completion: { (c: CMCard, image: UIImage?, croppedImage: UIImage?, error: Error?) in
-                    if error == nil {
-                        if c.id == card.id {
-                            UIView.transition(with: thumbnailImage,
-                                              duration: 1.0,
-                                              options: .transitionCrossDissolve,
-                                              animations: {
-                                                thumbnailImage.image = croppedImage
-                                              },
-                                              completion: nil)
-                        }
-                    }
-                })
+                firstly {
+                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
+                }.done { (image: UIImage?) in
+                    UIView.transition(with: thumbnailImage,
+                                      duration: 1.0,
+                                      options: .transitionCrossDissolve,
+                                      animations: {
+                                        thumbnailImage.image = image
+                                      },
+                                      completion: nil)
+                }.catch { error in
+                        
+                }
             }
             
             setImage.layer.cornerRadius = setImage.frame.height / 2
