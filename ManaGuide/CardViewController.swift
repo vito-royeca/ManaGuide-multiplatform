@@ -12,6 +12,7 @@ import DATASource
 import Firebase
 import Font_Awesome_Swift
 import iCarousel
+import IDMPhotoBrowser
 import ManaKit
 import MBProgressHUD
 import PromiseKit
@@ -302,21 +303,6 @@ class CardViewController: BaseViewController {
 //        tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
     }
     
-    func replaceSymbols(inText text: String) -> String {
-        var newText = text
-        newText = newText.replacingOccurrences(of: "\n", with:"<br/> ")
-        newText = newText.replacingOccurrences(of: "(", with:"(<i>")
-        newText = newText.replacingOccurrences(of:")", with:"</i>)")
-        
-        for (_,v) in Symbols {
-            if let imgLink = ManaKit.sharedInstance.symbolHTML(name: v) {
-                newText = newText.replacingOccurrences(of: v, with: imgLink)
-            }
-        }
-        
-        return newText
-    }
-    
     func composeType(of card: CMCard, pointSize: CGFloat) -> NSAttributedString {
         let attributedString = NSMutableAttributedString()
         var cardType: CMCardType?
@@ -347,6 +333,7 @@ class CardViewController: BaseViewController {
                 image = ManaKit.sharedInstance.symbolImage(name: name)
             }
         }
+
         // type
         if let type = card.type_,
             let cardType = cardType {
@@ -613,7 +600,7 @@ class CardViewController: BaseViewController {
                                   },
                                   completion: nil)
             }.catch { error in
-                    
+                print("\(error)")
             }
         }
     }
@@ -1432,6 +1419,37 @@ extension CardViewController : iCarouselDelegate {
         if segmentedIndex == .image {
             tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.pricing.rawValue),
                                       IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
+        }
+    }
+    
+    func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
+        if let cards = cards {
+            var urls = [URL]()
+            
+            for card in cards {
+                if let url = ManaKit.sharedInstance.imageURL(ofCard: card, imageType: .png) {
+                    urls.append(url)
+                }
+            }
+            
+            if let browser = IDMPhotoBrowser(photoURLs: urls/*, animatedFrom: view*/) {
+                browser.setInitialPageIndex(UInt(index))
+//                browser.useWhiteBackgroundColor = true
+                
+                browser.displayActionButton = true
+                browser.displayArrowButton = true
+                browser.displayCounterLabel = true
+                browser.usePopAnimation = true
+                browser.forceHideStatusBar = true
+                
+                browser.leftArrowImage = UIImage(bgIcon: .FAArrowLeft, orientation: .up, bgTextColor: UIColor.black, bgBackgroundColor: UIColor.clear, topIcon: .FAArrowLeft, topTextColor: UIColor.black, bgLarge: true, size: CGSize(width: 30, height: 30))
+                browser.rightArrowImage = UIImage(bgIcon: .FAArrowRight, orientation: .up, bgTextColor: UIColor.black, bgBackgroundColor: UIColor.clear, topIcon: .FAArrowRight, topTextColor: UIColor.black, bgLarge: true, size: CGSize(width: 30, height: 30))
+//                browser.leftArrowSelectedImage = [UIImage imageNamed:@"IDMPhotoBrowser_customArrowLeftSelected.png"];
+//                browser.rightArrowSelectedImage = [UIImage imageNamed:@"IDMPhotoBrowser_customArrowRightSelected.png"];
+                browser.doneButtonImage = UIImage(bgIcon: .FAWindowClose, orientation: .up, bgTextColor: UIColor.black, bgBackgroundColor: UIColor.clear, topIcon: .FAWindowClose, topTextColor: UIColor.black, bgLarge: true, size: CGSize(width: 30, height: 30))
+                
+                present(browser, animated: true, completion: nil)
+            }
         }
     }
 }

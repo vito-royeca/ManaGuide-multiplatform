@@ -28,6 +28,17 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>github.com</key>
+			<dict>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<false/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSTemporaryExceptionMinimumTLSVersion</key>
+				<string>TLSv1.1</string>
+			</dict>
 			<key>gamepedia.com</key>
 			<dict>
 				<key>NSExceptionRequiresForwardSecrecy</key>
@@ -93,11 +104,28 @@
 			</array>
 		</dict>
 		<dict>
+			<key>CFBundleURLName</key>
+			<string></string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>twitterkit-saMFOtPPU7OPGofIYoVYEmzFx</string>
+			</array>
+		</dict>
+		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.976672670197-h4fs0sbbfboi92hsbvjr4gamepnas08m</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>oauth-managuide</string>
+				<string>com.jovitoroyeca.ManaGuide</string>
 			</array>
 		</dict>
 	</array>

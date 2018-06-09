@@ -12,7 +12,11 @@ import FBSDKLoginKit
 import Firebase
 import GoogleSignIn
 import MBProgressHUD
+import OAuthSwift
 import PromiseKit
+import SafariServices
+import TwitterCore
+import TwitterKit
 
 class LoginViewController: UIViewController {
 
@@ -199,8 +203,54 @@ class LoginViewController: UIViewController {
         }
     }
     
+    @IBAction func twitterAction(_ sender: UIButton) {
+        MBProgressHUD.showAdded(to: self.view, animated: true)
+        
+        firstly {
+            self.twitterLogin()
+        }.then { (credential: AuthCredential) in
+            self.authSignInandRetrieveData(credential: credential)
+        }.then { (authResult: AuthDataResult?) in
+            self.updateUser(email: authResult?.user.email, photoURL: authResult?.user.photoURL, displayName: authResult?.user.displayName)
+        }.done {
+            MBProgressHUD.hide(for: self.view, animated: true)
+            
+            self.dismiss(animated: true, completion: {
+                if let actionAfterLogin = self.actionAfterLogin {
+                    actionAfterLogin(true)
+                }
+            })
+        }.catch { error in
+            MBProgressHUD.hide(for: self.view, animated: true)
+            self.showMessage(title: "Error", message: error.localizedDescription)
+        }
+    }
+    
     @IBAction func googleAction(_ sender: UIButton) {
         GIDSignIn.sharedInstance().signIn()
+    }
+    
+    @IBAction func githubAction(_ sender: UIButton) {
+        MBProgressHUD.showAdded(to: self.view, animated: true)
+        
+        firstly {
+            self.githubLogin()
+        }.then { (credential: AuthCredential) in
+            self.authSignInandRetrieveData(credential: credential)
+        }.then { (authResult: AuthDataResult?) in
+            self.updateUser(email: authResult?.user.email, photoURL: authResult?.user.photoURL, displayName: authResult?.user.displayName)
+        }.done {
+            MBProgressHUD.hide(for: self.view, animated: true)
+            
+            self.dismiss(animated: true, completion: {
+                if let actionAfterLogin = self.actionAfterLogin {
+                    actionAfterLogin(true)
+                }
+            })
+        }.catch { error in
+                MBProgressHUD.hide(for: self.view, animated: true)
+                self.showMessage(title: "Error", message: error.localizedDescription)
+        }
     }
     
     // MARK: Overrides
@@ -260,6 +310,20 @@ class LoginViewController: UIViewController {
         FirebaseManager.sharedInstance.monitorUser()
     }
     
+    func generateRandomString(length: Int) -> String {
+        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        let count = UInt32(letters.count)
+        
+        var randomString = ""
+        for _ in 0..<length {
+            let rand = arc4random_uniform(count)
+            let idx = letters.index(letters.startIndex, offsetBy: Int(rand))
+            let letter = letters[idx]
+            randomString += String(letter)
+        }
+        return randomString
+    }
+    
     // MARK: Promises
     func authSignIn(with email: String, password: String) -> Promise<AuthDataResult?> {
         return Promise { seal  in
@@ -317,11 +381,61 @@ class LoginViewController: UIViewController {
                 if let error = error {
                     seal.reject(error)
                 } else {
-                    let credential = FacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
-                    seal.fulfill(credential)
+                    if let result = result {
+                        if result.isCancelled {
+                            let error = NSError(domain: "400", code: 400, userInfo: [NSLocalizedDescriptionKey: "Login cancelled."])
+                            seal.reject(error)
+                        } else {
+                            let credential = FacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
+                            seal.fulfill(credential)
+                        }
+                    }
                 }
                 
             })
+        }
+    }
+    
+    func twitterLogin() -> Promise<AuthCredential> {
+        return Promise { seal in
+            TWTRTwitter.sharedInstance().logIn { session, error in
+                if let error = error {
+                    seal.reject(error)
+                } else {
+                    if let session = session {
+                        let credential = TwitterAuthProvider.credential(withToken: session.authToken, secret: session.authTokenSecret)
+                        seal.fulfill(credential)
+                    }
+                }
+            }
+        }
+    }
+    
+    func githubLogin() -> Promise<AuthCredential> {
+        return Promise { seal in
+            let oauthswift = OAuth2Swift(
+                consumerKey:    "02c51a1f8d2f22f089d7",
+                consumerSecret: "36d40c833a2fb134d90ee5351b3a9684e29bb50a",
+                authorizeUrl:   "https://github.com/login/oauth/authorize",
+                accessTokenUrl: "https://github.com/login/oauth/access_token",
+                responseType:   "code"
+            )
+            let safari = SafariURLHandler(viewController: self, oauthSwift: oauthswift)//OAuthSwiftOpenURLExternally.sharedInstance
+            
+            safari.delegate = self
+            oauthswift.authorizeURLHandler = safari
+            
+            let state = generateRandomString(length: 20)
+            let _ = oauthswift.authorize(
+                withCallbackURL: URL(string: "oauth-managuide://oauth-callback/managuide")!, scope: "user,repo", state: state,
+                success: { credential, response, parameters in
+                    let c = GitHubAuthProvider.credential(withToken: credential.oauthToken)
+                    seal.fulfill(c)
+                },
+                failure: { error in
+                    seal.reject(error)
+                }
+            )
         }
     }
     
@@ -396,3 +510,10 @@ extension LoginViewController : GIDSignInUIDelegate {
     }
 }
 
+// MARK: SFSafariViewControllerDelegate
+extension LoginViewController : SFSafariViewControllerDelegate{
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        // when the user cancels the OAuth safari view
+        MBProgressHUD.hide(for: self.view, animated: true)
+    }
+}

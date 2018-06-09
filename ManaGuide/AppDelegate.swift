@@ -14,6 +14,7 @@ import FBSDKCoreKit
 import GoogleSignIn
 import ManaKit
 import MMDrawerController
+import OAuthSwift
 import TwitterKit
 
 @UIApplicationMain
@@ -81,8 +82,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if url.absoluteString.hasPrefix("fb") {
             handled = FBSDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
+        } else if url.absoluteString.hasPrefix("twitterkit") {
+            handled = TWTRTwitter.sharedInstance().application(app, open: url, options: options)
         } else if url.absoluteString.hasPrefix("com.googleusercontent.apps") {
             handled = GIDSignIn.sharedInstance().handle(url, sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String, annotation: options[UIApplicationOpenURLOptionsKey.annotation])
+        } else if (url.host == "oauth-callback") {
+            OAuthSwift.handle(url: url)
+            handled = true
         }
         
         return handled

@@ -130,7 +130,7 @@ class SearchViewController: BaseViewController {
         
         switch searchDisplayBy {
         case "list":
-            dataSource = getDataSource(request != nil ? request : createSearchRequeat())
+            dataSource = getDataSource(request != nil ? request : createSearchRequest())
             updateSections()
             statusLabel.text = "  \(dataSource!.all().count) items"
         case "grid":
@@ -329,7 +329,7 @@ class SearchViewController: BaseViewController {
         searchKeyword = searchController.searchBar.text
         statusLabel.text = "  Loading..."
         
-        dataSource = getDataSource(createSearchRequeat())
+        dataSource = getDataSource(createSearchRequest())
         updateSections()
         
         tableView.reloadData()
@@ -401,7 +401,7 @@ class SearchViewController: BaseViewController {
         return values
     }
     
-    func createSearchRequeat() -> NSFetchRequest<NSFetchRequestResult>? {
+    func createSearchRequest() -> NSFetchRequest<NSFetchRequestResult>? {
         let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
         var predicate: NSPredicate?
         
@@ -691,7 +691,7 @@ extension SearchViewController : UITableViewDelegate {
         
         switch searchDisplayBy {
         case "grid":
-            dataSource = getDataSource(request != nil ? request : createSearchRequeat())
+            dataSource = getDataSource(request != nil ? request : createSearchRequest())
             updateSections()
         default:
             ()

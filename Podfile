@@ -16,6 +16,7 @@ def default_pods
     pod 'FirebaseUI/Storage'
     pod 'Font-Awesome-Swift', :git => 'https://github.com/Vaberer/Font-Awesome-Swift', :branch => 'swift-3'
     pod 'GoogleSignIn'
+    pod 'IDMPhotoBrowser'
     pod 'InAppSettingsKit'
     pod 'iCarousel'
     pod 'Kanna', :git => 'https://github.com/tid-kijyun/Kanna', :branch => 'feature/v3.0.0'
