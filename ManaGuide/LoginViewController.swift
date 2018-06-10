@@ -414,11 +414,11 @@ class LoginViewController: UIViewController {
     func githubLogin() -> Promise<AuthCredential> {
         return Promise { seal in
             let oauthswift = OAuth2Swift(
-                consumerKey:    "02c51a1f8d2f22f089d7",
-                consumerSecret: "36d40c833a2fb134d90ee5351b3a9684e29bb50a",
-                authorizeUrl:   "https://github.com/login/oauth/authorize",
-                accessTokenUrl: "https://github.com/login/oauth/access_token",
-                responseType:   "code"
+                consumerKey:    kGitHubOAuthConsumerKey,
+                consumerSecret: kGitHubOAuthConsumerSecret,
+                authorizeUrl:   kGitHubOAuthAuthorizeUrl,
+                accessTokenUrl: kGitHubOAuthAccessTokenUrl,
+                responseType:   kGitHubOAuthResponseType
             )
             let safari = SafariURLHandler(viewController: self, oauthSwift: oauthswift)//OAuthSwiftOpenURLExternally.sharedInstance
             

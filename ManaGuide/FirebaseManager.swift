@@ -13,7 +13,6 @@ import ManaKit
 
 let kMaxFetchTopViewed = UInt(10)
 let kMaxFetchTopRated  = UInt(10)
-let kCardViewUpdatedNotification = "kCardViewUpdatedNotification"
 
 class FirebaseManager: NSObject {
     private var userRef: DatabaseReference?

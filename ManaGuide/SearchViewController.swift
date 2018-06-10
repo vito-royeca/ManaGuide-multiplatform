@@ -30,17 +30,11 @@ class SearchViewController: BaseViewController {
     var searchKeyword: String?
     
     // MARK: Outlets
-    @IBOutlet weak var leftMenuButton: UIBarButtonItem!
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet var statusLabel: UILabel!
     
-    
     // MARK: Actions
-    @IBAction func leftMenuAction(_ sender: UIBarButtonItem) {
-        
-    }
-
     @IBAction func rightMenuAction(_ sender: UIBarButtonItem) {
         if request != nil {
             showSettingsMenu(file: "SearchResults")
@@ -56,7 +50,11 @@ class SearchViewController: BaseViewController {
         // Do any additional setup after loading the view.
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
-        
+        if title == "Favorites" {
+            NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object:nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(self.updateFavorites(_:)), name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object: nil)
+        }
+
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.tintColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
@@ -118,11 +116,6 @@ class SearchViewController: BaseViewController {
         }
     }
 
-//    - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-//    {
-//    [searchBar resignFirstResponder];
-//    }
-    
     // MARK: Custom methods
     func updateDataDisplay() {
         let defaults = defaultsValue()
@@ -135,6 +128,7 @@ class SearchViewController: BaseViewController {
             statusLabel.text = "  \(dataSource!.all().count) items"
         case "grid":
             tableView.dataSource = self
+            statusLabel.text = "  0 items"
         default:
             ()
         }
@@ -326,26 +320,40 @@ class SearchViewController: BaseViewController {
         }
     }
 
+    func updateFavorites(_ notification: Notification) {
+        if let _ = notification.userInfo as? [String: Any] {
+            let newRequest:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+            let names = FirebaseManager.sharedInstance.favorites.map({ $0.id })
+            
+            newRequest.predicate = NSPredicate(format: "id IN %@", names)
+            newRequest.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                       NSSortDescriptor(key: "name", ascending: true),
+                                       NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+            self.request = newRequest
+            updateDataDisplay()
+        }
+    }
+    
     func doSearch() {
         searchKeyword = searchController.searchBar.text
         statusLabel.text = "  Loading..."
-        
+
         dataSource = getDataSource(createSearchRequest())
         updateSections()
+
+        let defaults = defaultsValue()
+        if let searchDisplayBy = defaults["searchDisplayBy"] as? String {
+            switch searchDisplayBy {
+            case "list":
+                tableView.reloadData()
+            case "grid":
+                collectionView?.reloadData()
+            default:
+                ()
+            }
+        }
         
-        tableView.reloadData()
         statusLabel.text = "  \(dataSource!.all().count) items"
-        
-        
-//        DispatchQueue.global(qos: .background).async {
-//            self.dataSource = self.getDataSource(self.createSearchRequeat())
-//            self.updateSections()
-//
-//            DispatchQueue.main.async {
-//                self.tableView.reloadData()
-//                self.statusLabel.text = "  \(self.dataSource!.all().count) items"
-//            }
-//        }
     }
 
     // MARK: Search filters
@@ -403,7 +411,7 @@ class SearchViewController: BaseViewController {
     }
     
     func createSearchRequest() -> NSFetchRequest<NSFetchRequestResult>? {
-        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+        let newRequest:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
         var predicate: NSPredicate?
         
         let defaults = defaultsValue()
@@ -417,28 +425,34 @@ class SearchViewController: BaseViewController {
             predicate = kp
         }
         
-        // Skip other filters for now...
-//        if let mcp = createManaCostPredicate() {
-//            if let p = predicate {
-//                predicate = NSCompoundPredicate.init(andPredicateWithSubpredicates: [p, mcp])
-//            } else {
-//                predicate = mcp
-//            }
-//        }
-        
         // create a negative predicate, i.e. search for cards with nil name which results to zero
-        if predicate == nil {
+        if predicate == nil && request == nil {
             predicate = NSPredicate(format: "name = nil")
         }
         
-        print("\(predicate!)")
-        request.predicate = predicate
-        request.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
-                                   NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy),
-                                   NSSortDescriptor(key: "set.releaseDate", ascending: searchOrderBy),
-                                   NSSortDescriptor(key: "numberOrder", ascending: searchOrderBy)]
+        if let request = request {
+            var predicates = [NSPredicate]()
+            
+            if let predicate = predicate {
+                predicates.append(predicate)
+            }
+            if let predicate = request.predicate {
+                predicates.append(predicate)
+            }
+            
+            if predicates.count > 0 {
+                predicate = NSCompoundPredicate.init(andPredicateWithSubpredicates: predicates)
+            }
+        }
         
-        return request
+        print("\(predicate!)")
+        newRequest.predicate = predicate
+        newRequest.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
+                                      NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy),
+                                      NSSortDescriptor(key: "set.releaseDate", ascending: searchOrderBy),
+                                      NSSortDescriptor(key: "numberOrder", ascending: searchOrderBy)]
+        
+        return newRequest
     }
     
     func createKeywordPredicate() -> NSPredicate? {
@@ -456,7 +470,7 @@ class SearchViewController: BaseViewController {
             if let text = searchKeyword {
                 if text.count == 1 {
                     subpredicates.append(NSPredicate(format: "name BEGINSWITH[cd] %@", text))
-                } else {
+                } else if text.count > 1{
                     subpredicates.append(NSPredicate(format: "name CONTAINS[cd] %@", text))
                 }
             }
@@ -465,7 +479,7 @@ class SearchViewController: BaseViewController {
             if let text = searchKeyword {
                 if text.count == 1 {
                     subpredicates.append(NSPredicate(format: "text BEGINSWITH[cd] %@ OR originalText BEGINSWITH[cd] %@", text, text))
-                } else {
+                } else if text.count > 1{
                     subpredicates.append(NSPredicate(format: "text CONTAINS[cd] %@ OR originalText CONTAINS[cd] %@", text, text))
                 }
             }
@@ -474,14 +488,16 @@ class SearchViewController: BaseViewController {
             if let text = searchKeyword {
                 if text.count == 1 {
                     subpredicates.append(NSPredicate(format: "flavor BEGINSWITH[cd] %@", text))
-                } else {
+                } else if text.count > 1{
                     subpredicates.append(NSPredicate(format: "flavor CONTAINS[cd] %@", text))
                 }
             }
         }
         
-        if subpredicates.count > 0 {
+        if subpredicates.count > 1 {
             predicate = NSCompoundPredicate(orPredicateWithSubpredicates: subpredicates)
+        } else {
+            predicate = subpredicates.first
         }
         
         return predicate

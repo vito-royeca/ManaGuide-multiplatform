@@ -180,6 +180,8 @@ class CardViewController: BaseViewController {
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kCardViewUpdatedNotification), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateCardViews(_:)), name: NSNotification.Name(rawValue: kCardViewUpdatedNotification), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object:nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateFavorites(_:)), name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object: nil)
         
         if let cards = cards {
             let card = cards[cardIndex]
@@ -267,6 +269,10 @@ class CardViewController: BaseViewController {
         }
     }
     
+    func updateFavorites(_ notification: Notification) {
+        tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
+    }
+
     func toggleCardFavorite() {
         if let cards = cards {
             let card = cards[cardIndex]
@@ -282,14 +288,15 @@ class CardViewController: BaseViewController {
             MBProgressHUD.showAdded(to: view, animated: true)
             FirebaseManager.sharedInstance.toggleCardFavorite(card.id!, favorite: !isFavorite, completion: {
                 MBProgressHUD.hide(for: self.view, animated: true)
-                self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
+                
+                let userInfo = ["card": card,
+                                "favorite": isFavorite] as [String : Any]
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object: nil, userInfo: userInfo)
             })
         }
     }
     
     func update(rating: Double) {
-        
-        
         let alertController = UIAlertController(title: "Rate this Card", message: nil, preferredStyle: .alert)
         let cosmosView = CosmosView(frame: CGRect(x: 0, y: 0, width: 200, height: 30))
         let confirmAction = UIAlertAction(title: "Submit", style: .default) { (_) in }
@@ -1469,23 +1476,7 @@ extension CardViewController : iCarouselDelegate {
 
 // MARK: IDMPhotoBrowserDelegate
 extension CardViewController : IDMPhotoBrowserDelegate {
-//    func photoBrowser(_ photoBrowser: IDMPhotoBrowser,  didShowPhotoAt index: UInt) {
-//        
-//        // pre-download the next image
-//        if let cards = cards {
-//            if index < cards.count - 1 {
-//                let card = cards[Int(index + 1)]
-//
-//                firstly {
-//                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-//                }.catch { error in
-//                    print("\(error)")
-//                }
-//            }
-//        }
-//    }
-    
-    func photoBrowser(_ photoBrowser: IDMPhotoBrowser, willDismissAtPageIndex index: UInt) {
+    func photoBrowser(_ photoBrowser: IDMPhotoBrowser,  didShowPhotoAt index: UInt) {
         let i = Int(index)
         
         if i != cardIndex {

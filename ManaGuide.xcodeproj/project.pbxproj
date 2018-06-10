@@ -37,6 +37,9 @@
 		11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */; };
 		11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */; };
 		11448A6020CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */; };
+		11448A6220CD3849008EFC40 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A6120CD3849008EFC40 /* Constants.swift */; };
+		11448A6320CD3849008EFC40 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A6120CD3849008EFC40 /* Constants.swift */; };
+		11448A6420CD3849008EFC40 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A6120CD3849008EFC40 /* Constants.swift */; };
 		1147B7571F223607004EF296 /* SetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7561F223607004EF296 /* SetsViewController.swift */; };
 		1147B7581F223607004EF296 /* SetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7561F223607004EF296 /* SetsViewController.swift */; };
 		1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7591F22379F004EF296 /* BaseViewController.swift */; };
@@ -113,6 +116,7 @@
 		1140F0CB1F42CA500023E107 /* FCCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FCCard.swift; sourceTree = "<group>"; };
 		1140F0D01F42CC020023E107 /* FirebaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManaGuidePhoto.swift; sourceTree = "<group>"; };
+		11448A6120CD3849008EFC40 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		1147B7561F223607004EF296 /* SetsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetsViewController.swift; sourceTree = "<group>"; };
 		1147B7591F22379F004EF296 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		1147B7621F224198004EF296 /* SetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetViewController.swift; sourceTree = "<group>"; };
@@ -280,6 +284,7 @@
 			children = (
 				1140F0D01F42CC020023E107 /* FirebaseManager.swift */,
 				11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */,
+				11448A6120CD3849008EFC40 /* Constants.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -872,6 +877,7 @@
 				1165CD791F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
 				110BB52D1F20892B00086841 /* SearchViewController.swift in Sources */,
 				118281B120B67FA500865172 /* AccountViewController.swift in Sources */,
+				11448A6220CD3849008EFC40 /* Constants.swift in Sources */,
 				1140F0D11F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
@@ -896,6 +902,7 @@
 				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
 				111D5A6D20AF57590046285B /* ArtistsViewController.swift in Sources */,
+				11448A6320CD3849008EFC40 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -914,6 +921,7 @@
 				1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */,
 				1140F0D31F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				118281B320B67FA500865172 /* AccountViewController.swift in Sources */,
+				11448A6420CD3849008EFC40 /* Constants.swift in Sources */,
 				11E4374B1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
 				11448A6020CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */,
