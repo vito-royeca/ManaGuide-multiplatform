@@ -34,9 +34,9 @@
 		1140F0D11F42CC020023E107 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0D01F42CC020023E107 /* FirebaseManager.swift */; };
 		1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0D01F42CC020023E107 /* FirebaseManager.swift */; };
 		1140F0D31F42CC020023E107 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0D01F42CC020023E107 /* FirebaseManager.swift */; };
-		11448A5220CCB47B008EFC40 /* UIImage+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5120CCB47B008EFC40 /* UIImage+Utilities.swift */; };
-		11448A5320CCB47B008EFC40 /* UIImage+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5120CCB47B008EFC40 /* UIImage+Utilities.swift */; };
-		11448A5420CCB47B008EFC40 /* UIImage+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5120CCB47B008EFC40 /* UIImage+Utilities.swift */; };
+		11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */; };
+		11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */; };
+		11448A6020CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */; };
 		1147B7571F223607004EF296 /* SetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7561F223607004EF296 /* SetsViewController.swift */; };
 		1147B7581F223607004EF296 /* SetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7561F223607004EF296 /* SetsViewController.swift */; };
 		1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7591F22379F004EF296 /* BaseViewController.swift */; };
@@ -112,7 +112,7 @@
 		1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1140F0CB1F42CA500023E107 /* FCCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FCCard.swift; sourceTree = "<group>"; };
 		1140F0D01F42CC020023E107 /* FirebaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
-		11448A5120CCB47B008EFC40 /* UIImage+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Utilities.swift"; sourceTree = "<group>"; };
+		11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManaGuidePhoto.swift; sourceTree = "<group>"; };
 		1147B7561F223607004EF296 /* SetsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetsViewController.swift; sourceTree = "<group>"; };
 		1147B7591F22379F004EF296 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		1147B7621F224198004EF296 /* SetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetViewController.swift; sourceTree = "<group>"; };
@@ -279,7 +279,7 @@
 			isa = PBXGroup;
 			children = (
 				1140F0D01F42CC020023E107 /* FirebaseManager.swift */,
-				11448A5120CCB47B008EFC40 /* UIImage+Utilities.swift */,
+				11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -873,13 +873,13 @@
 				110BB52D1F20892B00086841 /* SearchViewController.swift in Sources */,
 				118281B120B67FA500865172 /* AccountViewController.swift in Sources */,
 				1140F0D11F42CC020023E107 /* FirebaseManager.swift in Sources */,
+				11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
 				1140F0CC1F42CA500023E107 /* FCCard.swift in Sources */,
 				1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */,
 				111D5A6C20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */,
 				1165CD731F377395006CC433 /* MoreViewController.swift in Sources */,
-				11448A5220CCB47B008EFC40 /* UIImage+Utilities.swift in Sources */,
 				110BB52A1F20891D00086841 /* FeaturedViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -890,9 +890,9 @@
 			files = (
 				1150BCEF20B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */,
-				11448A5320CCB47B008EFC40 /* UIImage+Utilities.swift in Sources */,
 				11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				118281B220B67FA500865172 /* AccountViewController.swift in Sources */,
+				11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
 				111D5A6D20AF57590046285B /* ArtistsViewController.swift in Sources */,
@@ -915,13 +915,13 @@
 				1140F0D31F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				118281B320B67FA500865172 /* AccountViewController.swift in Sources */,
 				11E4374B1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
+				11448A6020CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */,
 				1147B7641F224198004EF296 /* SetViewController.swift in Sources */,
 				11B2AA341F29DE490067E833 /* CardViewController.swift in Sources */,
 				111D5A6E20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				1165CD741F377395006CC433 /* MoreViewController.swift in Sources */,
 				1147B75B1F22379F004EF296 /* BaseViewController.swift in Sources */,
-				11448A5420CCB47B008EFC40 /* UIImage+Utilities.swift in Sources */,
 				110BB52B1F20891D00086841 /* FeaturedViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -585,25 +585,23 @@ class CardViewController: BaseViewController {
     
     func showImage(ofCard card: CMCard, inImageView imageView: UIImageView) {
         if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
-            imageView.image = image.roundCornered(radius: 22.0)
+            imageView.image = image
         } else {
             imageView.image = ManaKit.sharedInstance.cardBack(card)
             
             firstly {
                 ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
             }.done { (image: UIImage?) in
-                var roundCorneredImage: UIImage?
                 
                 if let image = image {
-                    roundCorneredImage = image.roundCornered(radius: 22.0)
+                    UIView.transition(with: imageView,
+                                      duration: 1.0,
+                                      options: .transitionCrossDissolve,
+                                      animations: {
+                                          imageView.image = image
+                                      },
+                                      completion: nil)
                 }
-                UIView.transition(with: imageView,
-                                  duration: 1.0,
-                                  options: .transitionCrossDissolve,
-                                  animations: {
-                                      imageView.image = roundCorneredImage
-                                  },
-                                  completion: nil)
             }.catch { error in
                 print("\(error)")
             }
@@ -749,12 +747,6 @@ extension CardViewController : UITableViewDataSource {
                         if let imageView = carouselView.itemView(at: cardIndex) as? UIImageView,
                             let cards = cards {
                             let card = cards[cardIndex]
-                            
-//                            imageView.layer.shadowColor = UIColor(red:0.00, green:0.00, blue:0.00, alpha:0.45).cgColor
-//                            imageView.layer.shadowOffset = CGSize(width: 1, height: 1)
-//                            imageView.layer.shadowOpacity = 1
-//                            imageView.layer.shadowRadius = 6.0
-//                            imageView.clipsToBounds = false
                             showImage(ofCard: card, inImageView: imageView)
                         }
                     }
@@ -1419,6 +1411,13 @@ extension CardViewController : iCarouselDataSource {
             let width = tableView.frame.size.width - 40
             imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: width, height: height))
             imageView!.contentMode = .scaleAspectFit
+
+            // add drop shadow
+            imageView!.layer.shadowColor = UIColor(red:0.00, green:0.00, blue:0.00, alpha:0.45).cgColor
+            imageView!.layer.shadowOffset = CGSize(width: 1, height: 1)
+            imageView!.layer.shadowOpacity = 1
+            imageView!.layer.shadowRadius = 6.0
+            imageView!.clipsToBounds = false
         }
         
         if let imageView = imageView,
@@ -1439,15 +1438,13 @@ extension CardViewController : iCarouselDelegate {
     
     func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
         if let cards = cards {
-            var urls = [URL]()
+            var photos = [ManaGuidePhoto]()
             
             for card in cards {
-                if let url = ManaKit.sharedInstance.imageURL(ofCard: card, imageType: .normal) {
-                    urls.append(url)
-                }
+                photos.append(ManaGuidePhoto(card: card))
             }
             
-            if let browser = IDMPhotoBrowser(photoURLs: urls/*, animatedFrom: view*/) {
+            if let browser = IDMPhotoBrowser(photos: photos) {
                 browser.setInitialPageIndex(UInt(index))
 
 //                browser.useWhiteBackgroundColor = true
@@ -1489,8 +1486,11 @@ extension CardViewController : IDMPhotoBrowserDelegate {
     }
     
     func photoBrowser(_ photoBrowser: IDMPhotoBrowser, willDismissAtPageIndex index: UInt) {
-        movePhotoTo(index: Int(index))
-        tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.image.rawValue)], with: .none)
+        let i = Int(index)
+        
+        if i != cardIndex {
+            movePhotoTo(index: i)
+            tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.image.rawValue)], with: .none)
+        }
     }
 }
-

@@ -191,7 +191,6 @@ class SearchViewController: BaseViewController {
                     if let card = card,
                         let imageView = cell.viewWithTag(100) as? UIImageView {
                         
-                        
                         if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
                             imageView.image = image
                         } else {
@@ -200,15 +199,17 @@ class SearchViewController: BaseViewController {
                             firstly {
                                 ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
                             }.done { (image: UIImage?) in
-                                UIView.transition(with: imageView,
-                                                  duration: 1.0,
-                                                  options: .transitionFlipFromLeft,
-                                                  animations: {
-                                                      imageView.image = image
-                                                  },
-                                                  completion: nil)
+                                if let image = image {
+                                    UIView.transition(with: imageView,
+                                                      duration: 1.0,
+                                                      options: .transitionFlipFromLeft,
+                                                      animations: {
+                                                          imageView.image = image
+                                                      },
+                                                      completion: nil)
+                                }
                             }.catch { error in
-                                    
+                                print("\(error)")
                             }
                         }
                     }
