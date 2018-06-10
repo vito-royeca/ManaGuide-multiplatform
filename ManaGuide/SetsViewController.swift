@@ -314,7 +314,8 @@ extension SetsViewController : DATASourceDelegate {
 // MARK: UISearchResultsUpdating
 extension SetsViewController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        doSearch()
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
+        perform(#selector(doSearch), with: nil, afterDelay: 1.0)
     }
 }
 

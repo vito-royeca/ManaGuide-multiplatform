@@ -12,6 +12,9 @@ import ManaKit
 
 class ArtistsViewController: UIViewController {
 
+    // MARK: Constants
+    let searchController = UISearchController(searchResultsController: nil)
+
     // MARK: Variables
     var dataSource: DATASource?
     var sectionIndexTitles = [String]()
@@ -25,6 +28,19 @@ class ArtistsViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchBar.tintColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
+        definesPresentationContext = true
+        
+        if #available(iOS 11.0, *) {
+            navigationItem.searchController = searchController
+            navigationItem.hidesSearchBarWhenScrolling = false
+        } else {
+            tableView.tableHeaderView = searchController.searchBar
+        }
+        tableView.keyboardDismissMode = .onDrag
+        
         dataSource = getDataSource(nil)
         updateSections()
         tableView.reloadData()
@@ -107,6 +123,31 @@ class ArtistsViewController: UIViewController {
         sectionTitles.sort()
     }
 
+    func doSearch() {
+        var newRequest:NSFetchRequest<NSFetchRequestResult>?
+        
+        if let text = searchController.searchBar.text {
+            if text.count > 0 {
+                newRequest = NSFetchRequest(entityName: "CMArtist")
+                
+                newRequest!.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                               NSSortDescriptor(key: "lastName", ascending: true),
+                                               NSSortDescriptor(key: "firstName", ascending: true)]
+                
+                if text.count == 1 {
+                    newRequest!.predicate = NSPredicate(format: "firstName BEGINSWITH[cd] %@ OR lastName BEGINSWITH[cd] %@", text, text)
+                } else if text.count > 1 {
+                    newRequest!.predicate = NSPredicate(format: "firstName CONTAINS[cd] %@ OR lastName CONTAINS[cd] %@", text, text)
+                }
+                dataSource = getDataSource(newRequest)
+                tableView.reloadData()
+                
+            } else {
+                dataSource = getDataSource(nil)
+                tableView.reloadData()
+            }
+        }
+    }
 }
 
 // MARK: UITableViewDelegate
@@ -148,6 +189,15 @@ extension ArtistsViewController : DATASourceDelegate {
         return sectionIndex
     }
 }
+
+// MARK: UISearchResultsUpdating
+extension ArtistsViewController : UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
+        perform(#selector(doSearch), with: nil, afterDelay: 1.0)
+    }
+}
+
 
 
 
