@@ -41,6 +41,7 @@ class ComprehensiveRulesViewController: UIViewController {
         } else {
             tableView.tableHeaderView = searchController.searchBar
         }
+        tableView.keyboardDismissMode = .onDrag
         
         if request == nil {
             request = NSFetchRequest(entityName: "CMRule")

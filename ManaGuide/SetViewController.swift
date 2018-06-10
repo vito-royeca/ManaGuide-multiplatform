@@ -154,11 +154,16 @@ class SetViewController: BaseViewController {
                                 firstly {
                                     ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
                                 }.done { (image: UIImage?) in
+                                    var roundCorneredImage: UIImage?
+                                    
+                                    if let image = image {
+                                        roundCorneredImage = image.roundCornered(radius: 22.0)
+                                    }
                                     UIView.transition(with: imageView,
                                                       duration: 1.0,
                                                       options: .transitionFlipFromLeft,
                                                       animations: {
-                                                          imageView.image = image
+                                                          imageView.image = roundCorneredImage
                                                       },
                                                       completion: nil)
                                 }.catch { error in

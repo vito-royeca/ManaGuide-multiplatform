@@ -31,7 +31,7 @@ class FirebaseManager: NSObject {
             changeRequest.photoURL = photoURL
             changeRequest.commitChanges { (error) in
                 if let error = error {
-                    print(error.localizedDescription)
+                    completion(error)
                 } else {
                     let ref = Database.database().reference().child("users").child(user.uid)
                     
@@ -49,12 +49,15 @@ class FirebaseManager: NSObject {
                             return TransactionResult.success(withValue: currentData)
                             
                         } else {
-                            ref.setValue(["displayName": displayName ?? ""])
-                            return TransactionResult.success(withValue: currentData)
+                            return TransactionResult.abort()
                         }
                         
                     }) { (error, committed, snapshot) in
-                        completion(error)
+                        if committed {
+                            completion(error)
+                        } else {
+                            self.updateUser(email: email, photoURL: photoURL, displayName: displayName, completion: completion)
+                        }
                     }
                 }
             }
@@ -64,39 +67,39 @@ class FirebaseManager: NSObject {
     }
 
     func updateCardRatings(_ key: String) {
-        let ref = Database.database().reference().child("cards").child(key)
-        
-        ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-            if var post = currentData.value as? [String : Any] {
-                var views = post[FCCard.Keys.Views] as? Int ?? 0
-                views += 1
-                post[FCCard.Keys.Views] = views
-                
-                // Set value and report transaction success
-                currentData.value = post
-                return TransactionResult.success(withValue: currentData)
-                
-            } else {
-                ref.setValue([FCCard.Keys.Views: 1])
-                return TransactionResult.success(withValue: currentData)
-            }
-            
-        }) { (error, committed, snapshot) in
-            if let snapshot = snapshot {
-                let fcard = FCCard(snapshot: snapshot)
-                let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-                request.predicate = NSPredicate(format: "id == %@", snapshot.key)
-                
-                if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
-                    if let card = result.first {
-                        card.views = Int64(fcard.views == nil ? 0 : fcard.views!)
-                        try! ManaKit.sharedInstance.dataStack!.mainContext.save()
-                        
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: kCardViewUpdatedNotification), object: nil, userInfo: ["card": card])
-                    }
-                }
-            }
-        }
+//        let ref = Database.database().reference().child("cards").child(key)
+//
+//        ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+//            if var post = currentData.value as? [String : Any] {
+//                var views = post[FCCard.Keys.Views] as? Int ?? 0
+//                views += 1
+//                post[FCCard.Keys.Views] = views
+//
+//                // Set value and report transaction success
+//                currentData.value = post
+//                return TransactionResult.success(withValue: currentData)
+//
+//            } else {
+//                ref.setValue([FCCard.Keys.Views: 1])
+//                return TransactionResult.success(withValue: currentData)
+//            }
+//
+//        }) { (error, committed, snapshot) in
+//            if let snapshot = snapshot {
+//                let fcard = FCCard(snapshot: snapshot)
+//                let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+//                request.predicate = NSPredicate(format: "id == %@", snapshot.key)
+//
+//                if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
+//                    if let card = result.first {
+//                        card.views = Int64(fcard.views == nil ? 0 : fcard.views!)
+//                        try! ManaKit.sharedInstance.dataStack!.mainContext.save()
+//
+//                        NotificationCenter.default.post(name: Notification.Name(rawValue: kCardViewUpdatedNotification), object: nil, userInfo: ["card": card])
+//                    }
+//                }
+//            }
+//        }
     }
     
     func incrementCardViews(_ key: String) {
@@ -113,24 +116,28 @@ class FirebaseManager: NSObject {
                 return TransactionResult.success(withValue: currentData)
                 
             } else {
-                ref.setValue([FCCard.Keys.Views: 1])
-                return TransactionResult.success(withValue: currentData)
+                return TransactionResult.abort()
             }
             
         }) { (error, committed, snapshot) in
-            if let snapshot = snapshot {
-                let fcard = FCCard(snapshot: snapshot)
-                let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-                request.predicate = NSPredicate(format: "id == %@", snapshot.key)
-                
-                if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
-                    if let card = result.first {
-                        card.views = Int64(fcard.views == nil ? 0 : fcard.views!)
-                        try! ManaKit.sharedInstance.dataStack!.mainContext.save()
+            if committed {
+                if let snapshot = snapshot {
+                    let fcard = FCCard(snapshot: snapshot)
+                    let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                    request.predicate = NSPredicate(format: "id == %@", snapshot.key)
+                    
+                    if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
+                        if let card = result.first {
+                            card.views = Int64(fcard.views == nil ? 0 : fcard.views!)
+                            try! ManaKit.sharedInstance.dataStack!.mainContext.save()
 
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: kCardViewUpdatedNotification), object: nil, userInfo: ["card": card])
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: kCardViewUpdatedNotification), object: nil, userInfo: ["card": card])
+                        }
                     }
                 }
+            } else {
+                // retry again, if we were aborted from above
+                self.incrementCardViews(key)
             }
         }
     }
@@ -161,23 +168,29 @@ class FirebaseManager: NSObject {
                     return TransactionResult.success(withValue: currentData)
 
                 } else {
-                    userRef.setValue(["favorites": [key: true]])
-                    return TransactionResult.success(withValue: currentData)
+                    return TransactionResult.abort()
                 }
 
             }) { (error, committed, snapshot) in
-                if let snapshot = snapshot {
-                    if let value = snapshot.value as? [String : Any] {
-                        if let dict = value["favorites"] as? [String : Any] {
-                            let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-                            request.predicate = NSPredicate(format: "id IN %@", Array(dict.keys))
-                            
-                            if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
-                                self.favorites = result
-                                completion()
+                if committed {
+                    if let snapshot = snapshot {
+                        if let value = snapshot.value as? [String : Any] {
+                            if let dict = value["favorites"] as? [String : Any] {
+                                let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                                request.predicate = NSPredicate(format: "id IN %@", Array(dict.keys))
+                                
+                                if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
+                                    self.favorites = result
+                                }
+                            } else {
+                                self.favorites = [CMCard]()
                             }
                         }
                     }
+                    completion()
+                } else {
+                    // retry again, if we were aborted from above
+                    self.toggleCardFavorite(key, favorite: favorite, completion: completion)
                 }
             }
         }

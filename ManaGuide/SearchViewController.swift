@@ -68,13 +68,13 @@ class SearchViewController: BaseViewController {
         } else {
             tableView.tableHeaderView = searchController.searchBar
         }
+        tableView.keyboardDismissMode = .onDrag
         searchController.searchBar.placeholder = "Keyword"
         
         rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
         
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
-        tableView.keyboardDismissMode = .onDrag
         
         statusLabel.text = "  Loading..."
     }

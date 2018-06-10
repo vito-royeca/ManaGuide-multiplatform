@@ -585,23 +585,43 @@ class CardViewController: BaseViewController {
     
     func showImage(ofCard card: CMCard, inImageView imageView: UIImageView) {
         if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
-            imageView.image = image
+            imageView.image = image.roundCornered(radius: 22.0)
         } else {
             imageView.image = ManaKit.sharedInstance.cardBack(card)
             
             firstly {
                 ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
             }.done { (image: UIImage?) in
+                var roundCorneredImage: UIImage?
+                
+                if let image = image {
+                    roundCorneredImage = image.roundCornered(radius: 22.0)
+                }
                 UIView.transition(with: imageView,
                                   duration: 1.0,
                                   options: .transitionCrossDissolve,
                                   animations: {
-                                    imageView.image = image
+                                      imageView.image = roundCorneredImage
                                   },
                                   completion: nil)
             }.catch { error in
                 print("\(error)")
             }
+        }
+    }
+    
+    func movePhotoTo(index: Int) {
+        cardIndex = index
+        cardViewIncremented = false
+        
+        if let cards = cards {
+            let card = cards[cardIndex]
+            title = card.name
+        }
+        
+        if segmentedIndex == .image {
+            tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.pricing.rawValue),
+                                      IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
         }
     }
 }
@@ -729,6 +749,12 @@ extension CardViewController : UITableViewDataSource {
                         if let imageView = carouselView.itemView(at: cardIndex) as? UIImageView,
                             let cards = cards {
                             let card = cards[cardIndex]
+                            
+//                            imageView.layer.shadowColor = UIColor(red:0.00, green:0.00, blue:0.00, alpha:0.45).cgColor
+//                            imageView.layer.shadowOffset = CGSize(width: 1, height: 1)
+//                            imageView.layer.shadowOpacity = 1
+//                            imageView.layer.shadowRadius = 6.0
+//                            imageView.clipsToBounds = false
                             showImage(ofCard: card, inImageView: imageView)
                         }
                     }
@@ -1408,18 +1434,7 @@ extension CardViewController : iCarouselDataSource {
 // MARK: iCarouselDelegate
 extension CardViewController : iCarouselDelegate {
     func carouselCurrentItemIndexDidChange(_ carousel: iCarousel) {
-        cardIndex = carousel.currentItemIndex
-        cardViewIncremented = false
-        
-        if let cards = cards {
-            let card = cards[cardIndex]
-            title = card.name
-        }
-        
-        if segmentedIndex == .image {
-            tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.pricing.rawValue),
-                                      IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
-        }
+        movePhotoTo(index: carousel.currentItemIndex)
     }
     
     func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
@@ -1427,20 +1442,21 @@ extension CardViewController : iCarouselDelegate {
             var urls = [URL]()
             
             for card in cards {
-                if let url = ManaKit.sharedInstance.imageURL(ofCard: card, imageType: .png) {
+                if let url = ManaKit.sharedInstance.imageURL(ofCard: card, imageType: .normal) {
                     urls.append(url)
                 }
             }
             
             if let browser = IDMPhotoBrowser(photoURLs: urls/*, animatedFrom: view*/) {
                 browser.setInitialPageIndex(UInt(index))
+
 //                browser.useWhiteBackgroundColor = true
-                
                 browser.displayActionButton = true
                 browser.displayArrowButton = true
                 browser.displayCounterLabel = true
                 browser.usePopAnimation = true
                 browser.forceHideStatusBar = true
+                browser.delegate = self
                 
                 browser.leftArrowImage = UIImage(bgIcon: .FAArrowLeft, orientation: .up, bgTextColor: UIColor.black, bgBackgroundColor: UIColor.clear, topIcon: .FAArrowLeft, topTextColor: UIColor.black, bgLarge: true, size: CGSize(width: 30, height: 30))
                 browser.rightArrowImage = UIImage(bgIcon: .FAArrowRight, orientation: .up, bgTextColor: UIColor.black, bgBackgroundColor: UIColor.clear, topIcon: .FAArrowRight, topTextColor: UIColor.black, bgLarge: true, size: CGSize(width: 30, height: 30))
@@ -1451,6 +1467,30 @@ extension CardViewController : iCarouselDelegate {
                 present(browser, animated: true, completion: nil)
             }
         }
+    }
+}
+
+// MARK: IDMPhotoBrowserDelegate
+extension CardViewController : IDMPhotoBrowserDelegate {
+    func photoBrowser(_ photoBrowser: IDMPhotoBrowser,  didShowPhotoAt index: UInt) {
+        
+        // pre-download the next image
+        if let cards = cards {
+            if index < cards.count - 1 {
+                let card = cards[Int(index + 1)]
+
+                firstly {
+                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+                }.catch { error in
+                    print("\(error)")
+                }
+            }
+        }
+    }
+    
+    func photoBrowser(_ photoBrowser: IDMPhotoBrowser, willDismissAtPageIndex index: UInt) {
+        movePhotoTo(index: Int(index))
+        tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.image.rawValue)], with: .none)
     }
 }
 
