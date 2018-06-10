@@ -418,16 +418,16 @@ class LoginViewController: UIViewController {
                 consumerSecret: kGitHubOAuthConsumerSecret,
                 authorizeUrl:   kGitHubOAuthAuthorizeUrl,
                 accessTokenUrl: kGitHubOAuthAccessTokenUrl,
-                responseType:   kGitHubOAuthResponseType
+                responseType:   "code"
             )
             let safari = SafariURLHandler(viewController: self, oauthSwift: oauthswift)//OAuthSwiftOpenURLExternally.sharedInstance
+            let state = generateRandomString(length: 20)
             
             safari.delegate = self
             oauthswift.authorizeURLHandler = safari
             
-            let state = generateRandomString(length: 20)
             let _ = oauthswift.authorize(
-                withCallbackURL: URL(string: "oauth-managuide://oauth-callback/managuide")!, scope: "user,repo", state: state,
+                withCallbackURL: URL(string: kGitHubOAuthCallbackURL)!, scope: "user,repo", state: state,
                 success: { credential, response, parameters in
                     let c = GitHubAuthProvider.credential(withToken: credential.oauthToken)
                     seal.fulfill(c)

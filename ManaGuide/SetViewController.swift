@@ -16,6 +16,9 @@ import PromiseKit
 
 class SetViewController: BaseViewController {
 
+    // MARK: Constants
+    let searchController = UISearchController(searchResultsController: nil)
+
     // MARK: Variables
     var set:CMSet?
     var dataSource: DATASource?
@@ -41,10 +44,23 @@ class SetViewController: BaseViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
         
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        definesPresentationContext = true
+        
+        if #available(iOS 11.0, *) {
+            navigationItem.searchController = searchController
+            navigationItem.hidesSearchBarWhenScrolling = false
+        } else {
+            tableView.tableHeaderView = searchController.searchBar
+        }
+
         rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
+        
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         tableView.register(UINib(nibName: "BrowserTableViewCell", bundle: nil), forCellReuseIdentifier: "SetInfoCell")
+        tableView.keyboardDismissMode = .onDrag
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -95,6 +111,13 @@ class SetViewController: BaseViewController {
         let setShow = defaults["setShow"] as! String
         
         if setShow == "cards" {
+            if #available(iOS 11.0, *) {
+                navigationItem.searchController?.searchBar.isHidden = false
+                navigationItem.hidesSearchBarWhenScrolling = false
+            } else {
+                tableView.tableHeaderView = searchController.searchBar
+            }
+            
             switch setDisplayBy {
             case "list":
                 dataSource = getDataSource(nil)
@@ -105,6 +128,13 @@ class SetViewController: BaseViewController {
                 ()
             }
         } else {
+            if #available(iOS 11.0, *) {
+                navigationItem.searchController?.searchBar.isHidden = true
+                navigationItem.hidesSearchBarWhenScrolling = true
+            } else {
+                tableView.tableHeaderView = nil
+            }
+            
             tableView.dataSource = self
         }
 
@@ -381,6 +411,46 @@ class SetViewController: BaseViewController {
         
         return URL(string: "https://mtg.gamepedia.com/\(path)")
     }
+    
+    func doSearch() {
+        var newRequest:NSFetchRequest<NSFetchRequestResult>?
+        let defaults = defaultsValue()
+        
+        if let setSectionName = defaults["setSectionName"] as? String,
+            let setSecondSortBy = defaults["setSecondSortBy"] as? String,
+            let setOrderBy = defaults["setOrderBy"] as? Bool,
+            let searchDisplayBy = defaults["setDisplayBy"] as? String {
+        
+            if let text = searchController.searchBar.text {
+                if text.count > 0 {
+                    newRequest = NSFetchRequest(entityName: "CMCard")
+                    
+                    newRequest!.sortDescriptors = [NSSortDescriptor(key: setSectionName, ascending: setOrderBy),
+                                                   NSSortDescriptor(key: setSecondSortBy, ascending: setOrderBy)]
+                    
+                    if text.count == 1 {
+                        newRequest!.predicate = NSPredicate(format: "set.code = %@ AND name BEGINSWITH[cd] %@", set!.code!, text)
+                    } else if text.count > 1 {
+                        newRequest!.predicate = NSPredicate(format: "set.code = %@ AND (name CONTAINS[cd] %@ OR name CONTAINS[cd] %@)", set!.code!, text, text)
+                    }
+                    dataSource = getDataSource(newRequest)
+                    
+                } else {
+                    dataSource = getDataSource(nil)
+                }
+            }
+        
+            updateSections()
+            switch searchDisplayBy {
+            case "list":
+                tableView.reloadData()
+            case "grid":
+                collectionView?.reloadData()
+            default:
+                ()
+            }
+        }
+    }
 }
 
 // MARK: UITableViewDataSource
@@ -656,3 +726,12 @@ extension SetViewController : UIWebViewDelegate {
         webView.loadHTMLString(html, baseURL: nil)
     }
 }
+
+// MARK: UISearchResultsUpdating
+extension SetViewController : UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
+        perform(#selector(doSearch), with: nil, afterDelay: 1.0)
+    }
+}
+

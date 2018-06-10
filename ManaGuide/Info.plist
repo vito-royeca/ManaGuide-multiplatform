@@ -152,5 +152,7 @@
 			</dict>
 		</array>
 	</dict>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This allows the app to save images in your device.</string>
 </dict>
 </plist>

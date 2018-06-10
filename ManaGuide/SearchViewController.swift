@@ -57,7 +57,7 @@ class SearchViewController: BaseViewController {
 
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchBar.tintColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
+        searchController.searchBar.placeholder = "Keyword"
         definesPresentationContext = true
         
         if #available(iOS 11.0, *) {
@@ -66,13 +66,13 @@ class SearchViewController: BaseViewController {
         } else {
             tableView.tableHeaderView = searchController.searchBar
         }
-        tableView.keyboardDismissMode = .onDrag
-        searchController.searchBar.placeholder = "Keyword"
+        
         
         rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
         
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
+        tableView.keyboardDismissMode = .onDrag
         
         statusLabel.text = "  Loading..."
     }

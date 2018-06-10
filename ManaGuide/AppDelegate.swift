@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Fabric.with([Crashlytics.self])
         
         // Twitter
-        TWTRTwitter.sharedInstance().start(withConsumerKey: "saMFOtPPU7OPGofIYoVYEmzFx", consumerSecret: "6QtePMvphlWKjxToaoFmGNpYWhvIaCQ4zQGh6GD3xGfcLbY1GN")
+        TWTRTwitter.sharedInstance().start(withConsumerKey: kTwitterOAuthConsumerKey, consumerSecret: kTwitterOAuthConsumerSecret)
         
         // Firebase
         FirebaseApp.configure()
@@ -41,9 +41,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // ManaKit
         ManaKit.sharedInstance.setupResources()
-        ManaKit.sharedInstance.configureTCGPlayer(partnerKey: "ManaGuide", publicKey: "A49D81FB-5A76-4634-9152-E1FB5A657720", privateKey: nil)
+        ManaKit.sharedInstance.configureTCGPlayer(partnerKey: kTCGPlayerPartnerKey, publicKey: kTCGPlayerPublicKey, privateKey: kTCGPlayerPrivateKey)
         FirebaseManager.sharedInstance.monitorUser()
         
+        // Set the global tint color
+        window?.tintColor = kGlobalTintColor
+
         // change the account icon
         if let rootVC = window?.rootViewController as? MMDrawerController {
             if let tabBarVC = rootVC.centerViewController as? UITabBarController {

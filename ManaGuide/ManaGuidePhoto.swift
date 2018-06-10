@@ -44,6 +44,10 @@ class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
         return ManaKit.sharedInstance.cardBack(card!)
     }
     
+    func caption() -> String? {
+        return nil
+    }
+    
     func imageLoadingComplete() {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: IDMPhoto_LOADING_DID_END_NOTIFICATION), object: self)
     }

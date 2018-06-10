@@ -1464,20 +1464,11 @@ extension CardViewController : iCarouselDelegate {
             if let browser = IDMPhotoBrowser(photos: photos) {
                 browser.setInitialPageIndex(UInt(index))
 
-//                browser.useWhiteBackgroundColor = true
                 browser.displayActionButton = true
-                browser.displayArrowButton = true
-                browser.displayCounterLabel = true
                 browser.usePopAnimation = true
                 browser.forceHideStatusBar = true
                 browser.delegate = self
-                
-                browser.leftArrowImage = UIImage(bgIcon: .FAArrowLeft, orientation: .up, bgTextColor: UIColor.black, bgBackgroundColor: UIColor.clear, topIcon: .FAArrowLeft, topTextColor: UIColor.black, bgLarge: true, size: CGSize(width: 30, height: 30))
-                browser.rightArrowImage = UIImage(bgIcon: .FAArrowRight, orientation: .up, bgTextColor: UIColor.black, bgBackgroundColor: UIColor.clear, topIcon: .FAArrowRight, topTextColor: UIColor.black, bgLarge: true, size: CGSize(width: 30, height: 30))
-//                browser.leftArrowSelectedImage = [UIImage imageNamed:@"IDMPhotoBrowser_customArrowLeftSelected.png"];
-//                browser.rightArrowSelectedImage = [UIImage imageNamed:@"IDMPhotoBrowser_customArrowRightSelected.png"];
-                browser.doneButtonImage = UIImage(bgIcon: .FAWindowClose, orientation: .up, bgTextColor: UIColor.black, bgBackgroundColor: UIColor.clear, topIcon: .FAWindowClose, topTextColor: UIColor.black, bgLarge: true, size: CGSize(width: 30, height: 30))
-                
+
                 present(browser, animated: true, completion: nil)
             }
         }

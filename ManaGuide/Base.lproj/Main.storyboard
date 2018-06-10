@@ -27,13 +27,12 @@
                         <viewControllerLayoutGuide type="bottom" id="bam-Dw-5q0"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="65g-4A-NuH">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="88" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="c6Y-yF-szq">
-                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <color key="sectionIndexColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardCell" rowHeight="88" id="NHU-Qb-dj3">
                                         <rect key="frame" x="0.0" y="28" width="414" height="88"/>
@@ -96,7 +95,7 @@
                                 </connections>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="le4-0f-D97">
-                                <rect key="frame" x="0.0" y="706" width="414" height="30"/>
+                                <rect key="frame" x="0.0" y="541" width="414" height="30"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="r9S-nb-s5A"/>
@@ -121,11 +120,8 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Search" id="9yE-fJ-3l8">
-                        <barButtonItem key="backBarButtonItem" title=" " id="TiL-3g-xAB">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                        </barButtonItem>
+                        <barButtonItem key="backBarButtonItem" title=" " id="TiL-3g-xAB"/>
                         <barButtonItem key="rightBarButtonItem" title="Item" id="pW4-Bt-JMi">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <action selector="rightMenuAction:" destination="t1B-qF-FHV" id="sIH-p9-Kg8"/>
                             </connections>
@@ -157,7 +153,7 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Dwq-OW-JWe">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" textLabel="n4P-yX-quM" style="IBUITableViewCellStyleDefault" id="PFc-rp-PhC">
                                         <rect key="frame" x="0.0" y="28" width="414" height="44"/>
@@ -192,9 +188,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="More" id="7Rk-nP-l6m">
-                        <barButtonItem key="backBarButtonItem" title=" " id="T9j-Tw-H15">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                        </barButtonItem>
+                        <barButtonItem key="backBarButtonItem" title=" " id="T9j-Tw-H15"/>
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="Dwq-OW-JWe" id="w5B-Jq-jUb"/>
@@ -223,8 +217,7 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="qgA-Bv-loi">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <color key="sectionIndexColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" textLabel="9fB-g7-6ir" style="IBUITableViewCellStyleDefault" id="Pba-f2-bRp">
                                         <rect key="frame" x="0.0" y="28" width="414" height="44"/>
@@ -258,9 +251,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Banned and Restricted List" id="Z1a-Uc-hvY">
-                        <barButtonItem key="backBarButtonItem" title=" " id="Hd9-NU-Gd8">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                        </barButtonItem>
+                        <barButtonItem key="backBarButtonItem" title=" " id="Hd9-NU-Gd8"/>
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="qgA-Bv-loi" id="5J6-yy-q9P"/>
@@ -286,7 +277,6 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="81b-ro-cdm">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <color key="sectionIndexColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" textLabel="8ct-BP-PtL" style="IBUITableViewCellStyleDefault" id="eI0-Qe-Hbk">
                                         <rect key="frame" x="0.0" y="28" width="414" height="44"/>
@@ -320,9 +310,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Artists" id="zhC-Wf-EE9">
-                        <barButtonItem key="backBarButtonItem" title=" " id="Ja5-Om-jhZ">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                        </barButtonItem>
+                        <barButtonItem key="backBarButtonItem" title=" " id="Ja5-Om-jhZ"/>
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="81b-ro-cdm" id="uTD-jn-Wi2"/>
@@ -368,18 +356,14 @@
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lwY-NB-cLT">
                                         <rect key="frame" x="111.66666666666666" y="100" width="38" height="30"/>
-                                        <state key="normal" title="Login">
-                                            <color key="titleColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                                        </state>
+                                        <state key="normal" title="Login"/>
                                         <connections>
                                             <action selector="loginAction:" destination="Scc-uM-cUd" eventType="touchUpInside" id="9aO-j3-pOw"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yRE-BY-ElP">
                                         <rect key="frame" x="69" y="150" width="123" height="30"/>
-                                        <state key="normal" title="Forgot Password?">
-                                            <color key="titleColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                                        </state>
+                                        <state key="normal" title="Forgot Password?"/>
                                         <connections>
                                             <action selector="forgotPasswordAction:" destination="Scc-uM-cUd" eventType="touchUpInside" id="vpv-fS-X1N"/>
                                         </connections>
@@ -400,9 +384,7 @@
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="swT-ft-NPK">
                                         <rect key="frame" x="104.66666666666666" y="290.33333333333331" width="52" height="30"/>
-                                        <state key="normal" title="Sign up">
-                                            <color key="titleColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                                        </state>
+                                        <state key="normal" title="Sign up"/>
                                         <connections>
                                             <action selector="signupAction:" destination="Scc-uM-cUd" eventType="touchUpInside" id="2xO-h5-RVv"/>
                                         </connections>
@@ -422,9 +404,7 @@
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LFk-cs-s3D">
                                                 <rect key="frame" x="0.0" y="0.0" width="30" height="29"/>
                                                 <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="17"/>
-                                                <state key="normal" title="">
-                                                    <color key="titleColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                                                </state>
+                                                <state key="normal" title=""/>
                                                 <connections>
                                                     <action selector="facebookAction:" destination="Scc-uM-cUd" eventType="touchUpInside" id="Fbs-iX-jAa"/>
                                                 </connections>
@@ -432,9 +412,7 @@
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AtL-E9-1aZ">
                                                 <rect key="frame" x="59.999999999999986" y="0.0" width="30" height="29"/>
                                                 <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="17"/>
-                                                <state key="normal" title="">
-                                                    <color key="titleColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                                                </state>
+                                                <state key="normal" title=""/>
                                                 <connections>
                                                     <action selector="twitterAction:" destination="Scc-uM-cUd" eventType="touchUpInside" id="G0M-VG-vOs"/>
                                                 </connections>
@@ -442,9 +420,7 @@
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D0K-YZ-sOM">
                                                 <rect key="frame" x="120" y="0.0" width="30" height="29"/>
                                                 <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="17"/>
-                                                <state key="normal" title="">
-                                                    <color key="titleColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                                                </state>
+                                                <state key="normal" title=""/>
                                                 <connections>
                                                     <action selector="googleAction:" destination="Scc-uM-cUd" eventType="touchUpInside" id="GgZ-Rt-0bU"/>
                                                 </connections>
@@ -452,9 +428,7 @@
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wrc-cf-AzJ">
                                                 <rect key="frame" x="180" y="0.0" width="30" height="29"/>
                                                 <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="17"/>
-                                                <state key="normal" title="">
-                                                    <color key="titleColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                                                </state>
+                                                <state key="normal" title=""/>
                                                 <connections>
                                                     <action selector="githubAction:" destination="Scc-uM-cUd" eventType="touchUpInside" id="hKM-wT-wTv"/>
                                                 </connections>
@@ -472,11 +446,8 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Login" id="UgS-P3-TFq">
-                        <barButtonItem key="backBarButtonItem" title=" " id="MzL-Ah-c4R">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                        </barButtonItem>
+                        <barButtonItem key="backBarButtonItem" title=" " id="MzL-Ah-c4R"/>
                         <barButtonItem key="rightBarButtonItem" systemItem="cancel" id="vtS-gT-znY">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <action selector="cancelAction:" destination="Scc-uM-cUd" id="Bfb-br-eeI"/>
                             </connections>
@@ -506,7 +477,6 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="7Xl-Ov-cSh">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <color key="sectionIndexColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="DynamicHeightCell" rowHeight="88" id="rrK-aT-xSz">
                                         <rect key="frame" x="0.0" y="28" width="414" height="88"/>
@@ -548,9 +518,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Comprehensive Rules" id="fQt-Mm-Bj0">
-                        <barButtonItem key="backBarButtonItem" title=" " id="JdQ-WT-7so">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                        </barButtonItem>
+                        <barButtonItem key="backBarButtonItem" title=" " id="JdQ-WT-7so"/>
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="7Xl-Ov-cSh" id="VZk-iV-vVn"/>
@@ -574,9 +542,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <navigationItem key="navigationItem" title="PDF Viewer" id="l0k-m6-C5d">
-                        <barButtonItem key="backBarButtonItem" title=" " id="Z7l-Xm-qpO">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                        </barButtonItem>
+                        <barButtonItem key="backBarButtonItem" title=" " id="Z7l-Xm-qpO"/>
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qKa-4H-Xpu" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -597,7 +563,7 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="M3W-ac-1Xr">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SliderCell" rowHeight="140" id="4wt-Lw-MoS">
                                         <rect key="frame" x="0.0" y="28" width="414" height="140"/>
@@ -620,9 +586,7 @@
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="65" id="XzX-RO-tO5"/>
                                                     </constraints>
-                                                    <state key="normal" title="See All &gt;">
-                                                        <color key="titleColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                                                    </state>
+                                                    <state key="normal" title="See All &gt;"/>
                                                 </button>
                                                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" tag="300" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="54Y-BC-s5w">
                                                     <rect key="frame" x="0.0" y="30.999999999999993" width="414" height="106.33333333333331"/>
@@ -839,9 +803,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Featured" id="U2n-yh-Oe7">
-                        <barButtonItem key="backBarButtonItem" title=" " id="4i7-VD-yHv">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                        </barButtonItem>
+                        <barButtonItem key="backBarButtonItem" title=" " id="4i7-VD-yHv"/>
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="M3W-ac-1Xr" id="Xri-TQ-5zd"/>
@@ -869,8 +831,7 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="87" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="5dz-Le-vRr">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="527"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <color key="sectionIndexColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SetCell" rowHeight="80" id="eBC-aH-KIr">
                                         <rect key="frame" x="0.0" y="28" width="414" height="80"/>
@@ -956,11 +917,8 @@
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Sets" id="8ir-YY-xrq">
-                        <barButtonItem key="backBarButtonItem" title=" " id="vAI-2l-2WB">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                        </barButtonItem>
+                        <barButtonItem key="backBarButtonItem" title=" " id="vAI-2l-2WB"/>
                         <barButtonItem key="rightBarButtonItem" title="Item" id="FAl-H1-Jbe">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <action selector="rightMenuAction:" destination="8F9-G6-Erf" id="ad7-gD-hfI"/>
                             </connections>
@@ -986,13 +944,12 @@
                         <viewControllerLayoutGuide type="bottom" id="841-wA-QXv"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="eGO-g0-CCv">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="uA5-1d-p4e">
-                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <color key="sectionIndexColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardCell" rowHeight="88" id="xxb-st-kEj">
                                         <rect key="frame" x="0.0" y="28" width="414" height="88"/>
@@ -1073,11 +1030,8 @@
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Set" id="Jvf-cB-9Ki">
-                        <barButtonItem key="backBarButtonItem" title=" " id="rrT-34-aHM">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                        </barButtonItem>
+                        <barButtonItem key="backBarButtonItem" title=" " id="rrT-34-aHM"/>
                         <barButtonItem key="rightBarButtonItem" title="Item" id="pPe-Uo-193">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <action selector="showRightMenuAction:" destination="aOj-40-y9v" id="bM5-kH-7DR"/>
                             </connections>
@@ -1109,7 +1063,7 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="XTg-F2-G7x">
                                 <rect key="frame" x="0.0" y="20" width="414" height="716"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BasicCell" textLabel="bGb-Ks-SVK" style="IBUITableViewCellStyleDefault" id="gLf-9z-exN">
                                         <rect key="frame" x="0.0" y="28" width="414" height="44"/>
@@ -1469,9 +1423,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="iPw-Is-cTc">
                         <nil key="title"/>
-                        <barButtonItem key="backBarButtonItem" title=" " id="tMH-8X-jPz">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                        </barButtonItem>
+                        <barButtonItem key="backBarButtonItem" title=" " id="tMH-8X-jPz"/>
                         <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="2bC-Vj-fNr">
                             <rect key="frame" x="146.66666666666666" y="7.6666666666666679" width="120.99999999999997" height="29.000000000000004"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -1479,7 +1431,6 @@
                                 <segment title="First"/>
                                 <segment title="Second"/>
                             </segments>
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <action selector="contentAction:" destination="v6L-wJ-qRt" eventType="valueChanged" id="Sg5-o4-qKq"/>
                             </connections>
@@ -1533,11 +1484,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                        <userDefinedRuntimeAttributes>
-                            <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
-                                <color key="value" red="0.41176470588235292" green="0.12156862745098039" blue="0.0039215686274509803" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </userDefinedRuntimeAttribute>
-                        </userDefinedRuntimeAttributes>
                     </tabBar>
                     <connections>
                         <segue destination="611-iq-DQy" kind="relationship" relationship="viewControllers" id="YGH-qt-hQf"/>
@@ -1726,11 +1672,8 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Account" id="Ohz-r0-vwI">
-                        <barButtonItem key="backBarButtonItem" title=" " id="yeV-j1-QSZ">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                        </barButtonItem>
+                        <barButtonItem key="backBarButtonItem" title=" " id="yeV-j1-QSZ"/>
                         <barButtonItem key="rightBarButtonItem" title="Login" id="JOc-Ku-cUc">
-                            <color key="tintColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <action selector="loginAction:" destination="xiT-xW-PPD" id="R0b-t9-v4M"/>
                             </connections>
@@ -1826,10 +1769,10 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Vbm-cg-ye0"/>
-        <segue reference="Ubl-6g-hH9"/>
-        <segue reference="sDJ-KE-8ls"/>
-        <segue reference="xMx-O9-Y4N"/>
-        <segue reference="whl-Hr-bZH"/>
+        <segue reference="raG-Jp-fAl"/>
+        <segue reference="X4a-uC-2tC"/>
+        <segue reference="J88-7q-TTb"/>
+        <segue reference="Mbq-CH-LY8"/>
+        <segue reference="bra-At-7UT"/>
     </inferredMetricsTieBreakers>
 </document>

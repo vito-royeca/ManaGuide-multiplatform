@@ -32,7 +32,6 @@ class ComprehensiveRulesViewController: UIViewController {
         // Do any additional setup after loading the view.
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchBar.tintColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
         definesPresentationContext = true
 
         if #available(iOS 11.0, *) {
@@ -41,6 +40,7 @@ class ComprehensiveRulesViewController: UIViewController {
         } else {
             tableView.tableHeaderView = searchController.searchBar
         }
+        
         tableView.keyboardDismissMode = .onDrag
         
         if request == nil {
