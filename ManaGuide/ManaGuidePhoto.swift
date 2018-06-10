@@ -11,25 +11,24 @@ import IDMPhotoBrowser
 import ManaKit
 import PromiseKit
 
-class ManaGuidePhoto: NSObject, IDMPhotoProtocol {
+class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
     var card: CMCard?
-    var image: UIImage?
     var progressUpdateBlock: IDMProgressUpdateBlock?
-
+    private var _underlyingImage: UIImage?
+    
     init(card: CMCard) {
         self.card = card
     }
     
     func underlyingImage() -> UIImage? {
-        image = ManaKit.sharedInstance.cardImage(card!, imageType: .normal)
-        return image
+        return _underlyingImage
     }
     
     func loadUnderlyingImageAndNotify() {
         firstly {
             ManaKit.sharedInstance.downloadImage(ofCard: card!, imageType: .normal)
         }.done { (image: UIImage?) in
-            self.image = image
+            self._underlyingImage = image
             self.imageLoadingComplete()
         }.catch { error in
             self.unloadUnderlyingImage()
@@ -38,7 +37,7 @@ class ManaGuidePhoto: NSObject, IDMPhotoProtocol {
     }
     
     func unloadUnderlyingImage() {
-        image = nil
+        _underlyingImage = nil
     }
     
     func placeholderImage() -> UIImage? {

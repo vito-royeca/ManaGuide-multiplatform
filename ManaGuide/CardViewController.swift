@@ -1469,21 +1469,21 @@ extension CardViewController : iCarouselDelegate {
 
 // MARK: IDMPhotoBrowserDelegate
 extension CardViewController : IDMPhotoBrowserDelegate {
-    func photoBrowser(_ photoBrowser: IDMPhotoBrowser,  didShowPhotoAt index: UInt) {
-        
-        // pre-download the next image
-        if let cards = cards {
-            if index < cards.count - 1 {
-                let card = cards[Int(index + 1)]
-
-                firstly {
-                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-                }.catch { error in
-                    print("\(error)")
-                }
-            }
-        }
-    }
+//    func photoBrowser(_ photoBrowser: IDMPhotoBrowser,  didShowPhotoAt index: UInt) {
+//        
+//        // pre-download the next image
+//        if let cards = cards {
+//            if index < cards.count - 1 {
+//                let card = cards[Int(index + 1)]
+//
+//                firstly {
+//                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+//                }.catch { error in
+//                    print("\(error)")
+//                }
+//            }
+//        }
+//    }
     
     func photoBrowser(_ photoBrowser: IDMPhotoBrowser, willDismissAtPageIndex index: UInt) {
         let i = Int(index)
