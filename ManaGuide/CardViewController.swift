@@ -360,9 +360,7 @@ class CardViewController: BaseViewController {
         }
         
         
-        if let image = image,
-            let text = text {
-            
+        if let image = image {
             let imageAttachment =  NSTextAttachment()
             imageAttachment.image = image
             
@@ -381,6 +379,9 @@ class CardViewController: BaseViewController {
             
             let attachmentString = NSAttributedString(attachment: imageAttachment)
             attributedString.append(attachmentString)
+        }
+        
+        if let text = text {
             attributedString.append(NSAttributedString(string: text))
         }
         
@@ -412,9 +413,14 @@ class CardViewController: BaseViewController {
                             }
                         }
                         
-                        let cleanSymbol = symbol.replacingOccurrences(of: "{", with: "")
+                        var cleanSymbol = symbol.replacingOccurrences(of: "{", with: "")
                             .replacingOccurrences(of: "}", with: "")
                             .replacingOccurrences(of: "/", with: "")
+                        if cleanSymbol.count >= 1 {
+                            let first = String(cleanSymbol.prefix(1)).capitalized
+                            let other = String(cleanSymbol.dropFirst())
+                            cleanSymbol = first + other.lowercased()
+                        }
                         
                         if let image = ManaKit.sharedInstance.symbolImage(name: cleanSymbol as String) {
                             let imageAttachment =  NSTextAttachment()
@@ -472,8 +478,12 @@ class CardViewController: BaseViewController {
                           NSParagraphStyleAttributeName: titleParagraphStyle]
         
         var text = "Layout: "
-        if let layout = card.layout {
-            text.append(layout)
+        if let layout = card.layout_ {
+            if let name = layout.name {
+                text.append(name)
+            } else {
+                text.append("\u{2014}")
+            }
         } else {
             text.append("\u{2014}")
         }

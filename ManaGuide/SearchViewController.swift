@@ -27,7 +27,7 @@ class SearchViewController: BaseViewController {
     var request:NSFetchRequest<NSFetchRequestResult>?
     var customSectionName: String?
     var firstLoad = false
-    var searchKeyword: String?
+//    var searchKeyword: String?
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
@@ -335,9 +335,6 @@ class SearchViewController: BaseViewController {
     }
     
     func doSearch() {
-        searchKeyword = searchController.searchBar.text
-        statusLabel.text = "  Loading..."
-
         dataSource = getDataSource(createSearchRequest())
         updateSections()
 
@@ -456,6 +453,7 @@ class SearchViewController: BaseViewController {
     }
     
     func createKeywordPredicate() -> NSPredicate? {
+        let searchKeyword = searchController.searchBar.text
         let defaults = defaultsValue()
         var predicate: NSPredicate?
         var subpredicates = [NSPredicate]()
