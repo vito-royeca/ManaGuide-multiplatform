@@ -41,6 +41,7 @@ class SetsViewController: BaseViewController {
         
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Filter"
         definesPresentationContext = true
         
         if #available(iOS 11.0, *) {
@@ -315,7 +316,7 @@ extension SetsViewController : DATASourceDelegate {
 extension SetsViewController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
-        perform(#selector(doSearch), with: nil, afterDelay: 1.0)
+        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
     }
 }
 

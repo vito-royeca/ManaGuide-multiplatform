@@ -19,6 +19,7 @@ class ComprehensiveRulesViewController: UIViewController {
     var dataSource: DATASource?
     var request: NSFetchRequest<NSFetchRequestResult>?
     var rule: CMRule?
+    var sectionName: String?
     var sectionIndexTitles = [String]()
     var sectionTitles = [String]()
     
@@ -32,6 +33,7 @@ class ComprehensiveRulesViewController: UIViewController {
         // Do any additional setup after loading the view.
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Filter"
         definesPresentationContext = true
 
         if #available(iOS 11.0, *) {
@@ -48,7 +50,7 @@ class ComprehensiveRulesViewController: UIViewController {
             request!.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
             request!.predicate = NSPredicate(format: "parent = nil")
         }
-        dataSource = getDataSource(request)
+        dataSource = getDataSource(request, sectionName: sectionName)
         updateSections()
         tableView.reloadData()
     }
@@ -74,6 +76,10 @@ class ComprehensiveRulesViewController: UIViewController {
                         
                         dest.request = newRequest
                         dest.rule = r
+                        if r.term == "Glossary" {
+                            dest.sectionName = "termSection"
+                        }
+                        
                         var string = ""
                         if let term = r.term {
                             string.append("\(term)")
@@ -92,41 +98,31 @@ class ComprehensiveRulesViewController: UIViewController {
     }
     
     // MARK: Custom methods
-    func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
+    func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?, sectionName: String?) -> DATASource? {
         var ds: DATASource?
 
-        ds = DATASource(tableView: tableView, cellIdentifier: "DynamicHeightCell", fetchRequest: fetchRequest!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: "termSection", configuration: { cell, item, indexPath in
+        ds = DATASource(tableView: tableView, cellIdentifier: "DynamicHeightCell", fetchRequest: fetchRequest!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: sectionName, configuration: { cell, item, indexPath in
             if let r = item as? CMRule,
                 let label = cell.viewWithTag(100) as? UILabel {
+                
                 if let children = r.children {
                     if children.allObjects.count > 0 {
-                        label.text = self.textFor(rule: r)
                         cell.accessoryType = .disclosureIndicator
                         cell.selectionStyle = .default
                         
                     } else {
                         if let _ = r.parent {
-                            let attributedString = NSMutableAttributedString(string: "")
-                            if let term = r.term {
-                                attributedString.append(NSMutableAttributedString(string: term,
-                                    attributes: [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 17)]))
-                            }
-                            if let definition = r.definition {
-                                attributedString.append(NSMutableAttributedString(string: "\n\n\(definition)",
-                                    attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 14)]))
-                            }
-                        
-                            label.attributedText = attributedString
                             cell.accessoryType = .none
                             cell.selectionStyle = .none
                             
                         } else {
-                            label.text = self.textFor(rule: r)
                             cell.accessoryType = .disclosureIndicator
                             cell.selectionStyle = .default
                         }
                     }
                 }
+                
+                label.attributedText = self.attributedTextFor(r)
             }
         })
         
@@ -173,19 +169,109 @@ class ComprehensiveRulesViewController: UIViewController {
         }
     }
 
-    func textFor(rule: CMRule) -> String {
-        var string = ""
-        if let term = rule.term {
-            string.append("\(term)")
-        }
-        if let definition = rule.definition {
-            if string.count > 0 {
-                string.append(". ")
+    func attributedTextFor(_ rule: CMRule) -> NSAttributedString {
+        var attributedString = NSMutableAttributedString(string: "")
+        let text = searchController.searchBar.text
+        let bigFontAttributes = [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]
+        let bigBoldFontAttributes = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 17)]
+        let smallFontAttributes = [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]
+        
+        if let children = rule.children {
+            if children.allObjects.count > 0 {
+                attributedString = singleLineAttributedStringFor(rule, withAttributes: bigFontAttributes)
+                
+                if let text = text {
+                    if text.count > 0 {
+                        highlight(attributedString: attributedString, withAttributes: bigFontAttributes, fromText: text)
+                    }
+                }
+                
+            } else {
+                if let _ = rule.parent {
+                    if let term = rule.term {
+                        let tmp = NSMutableAttributedString(string: term, attributes: bigBoldFontAttributes)
+                        
+                        if let text = text {
+                            if text.count > 0 {
+                                highlight(attributedString: tmp, withAttributes: bigBoldFontAttributes, fromText: text)
+                            }
+                        }
+                        attributedString.append(tmp)
+                    }
+
+                    if let definition = rule.definition {
+                        let tmp = NSMutableAttributedString(string: "\n\n\(definition)", attributes: smallFontAttributes)
+                        
+                        if let text = text {
+                            if text.count > 0 {
+                                highlight(attributedString: tmp, withAttributes: smallFontAttributes, fromText: text)
+                            }
+                        }
+                        attributedString.append(tmp)
+                    }
+                    
+                } else {
+                    attributedString = singleLineAttributedStringFor(rule, withAttributes: bigBoldFontAttributes)
+                    
+                    if let text = text {
+                        if text.count > 0 {
+                            highlight(attributedString: attributedString, withAttributes: bigBoldFontAttributes, fromText: text)
+                        }
+                    }
+                }
             }
-            string.append(definition)
         }
         
-        return string
+        return attributedString
+    }
+    
+    func singleLineAttributedStringFor(_ rule: CMRule, withAttributes: [String: Any]) -> NSMutableAttributedString {
+        let attributedString = NSMutableAttributedString(string: "")
+        var dirty = false
+        
+        if let term = rule.term {
+            attributedString.append(NSAttributedString(string: term, attributes: withAttributes))
+            dirty = true
+        }
+        if let definition = rule.definition {
+            if dirty {
+                attributedString.append(NSAttributedString(string: ". ", attributes: withAttributes))
+            }
+            attributedString.append(NSAttributedString(string: definition, attributes: withAttributes))
+        }
+        
+        return attributedString
+    }
+    
+    func highlight(attributedString: NSMutableAttributedString, withAttributes: [String: Any], fromText: String) {
+        var newAttributes = [String: Any]()
+        for (k,v) in withAttributes {
+            newAttributes[k] = v
+        }
+        newAttributes[NSBackgroundColorAttributeName] = UIColor.yellow
+        
+        let string = attributedString.mutableString
+        
+        var searchRange = NSMakeRange(0, string.length)
+        var foundRange = NSMakeRange(0, 0)
+        
+        while (searchRange.location < string.length) {
+            searchRange.length = string.length - searchRange.location
+            foundRange = string.range(of: fromText, options: String.CompareOptions.caseInsensitive, range: searchRange)
+            
+            if foundRange.location != NSNotFound {
+                // found an occurrence of the substring! do stuff here
+                let origText = string.substring(with: foundRange)
+                let highlight = NSAttributedString(string: origText,
+                                                   attributes: newAttributes)
+                
+                attributedString.replaceCharacters(in: foundRange, with: highlight)
+                searchRange.location = foundRange.location + 1 //foundRange.length
+            } else {
+                // no more substring to find
+                break;
+            }
+        }
     }
     
     func doSearch() {
@@ -205,13 +291,12 @@ class ComprehensiveRulesViewController: UIViewController {
                                       NSPredicate(format: "definition CONTAINS[cd] %@", text)]
                     newRequest!.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
                 }
-                dataSource = getDataSource(newRequest)
-                tableView.reloadData()
-                
+                dataSource = getDataSource(newRequest, sectionName: nil)
             } else {
-                dataSource = getDataSource(request)
-                tableView.reloadData()
+                dataSource = getDataSource(request, sectionName: nil)
             }
+            
+            tableView.reloadData()
         }
     }
 }
@@ -258,7 +343,7 @@ extension ComprehensiveRulesViewController : DATASourceDelegate {
 extension ComprehensiveRulesViewController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
-        perform(#selector(doSearch), with: nil, afterDelay: 1.0)
+        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
     }
 }
 

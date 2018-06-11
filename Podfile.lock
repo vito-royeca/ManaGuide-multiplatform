@@ -130,14 +130,14 @@ PODS:
   - Networking (4.1.1)
   - OAuthSwift (1.1.2)
   - pop (1.0.10)
-  - PromiseKit (6.2.8):
-    - PromiseKit/CorePromise (= 6.2.8)
-    - PromiseKit/Foundation (= 6.2.8)
-    - PromiseKit/UIKit (= 6.2.8)
-  - PromiseKit/CorePromise (6.2.8)
-  - PromiseKit/Foundation (6.2.8):
+  - PromiseKit (6.3.0):
+    - PromiseKit/CorePromise (= 6.3.0)
+    - PromiseKit/Foundation (= 6.3.0)
+    - PromiseKit/UIKit (= 6.3.0)
+  - PromiseKit/CorePromise (6.3.0)
+  - PromiseKit/Foundation (6.3.0):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.2.8):
+  - PromiseKit/UIKit (6.3.0):
     - PromiseKit/CorePromise
   - Reachability (3.2)
   - SDWebImage (4.4.1):
@@ -294,7 +294,7 @@ SPEC CHECKSUMS:
   Networking: ffde5754883907f90f9f751e183eba4a75dc4b89
   OAuthSwift: 5aa5659984d3ca3206ba636a9e7a9c6626b2e8bd
   pop: 82ca6b068ce9278fd350fd9dd09482a0ce9492e6
-  PromiseKit: 6788ce1a0ed5448b83d4aaf56b9fc49fb7647d32
+  PromiseKit: cf84bbb1235a61473b326c5cf0b41f6828f87ba5
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 47e9b5b925cbce75946c23f0c42dd19464189af4
   SimulatorStatusMagic: 0389a805fa8bd001e2977c4046730bdbd6642861
