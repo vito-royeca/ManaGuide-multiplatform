@@ -14,12 +14,14 @@ import SDWebImage
 enum AccountViewControllerSection: Int {
     case accountHeader
     case favorites
+    case ratedCards
     
     var description : String {
         switch self {
         // Use Internationalization, as appropriate.
         case .accountHeader: return ""
         case .favorites: return "Favorites"
+        case .ratedCards: return "Rated Cards"
         }
     }
     
@@ -29,11 +31,13 @@ enum AccountViewControllerSection: Int {
             return nil
         case .favorites:
             return UIImage(bgIcon: .FAHeart, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAHeart, topTextColor: UIColor.clear, bgLarge: false, size: CGSize(width: 20, height: 20))
+        case .ratedCards:
+            return UIImage(bgIcon: .FAStar, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAStar, topTextColor: UIColor.clear, bgLarge: false, size: CGSize(width: 20, height: 20))
         }
     }
     
     static var count: Int {
-        return 2
+        return 3
     }
 }
 
@@ -117,6 +121,8 @@ extension AccountViewController : UITableViewDataSource {
             rows = 1
         case AccountViewControllerSection.favorites.rawValue:
             rows = 1
+        case AccountViewControllerSection.ratedCards.rawValue:
+            rows = 1
         default:
             ()
         }
@@ -162,6 +168,17 @@ extension AccountViewController : UITableViewDataSource {
                 c.accessoryType = .disclosureIndicator
                 cell = c
             }
+        case AccountViewControllerSection.ratedCards.rawValue:
+            if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") {
+                if let label = c.textLabel,
+                    let imageView = c.imageView {
+                    imageView.image = AccountViewControllerSection.ratedCards.imageIcon
+                    label.text = AccountViewControllerSection.ratedCards.description
+                }
+                
+                c.accessoryType = .disclosureIndicator
+                cell = c
+            }
         default:
             ()
         }
@@ -189,7 +206,8 @@ extension AccountViewController : UITableViewDelegate {
         switch indexPath.section {
         case AccountViewControllerSection.accountHeader.rawValue:
             height = 88
-        case AccountViewControllerSection.favorites.rawValue:
+        case AccountViewControllerSection.favorites.rawValue,
+             AccountViewControllerSection.ratedCards.rawValue:
             height = UITableViewAutomaticDimension
         default:
             ()
@@ -205,6 +223,8 @@ extension AccountViewController : UITableViewDelegate {
         case AccountViewControllerSection.accountHeader.rawValue:
             ()
         case AccountViewControllerSection.favorites.rawValue:
+            path = indexPath
+        case AccountViewControllerSection.ratedCards.rawValue:
             path = indexPath
         default:
             ()
@@ -224,6 +244,16 @@ extension AccountViewController : UITableViewDelegate {
                                        NSSortDescriptor(key: "name", ascending: true),
                                        NSSortDescriptor(key: "set.releaseDate", ascending: true)]
             performSegue(withIdentifier: "showSearch", sender: ["title": "Favorites",
+                                                                "request": request])
+        case AccountViewControllerSection.ratedCards.rawValue:
+            let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+            let names = FirebaseManager.sharedInstance.ratedCards.map({ $0.id })
+            
+            request.predicate = NSPredicate(format: "id IN %@", names)
+            request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                       NSSortDescriptor(key: "name", ascending: true),
+                                       NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+            performSegue(withIdentifier: "showSearch", sender: ["title": "Rated Cards",
                                                                 "request": request])
         default:
             ()

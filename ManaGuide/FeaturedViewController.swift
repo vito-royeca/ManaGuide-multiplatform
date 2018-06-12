@@ -389,6 +389,9 @@ extension FeaturedViewController : UICollectionViewDataSource {
             }
             if let ratingView = cell?.viewWithTag(400) as? CosmosView {
                 ratingView.rating = card.rating
+                ratingView.settings.emptyBorderColor = kGlobalTintColor
+                ratingView.settings.filledBorderColor = kGlobalTintColor
+                ratingView.settings.filledColor = kGlobalTintColor
                 ratingView.settings.fillMode = .precise
             }
             

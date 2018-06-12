@@ -16,6 +16,7 @@ import IDMPhotoBrowser
 import ManaKit
 import MBProgressHUD
 import PromiseKit
+import NYAlertViewController
 
 enum CardViewControllerSegmentedIndex: Int {
     case image
@@ -154,15 +155,13 @@ class CardViewController: BaseViewController {
         }
     }
     
-    func ratingAction(rating: Double) {
+    func ratingAction() {
         if let _ = Auth.auth().currentUser {
-            update(rating: rating)
+            self.showUpdateRatingDialog()
         } else {
             let actionAfterLogin = {(success: Bool) in
                 if success {
-                    self.update(rating: rating)
-                } else {
-                    self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
+                    self.showUpdateRatingDialog()
                 }
             }
             performSegue(withIdentifier: "showLogin", sender: ["actionAfterLogin": actionAfterLogin])
@@ -178,10 +177,12 @@ class CardViewController: BaseViewController {
         contentSegmentedControl.setFAIcon(icon: .FAEye, forSegmentAtIndex: 1)
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kCardViewUpdatedNotification), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateCardViews(_:)), name: NSNotification.Name(rawValue: kCardViewUpdatedNotification), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification), object:nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadCardActionRows(_:)), name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kCardViewsUpdatedNotification), object:nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadCardActionRows(_:)), name: NSNotification.Name(rawValue: kCardViewsUpdatedNotification), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateFavorites(_:)), name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadCardActionRows(_:)), name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object: nil)
         
         if let cards = cards {
             let card = cards[cardIndex]
@@ -253,26 +254,55 @@ class CardViewController: BaseViewController {
     }
     
     // MARK: Custom methods
+    func showUpdateRatingDialog() {
+        if let cards = cards {
+            let card = cards[cardIndex]
+            var rating = Double(0)
+            
+            // get user's rating for this card, if there is
+            for c in FirebaseManager.sharedInstance.ratedCards {
+                if c.id == card.id {
+                    rating = c.rating
+                    break
+                }
+            }
+            
+            let ratingView = CosmosView(frame: CGRect.zero)
+            ratingView.rating = rating
+            ratingView.settings.emptyBorderColor = kGlobalTintColor
+            ratingView.settings.filledBorderColor = kGlobalTintColor
+            ratingView.settings.filledColor = kGlobalTintColor
+            ratingView.settings.fillMode = .full
+            
+            let nyAlertController = NYAlertViewController(nibName: nil, bundle: nil)
+            let confirmAction = NYAlertAction(title: "Ok", style: .default, handler: {(action: NYAlertAction?) -> Void in
+                self.dismiss(animated: false, completion: nil)
+                
+                MBProgressHUD.showAdded(to: self.view, animated: true)
+                FirebaseManager.sharedInstance.updateCardRatings(card.id!, rating: ratingView.rating, firstAttempt: true)
+            })
+            let cancelAction = NYAlertAction(title: "Cancel", style: .default, handler:  {(action: NYAlertAction?) -> Void in
+                self.dismiss(animated: false, completion: nil)
+            })
+
+            nyAlertController.title = "Rating"
+            nyAlertController.message = rating > 0 ? "Update your rating for this card." : "Submit your rating for this card."
+            nyAlertController.buttonColor = kGlobalTintColor
+            nyAlertController.addAction(cancelAction)
+            nyAlertController.addAction(confirmAction)
+            nyAlertController.alertViewContentView = ratingView
+            
+            self.present(nyAlertController, animated: true, completion: nil)
+        }
+    }
+    
     func incrementCardViews() {
         if let cards = cards {
             let card = cards[cardIndex]
-            FirebaseManager.sharedInstance.incrementCardViews(card.id!)
+            FirebaseManager.sharedInstance.incrementCardViews(card.id!, firstAttempt: true)
         }
     }
     
-    func updateCardViews(_ notification: Notification) {
-        if let userInfo = notification.userInfo {
-            
-            if let card = userInfo["card"] as? CMCard {
-                cards?[cardIndex] = card
-            }
-        }
-    }
-    
-    func updateFavorites(_ notification: Notification) {
-        tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
-    }
-
     func toggleCardFavorite() {
         if let cards = cards {
             let card = cards[cardIndex]
@@ -286,28 +316,21 @@ class CardViewController: BaseViewController {
             }
             
             MBProgressHUD.showAdded(to: view, animated: true)
-            FirebaseManager.sharedInstance.toggleCardFavorite(card.id!, favorite: !isFavorite, completion: {
-                MBProgressHUD.hide(for: self.view, animated: true)
-                
-                let userInfo = ["card": card,
-                                "favorite": isFavorite] as [String : Any]
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object: nil, userInfo: userInfo)
-            })
+            FirebaseManager.sharedInstance.toggleCardFavorite(card.id!, favorite: !isFavorite, firstAttempt: true)
         }
     }
     
-    func update(rating: Double) {
-        let alertController = UIAlertController(title: "Rate this Card", message: nil, preferredStyle: .alert)
-        let cosmosView = CosmosView(frame: CGRect(x: 0, y: 0, width: 200, height: 30))
-        let confirmAction = UIAlertAction(title: "Submit", style: .default) { (_) in }
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in }
+    func reloadCardActionRows(_ notification: Notification) {
+        if let userInfo = notification.userInfo {
+            if let card = userInfo["card"] as? CMCard {
+                cards?[cardIndex] = card
+            }
+        }
         
-        alertController.view.addSubview(cosmosView)
-        alertController.addAction(confirmAction)
-        alertController.addAction(cancelAction)
-        self.present(alertController, animated: true, completion: nil)
-        
-//        tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
+        MBProgressHUD.hide(for: view, animated: true)
+        if segmentedIndex == .image {
+            tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
+        }
     }
     
     func composeType(of card: CMCard, pointSize: CGFloat) -> NSAttributedString {
@@ -778,10 +801,17 @@ extension CardViewController : UITableViewDataSource {
                     let card = cards[cardIndex]
                     
                     if let ratingView = c.viewWithTag(100) as? CosmosView {
-                        ratingView.rating = card.rating //Double(arc4random_uniform(5) + 1)
-                        ratingView.didFinishTouchingCosmos = { rating in
-                            self.ratingAction(rating: rating)
+                        ratingView.didFinishTouchingCosmos = { _ in
+                            self.ratingAction()
                         }
+                        ratingView.rating = card.rating //Double(arc4random_uniform(5) + 1)
+                        ratingView.settings.emptyBorderColor = kGlobalTintColor
+                        ratingView.settings.filledBorderColor = kGlobalTintColor
+                        ratingView.settings.filledColor = kGlobalTintColor
+                        ratingView.settings.fillMode = .precise
+                    }
+                    if let label = c.viewWithTag(101) as? UILabel {
+                        label.text = "\(card.ratings) Rating\(card.ratings > 1 ? "s" : "")"
                     }
                     if let label = c.viewWithTag(200) as? UILabel {
                         var isFavorite = false
@@ -804,6 +834,7 @@ extension CardViewController : UITableViewDataSource {
                             }
                         }
                         label.addGestureRecognizer(favoriteTapGestureRecognizer)
+                        label.textColor = kGlobalTintColor
                     }
                     if let label = c.viewWithTag(300) as? UILabel {
                         label.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))

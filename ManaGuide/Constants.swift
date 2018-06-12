@@ -33,5 +33,6 @@ let kTwitterOAuthConsumerSecret = "6QtePMvphlWKjxToaoFmGNpYWhvIaCQ4zQGh6GD3xGfcL
 // ---------------- DO NOT MODIFY ANYTHING BELOW ------------------------ //
 // ---------------------------------------------------------------------- //
 // Notifications
-let kFavoriteToggleNotification  = "kFavoriteToggleNotification"
-let kCardViewUpdatedNotification = "kCardViewUpdatedNotification"
+let kFavoriteToggleNotification     = "kFavoriteToggleNotification"
+let kCardViewsUpdatedNotification   = "kCardViewsUpdatedNotification"
+let kCardRatingUpdatedNotification  = "kCardRatingUpdatedNotification"

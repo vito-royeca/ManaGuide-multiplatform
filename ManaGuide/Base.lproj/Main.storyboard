@@ -636,7 +636,7 @@
                                                                             <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
                                                                         </userDefinedRuntimeAttributes>
                                                                     </label>
-                                                                    <view tag="4000" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c0A-YA-SfL" customClass="CosmosView" customModule="Cosmos">
+                                                                    <view tag="400" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c0A-YA-SfL" customClass="CosmosView" customModule="Cosmos">
                                                                         <rect key="frame" x="0.0" y="95" width="88" height="17"/>
                                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <constraints>
@@ -1058,11 +1058,11 @@
                         <viewControllerLayoutGuide type="bottom" id="tqU-jq-t3l"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="fcE-qX-xlo">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="XTg-F2-G7x">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BasicCell" textLabel="bGb-Ks-SVK" style="IBUITableViewCellStyleDefault" id="gLf-9z-exN">
@@ -1206,21 +1206,13 @@
                                                                         <userDefinedRuntimeAttribute type="number" keyPath="rating">
                                                                             <real key="value" value="5"/>
                                                                         </userDefinedRuntimeAttribute>
-                                                                        <userDefinedRuntimeAttribute type="color" keyPath="emptyBorderColor">
-                                                                            <color key="value" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                                                                        </userDefinedRuntimeAttribute>
-                                                                        <userDefinedRuntimeAttribute type="color" keyPath="filledColor">
-                                                                            <color key="value" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                                                                        </userDefinedRuntimeAttribute>
                                                                         <userDefinedRuntimeAttribute type="number" keyPath="emptyBorderWidth">
                                                                             <real key="value" value="1"/>
                                                                         </userDefinedRuntimeAttribute>
-                                                                        <userDefinedRuntimeAttribute type="color" keyPath="filledBorderColor">
-                                                                            <color key="value" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
-                                                                        </userDefinedRuntimeAttribute>
+                                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="updateOnTouch" value="NO"/>
                                                                     </userDefinedRuntimeAttributes>
                                                                 </view>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 Ratings" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tmf-UN-dCC">
+                                                                <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 Ratings" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tmf-UN-dCC">
                                                                     <rect key="frame" x="0.0" y="22" width="138" height="21.666666666666671"/>
                                                                     <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="13"/>
                                                                     <nil key="textColor"/>
@@ -1243,7 +1235,7 @@
                                                             <rect key="frame" x="138" y="0.0" width="138" height="43.666666666666664"/>
                                                             <gestureRecognizers/>
                                                             <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="30"/>
-                                                            <color key="textColor" red="0.41176470590000003" green="0.1215686275" blue="0.0039215686269999999" alpha="1" colorSpace="calibratedRGB"/>
+                                                            <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" tag="300" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" 100" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kkd-kM-zpB">
@@ -1769,10 +1761,10 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="raG-Jp-fAl"/>
-        <segue reference="X4a-uC-2tC"/>
-        <segue reference="J88-7q-TTb"/>
+        <segue reference="Vbm-cg-ye0"/>
+        <segue reference="jVZ-a8-OYH"/>
+        <segue reference="lLZ-BR-fAo"/>
         <segue reference="Mbq-CH-LY8"/>
-        <segue reference="bra-At-7UT"/>
+        <segue reference="whl-Hr-bZH"/>
     </inferredMetricsTieBreakers>
 </document>

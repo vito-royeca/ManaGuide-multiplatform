@@ -13,6 +13,7 @@ struct FCCard {
     struct Keys {
         static let Rating       = "Rating"
         static let Views        = "Views"
+        static let Ratings      = "ratings"
     }
     
     // MARK: Properties
@@ -21,6 +22,7 @@ struct FCCard {
     
     let rating: Double?
     let views: Int?
+    let ratings: [String: Double]?
     
     // MARK: Initialization
     init(key: String, dict: [String: Any]) {
@@ -29,6 +31,7 @@ struct FCCard {
         
         self.rating = dict[Keys.Rating] as? Double
         self.views = dict[Keys.Views] as? Int
+        self.ratings = dict[Keys.Ratings] as? [String: Double]
     }
     
     init(snapshot: DataSnapshot) {
@@ -37,11 +40,13 @@ struct FCCard {
             self.ref = snapshot.ref
             self.rating = value[Keys.Rating] as? Double
             self.views = value[Keys.Views] as? Int
+            self.ratings = value[Keys.Ratings] as? [String: Double]
         } else {
             self.key = nil
             self.ref = nil
             self.rating = nil
             self.views = nil
+            self.ratings = nil
         }
     }
 }

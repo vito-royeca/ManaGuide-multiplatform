@@ -26,6 +26,7 @@ def default_pods
     pod 'MMDrawerController'
     pod 'MMDrawerController+Storyboard'
     pod 'Networking'
+    pod 'NYAlertViewController'
     pod 'OAuthSwift', '~> 1.1.2'
     pod 'PromiseKit', '~> 6.0'
     pod 'Reachability'

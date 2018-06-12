@@ -321,17 +321,15 @@ class SearchViewController: BaseViewController {
     }
 
     func updateFavorites(_ notification: Notification) {
-        if let _ = notification.userInfo as? [String: Any] {
-            let newRequest:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-            let names = FirebaseManager.sharedInstance.favorites.map({ $0.id })
-            
-            newRequest.predicate = NSPredicate(format: "id IN %@", names)
-            newRequest.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                       NSSortDescriptor(key: "name", ascending: true),
-                                       NSSortDescriptor(key: "set.releaseDate", ascending: true)]
-            self.request = newRequest
-            updateDataDisplay()
-        }
+        let newRequest:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+        let names = FirebaseManager.sharedInstance.favorites.map({ $0.id })
+        
+        newRequest.predicate = NSPredicate(format: "id IN %@", names)
+        newRequest.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                   NSSortDescriptor(key: "name", ascending: true),
+                                   NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+        self.request = newRequest
+        updateDataDisplay()
     }
     
     func doSearch() {
