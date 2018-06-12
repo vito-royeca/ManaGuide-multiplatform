@@ -9,7 +9,8 @@
 import XCTest
 
 class ManaGuideUITests: XCTestCase {
-        
+    let app = XCUIApplication()
+    
     override func setUp() {
         super.setUp()
         
@@ -21,6 +22,9 @@ class ManaGuideUITests: XCTestCase {
         XCUIApplication().launch()
 
         // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+        
+        setupSnapshot(app)
+        app.launch()
     }
     
     override func tearDown() {
@@ -28,9 +32,31 @@ class ManaGuideUITests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
+    func testScreenshots() {
         // Use recording to get started writing UI tests.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
+        
+        let tabBarsQuery = app.tabBars
+
+        sleep(10)
+        snapshot("01Features")
+
+        app.tables/*@START_MENU_TOKEN@*/.cells.buttons["See All >"]/*[[".cells.buttons[\"See All >\"]",".buttons[\"See All >\"]"],[[[-1,1],[-1,0]]],[1]]@END_MENU_TOKEN@*/.tap()
+        sleep(2)
+        snapshot("02Sets")
+
+        tabBarsQuery.buttons["More"].tap()
+        snapshot("05More")
+        
+        tabBarsQuery.buttons["Search"].tap()
+        let keywordSearchField = app.searchFields["Keyword"]
+        keywordSearchField.tap()
+        keywordSearchField.typeText("Lotus")
+        sleep(10)
+        snapshot("03Search")
+        app.tables.cells.containing(.staticText, identifier:"").staticTexts["Artifact"].tap()
+        sleep(20)
+        snapshot("04Card")
     }
     
 }

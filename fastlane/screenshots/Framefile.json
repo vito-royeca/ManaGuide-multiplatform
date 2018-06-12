@@ -1,0 +1,44 @@
+{
+  "default": {
+    "title": {
+      "font": "../../../ManaKit/ManaKit/Assets/fonts/beleren-bold-webfont.ttf",
+      "color": "#000000"
+    },
+    "background": "./background.jpg",
+    "padding": 50
+  },
+
+
+  "data": [
+    {
+      "filter": "Features",
+      "keyword": {
+        "color": "#000000"
+      }
+    },
+    {
+      "filter": "Sets",
+      "keyword": {
+        "color": "#000000"
+      }
+    },
+    {
+      "filter": "Search",
+      "keyword": {
+        "color": "#000000"
+      }
+    },
+    {
+      "filter": "Card",
+      "keyword": {
+        "color": "#000000"
+      }
+    },
+    {
+      "filter": "More",
+      "keyword": {
+        "color": "#000000"
+      }
+    }
+  ]
+}

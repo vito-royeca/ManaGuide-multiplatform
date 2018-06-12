@@ -80,7 +80,6 @@ class BaseViewController: UIViewController {
     
     func cardSize(inFrame frame: CGSize) -> CGSize {
         let width = frame.width
-        let height = frame.height
         let defaultSize = CGSize(width: 480, height: 680)
         var newWidth = CGFloat(0)
         var newHeight = CGFloat(0)
