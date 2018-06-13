@@ -22,8 +22,11 @@ platform :ios do
   end
 
   lane :beta do
-    sync_code_signing(type: "appstore")    # see code signing guide for more information
+    #sync_code_signing(type: "appstore")    # see code signing guide for more information
+    get_certificates
+    get_provisioning_profile
     build_app(scheme: "ManaGuide")
     upload_to_testflight
+    #pilot(skip_waiting_for_build_processing: true)
   end
 end
