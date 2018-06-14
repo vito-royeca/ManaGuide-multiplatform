@@ -860,7 +860,7 @@ extension CardViewController : UITableViewDataSource {
                     let card = cards[cardIndex]
                     if let label = c.textLabel {
                         if let text = card.manaCost {
-                            label.attributedText = addSymbols(toText: "\(text) (CMC \(Int(card.cmc)))", withPointSize: label.font.pointSize)
+                            label.attributedText = addSymbols(toText: "\(text))", withPointSize: label.font.pointSize)
                         } else {
                             label.text = " "
                         }

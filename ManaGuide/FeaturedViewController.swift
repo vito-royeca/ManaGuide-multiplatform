@@ -15,11 +15,6 @@ import ManaKit
 import MBProgressHUD
 import PromiseKit
 
-//let kSliderTableViewCellSetWidth = CGFloat(88)
-//let kSliderTableViewCellSetHeight = CGFloat(112)
-//let kSliderTableViewCellCardWidth  = CGFloat(100)
-//let kSliderTableViewCellCardHeight = CGFloat(72)
-
 enum FeaturedViewControllerSection: Int {
     case randomCards
     case latestSets
@@ -50,6 +45,7 @@ class FeaturedViewController: BaseViewController {
     var latestSets: [CMSet]?
     var randomCardView: RandomCardView?
     var slideshowTimer: Timer?
+    var flowLayoutHeight = CGFloat(0)
     
     // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
@@ -76,17 +72,10 @@ class FeaturedViewController: BaseViewController {
         FirebaseManager.sharedInstance.demonitorTopCharts()
     }
     
-//    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-//        tableView.reloadData()
-//        if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.randomCards.rawValue, section: 0)) {
-//            if let carouselView = cell.viewWithTag(100) as? iCarousel {
-//                carouselView.reloadData()
-//            }
-//        }
-//    }
-    
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
+        flowLayoutHeight = (view.frame.size.height / 3) - 50
         tableView.reloadData()
+        
         if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.randomCards.rawValue, section: 0)) {
             if let carouselView = cell.viewWithTag(100) as? iCarousel {
                 carouselView.reloadData()
@@ -169,15 +158,6 @@ class FeaturedViewController: BaseViewController {
         
         if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMSet] {
             latestSets = result
-            
-            if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.latestSets.rawValue, section: 0)) {
-                for v in cell.contentView.subviews {
-                    if let collectionView = v as? UICollectionView {
-                        collectionView.reloadData()
-                        break
-                    }
-                }
-            }
         }
     }
     
@@ -238,6 +218,10 @@ extension FeaturedViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell:UITableViewCell?
         
+        if flowLayoutHeight == 0 {
+            flowLayoutHeight = (view.frame.size.height / 3) - 50
+        }
+
         switch indexPath.row {
         case FeaturedViewControllerSection.randomCards.rawValue:
             if let c = tableView.dequeueReusableCell(withIdentifier: "RandomCell") {
@@ -271,9 +255,9 @@ extension FeaturedViewController : UITableViewDataSource {
                 
                 if let collectionView = collectionView {
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        let height = (tableView.frame.size.height / 3) - 50
-                        let width = collectionView.frame.size.width / 3
-                        flowLayout.itemSize = CGSize(width: width - 20, height: height - 5)
+                        let divisor = CGFloat(UIDevice.current.userInterfaceIdiom == .phone ? 3 : 4)
+                        let width = (view.frame.size.width / divisor) - 20
+                        flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
                         flowLayout.scrollDirection = .horizontal
                         flowLayout.minimumInteritemSpacing = CGFloat(5)
                         flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
@@ -282,6 +266,7 @@ extension FeaturedViewController : UITableViewDataSource {
                     collectionView.dataSource = self
                     collectionView.delegate = self
                     collectionView.tag = FeaturedViewControllerSection.latestSets.rawValue
+                    collectionView.reloadData()
                 }
                 
                 cell = c
@@ -306,9 +291,8 @@ extension FeaturedViewController : UITableViewDataSource {
                 
                 if let collectionView = collectionView {
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        let height = (tableView.frame.size.height / 3) - 50
-                        let width = (height * 2) / 3 //(height * kSliderTableViewCellCardWidth) / kSliderTableViewCellCardHeight
-                        flowLayout.itemSize = CGSize(width: width - 20, height: height - 5)
+                        let width = flowLayoutHeight + (flowLayoutHeight / 2)
+                        flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
                         flowLayout.scrollDirection = .horizontal
                         flowLayout.minimumInteritemSpacing = CGFloat(5)
                         flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
@@ -340,9 +324,8 @@ extension FeaturedViewController : UITableViewDataSource {
                 
                 if let collectionView = collectionView {
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        let height = (tableView.frame.size.height / 3) - 50
-                        let width = (height * 2) / 3 // (height * kSliderTableViewCellCardWidth) / kSliderTableViewCellCardHeight
-                        flowLayout.itemSize = CGSize(width: width - 20, height: height - 5)
+                        let width = flowLayoutHeight + (flowLayoutHeight / 2)
+                        flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
                         flowLayout.scrollDirection = .horizontal
                         flowLayout.minimumInteritemSpacing = CGFloat(5)
                         flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
@@ -372,7 +355,7 @@ extension FeaturedViewController : UITableViewDelegate {
              FeaturedViewControllerSection.latestSets.rawValue,
              FeaturedViewControllerSection.topRated.rawValue,
              FeaturedViewControllerSection.topViewed.rawValue:
-            height = tableView.frame.size.height / 3
+            height = view.frame.size.height / 3
         default:
             height = UITableViewAutomaticDimension
         }
