@@ -19,6 +19,7 @@ class RandomCardView: UIView {
 
     // MARK: Variables
     var card: CMCard?
+    var averageColor: UIColor?
     
     // MARK: Outlets
     @IBOutlet weak var nameLabel: UILabel!
@@ -44,6 +45,8 @@ class RandomCardView: UIView {
                     ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
                 }.done { (image: UIImage?) in
                     if let image = image {
+                        self.averageColor = image.averageColor
+                        
                         UIView.transition(with: self.cropImageView,
                                           duration: 1.0,
                                           options: .transitionCrossDissolve,
@@ -63,6 +66,8 @@ class RandomCardView: UIView {
     func showNameandSet() {
         if let card = card {
             nameLabel.text = card.name
+            nameLabel.textColor = averageColor
+            
             if let releaseDate = card.set!.releaseDate {
                 let isModern = ManaKit.sharedInstance.isModern(card)
                 let formatter = DateFormatter()
@@ -71,8 +76,8 @@ class RandomCardView: UIView {
                 if let m15Date = formatter.date(from: "2014-07-18"),
                     let setReleaseDate = formatter.date(from: releaseDate) {
                     
-                    var shadowColor:UIColor?
-                    var shadowOffset = CGSize(width: 0, height: -1)
+                    let shadowColor = UIColor.white
+                    var shadowOffset = CGSize(width: 0, height: 1)
                     
                     if setReleaseDate.compare(m15Date) == .orderedSame ||
                         setReleaseDate.compare(m15Date) == .orderedDescending {
@@ -82,7 +87,6 @@ class RandomCardView: UIView {
                         nameLabel.font = isModern ? eightEditionFont : preEightEditionFont
                         
                         if !isModern {
-                            shadowColor = UIColor.black
                             shadowOffset = CGSize(width: 1, height: 1)
                         }
                     }
@@ -97,8 +101,6 @@ class RandomCardView: UIView {
                 setIcon.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
                 setIcon.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: rarity)
                 setIcon.backgroundColor = UIColor.white
-            } else {
-                setIcon.text = ""
             }
         }
     }
