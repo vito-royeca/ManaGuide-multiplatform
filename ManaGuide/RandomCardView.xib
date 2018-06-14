@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="keyrune.ttf">
+            <string>Keyrune</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="RandomCardView" customModule="ManaGuide" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dHe-Z0-a3R">
+                    <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mvQ-7t-UVy">
+                    <rect key="frame" x="355" y="647" width="20" height="20"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="20" id="XRw-7E-uPD"/>
+                        <constraint firstAttribute="height" constant="20" id="oq2-xY-fvs"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="Keyrune" family="Keyrune" pointSize="20"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                    </userDefinedRuntimeAttributes>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Card Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UeC-cy-bkc">
+                    <rect key="frame" x="10" y="647" width="337" height="20"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="20" id="ZDt-I6-fk3"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="dHe-Z0-a3R" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="L7s-Zc-PoB"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="mvQ-7t-UVy" secondAttribute="bottom" id="N1W-6r-jHZ"/>
+                <constraint firstItem="dHe-Z0-a3R" firstAttribute="bottom" secondItem="vUN-kp-3ea" secondAttribute="bottom" id="VFT-WZ-Hsd"/>
+                <constraint firstItem="dHe-Z0-a3R" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="ZVp-WO-d7j"/>
+                <constraint firstItem="mvQ-7t-UVy" firstAttribute="leading" secondItem="UeC-cy-bkc" secondAttribute="trailing" constant="8" id="eTq-le-K1K"/>
+                <constraint firstItem="UeC-cy-bkc" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="kwF-I1-80K"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="mvQ-7t-UVy" secondAttribute="trailing" id="lYf-ng-mDf"/>
+                <constraint firstItem="dHe-Z0-a3R" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="laB-S6-ufq"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="UeC-cy-bkc" secondAttribute="bottom" id="ydW-ac-sFp"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <connections>
+                <outlet property="cropImageView" destination="dHe-Z0-a3R" id="RkL-GP-d0z"/>
+                <outlet property="nameLabel" destination="UeC-cy-bkc" id="6rA-F3-a6W"/>
+                <outlet property="setIcon" destination="mvQ-7t-UVy" id="KND-gi-NV4"/>
+            </connections>
+            <point key="canvasLocation" x="33.5" y="85.5"/>
+        </view>
+    </objects>
+</document>

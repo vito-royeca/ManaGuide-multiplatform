@@ -1504,6 +1504,7 @@ extension CardViewController : iCarouselDelegate {
             }
         }
     }
+    
 }
 
 // MARK: IDMPhotoBrowserDelegate

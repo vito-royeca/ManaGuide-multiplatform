@@ -19,6 +19,9 @@
 		111D5A6C20AF57590046285B /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D5A6B20AF57590046285B /* ArtistsViewController.swift */; };
 		111D5A6D20AF57590046285B /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D5A6B20AF57590046285B /* ArtistsViewController.swift */; };
 		111D5A6E20AF57590046285B /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D5A6B20AF57590046285B /* ArtistsViewController.swift */; };
+		1127329820D2480F00910D77 /* UIImage+AverageColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1127329720D2480F00910D77 /* UIImage+AverageColor.swift */; };
+		1127329920D2480F00910D77 /* UIImage+AverageColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1127329720D2480F00910D77 /* UIImage+AverageColor.swift */; };
+		1127329A20D2480F00910D77 /* UIImage+AverageColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1127329720D2480F00910D77 /* UIImage+AverageColor.swift */; };
 		113661591F2F912500DCBB41 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 113661581F2F912500DCBB41 /* data */; };
 		113A6B0E1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113A6B0C1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift */; };
 		113A6B0F1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113A6B0C1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift */; };
@@ -34,6 +37,12 @@
 		1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0D01F42CC020023E107 /* FirebaseManager.swift */; };
 		1140F0D31F42CC020023E107 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0D01F42CC020023E107 /* FirebaseManager.swift */; };
 		1141A84020D00F4A00554872 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1141A83F20D00F4A00554872 /* SnapshotHelper.swift */; };
+		11447EB220D1764000DFF5C7 /* RandomCardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11447EB120D1764000DFF5C7 /* RandomCardView.xib */; };
+		11447EB320D1764000DFF5C7 /* RandomCardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11447EB120D1764000DFF5C7 /* RandomCardView.xib */; };
+		11447EB420D1764000DFF5C7 /* RandomCardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11447EB120D1764000DFF5C7 /* RandomCardView.xib */; };
+		11447EB620D177F700DFF5C7 /* RandomCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11447EB520D177F700DFF5C7 /* RandomCardView.swift */; };
+		11447EB720D177F700DFF5C7 /* RandomCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11447EB520D177F700DFF5C7 /* RandomCardView.swift */; };
+		11447EB820D177F700DFF5C7 /* RandomCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11447EB520D177F700DFF5C7 /* RandomCardView.swift */; };
 		11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */; };
 		11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */; };
 		11448A6020CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */; };
@@ -115,6 +124,7 @@
 		110BB5291F20891D00086841 /* FeaturedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeaturedViewController.swift; sourceTree = "<group>"; };
 		110BB52C1F20892B00086841 /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		111D5A6B20AF57590046285B /* ArtistsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistsViewController.swift; sourceTree = "<group>"; };
+		1127329720D2480F00910D77 /* UIImage+AverageColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+AverageColor.swift"; sourceTree = "<group>"; };
 		113661581F2F912500DCBB41 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = "<group>"; };
 		113A6B0C1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DynamicHeightTableViewCell.swift; sourceTree = "<group>"; };
 		113A6B0D1F385D1700C68FF9 /* DynamicHeightTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DynamicHeightTableViewCell.xib; sourceTree = "<group>"; };
@@ -122,6 +132,8 @@
 		1140F0CB1F42CA500023E107 /* FCCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FCCard.swift; sourceTree = "<group>"; };
 		1140F0D01F42CC020023E107 /* FirebaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		1141A83F20D00F4A00554872 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
+		11447EB120D1764000DFF5C7 /* RandomCardView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RandomCardView.xib; sourceTree = "<group>"; };
+		11447EB520D177F700DFF5C7 /* RandomCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomCardView.swift; sourceTree = "<group>"; };
 		11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManaGuidePhoto.swift; sourceTree = "<group>"; };
 		11448A6120CD3849008EFC40 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		1147B7561F223607004EF296 /* SetsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetsViewController.swift; sourceTree = "<group>"; };
@@ -263,6 +275,8 @@
 				113A6B0D1F385D1700C68FF9 /* DynamicHeightTableViewCell.xib */,
 				11CEE05A20D0012300D72186 /* Launch Screen.storyboard */,
 				110BB4FD1F207C6400086841 /* Main.storyboard */,
+				11447EB120D1764000DFF5C7 /* RandomCardView.xib */,
+				11447EB520D177F700DFF5C7 /* RandomCardView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -302,6 +316,7 @@
 				1140F0D01F42CC020023E107 /* FirebaseManager.swift */,
 				11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */,
 				11448A6120CD3849008EFC40 /* Constants.swift */,
+				1127329720D2480F00910D77 /* UIImage+AverageColor.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -454,6 +469,7 @@
 				110BB5011F207C6400086841 /* Assets.xcassets in Resources */,
 				11CEE05B20D0012300D72186 /* Launch Screen.storyboard in Resources */,
 				110BB4FF1F207C6400086841 /* Main.storyboard in Resources */,
+				11447EB220D1764000DFF5C7 /* RandomCardView.xib in Resources */,
 				11E4374C1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */,
 				1147B7691F226143004EF296 /* Settings.bundle in Resources */,
 				1140F0C71F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
@@ -465,6 +481,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11447EB320D1764000DFF5C7 /* RandomCardView.xib in Resources */,
 				11CEE05C20D0012300D72186 /* Launch Screen.storyboard in Resources */,
 				11CEE05820CFE96100D72186 /* Assets.xcassets in Resources */,
 				1140F0C81F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
@@ -475,6 +492,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11447EB420D1764000DFF5C7 /* RandomCardView.xib in Resources */,
 				11CEE05D20D0012300D72186 /* Launch Screen.storyboard in Resources */,
 				11E4374D1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */,
 				1147B76A1F226143004EF296 /* Settings.bundle in Resources */,
@@ -919,10 +937,12 @@
 				1140F0D11F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
+				1127329820D2480F00910D77 /* UIImage+AverageColor.swift in Sources */,
 				1140F0CC1F42CA500023E107 /* FCCard.swift in Sources */,
 				1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */,
 				111D5A6C20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */,
+				11447EB620D177F700DFF5C7 /* RandomCardView.swift in Sources */,
 				1165CD731F377395006CC433 /* MoreViewController.swift in Sources */,
 				110BB52A1F20891D00086841 /* FeaturedViewController.swift in Sources */,
 			);
@@ -939,8 +959,10 @@
 				11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
+				11447EB720D177F700DFF5C7 /* RandomCardView.swift in Sources */,
 				111D5A6D20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				11448A6320CD3849008EFC40 /* Constants.swift in Sources */,
+				1127329920D2480F00910D77 /* UIImage+AverageColor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -951,6 +973,7 @@
 				110BB52E1F20892B00086841 /* SearchViewController.swift in Sources */,
 				11F336B420BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				1147B7581F223607004EF296 /* SetsViewController.swift in Sources */,
+				1127329A20D2480F00910D77 /* UIImage+AverageColor.swift in Sources */,
 				1141A84020D00F4A00554872 /* SnapshotHelper.swift in Sources */,
 				110BB51A1F207C6400086841 /* ManaGuideUITests.swift in Sources */,
 				1165CD771F377F58006CC433 /* BannedListViewController.swift in Sources */,
@@ -965,6 +988,7 @@
 				11448A6020CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */,
 				1147B7641F224198004EF296 /* SetViewController.swift in Sources */,
+				11447EB820D177F700DFF5C7 /* RandomCardView.swift in Sources */,
 				11B2AA341F29DE490067E833 /* CardViewController.swift in Sources */,
 				111D5A6E20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				1165CD741F377395006CC433 /* MoreViewController.swift in Sources */,
