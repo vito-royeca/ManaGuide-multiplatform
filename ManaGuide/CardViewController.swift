@@ -411,86 +411,6 @@ class CardViewController: BaseViewController {
         return attributedString
     }
     
-    func addSymbols(toText text: String?, withPointSize pointSize: CGFloat) -> NSAttributedString {
-        let newText = NSMutableAttributedString()
-        
-        if let text = text {
-            var fragmentText = NSMutableString()
-            var offset = 0
-            
-            repeat {
-                for i in offset...text.count - 1 {
-                    let c = text[text.index(text.startIndex, offsetBy: i)]
-                    
-                    if c == "{" {
-                        let symbol = NSMutableString()
-                        
-                        for j in i...text.count - 1 {
-                            let cc = text[text.index(text.startIndex, offsetBy: j)]
-                            
-                            if cc == "}" {
-                                offset = j + 1
-                                break
-                            } else {
-                                symbol.append(String(cc))
-                            }
-                        }
-                        
-                        var cleanSymbol = symbol.replacingOccurrences(of: "{", with: "")
-                            .replacingOccurrences(of: "}", with: "")
-                            .replacingOccurrences(of: "/", with: "")
-                        if cleanSymbol.count >= 1 {
-                            let first = String(cleanSymbol.prefix(1)).capitalized
-                            let other = String(cleanSymbol.dropFirst())
-                            cleanSymbol = first + other.lowercased()
-                        }
-                        
-                        if let image = ManaKit.sharedInstance.symbolImage(name: cleanSymbol as String) {
-                            let imageAttachment =  NSTextAttachment()
-                            imageAttachment.image = image
-                            
-                            var width = CGFloat(16)
-                            let height = CGFloat(16)
-                            var imageOffsetY = CGFloat(0)
-                            
-                            if cleanSymbol == "100" {
-                                width = 35
-                            } else if symbol == "1000000" {
-                                width = 60
-                            }
-                            
-                            if height > pointSize {
-                                imageOffsetY = -(height - pointSize) / 2.0
-                            } else {
-                                imageOffsetY = -(pointSize - height) / 2.0
-                            }
-                            
-                            imageAttachment.bounds = CGRect(x: 0, y: imageOffsetY, width: width, height: height)
-                            
-                            let attachmentString = NSAttributedString(attachment: imageAttachment)
-                            let attributedString = NSMutableAttributedString(string: fragmentText as String)
-                            attributedString.append(attachmentString)
-                            
-                            newText.append(attributedString)
-                            fragmentText = NSMutableString()
-                            break
-                        }
-                        
-                    } else {
-                        fragmentText.append(String(c))
-                        offset = i
-                    }
-                    
-                }
-            } while offset != text.count - 1
-        
-            let attributedString = NSMutableAttributedString(string: fragmentText as String)
-            newText.append(attributedString)
-        }
-        
-        return newText
-    }
-    
     func composeOtherDetails(forCard card: CMCard) -> NSAttributedString {
         let attributedString = NSMutableAttributedString()
         
@@ -860,7 +780,7 @@ extension CardViewController : UITableViewDataSource {
                     let card = cards[cardIndex]
                     if let label = c.textLabel {
                         if let text = card.manaCost {
-                            label.attributedText = addSymbols(toText: "\(text))", withPointSize: label.font.pointSize)
+                            label.attributedText = MGUtilities.addSymbols(toText: "\(text))", pointSize: label.font.pointSize)
                         } else {
                             label.text = " "
                         }
@@ -895,7 +815,7 @@ extension CardViewController : UITableViewDataSource {
                     let card = cards[cardIndex]
                     if let label = c.viewWithTag(100) as? UILabel {
                         if let text = card.text {
-                            label.attributedText = addSymbols(toText: "\n\(text)\n", withPointSize: label.font.pointSize)
+                            label.attributedText = MGUtilities.addSymbols(toText: "\n\(text)\n", pointSize: label.font.pointSize)
                         } else {
                             label.text = " "
                         }
@@ -911,7 +831,7 @@ extension CardViewController : UITableViewDataSource {
                     let card = cards[cardIndex]
                     if let label = c.viewWithTag(100) as? UILabel {
                         if let text = card.originalText {
-                            label.attributedText = addSymbols(toText: "\n\(text)\n", withPointSize: label.font.pointSize)
+                            label.attributedText = MGUtilities.addSymbols(toText: "\n\(text)\n", pointSize: label.font.pointSize)
                         } else {
                             label.text = " "
                         }
@@ -1056,7 +976,7 @@ extension CardViewController : UITableViewDataSource {
                             contents = " "
                         }
                         
-                        label.attributedText = addSymbols(toText: contents, withPointSize: label.font.pointSize)//contents
+                        label.attributedText = MGUtilities.addSymbols(toText: contents, pointSize: label.font.pointSize)
                     }
                     c.selectionStyle = .none
                     c.accessoryType = .none

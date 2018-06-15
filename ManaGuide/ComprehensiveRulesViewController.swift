@@ -200,7 +200,7 @@ class ComprehensiveRulesViewController: UIViewController {
                     }
 
                     if let definition = rule.definition {
-                        let tmp = NSMutableAttributedString(string: "\n\n\(definition)", attributes: smallFontAttributes)
+                        let tmp = MGUtilities.addSymbols(toText: "\n\n\(definition)", pointSize: CGFloat(17))
                         
                         if let text = text {
                             if text.count > 0 {
