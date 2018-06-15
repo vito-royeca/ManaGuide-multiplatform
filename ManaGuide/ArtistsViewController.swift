@@ -141,10 +141,12 @@ class ArtistsViewController: UIViewController {
                     newRequest!.predicate = NSPredicate(format: "firstName CONTAINS[cd] %@ OR lastName CONTAINS[cd] %@", text, text)
                 }
                 dataSource = getDataSource(newRequest)
+                updateSections()
                 tableView.reloadData()
                 
             } else {
                 dataSource = getDataSource(nil)
+                updateSections()
                 tableView.reloadData()
             }
         }

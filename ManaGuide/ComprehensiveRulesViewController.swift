@@ -292,8 +292,15 @@ class ComprehensiveRulesViewController: UIViewController {
                     newRequest!.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
                 }
                 dataSource = getDataSource(newRequest, sectionName: nil)
+                sectionIndexTitles = [String]()
+                sectionTitles = [String]()
             } else {
                 dataSource = getDataSource(request, sectionName: nil)
+                if let rule = rule {
+                    if rule.term == "Glossary" {
+                        updateSections()
+                    }
+                }
             }
             
             tableView.reloadData()

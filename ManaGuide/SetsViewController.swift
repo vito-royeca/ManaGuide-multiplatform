@@ -266,10 +266,12 @@ class SetsViewController: BaseViewController {
                     newRequest!.predicate = NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@", text, text)
                 }
                 dataSource = getDataSource(newRequest)
+                updateSections()
                 tableView.reloadData()
                 
             } else {
                 dataSource = getDataSource(nil)
+                updateSections()
                 tableView.reloadData()
             }
         }
