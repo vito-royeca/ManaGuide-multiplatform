@@ -45,6 +45,7 @@ class FeaturedViewController: BaseViewController {
     var latestSets: [CMSet]?
     var randomCardView: RandomCardView?
     var slideshowTimer: Timer?
+    var randomCardsTimer: Timer?
     var flowLayoutHeight = CGFloat(0)
     
     // MARK: Outlets
@@ -57,6 +58,7 @@ class FeaturedViewController: BaseViewController {
         // Do any additional setup after loading the view.
         fetchRandomCards()
         fetchLatestSets()
+        randomCardsTimer = Timer.scheduledTimer(timeInterval: 60 * 5, target: self, selector: #selector(fetchRandomCards), userInfo: nil, repeats: true)
     }
 
     override func viewDidAppear(_ animated: Bool) {

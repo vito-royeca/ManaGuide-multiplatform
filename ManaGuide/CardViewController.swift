@@ -9,6 +9,9 @@
 import UIKit
 import Cosmos
 import DATASource
+import FBSDKCoreKit
+import FBSDKShareKit
+import FBSDKMessengerShareKit
 import Firebase
 import Font_Awesome_Swift
 import iCarousel
@@ -17,6 +20,8 @@ import ManaKit
 import MBProgressHUD
 import PromiseKit
 import NYAlertViewController
+import TwitterKit
+import TwitterCore
 
 enum CardViewControllerSegmentedIndex: Int {
     case image
@@ -97,6 +102,7 @@ class CardViewController: BaseViewController {
     
     // MARK: Outlets
     @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
+    @IBOutlet weak var activityButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var favoriteTapGestureRecognizer: UITapGestureRecognizer!
     
@@ -140,6 +146,27 @@ class CardViewController: BaseViewController {
         
         tableView.reloadData()
         tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+    }
+    
+    @IBAction func activityAction(_ sender: UIBarButtonItem) {
+        if let cards = cards {
+            let card = cards[cardIndex]
+            
+            if let _ = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
+                showActivityViewController(sender, card: card)
+            } else {
+                MBProgressHUD.showAdded(to: view, animated: true)
+                firstly {
+                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+                }.done { (image: UIImage?) in
+                    MBProgressHUD.hide(for: self.view, animated: true)
+                    self.showActivityViewController(sender, card: card)
+                    
+                }.catch { error in
+                        print("\(error)")
+                }
+            }
+        }
     }
     
     @IBAction func favoriteAction(_ sender: UITapGestureRecognizer) {
@@ -254,6 +281,32 @@ class CardViewController: BaseViewController {
     }
     
     // MARK: Custom methods
+    func showActivityViewController(_ sender: UIBarButtonItem, card: CMCard) {
+        let provider = CardActivityItemProvider(card)
+        let activityVC = UIActivityViewController(activityItems: [provider], applicationActivities: [FacebookShareActivity(parent: self), TwitterShareActivity(parent: self)])
+
+        var excludedActivityTypes: [UIActivityType] = [.addToReadingList, .openInIBooks, .postToFacebook, .postToTwitter]
+        if #available(iOS 11.0, *) {
+            excludedActivityTypes.append(.markupAsPDF)
+        }
+
+        if let popoverPresentationController = activityVC.popoverPresentationController {
+            popoverPresentationController.barButtonItem = sender
+//            popoverPresentationController.sourceView = view
+        }
+        activityVC.excludedActivityTypes = excludedActivityTypes
+        activityVC.completionWithItemsHandler = { activity, success, items, error in
+            // user did not cancel
+            if success {
+                if let e = error {
+                    print("error saving meme: \(e.localizedDescription)")
+                }
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
+        self.present(activityVC, animated: true, completion: nil)
+    }
+
     func showUpdateRatingDialog() {
         if let cards = cards {
             let card = cards[cardIndex]
@@ -1415,7 +1468,7 @@ extension CardViewController : iCarouselDelegate {
             if let browser = IDMPhotoBrowser(photos: photos) {
                 browser.setInitialPageIndex(UInt(index))
 
-                browser.displayActionButton = true
+                browser.displayActionButton = false
                 browser.usePopAnimation = true
                 browser.forceHideStatusBar = true
                 browser.delegate = self

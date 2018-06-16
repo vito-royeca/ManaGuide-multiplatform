@@ -76,6 +76,7 @@
 	<string>Mana Guide</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>fbauth2</string>
 		<string>twitter</string>
 		<string>twitterauth</string>
 	</array>
@@ -131,7 +132,7 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSPhotoLibraryAddUsageDescription</key>
+	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This allows the app to save images in your device.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen</string>

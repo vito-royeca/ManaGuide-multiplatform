@@ -1448,8 +1448,14 @@
                                 <action selector="contentAction:" destination="v6L-wJ-qRt" eventType="valueChanged" id="Sg5-o4-qKq"/>
                             </connections>
                         </segmentedControl>
+                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="HKz-ot-gcd">
+                            <connections>
+                                <action selector="activityAction:" destination="v6L-wJ-qRt" id="4bH-TE-tkh"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="activityButton" destination="HKz-ot-gcd" id="k4r-YQ-fQh"/>
                         <outlet property="contentSegmentedControl" destination="2bC-Vj-fNr" id="ozL-jl-Es4"/>
                         <outlet property="favoriteTapGestureRecognizer" destination="jKI-Tm-ir5" id="hsu-Nx-AVX"/>
                         <outlet property="tableView" destination="XTg-F2-G7x" id="zcJ-OQ-Zvg"/>
@@ -1785,7 +1791,7 @@
         <segue reference="Vbm-cg-ye0"/>
         <segue reference="jVZ-a8-OYH"/>
         <segue reference="lLZ-BR-fAo"/>
-        <segue reference="Mbq-CH-LY8"/>
+        <segue reference="xMx-O9-Y4N"/>
         <segue reference="whl-Hr-bZH"/>
     </inferredMetricsTieBreakers>
 </document>

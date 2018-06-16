@@ -71,6 +71,15 @@
 		118281B120B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
 		118281B220B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
 		118281B320B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
+		118FDC6F20D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118FDC6E20D50499002FA5E8 /* CardActivityItemProvider.swift */; };
+		118FDC7020D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118FDC6E20D50499002FA5E8 /* CardActivityItemProvider.swift */; };
+		118FDC7120D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118FDC6E20D50499002FA5E8 /* CardActivityItemProvider.swift */; };
+		118FDC7320D51045002FA5E8 /* FacebookShareActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118FDC7220D51044002FA5E8 /* FacebookShareActivity.swift */; };
+		118FDC7420D51045002FA5E8 /* FacebookShareActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118FDC7220D51044002FA5E8 /* FacebookShareActivity.swift */; };
+		118FDC7520D51045002FA5E8 /* FacebookShareActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118FDC7220D51044002FA5E8 /* FacebookShareActivity.swift */; };
+		118FDC7720D515E5002FA5E8 /* ShareActivity.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 118FDC7620D515E5002FA5E8 /* ShareActivity.xcassets */; };
+		118FDC7820D515E5002FA5E8 /* ShareActivity.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 118FDC7620D515E5002FA5E8 /* ShareActivity.xcassets */; };
+		118FDC7920D515E5002FA5E8 /* ShareActivity.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 118FDC7620D515E5002FA5E8 /* ShareActivity.xcassets */; };
 		11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
 		11B2AA341F29DE490067E833 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
 		11CEE05820CFE96100D72186 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 110BB5001F207C6400086841 /* Assets.xcassets */; };
@@ -90,6 +99,9 @@
 		11F3BA3120D4141900511388 /* MGUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F3BA3020D4141900511388 /* MGUtilities.swift */; };
 		11F3BA3220D4141900511388 /* MGUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F3BA3020D4141900511388 /* MGUtilities.swift */; };
 		11F3BA3320D4141900511388 /* MGUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F3BA3020D4141900511388 /* MGUtilities.swift */; };
+		11FC811220D52D0D001407C6 /* TwitterShareActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11FC811120D52D0D001407C6 /* TwitterShareActivity.swift */; };
+		11FC811320D52D0D001407C6 /* TwitterShareActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11FC811120D52D0D001407C6 /* TwitterShareActivity.swift */; };
+		11FC811420D52D0D001407C6 /* TwitterShareActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11FC811120D52D0D001407C6 /* TwitterShareActivity.swift */; };
 		74354F476842033081184C2B /* Pods_ManaGuide.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBC4619D8E82345F50B95062 /* Pods_ManaGuide.framework */; };
 		C6B3BF0EAEFDFD7753AABDCA /* Pods_ManaGuideUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D468E164F8FD81E252338DF /* Pods_ManaGuideUITests.framework */; };
 		CF25780178833B6EA5E11C6F /* Pods_ManaGuideTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5D11A42B4FA676E10149FA9 /* Pods_ManaGuideTests.framework */; };
@@ -149,6 +161,12 @@
 		1165CD751F377F58006CC433 /* BannedListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannedListViewController.swift; sourceTree = "<group>"; };
 		1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComprehensiveRulesViewController.swift; sourceTree = "<group>"; };
 		118281B020B67FA500865172 /* AccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewController.swift; sourceTree = "<group>"; };
+		118FDC6E20D50499002FA5E8 /* CardActivityItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardActivityItemProvider.swift; sourceTree = "<group>"; };
+		118FDC7220D51044002FA5E8 /* FacebookShareActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacebookShareActivity.swift; sourceTree = "<group>"; };
+		118FDC7620D515E5002FA5E8 /* ShareActivity.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ShareActivity.xcassets; sourceTree = "<group>"; };
+		1195B2F320D4F1720026EA99 /* ManaGuide-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ManaGuide-Bridging-Header.h"; sourceTree = "<group>"; };
+		1195B2F420D4F1720026EA99 /* ManaGuideTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ManaGuideTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		1195B2F520D4F1720026EA99 /* ManaGuideUITests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ManaGuideUITests-Bridging-Header.h"; sourceTree = "<group>"; };
 		11B2AA321F29DE490067E833 /* CardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		11CEE05A20D0012300D72186 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		11E2E3E920D11AF500F9DB47 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
@@ -158,6 +176,7 @@
 		11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BrowserTableViewCell.xib; sourceTree = "<group>"; };
 		11F336B120BBB47B0007552F /* PDFViewerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFViewerViewController.swift; sourceTree = "<group>"; };
 		11F3BA3020D4141900511388 /* MGUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MGUtilities.swift; sourceTree = "<group>"; };
+		11FC811120D52D0D001407C6 /* TwitterShareActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitterShareActivity.swift; sourceTree = "<group>"; };
 		16CE1263B7BD598033CE1752 /* Pods-ManaGuideUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ManaGuideUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ManaGuideUITests/Pods-ManaGuideUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		24D1EA6B21F1DF4EBD57196F /* Pods-ManaGuide.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ManaGuide.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ManaGuide/Pods-ManaGuide.debug.xcconfig"; sourceTree = "<group>"; };
 		2C8C1EAFD37CC486643EE4F2 /* Pods-ManaGuideUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ManaGuideUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ManaGuideUITests/Pods-ManaGuideUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -236,6 +255,10 @@
 		110BB4F81F207C6400086841 /* ManaGuide */ = {
 			isa = PBXGroup;
 			children = (
+				1195B2F320D4F1720026EA99 /* ManaGuide-Bridging-Header.h */,
+				1195B2F420D4F1720026EA99 /* ManaGuideTests-Bridging-Header.h */,
+				1195B2F520D4F1720026EA99 /* ManaGuideUITests-Bridging-Header.h */,
+				1195B2F220D4F14A0026EA99 /* 3rdParty */,
 				11E2E3EB20D11AFD00F9DB47 /* ManaGuide.entitlements */,
 				1140F0CF1F42CBD80023E107 /* Utilities */,
 				110BB4F91F207C6400086841 /* AppDelegate.swift */,
@@ -317,13 +340,24 @@
 		1140F0CF1F42CBD80023E107 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				118FDC6E20D50499002FA5E8 /* CardActivityItemProvider.swift */,
+				11448A6120CD3849008EFC40 /* Constants.swift */,
+				118FDC7220D51044002FA5E8 /* FacebookShareActivity.swift */,
 				1140F0D01F42CC020023E107 /* FirebaseManager.swift */,
 				11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */,
-				11448A6120CD3849008EFC40 /* Constants.swift */,
-				1127329720D2480F00910D77 /* UIImage+AverageColor.swift */,
 				11F3BA3020D4141900511388 /* MGUtilities.swift */,
+				118FDC7620D515E5002FA5E8 /* ShareActivity.xcassets */,
+				11FC811120D52D0D001407C6 /* TwitterShareActivity.swift */,
+				1127329720D2480F00910D77 /* UIImage+AverageColor.swift */,
 			);
 			name = Utilities;
+			sourceTree = "<group>";
+		};
+		1195B2F220D4F14A0026EA99 /* 3rdParty */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = 3rdParty;
 			sourceTree = "<group>";
 		};
 		CCCF4703A6CA69F4288EC386 /* Pods */ = {
@@ -418,6 +452,7 @@
 					110BB4F51F207C6400086841 = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = 43CD66539H;
+						LastSwiftMigration = 0940;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.GameCenter.iOS = {
@@ -434,12 +469,14 @@
 					110BB5091F207C6400086841 = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = 43CD66539H;
+						LastSwiftMigration = 0940;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 110BB4F51F207C6400086841;
 					};
 					110BB5141F207C6400086841 = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = 43CD66539H;
+						LastSwiftMigration = 0940;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 110BB4F51F207C6400086841;
 					};
@@ -474,6 +511,7 @@
 				110BB5011F207C6400086841 /* Assets.xcassets in Resources */,
 				11CEE05B20D0012300D72186 /* Launch Screen.storyboard in Resources */,
 				110BB4FF1F207C6400086841 /* Main.storyboard in Resources */,
+				118FDC7720D515E5002FA5E8 /* ShareActivity.xcassets in Resources */,
 				11447EB220D1764000DFF5C7 /* RandomCardView.xib in Resources */,
 				11E4374C1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */,
 				1147B7691F226143004EF296 /* Settings.bundle in Resources */,
@@ -490,6 +528,7 @@
 				11CEE05C20D0012300D72186 /* Launch Screen.storyboard in Resources */,
 				11CEE05820CFE96100D72186 /* Assets.xcassets in Resources */,
 				1140F0C81F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
+				118FDC7820D515E5002FA5E8 /* ShareActivity.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -501,6 +540,7 @@
 				11CEE05D20D0012300D72186 /* Launch Screen.storyboard in Resources */,
 				11E4374D1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */,
 				1147B76A1F226143004EF296 /* Settings.bundle in Resources */,
+				118FDC7920D515E5002FA5E8 /* ShareActivity.xcassets in Resources */,
 				113A6B111F385D1700C68FF9 /* DynamicHeightTableViewCell.xib in Resources */,
 				1140F0C91F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
 				11CEE05920CFE96200D72186 /* Assets.xcassets in Resources */,
@@ -546,10 +586,8 @@
 				"${BUILT_PRODUCTS_DIR}/DATAStack/DATAStack.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKMessengerShareKit/FBSDKMessengerShareKit.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKShareKit/FBSDKShareKit.framework",
-				"${BUILT_PRODUCTS_DIR}/FacebookCore/FacebookCore.framework",
-				"${BUILT_PRODUCTS_DIR}/FacebookLogin/FacebookLogin.framework",
-				"${BUILT_PRODUCTS_DIR}/FacebookShare/FacebookShare.framework",
 				"${BUILT_PRODUCTS_DIR}/Font-Awesome-Swift/Font_Awesome_Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
@@ -587,10 +625,8 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DATAStack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKLoginKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKMessengerShareKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKShareKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookCore.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookLogin.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookShare.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Font_Awesome_Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMOAuth2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
@@ -706,10 +742,8 @@
 				"${BUILT_PRODUCTS_DIR}/DATAStack/DATAStack.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKMessengerShareKit/FBSDKMessengerShareKit.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKShareKit/FBSDKShareKit.framework",
-				"${BUILT_PRODUCTS_DIR}/FacebookCore/FacebookCore.framework",
-				"${BUILT_PRODUCTS_DIR}/FacebookLogin/FacebookLogin.framework",
-				"${BUILT_PRODUCTS_DIR}/FacebookShare/FacebookShare.framework",
 				"${BUILT_PRODUCTS_DIR}/Font-Awesome-Swift/Font_Awesome_Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
@@ -747,10 +781,8 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DATAStack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKLoginKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKMessengerShareKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKShareKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookCore.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookLogin.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookShare.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Font_Awesome_Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMOAuth2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
@@ -842,10 +874,8 @@
 				"${BUILT_PRODUCTS_DIR}/DATAStack/DATAStack.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKMessengerShareKit/FBSDKMessengerShareKit.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKShareKit/FBSDKShareKit.framework",
-				"${BUILT_PRODUCTS_DIR}/FacebookCore/FacebookCore.framework",
-				"${BUILT_PRODUCTS_DIR}/FacebookLogin/FacebookLogin.framework",
-				"${BUILT_PRODUCTS_DIR}/FacebookShare/FacebookShare.framework",
 				"${BUILT_PRODUCTS_DIR}/Font-Awesome-Swift/Font_Awesome_Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
@@ -883,10 +913,8 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DATAStack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKLoginKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKMessengerShareKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKShareKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookCore.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookLogin.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookShare.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Font_Awesome_Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMOAuth2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
@@ -937,18 +965,21 @@
 				113A6B0E1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */,
 				1165CD791F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
 				110BB52D1F20892B00086841 /* SearchViewController.swift in Sources */,
+				11FC811220D52D0D001407C6 /* TwitterShareActivity.swift in Sources */,
 				118281B120B67FA500865172 /* AccountViewController.swift in Sources */,
 				11448A6220CD3849008EFC40 /* Constants.swift in Sources */,
 				1140F0D11F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
 				1127329820D2480F00910D77 /* UIImage+AverageColor.swift in Sources */,
+				118FDC7320D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
 				1140F0CC1F42CA500023E107 /* FCCard.swift in Sources */,
 				1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */,
 				111D5A6C20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */,
 				11447EB620D177F700DFF5C7 /* RandomCardView.swift in Sources */,
 				1165CD731F377395006CC433 /* MoreViewController.swift in Sources */,
+				118FDC6F20D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
 				110BB52A1F20891D00086841 /* FeaturedViewController.swift in Sources */,
 				11F3BA3120D4141900511388 /* MGUtilities.swift in Sources */,
 			);
@@ -958,14 +989,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				118FDC7420D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
 				1150BCEF20B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				11F3BA3220D4141900511388 /* MGUtilities.swift in Sources */,
 				1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				118281B220B67FA500865172 /* AccountViewController.swift in Sources */,
 				11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
+				118FDC7020D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
 				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
+				11FC811320D52D0D001407C6 /* TwitterShareActivity.swift in Sources */,
 				11447EB720D177F700DFF5C7 /* RandomCardView.swift in Sources */,
 				111D5A6D20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				11448A6320CD3849008EFC40 /* Constants.swift in Sources */,
@@ -981,8 +1015,10 @@
 				11F336B420BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				1147B7581F223607004EF296 /* SetsViewController.swift in Sources */,
 				1127329A20D2480F00910D77 /* UIImage+AverageColor.swift in Sources */,
+				11FC811420D52D0D001407C6 /* TwitterShareActivity.swift in Sources */,
 				1141A84020D00F4A00554872 /* SnapshotHelper.swift in Sources */,
 				110BB51A1F207C6400086841 /* ManaGuideUITests.swift in Sources */,
+				118FDC7120D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
 				1165CD771F377F58006CC433 /* BannedListViewController.swift in Sources */,
 				1150BCF020B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				113A6B0F1F385D1700C68FF9 /* DynamicHeightTableViewCell.swift in Sources */,
@@ -995,6 +1031,7 @@
 				11E4374B1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
 				11448A6020CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */,
+				118FDC7520D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
 				1147B7641F224198004EF296 /* SetViewController.swift in Sources */,
 				11447EB820D177F700DFF5C7 /* RandomCardView.swift in Sources */,
 				11B2AA341F29DE490067E833 /* CardViewController.swift in Sources */,
@@ -1148,12 +1185,15 @@
 			baseConfigurationReference = 24D1EA6B21F1DF4EBD57196F /* Pods-ManaGuide.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 43CD66539H;
 				INFOPLIST_FILE = ManaGuide/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jovitoroyeca.ManaGuide;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ManaGuide/ManaGuide-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1164,12 +1204,14 @@
 			baseConfigurationReference = 989B0970F49E42E2CB5E566B /* Pods-ManaGuide.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 43CD66539H;
 				INFOPLIST_FILE = ManaGuide/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jovitoroyeca.ManaGuide;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ManaGuide/ManaGuide-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1181,11 +1223,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 43CD66539H;
 				INFOPLIST_FILE = ManaGuideTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jovitoroyeca.ManaGuideTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ManaGuide/ManaGuideTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ManaGuide.app/ManaGuide";
 			};
@@ -1197,11 +1242,13 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 43CD66539H;
 				INFOPLIST_FILE = ManaGuideTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jovitoroyeca.ManaGuideTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ManaGuide/ManaGuideTests-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ManaGuide.app/ManaGuide";
 			};
@@ -1212,11 +1259,14 @@
 			baseConfigurationReference = 16CE1263B7BD598033CE1752 /* Pods-ManaGuideUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 43CD66539H;
 				INFOPLIST_FILE = ManaGuideUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jovitoroyeca.ManaGuideUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ManaGuide/ManaGuideUITests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = ManaGuide;
 			};
@@ -1227,11 +1277,13 @@
 			baseConfigurationReference = 2C8C1EAFD37CC486643EE4F2 /* Pods-ManaGuideUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 43CD66539H;
 				INFOPLIST_FILE = ManaGuideUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jovitoroyeca.ManaGuideUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ManaGuide/ManaGuideUITests-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = ManaGuide;
 			};

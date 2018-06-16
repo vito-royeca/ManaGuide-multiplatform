@@ -12,23 +12,11 @@ PODS:
   - DATASource (7.0.2)
   - DATAStack (8.0.2)
   - Fabric (1.7.7)
-  - FacebookCore (0.3.1):
-    - Bolts (~> 1.8)
-    - FBSDKCoreKit (~> 4.33)
-  - FacebookLogin (0.3.1):
-    - Bolts (~> 1.8)
-    - FacebookCore (~> 0.3.1)
-    - FBSDKCoreKit (~> 4.33)
-    - FBSDKLoginKit (~> 4.33)
-  - FacebookShare (0.2.0):
-    - Bolts (~> 1.8)
-    - FacebookCore (~> 0.2)
-    - FBSDKCoreKit (~> 4.21)
-    - FBSDKShareKit (~> 4.21)
   - FBSDKCoreKit (4.33.0):
     - Bolts (~> 1.7)
   - FBSDKLoginKit (4.33.0):
     - FBSDKCoreKit
+  - FBSDKMessengerShareKit (1.3.2)
   - FBSDKShareKit (4.33.0):
     - FBSDKCoreKit (~> 4.33.0)
   - Firebase/Auth (5.2.0):
@@ -98,7 +86,7 @@ PODS:
   - Kanna (3.0.0)
   - KeychainAccess (3.1.1)
   - leveldb-library (1.20)
-  - ManaKit (2.4.0):
+  - ManaKit (2.4.1):
     - DATASource
     - DATAStack
     - Kanna (~> 3)
@@ -157,9 +145,10 @@ DEPENDENCIES:
   - DATASource
   - DATAStack
   - Fabric
-  - FacebookCore
-  - FacebookLogin
-  - FacebookShare (from `https://github.com/1amageek/facebook-sdk-swift`)
+  - FBSDKCoreKit
+  - FBSDKLoginKit
+  - FBSDKMessengerShareKit
+  - FBSDKShareKit
   - Firebase/Auth
   - Firebase/Core
   - Firebase/Database
@@ -187,7 +176,7 @@ DEPENDENCIES:
   - TwitterKit
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - Bolts
     - Cosmos
     - Crashlytics
@@ -195,10 +184,9 @@ SPEC REPOS:
     - DATASource
     - DATAStack
     - Fabric
-    - FacebookCore
-    - FacebookLogin
     - FBSDKCoreKit
     - FBSDKLoginKit
+    - FBSDKMessengerShareKit
     - FBSDKShareKit
     - Firebase
     - FirebaseAnalytics
@@ -236,8 +224,6 @@ SPEC REPOS:
     - TwitterKit
 
 EXTERNAL SOURCES:
-  FacebookShare:
-    :git: https://github.com/1amageek/facebook-sdk-swift
   Font-Awesome-Swift:
     :branch: swift-3
     :git: https://github.com/Vaberer/Font-Awesome-Swift
@@ -246,9 +232,6 @@ EXTERNAL SOURCES:
     :git: https://github.com/tid-kijyun/Kanna
 
 CHECKOUT OPTIONS:
-  FacebookShare:
-    :commit: 3ac76c770e9849285c380f380309d866911d2e93
-    :git: https://github.com/1amageek/facebook-sdk-swift
   Font-Awesome-Swift:
     :commit: a1fa6a2529e0d4fe2f0cc735f6d907612e1b7535
     :git: https://github.com/Vaberer/Font-Awesome-Swift
@@ -264,11 +247,9 @@ SPEC CHECKSUMS:
   DATASource: b86db74542b5b27d4d2af43ae698022f19507379
   DATAStack: 9c415f6e7733eafb9cf5c076613bfb5958c407cb
   Fabric: bda89e242bce1b7b8ab264248cf3407774ce0095
-  FacebookCore: 33078ef1d7d76b73f7e8c990dca7d3ea6db8d22f
-  FacebookLogin: 6f15bf4fefd7a8865abbfa8fcd7f3dfd87aa275f
-  FacebookShare: d086f7a4610bbbca9cec5e774de450a9b3e1a20b
   FBSDKCoreKit: 572b047a7e029bc44542bcf8a59414e7ff2b543e
   FBSDKLoginKit: 88cb456349cfb3b554427ce4f8b43729d85dfb40
+  FBSDKMessengerShareKit: 41c0b1a667d685c9433f993eb9611b3d5074e1cb
   FBSDKShareKit: 1869cb24db2cea90666a50cb9d568deb38e2d16e
   Firebase: 25ed0412036d7d008568d1fb4d2e9d81ea8a0a2c
   FirebaseAnalytics: b3628aea54c50464c32c393fb2ea032566e7ecc2
@@ -289,7 +270,7 @@ SPEC CHECKSUMS:
   Kanna: 93a9af3643d46425e48899a8b033a2da44af2b49
   KeychainAccess: 7bd430028059754a3debab3cfc0bd1fc7fb85df3
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
-  ManaKit: 049f89ad4afc4eafb544bdf1787e2bbfc4ee2378
+  ManaKit: 3948668b73c15d3cc4178c1503d4813bf7d2a443
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MMDrawerController: e3a54a5570388463ad3b36975251575b50c4e1a0
   "MMDrawerController+Storyboard": c98f86c0f32cdef1d466d19a7da3ad2fc6c6ac00
@@ -307,6 +288,6 @@ SPEC CHECKSUMS:
   TwitterCore: 644d59e75abccb26cf0a9050d2c4dea0e5412241
   TwitterKit: a2e60ddcedbf54091eac6f27685ca7a87681e1d7
 
-PODFILE CHECKSUM: fef77603bc98393325a8102f5141c4d353462e3a
+PODFILE CHECKSUM: 8a0ccd6832b6097c25479ebb3b91429c1799d00e
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.3

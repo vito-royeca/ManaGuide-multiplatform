@@ -19,7 +19,6 @@ class RandomCardView: UIView {
 
     // MARK: Variables
     var card: CMCard?
-    var averageColor: UIColor?
     
     // MARK: Outlets
     @IBOutlet weak var nameLabel: UILabel!
@@ -45,7 +44,7 @@ class RandomCardView: UIView {
                     ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
                 }.done { (image: UIImage?) in
                     if let image = image {
-                        self.averageColor = image.averageColor
+//                        self.averageColor = image.averageColor
                         
                         UIView.transition(with: self.cropImageView,
                                           duration: 1.0,
@@ -66,7 +65,7 @@ class RandomCardView: UIView {
     func showNameandSet() {
         if let card = card {
             nameLabel.text = card.name
-            nameLabel.textColor = averageColor
+            nameLabel.textColor = UIColor.white
             
             if let releaseDate = card.set!.releaseDate {
                 let isModern = ManaKit.sharedInstance.isModern(card)
@@ -76,7 +75,7 @@ class RandomCardView: UIView {
                 if let m15Date = formatter.date(from: "2014-07-18"),
                     let setReleaseDate = formatter.date(from: releaseDate) {
                     
-                    let shadowColor = UIColor.white
+                    let shadowColor = UIColor.lightGray
                     var shadowOffset = CGSize(width: 0, height: 1)
                     
                     if setReleaseDate.compare(m15Date) == .orderedSame ||
