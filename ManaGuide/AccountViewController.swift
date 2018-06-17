@@ -80,19 +80,20 @@ class AccountViewController: UIViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let dict = sender as? [String: Any]  else {
+            return
+        }
+        
         if segue.identifier == "showLogin" {
             if let dest = segue.destination as? UINavigationController {
-                if let loginVC = dest.childViewControllers.first as? LoginViewController,
-                    let dict = sender as? [String: Any] {
+                if let loginVC = dest.childViewControllers.first as? LoginViewController {
                     if let actionAfterLogin = dict["actionAfterLogin"] as? ((Bool) -> Void) {
                         loginVC.actionAfterLogin = actionAfterLogin
                     }
                 }
             }
         } else if segue.identifier == "showSearch" {
-            if let dest = segue.destination as? SearchViewController,
-                let dict = sender as? [String: Any] {
-                
+            if let dest = segue.destination as? SearchViewController {
                 dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
                 dest.title = dict["title"] as? String
                 dest.customSectionName = "nameSection"

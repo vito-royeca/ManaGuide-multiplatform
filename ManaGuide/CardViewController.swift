@@ -26,17 +26,19 @@ import TwitterCore
 enum CardViewControllerSegmentedIndex: Int {
     case image
     case details
+    case store
     
     var description : String {
         switch self {
         // Use Internationalization, as appropriate.
         case .image: return "Image"
         case .details: return "Details"
+        case .store: return "Store"
         }
     }
     
     static var count: Int {
-        return 2
+        return 3
     }
 }
 
@@ -110,61 +112,80 @@ class CardViewController: BaseViewController {
     @IBAction func contentAction(_ sender: UISegmentedControl) {
         segmentedIndex = CardViewControllerSegmentedIndex(rawValue: sender.selectedSegmentIndex)!
         
-        if segmentedIndex == .details {
+        guard let cards = cards else {
+            return
+        }
+        let card = cards[cardIndex]
+        
+        if segmentedIndex == .image {
+            tableView.reloadData()
+            tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+            
+        } else if segmentedIndex == .details {
             if !cardViewIncremented {
                 cardViewIncremented = true
                 incrementCardViews()
             }
             
-            if let cards = cards {
-                let card = cards[cardIndex]
-            
-                if let printings_ = card.printings_ {
-                    let sets = printings_.allObjects as! [CMSet]
-                    var filteredSets = [CMSet]()
-                    let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-                    
-                    if let set = card.set {
-                        filteredSets = sets.filter({ $0.code != set.code})
-                    }
-                    
-                    request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                                               NSSortDescriptor(key: "number", ascending: true),
-                                               NSSortDescriptor(key: "mciNumber", ascending: true)]
-                    request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, filteredSets.map({$0.code}))
-                    
-                    otherPrintings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMCard]
+            if let printings_ = card.printings_ {
+                let sets = printings_.allObjects as! [CMSet]
+                var filteredSets = [CMSet]()
+                let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                
+                if let set = card.set {
+                    filteredSets = sets.filter({ $0.code != set.code})
                 }
                 
-                if let variations = card.variations_ {
-                    self.variations = variations.allObjects as? [CMCard]
-                } else {
-                    variations = [CMCard]()
-                }
+                request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                           NSSortDescriptor(key: "number", ascending: true),
+                                           NSSortDescriptor(key: "mciNumber", ascending: true)]
+                request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, filteredSets.map({$0.code}))
+                
+                otherPrintings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMCard]
+            }
+            
+            if let variations = card.variations_ {
+                self.variations = variations.allObjects as? [CMCard]
+            } else {
+                variations = [CMCard]()
+            }
+            tableView.reloadData()
+            tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+            
+        } else if segmentedIndex == .store {
+            tableView.reloadData()
+            MBProgressHUD.showAdded(to: tableView, animated: true)
+
+            firstly {
+                ManaKit.sharedInstance.fetchTCGPlayerStorePricing(card: card)
+            }.done {
+                MBProgressHUD.hide(for: self.tableView, animated: true)
+                self.tableView.reloadData()
+            }.catch { error in
+                
             }
         }
-        
-        tableView.reloadData()
-        tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
     }
     
     @IBAction func activityAction(_ sender: UIBarButtonItem) {
-        if let cards = cards {
-            let card = cards[cardIndex]
-            
-            if let _ = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
-                showActivityViewController(sender, card: card)
-            } else {
-                MBProgressHUD.showAdded(to: view, animated: true)
-                firstly {
-                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-                }.done { (image: UIImage?) in
-                    MBProgressHUD.hide(for: self.view, animated: true)
-                    self.showActivityViewController(sender, card: card)
-                    
-                }.catch { error in
-                        print("\(error)")
-                }
+        guard let cards = cards else {
+            return
+        }
+        
+        let card = cards[cardIndex]
+        
+        if let _ = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
+            showActivityViewController(sender, card: card)
+        } else {
+            MBProgressHUD.showAdded(to: view, animated: true)
+            firstly {
+                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+            }.done { (image: UIImage?) in
+                MBProgressHUD.hide(for: self.view, animated: true)
+                self.showActivityViewController(sender, card: card)
+                
+            }.catch { error in
+                    print("\(error)")
             }
         }
     }
@@ -202,8 +223,10 @@ class CardViewController: BaseViewController {
         // Do any additional setup after loading the view.
         contentSegmentedControl.setFAIcon(icon: .FAImage, forSegmentAtIndex: 0)
         contentSegmentedControl.setFAIcon(icon: .FAEye, forSegmentAtIndex: 1)
+        contentSegmentedControl.setFAIcon(icon: .FAShoppingCart, forSegmentAtIndex: 2)
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
-        
+        tableView.register(UINib(nibName: "StoreTableViewCell", bundle: nil), forCellReuseIdentifier: "StoreCell")
+
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadCardActionRows(_:)), name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kCardViewsUpdatedNotification), object:nil)
@@ -211,10 +234,12 @@ class CardViewController: BaseViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadCardActionRows(_:)), name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object: nil)
         
-        if let cards = cards {
-            let card = cards[cardIndex]
-            title = card.name
+        guard let cards = cards else {
+            return
         }
+        
+        let card = cards[cardIndex]
+        title = card.name
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -292,8 +317,8 @@ class CardViewController: BaseViewController {
 
         if let popoverPresentationController = activityVC.popoverPresentationController {
             popoverPresentationController.barButtonItem = sender
-//            popoverPresentationController.sourceView = view
         }
+        
         activityVC.excludedActivityTypes = excludedActivityTypes
         activityVC.completionWithItemsHandler = { activity, success, items, error in
             // user did not cancel
@@ -386,216 +411,6 @@ class CardViewController: BaseViewController {
         }
     }
     
-    func composeType(of card: CMCard, pointSize: CGFloat) -> NSAttributedString {
-        let attributedString = NSMutableAttributedString()
-        var cardType: CMCardType?
-        var image: UIImage?
-        var text:String?
-        
-        if let types = card.types_ {
-            if types.count > 1 {
-                image = ManaKit.sharedInstance.symbolImage(name: "Multiple")
-                cardType = types.allObjects.first as? CMCardType
-                
-                for t in types.allObjects {
-                    if let t = t as? CMCardType {
-                        if t.name == "Creature" {
-                            cardType = t
-                        }
-                    }
-                }
-            } else {
-                if let type = types.allObjects.first as? CMCardType {
-                    cardType = type
-                }
-            }
-        }
-        
-        if let cardType = cardType {
-            if let name = cardType.name {
-                image = ManaKit.sharedInstance.symbolImage(name: name)
-            }
-        }
-
-        // type
-        if let type = card.type_,
-            let cardType = cardType {
-            
-            text = " "
-            if let name = type.name {
-                text!.append(name)
-            }
-            if let name = cardType.name {
-                if name == "Creature" {
-                    if let power = card.power,
-                        let toughness = card.toughness {
-                        text!.append(" (\(power)/\(toughness))")
-                    }
-                }
-            }
-        }
-        
-        
-        if let image = image {
-            let imageAttachment =  NSTextAttachment()
-            imageAttachment.image = image
-            
-            let ratio = image.size.width / image.size.height
-            let height = CGFloat(17)
-            let width = ratio * height
-            var imageOffsetY = CGFloat(0)
-            
-            if height > pointSize {
-                imageOffsetY = -(height - pointSize) / 2.0
-            } else {
-                imageOffsetY = -(pointSize - height) / 2.0
-            }
-            
-            imageAttachment.bounds = CGRect(x: 0, y: imageOffsetY, width: width, height: height)
-            
-            let attachmentString = NSAttributedString(attachment: imageAttachment)
-            attributedString.append(attachmentString)
-        }
-        
-        if let text = text {
-            attributedString.append(NSAttributedString(string: text))
-        }
-        
-        return attributedString
-    }
-    
-    func composeOtherDetails(forCard card: CMCard) -> NSAttributedString {
-        let attributedString = NSMutableAttributedString()
-        
-        let titleParagraphStyle = NSMutableParagraphStyle()
-        titleParagraphStyle.alignment = .left
-        
-        let attributes = [NSFontAttributeName: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
-                          NSParagraphStyleAttributeName: titleParagraphStyle]
-        
-        var text = "Layout: "
-        if let layout = card.layout_ {
-            if let name = layout.name {
-                text.append(name)
-            } else {
-                text.append("\u{2014}")
-            }
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
-        
-        text = "\nConverted Mana Cost: "
-        text.append("\(String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))")
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
-        
-        text = "\nColors: "
-        if let colors_ = card.colors_ {
-            if let s = colors_.allObjects as? [CMColor] {
-                let string = s.map({ $0.name! }).joined(separator: ", ")
-                text.append(string.count > 0 ? string : "\u{2014}")
-            } else {
-                text.append("\u{2014}")
-            }
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
-        
-        text = "\nColors Identity: "
-        if let colorIdentities_ = card.colorIdentities_ {
-            if let s = colorIdentities_.allObjects as? [CMColor] {
-                let string = s.map({ $0.name! }).joined(separator: ", ")
-                text.append(string.count > 0 ? string : "\u{2014}")
-            } else {
-                text.append("\u{2014}")
-            }
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
-        
-        text = "\nOriginal Type: "
-        if let originalType = card.originalType {
-            text.append(originalType)
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
-        
-        text = "\nSubtypes: "
-        if let subtypes_ = card.subtypes_ {
-            if let s = subtypes_.allObjects as? [CMCardType] {
-                let string = s.map({ $0.name! }).joined(separator: ", ")
-                text.append(string.count > 0 ? string : "\u{2014}")
-            } else {
-                text.append("\u{2014}")
-            }
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
-        
-        text = "\nSupertypes: "
-        if let supertypes_ = card.supertypes_ {
-            if let s = supertypes_.allObjects as? [CMCardType] {
-                let string = s.map({ $0.name! }).joined(separator: ", ")
-                text.append(string.count > 0 ? string : "\u{2014}")
-            } else {
-                text.append("\u{2014}")
-            }
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
-        
-        text = "\nRarity: "
-        if let rarity = card.rarity_ {
-            text.append(rarity.name!)
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
-        
-        text = "\nSet Online Only: "
-        if let set = card.set {
-            text.append(set.onlineOnly ? "Yes" : "No")
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
-        
-        text = "\nReserved List: "
-        text.append(card.reserved ? "Yes" : "No")
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
-        
-        text = "\nRelease Date: "
-        if let releaseDate = card.releaseDate ?? card.set!.releaseDate {
-            text.append(releaseDate)
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
-        
-        text = "\nSource: "
-        if let source = card.source {
-            text.append(source)
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
-        
-        text = "\nNumber: "
-        if let number = card.number ?? card.mciNumber {
-            text.append(number)
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
-        
-        return attributedString
-    }
-    
     func showImage(ofCard card: CMCard, inImageView imageView: UIImageView) {
         if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
             imageView.image = image
@@ -640,6 +455,11 @@ class CardViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension CardViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let cards = cards else {
+            return 0
+        }
+        
+        let card = cards[cardIndex]
         var rows = 0
         
         switch segmentedIndex {
@@ -648,37 +468,30 @@ extension CardViewController : UITableViewDataSource {
         case .details:
             switch section {
             case CardViewControllerDetailsSection.otherNames.rawValue:
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    
-                    if let names_ = card.names_ {
-                        if let array = names_.allObjects as? [CMCard] {
-                            rows = array.filter({ $0.name != card.name}).count
-                        }
+                if let names_ = card.names_ {
+                    if let array = names_.allObjects as? [CMCard] {
+                        rows = array.filter({ $0.name != card.name}).count
                     }
-                    if rows == 0 {
-                        rows = 1
-                    }
+                }
+                if rows == 0 {
+                    rows = 1
                 }
             case CardViewControllerDetailsSection.rulings.rawValue:
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    
-                    if let rulings_ = card.rulings_ {
-                        rows = rulings_.allObjects.count >= 1 ? rulings_.allObjects.count : 1
-                    }
+                if let rulings_ = card.rulings_ {
+                    rows = rulings_.allObjects.count >= 1 ? rulings_.allObjects.count : 1
                 }
             case CardViewControllerDetailsSection.legalities.rawValue:
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    
-                    if let cardLegalities_ = card.cardLegalities_ {
-                        rows = cardLegalities_.allObjects.count >= 1 ? cardLegalities_.allObjects.count : 1
-                    }
+                if let cardLegalities_ = card.cardLegalities_ {
+                    rows = cardLegalities_.allObjects.count >= 1 ? cardLegalities_.allObjects.count : 1
                 }
             default:
                 rows = 1
             }
+        case .store:
+            guard let suppliers = card.suppliers else {
+                return rows
+            }
+            rows = suppliers.count + 1
         }
         
         return rows
@@ -692,12 +505,19 @@ extension CardViewController : UITableViewDataSource {
             sections = CardViewControllerImageSection.count
         case .details:
             sections = CardViewControllerDetailsSection.count
+        case .store:
+            sections = 1
         }
         
         return sections
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cards = cards else {
+            return UITableViewCell(frame: CGRect.zero)
+        }
+        
+        let card = cards[cardIndex]
         var cell: UITableViewCell?
         
         switch segmentedIndex {
@@ -706,10 +526,7 @@ extension CardViewController : UITableViewDataSource {
             
             switch indexPath.section {
             case CardViewControllerImageSection.pricing.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell"),
-                    let cards = cards {
-                    let card = cards[cardIndex]
-                    
+                if let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell") {
                     if let label = c.viewWithTag(100) as? UILabel {
                         label.text = "NA"
                     }
@@ -724,7 +541,7 @@ extension CardViewController : UITableViewDataSource {
                     }
                     
                     firstly {
-                        ManaKit.sharedInstance.fetchTCGPlayerPricing(card: card)
+                        ManaKit.sharedInstance.fetchTCGPlayerCardPricing(card: card)
                     }.done { (pricing: CMCardPricing?) in
                         if let pricing = pricing {
                             if let label = c.viewWithTag(100) as? UILabel {
@@ -757,9 +574,7 @@ extension CardViewController : UITableViewDataSource {
                         carouselView.isPagingEnabled = true
                         carouselView.currentItemIndex = cardIndex
                         
-                        if let imageView = carouselView.itemView(at: cardIndex) as? UIImageView,
-                            let cards = cards {
-                            let card = cards[cardIndex]
+                        if let imageView = carouselView.itemView(at: cardIndex) as? UIImageView {
                             showImage(ofCard: card, inImageView: imageView)
                         }
                     }
@@ -769,9 +584,7 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             case CardViewControllerImageSection.actions.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "ActionsCell"),
-                    let cards = cards {
-                    let card = cards[cardIndex]
+                if let c = tableView.dequeueReusableCell(withIdentifier: "ActionsCell") {
                     
                     if let ratingView = c.viewWithTag(100) as? CosmosView {
                         ratingView.didFinishTouchingCosmos = { _ in
@@ -827,10 +640,7 @@ extension CardViewController : UITableViewDataSource {
             
             switch indexPath.section {
             case CardViewControllerDetailsSection.manaCost.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
+                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") {
                     if let label = c.textLabel {
                         if let text = card.manaCost {
                             label.attributedText = MGUtilities.addSymbols(toText: "\(text))", pointSize: label.font.pointSize)
@@ -843,13 +653,10 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             case CardViewControllerDetailsSection.type.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
-                    let cards = cards {
-                    let card = cards[cardIndex]
-                    
+                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") {
                     if let label = c.textLabel {
                         if let _ = card.type_ {
-                            label.attributedText = composeType(of: card, pointSize: label.font.pointSize)
+                            label.attributedText = MGUtilities.composeType(of: card, pointSize: label.font.pointSize)
                             label.adjustsFontSizeToFitWidth = true
                         } else {
                             label.text = " "
@@ -862,10 +669,7 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             case CardViewControllerDetailsSection.oracleText.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
+                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
                     if let label = c.viewWithTag(100) as? UILabel {
                         if let text = card.text {
                             label.attributedText = MGUtilities.addSymbols(toText: "\n\(text)\n", pointSize: label.font.pointSize)
@@ -878,10 +682,7 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             case CardViewControllerDetailsSection.originalText.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
+                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
                     if let label = c.viewWithTag(100) as? UILabel {
                         if let text = card.originalText {
                             label.attributedText = MGUtilities.addSymbols(toText: "\n\(text)\n", pointSize: label.font.pointSize)
@@ -894,10 +695,7 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             case CardViewControllerDetailsSection.flavorText.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
+                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
                     if let label = c.viewWithTag(100) as? UILabel {
                         if let text = card.flavor {
                             label.text = "\n\(text)\n"
@@ -910,10 +708,7 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             case CardViewControllerDetailsSection.artist.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
+                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
                     if let artist = card.artist_ {
                         c.textLabel?.adjustsFontSizeToFitWidth = true
                         c.textLabel?.text = artist.name
@@ -927,10 +722,7 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             case CardViewControllerDetailsSection.set.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
+                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
                     if let set = card.set,
                         let label = c.textLabel {
                         
@@ -959,10 +751,7 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             case CardViewControllerDetailsSection.otherNames.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
+                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") {
                     if let label = c.textLabel {
                         var otherCard: CMCard?
                         
@@ -995,10 +784,7 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             case CardViewControllerDetailsSection.rulings.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
+                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
                     if let rulings_ = card.rulings_,
                         let label = c.viewWithTag(100) as? UILabel {
                         let array = rulings_.allObjects.sorted(by: {(first: Any, second: Any) -> Bool in
@@ -1036,10 +822,7 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             case CardViewControllerDetailsSection.legalities.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
+                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
                     if let cardLegalities_ = card.cardLegalities_ {
                         let array = cardLegalities_.allObjects as! [CMCardLegality]
                         
@@ -1057,12 +840,9 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             case CardViewControllerDetailsSection.otherDetails.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                    let cards = cards {
-                    
-                    let card = cards[cardIndex]
+                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
                     if let label = c.viewWithTag(100) as? UILabel {
-                        label.attributedText = composeOtherDetails(forCard: card)
+                        label.attributedText = MGUtilities.composeOtherDetails(forCard: card)
                     }
                     
                     c.selectionStyle = .none
@@ -1072,12 +852,55 @@ extension CardViewController : UITableViewDataSource {
             default:
                 ()
             }
+        case .store:
+            guard let suppliers = card.suppliers else {
+                return UITableViewCell(frame: CGRect.zero)
+            }
+            let count = suppliers.allObjects.count
+            
+            if count == 0 {
+                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
+                    if let label = c.viewWithTag(100) as? UILabel {
+                        label.text = card.storePricingNote
+                    }
+                    c.selectionStyle = .none
+                    c.accessoryType = .none
+                    cell = c
+                }
+            } else {
+                if indexPath.row <= count - 1 {
+                    if let c = tableView.dequeueReusableCell(withIdentifier: "StoreCell") as? StoreTableViewCell {
+                        if let suppliers = card.suppliers {
+                            if let supplier = suppliers.allObjects[indexPath.row] as? CMSupplier {
+                                c.display(supplier)
+                            }
+                        }
+                        c.selectionStyle = .none
+                        c.accessoryType = .none
+                        cell = c
+                    }
+                } else {
+                    if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
+                        if let label = c.viewWithTag(100) as? UILabel {
+                            label.text = card.storePricingNote
+                        }
+                        c.selectionStyle = .none
+                        c.accessoryType = .none
+                        cell = c
+                    }
+                }
+            }
         }
         
         return cell!
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let cards = cards else {
+            return nil
+        }
+        
+        let card = cards[cardIndex]
         var headerTitle: String?
         
         switch segmentedIndex {
@@ -1109,13 +932,10 @@ extension CardViewController : UITableViewDataSource {
                 headerTitle = CardViewControllerDetailsSection.otherNames.description
                 var count = 0
                 
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    if let names_ = card.names_ {
-                        if let array = names_.allObjects as? [CMCard] {
-                            count = array.filter({ $0.name != card.name}).count
-                            
-                        }
+                if let names_ = card.names_ {
+                    if let array = names_.allObjects as? [CMCard] {
+                        count = array.filter({ $0.name != card.name}).count
+                        
                     }
                 }
                 headerTitle?.append(": \(count)")
@@ -1131,24 +951,16 @@ extension CardViewController : UITableViewDataSource {
                 headerTitle = CardViewControllerDetailsSection.rulings.description
                 var count = 0
                 
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    
-                    if let rulings_ = card.rulings_ {
-                        count = rulings_.count
-                    }
+                if let rulings_ = card.rulings_ {
+                    count = rulings_.count
                 }
                 headerTitle?.append(": \(count)")
             case CardViewControllerDetailsSection.legalities.rawValue:
                 headerTitle = CardViewControllerDetailsSection.legalities.description
                 var count = 0
                 
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    
-                    if let cardLegalities_ = card.cardLegalities_ {
-                        count = cardLegalities_.count
-                    }
+                if let cardLegalities_ = card.cardLegalities_ {
+                    count = cardLegalities_.count
                 }
                 headerTitle?.append(": \(count)")
             case CardViewControllerDetailsSection.otherDetails.rawValue:
@@ -1207,6 +1019,11 @@ extension CardViewController : UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard let cards = cards else {
+            return CGFloat(0)
+        }
+        
+        let card = cards[cardIndex]
         var height = CGFloat(0)
         
         switch segmentedIndex {
@@ -1229,6 +1046,21 @@ extension CardViewController : UITableViewDelegate {
                 height = CGFloat(88)
             default:
                 height = UITableViewAutomaticDimension
+            }
+        case .store:
+            guard let suppliers = card.suppliers else {
+                return CGFloat(0)
+            }
+            let count = suppliers.allObjects.count
+            
+            if count == 0 {
+                height = UITableViewAutomaticDimension
+            } else {
+                if indexPath.row <= count - 1 {
+                    height = kStoreTableViewCellHeight
+                } else {
+                    height = UITableViewAutomaticDimension
+                }
             }
         }
         
@@ -1277,51 +1109,45 @@ extension CardViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let cards = cards else {
+            return
+        }
+        let card = cards[cardIndex]
+        
         switch segmentedIndex {
         case .details:
             switch indexPath.section {
             case CardViewControllerDetailsSection.artist.rawValue:
-                if let cards = cards  {
-                    let card = cards[cardIndex]
+                if let artist = card.artist_ {
+                    let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                    let predicate = NSPredicate(format: "artist_.name = %@", artist.name!)
                     
-                    if let artist = card.artist_ {
-                        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-                        let predicate = NSPredicate(format: "artist_.name = %@", artist.name!)
-                        
-                        request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                                   NSSortDescriptor(key: "name", ascending: true),
-                                                   NSSortDescriptor(key: "set.releaseDate", ascending: true)]
-                        request.predicate = predicate
-                        
-                        performSegue(withIdentifier: "showSearch", sender: ["request": request,
-                                                                            "title": artist.name!])
-                    }
+                    request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                               NSSortDescriptor(key: "name", ascending: true),
+                                               NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+                    request.predicate = predicate
+                    
+                    performSegue(withIdentifier: "showSearch", sender: ["request": request,
+                                                                        "title": artist.name!])
                 }
             case CardViewControllerDetailsSection.set.rawValue:
-                if let cards = cards  {
-                    let card = cards[cardIndex]
-                    
-                    if let set = card.set {
-                        performSegue(withIdentifier: "showSet", sender: set)
-                    }
+                if let set = card.set {
+                    performSegue(withIdentifier: "showSet", sender: set)
                 }
             case CardViewControllerDetailsSection.otherNames.rawValue:
-                if let cards = cards  {
-                    let card = cards[cardIndex]
-                    var otherCard: CMCard?
-                    
-                    if let names_ = card.names_ {
-                        if let array = names_.allObjects as? [CMCard] {
-                            let array2 = array.filter({ $0.name != card.name})
-                            if array2.count > 0 {
-                                otherCard = array2[indexPath.row]
-                            }
+                var otherCard: CMCard?
+                
+                if let names_ = card.names_ {
+                    if let array = names_.allObjects as? [CMCard] {
+                        let array2 = array.filter({ $0.name != card.name})
+                        if array2.count > 0 {
+                            otherCard = array2[indexPath.row]
                         }
                     }
-                    
-                    if let otherCard = otherCard {
-                        performSegue(withIdentifier: "showCard", sender: ["card": otherCard])
-                    }
+                }
+                
+                if let otherCard = otherCard {
+                    performSegue(withIdentifier: "showCard", sender: ["card": otherCard])
                 }
             default:
                 ()
@@ -1458,26 +1284,27 @@ extension CardViewController : iCarouselDelegate {
     }
     
     func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
-        if let cards = cards {
-            var photos = [ManaGuidePhoto]()
-            
-            for card in cards {
-                photos.append(ManaGuidePhoto(card: card))
-            }
-            
-            if let browser = IDMPhotoBrowser(photos: photos) {
-                browser.setInitialPageIndex(UInt(index))
+        guard let cards = cards else {
+            return
+        }
+        
+        var photos = [ManaGuidePhoto]()
+        
+        for card in cards {
+            photos.append(ManaGuidePhoto(card: card))
+        }
+        
+        if let browser = IDMPhotoBrowser(photos: photos) {
+            browser.setInitialPageIndex(UInt(index))
 
-                browser.displayActionButton = false
-                browser.usePopAnimation = true
-                browser.forceHideStatusBar = true
-                browser.delegate = self
+            browser.displayActionButton = false
+            browser.usePopAnimation = true
+            browser.forceHideStatusBar = true
+            browser.delegate = self
 
-                present(browser, animated: true, completion: nil)
-            }
+            present(browser, animated: true, completion: nil)
         }
     }
-    
 }
 
 // MARK: IDMPhotoBrowserDelegate

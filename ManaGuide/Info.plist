@@ -25,37 +25,16 @@
 			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb228147117948469</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string></string>
-			<key>CFBundleURLSchemes</key>
-			<array>
 				<string>twitterkit-saMFOtPPU7OPGofIYoVYEmzFx</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
+				<string>fb228147117948469</string>
 				<string>com.googleusercontent.apps.976672670197-h4fs0sbbfboi92hsbvjr4gamepnas08m</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
 				<string>oauth-managuide</string>
 				<string>com.jovitoroyeca.ManaGuide</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>4</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -76,7 +55,6 @@
 	<string>Mana Guide</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-		<string>fbauth2</string>
 		<string>twitter</string>
 		<string>twitterauth</string>
 	</array>

@@ -42,7 +42,7 @@ class FacebookShareActivity: UIActivity {
     }
     
     open override var activityTitle : String? {
-        return "Facebook Share"
+        return "Facebook Sharing"
     }
     
     open override var activityImage : UIImage? {

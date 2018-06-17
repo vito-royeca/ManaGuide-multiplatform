@@ -58,7 +58,7 @@ class LoginViewController: UIViewController {
                 
                 firstly {
                     authSignIn(with: email, password: password)
-                    }.then { (authResult: AuthDataResult?) in
+                }.then { (authResult: AuthDataResult?) in
                     self.updateUser(email: authResult?.user.email, photoURL: authResult?.user.photoURL, displayName: authResult?.user.displayName)
                 }.done {
                     MBProgressHUD.hide(for: self.view, animated: true)

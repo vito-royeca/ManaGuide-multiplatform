@@ -14,6 +14,23 @@ import ManaKit
 import MBProgressHUD
 import PromiseKit
 
+enum SetViewControllerSegmentedIndex: Int {
+    case cards
+    case wiki
+    
+    var description : String {
+        switch self {
+        // Use Internationalization, as appropriate.
+        case .cards: return "Cards"
+        case .wiki: return "Wiki"
+        }
+    }
+    
+    static var count: Int {
+        return 2
+    }
+}
+
 class SetViewController: BaseViewController {
 
     // MARK: Constants
@@ -28,10 +45,16 @@ class SetViewController: BaseViewController {
     var firstLoad = false
     
     // MARK: Outlets
+    @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: Actions
+    
+    @IBAction func contentAction(_ sender: UISegmentedControl) {
+        updateDataDisplay()
+    }
+    
     @IBAction func showRightMenuAction(_ sender: UIBarButtonItem) {
         showSettingsMenu(file: "Set")
     }
@@ -41,6 +64,8 @@ class SetViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        contentSegmentedControl.setFAIcon(icon: .FADatabase, forSegmentAtIndex: 0)
+        contentSegmentedControl.setFAIcon(icon: .FAWikipediaW, forSegmentAtIndex: 1)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
         
@@ -109,9 +134,9 @@ class SetViewController: BaseViewController {
     func updateDataDisplay() {
         let defaults = defaultsValue()
         let setDisplayBy = defaults["setDisplayBy"] as! String
-        let setShow = defaults["setShow"] as! String
         
-        if setShow == "cards" {
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case SetViewControllerSegmentedIndex.cards.rawValue:
             if #available(iOS 11.0, *) {
                 navigationItem.searchController?.searchBar.isHidden = false
                 navigationItem.hidesSearchBarWhenScrolling = false
@@ -128,7 +153,7 @@ class SetViewController: BaseViewController {
             default:
                 ()
             }
-        } else {
+        case SetViewControllerSegmentedIndex.wiki.rawValue:
             if #available(iOS 11.0, *) {
                 navigationItem.searchController?.searchBar.isHidden = true
                 navigationItem.hidesSearchBarWhenScrolling = true
@@ -137,8 +162,10 @@ class SetViewController: BaseViewController {
             }
             
             tableView.dataSource = self
+        default:
+            ()
         }
-
+        
         tableView.delegate = self
         tableView.reloadData()
     }
@@ -222,7 +249,6 @@ class SetViewController: BaseViewController {
             let defaults = defaultsValue()
             let setSectionName = defaults["setSectionName"] as! String
             let setDisplayBy = defaults["setDisplayBy"] as! String
-            let setShow = defaults["setShow"] as! String
             
             switch setSectionName {
             case "nameSection":
@@ -269,7 +295,8 @@ class SetViewController: BaseViewController {
             
             
             var sections = 0
-            if setShow == "cards" {
+            switch contentSegmentedControl.selectedSegmentIndex {
+            case SetViewControllerSegmentedIndex.cards.rawValue:
                 switch setDisplayBy {
                 case "list":
                     sections = dataSource.numberOfSections(in: tableView)
@@ -280,6 +307,8 @@ class SetViewController: BaseViewController {
                 default:
                     ()
                 }
+            default:
+                ()
             }
             
             if sections > 0 {
@@ -303,7 +332,6 @@ class SetViewController: BaseViewController {
             var setSecondSortBy = defaults["setSecondSortBy"] as! String
             var setOrderBy = defaults["setOrderBy"] as! Bool
             var setDisplayBy = defaults["setDisplayBy"] as! String
-            var setShow = defaults["setShow"] as! String
             
             if let value = userInfo["setSortBy"] as? String {
                 setSortBy = value
@@ -337,16 +365,11 @@ class SetViewController: BaseViewController {
                 setDisplayBy = value
             }
             
-            if let value = userInfo["setShow"] as? String {
-                setShow = value
-            }
-            
             UserDefaults.standard.set(setSectionName, forKey: "setSectionName")
             UserDefaults.standard.set(setSortBy, forKey: "setSortBy")
             UserDefaults.standard.set(setSecondSortBy, forKey: "setSecondSortBy")
             UserDefaults.standard.set(setOrderBy, forKey: "setOrderBy")
             UserDefaults.standard.set(setDisplayBy, forKey: "setDisplayBy")
-            UserDefaults.standard.set(setShow, forKey: "setShow")
             UserDefaults.standard.synchronize()
             
             updateDataDisplay()
@@ -386,12 +409,6 @@ class SetViewController: BaseViewController {
             values["setDisplayBy"] = "list"
         }
         
-        if let value = UserDefaults.standard.value(forKey: "setShow") as? String {
-            values["setShow"] = value
-        } else {
-            values["setShow"] = "cards"
-        }
-        
         return values
     }
     
@@ -406,7 +423,8 @@ class SetViewController: BaseViewController {
             } else if code == "LEB" {
                 path = "Beta"
             } else {
-                path = name.replacingOccurrences(of: " ", with: "_")
+                path = name.replacingOccurrences(of: " and ", with: " & ")
+                       .replacingOccurrences(of: " ", with: "_")
             }
         }
         
@@ -465,11 +483,10 @@ extension SetViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let defaults = defaultsValue()
         let setDisplayBy = defaults["setDisplayBy"] as! String
-        let setShow = defaults["setShow"] as! String
         var cell: UITableViewCell?
         
-        switch setShow {
-        case "cards":
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case SetViewControllerSegmentedIndex.cards.rawValue:
             switch setDisplayBy {
             case "grid":
                 if let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") {
@@ -494,7 +511,7 @@ extension SetViewController : UITableViewDataSource {
             default:
                 ()
             }
-        case "setInfo":
+        case SetViewControllerSegmentedIndex.wiki.rawValue:
             if let c = tableView.dequeueReusableCell(withIdentifier: "SetInfoCell") as? BrowserTableViewCell,
                 let set = set {
                 c.webView.delegate = self
@@ -515,11 +532,10 @@ extension SetViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let defaults = defaultsValue()
         let setDisplayBy = defaults["setDisplayBy"] as! String
-        let setShow = defaults["setShow"] as! String
         var height = CGFloat(0)
-        
-        switch setShow {
-        case "cards":
+
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case SetViewControllerSegmentedIndex.cards.rawValue:
             switch setDisplayBy {
             case "list":
                 height = kCardTableViewCellHeight
@@ -528,7 +544,7 @@ extension SetViewController : UITableViewDelegate {
             default:
                 ()
             }
-        case "setInfo":
+        case SetViewControllerSegmentedIndex.wiki.rawValue:
             height = tableView.frame.size.height
         default:
             ()
@@ -538,11 +554,8 @@ extension SetViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let defaults = defaultsValue()
-        let setShow = defaults["setShow"] as! String
-        
-        switch setShow {
-        case "cards":
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case SetViewControllerSegmentedIndex.cards.rawValue:
             let card = dataSource!.object(indexPath)
             let cards = dataSource!.all()
             let cardIndex = cards.index(of: card!)
@@ -550,7 +563,6 @@ extension SetViewController : UITableViewDelegate {
             let sender = ["cardIndex": cardIndex as Any,
                           "cards": cards]
             performSegue(withIdentifier: identifier, sender: sender)
-            
         default:
             ()
         }
@@ -559,9 +571,9 @@ extension SetViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let defaults = defaultsValue()
         let setDisplayBy = defaults["setDisplayBy"] as! String
-        let setShow = defaults["setShow"] as! String
 
-        if setShow == "cards" {
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case SetViewControllerSegmentedIndex.cards.rawValue:
             switch setDisplayBy {
             case "grid":
                 dataSource = getDataSource(nil)
@@ -569,6 +581,8 @@ extension SetViewController : UITableViewDelegate {
             default:
                 ()
             }
+        default:
+            ()
         }
     }
 }

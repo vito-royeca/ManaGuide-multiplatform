@@ -34,7 +34,7 @@ class TwitterShareActivity: UIActivity {
     }
     
     open override var activityTitle : String? {
-        return "Twitter Share"
+        return "Twitter Sharing"
     }
     
     open override var activityImage : UIImage? {
