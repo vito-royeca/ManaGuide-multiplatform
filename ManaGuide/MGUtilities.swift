@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kanna
 import ManaKit
 
 class MGUtilities {
@@ -89,7 +90,51 @@ class MGUtilities {
         return newAttributedString
     }
     
-    class func composeType(of card: CMCard, pointSize: CGFloat) -> NSAttributedString {
+    class func convertToHtml(_ text: String) -> NSMutableAttributedString? {
+        let style = "<style>" +
+            "body { font-family: -apple-system; font-size:15; } " +
+            "a:link { color: \(MGUtilities.colorToHex(kGlobalTintColor)); }" +
+            "</style>"
+        let html = "\(style)\(text)"
+        var links = [[String: Any]]()
+        
+        guard let doc = try? HTML(html: html, encoding: .utf16) else {
+            return nil
+        }
+        
+        // Search for links
+        for link in doc.css("a, link") {
+            if let text = link.text,
+                let href = link["href"] {
+                links.append([text: href])
+            }
+        }
+        
+        guard let data = html.data(using: String.Encoding.utf16) else {
+            return nil
+        }
+        guard let attributedString = try? NSMutableAttributedString(
+            data: data,
+            options: [NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType],
+            documentAttributes: nil) else {
+                return nil
+        }
+        
+        // add tappble links
+        for link in links {
+            for (k,v) in link {
+                let foundRange = attributedString.mutableString.range(of: k)
+                if foundRange.location != NSNotFound {
+                    attributedString.addAttribute(NSLinkAttributeName, value: v, range: foundRange)
+//                    attributedString.addAttribute(NSForegroundColorAttributeName, value: kGlobalTintColor, range: foundRange)
+//                    attributedString.addAttribute(NSUnderlineColorAttributeName, value: kGlobalTintColor, range: foundRange)
+                }
+            }
+        }
+        return attributedString
+    }
+    
+    class func composeType(of card: CMCard, pointSize: CGFloat) -> NSMutableAttributedString {
         let attributedString = NSMutableAttributedString()
         var cardType: CMCardType?
         var image: UIImage?
@@ -297,6 +342,28 @@ class MGUtilities {
         attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
         return attributedString
+    }
+    
+    class func colorToHex(_ color: UIColor) -> String {
+        let cgColor = color.cgColor
+        let colorRef = cgColor.components
+        let r = colorRef?[0] ?? 0
+        let g = colorRef?[1] ?? 0
+        let b = ((colorRef?.count ?? 0) > 2 ? colorRef?[2] : g) ?? 0
+        let a = cgColor.alpha
+        
+        var color = String(
+            format: "#%02lX%02lX%02lX",
+            lroundf(Float(r * 255)),
+            lroundf(Float(g * 255)),
+            lroundf(Float(b * 255))
+        )
+        
+        if a < 1 {
+            color += String(format: "%02lX", lroundf(Float(a)))
+        }
+        
+        return color
     }
 }
 

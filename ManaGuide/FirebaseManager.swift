@@ -50,7 +50,6 @@ class FirebaseManager: NSObject {
                             return TransactionResult.success(withValue: currentData)
                             
                         } else {
-//                            return TransactionResult.abort()
                             ref.setValue(["displayName": displayName ?? ""])
                             return TransactionResult.success(withValue: currentData)
                         }

@@ -450,6 +450,41 @@ class CardViewController: BaseViewController {
                                       IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
         }
     }
+    
+    func handleLink(_ tapGesture: UITapGestureRecognizer) {
+        // TODO: handle tap here...
+        
+        guard let label = tapGesture.view as? UILabel else {
+            return
+        }
+        guard let attributedText = label.attributedText else {
+            return
+        }
+
+        let storage = NSTextStorage(attributedString: attributedText)
+        let textContainer = NSTextContainer(size: label.bounds.size)
+        let layoutManager = NSLayoutManager()
+        layoutManager.addTextContainer(textContainer)
+        storage.addLayoutManager(layoutManager)
+        
+        
+        textContainer.lineFragmentPadding = 0.0
+        textContainer.lineBreakMode = label.lineBreakMode
+        textContainer.maximumNumberOfLines = label.numberOfLines
+        
+        let location = tapGesture.location(in: label)
+        let characterIndex = layoutManager.characterIndex(for: location, in: textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
+        
+        if characterIndex < storage.length {
+            guard let link = attributedText.attribute(NSLinkAttributeName, at: characterIndex, effectiveRange: nil) else {
+                return
+            }
+            guard let url = URL(string: "\(link)") else {
+                return
+            }
+            open(url)
+        }
+    }
 }
 
 // MARK: UITableViewDataSource
@@ -861,7 +896,12 @@ extension CardViewController : UITableViewDataSource {
             if count == 0 {
                 if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
                     if let label = c.viewWithTag(100) as? UILabel {
-                        label.text = card.storePricingNote
+                        guard let note = card.storePricingNote else {
+                            return UITableViewCell(frame: CGRect.zero)
+                        }
+                        label.attributedText = MGUtilities.convertToHtml(note)
+                        label.isUserInteractionEnabled = true
+                        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleLink(_:))))
                     }
                     c.selectionStyle = .none
                     c.accessoryType = .none
@@ -872,6 +912,7 @@ extension CardViewController : UITableViewDataSource {
                     if let c = tableView.dequeueReusableCell(withIdentifier: "StoreCell") as? StoreTableViewCell {
                         if let suppliers = card.suppliers {
                             if let supplier = suppliers.allObjects[indexPath.row] as? CMSupplier {
+                                c.delegate = self
                                 c.display(supplier)
                             }
                         }
@@ -882,7 +923,12 @@ extension CardViewController : UITableViewDataSource {
                 } else {
                     if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
                         if let label = c.viewWithTag(100) as? UILabel {
-                            label.text = card.storePricingNote
+                            guard let note = card.storePricingNote else {
+                                return UITableViewCell(frame: CGRect.zero)
+                            }
+                            label.attributedText = MGUtilities.convertToHtml(note)
+                            label.isUserInteractionEnabled = true
+                            label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleLink(_:))))
                         }
                         c.selectionStyle = .none
                         c.accessoryType = .none
@@ -1072,6 +1118,10 @@ extension CardViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        guard let cards = cards else {
+            return nil
+        }
+        let card = cards[cardIndex]
         var path: IndexPath?
         
         switch segmentedIndex {
@@ -1081,26 +1131,39 @@ extension CardViewController : UITableViewDelegate {
                  CardViewControllerDetailsSection.set.rawValue:
                 path = indexPath
             case CardViewControllerDetailsSection.otherNames.rawValue:
-                if let cards = cards {
-                    let card = cards[cardIndex]
-                    var otherCard: CMCard?
-                    
-                    if let names_ = card.names_ {
-                        if let array = names_.allObjects as? [CMCard] {
-                            let array2 = array.filter({ $0.name != card.name})
-                            if array2.count > 0 {
-                                otherCard = array2[indexPath.row]
-                            }
+                var otherCard: CMCard?
+                
+                if let names_ = card.names_ {
+                    if let array = names_.allObjects as? [CMCard] {
+                        let array2 = array.filter({ $0.name != card.name})
+                        if array2.count > 0 {
+                            otherCard = array2[indexPath.row]
                         }
                     }
-                    
-                    if let _ = otherCard {
-                        path = indexPath
-                    }
                 }
+                
+                if let _ = otherCard {
+                    path = indexPath
+                }
+                
             default:
                 ()
             }
+        /*case .store:
+            guard let suppliers = card.suppliers else {
+                return nil
+            }
+            let count = suppliers.allObjects.count
+            
+            if count == 0 {
+                path = indexPath
+            } else {
+                if indexPath.row <= count - 1 {
+                    return nil
+                } else {
+                    path = indexPath
+                }
+            }*/
         default:
             ()
         }
@@ -1152,6 +1215,24 @@ extension CardViewController : UITableViewDelegate {
             default:
                 ()
             }
+        /*case .store:
+            guard let suppliers = card.suppliers else {
+                return
+            }
+            guard let note = card.storePricingNote else {
+                return
+            }
+            let count = suppliers.allObjects.count
+            
+            if count == 0 {
+                
+            } else {
+                if indexPath.row <= count - 1 {
+                    return
+                } else {
+                    
+                }
+            }*/
         default:
             ()
         }
@@ -1316,5 +1397,12 @@ extension CardViewController : IDMPhotoBrowserDelegate {
             movePhotoTo(index: i)
             tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.image.rawValue)], with: .none)
         }
+    }
+}
+
+// MARK: StoreTableViewCellDelegate
+extension CardViewController : StoreTableViewCellDelegate {
+    func open(_ link: URL) {
+        UIApplication.shared.open(link)
     }
 }

@@ -11,7 +11,6 @@ import ManaKit
 
 class CardActivityItemProvider: UIActivityItemProvider {
     let card: CMCard
-//    private var semaphore: DispatchSemaphore?
     
     init(_ card: CMCard) {
         self.card = card
