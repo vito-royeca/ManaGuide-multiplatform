@@ -91,22 +91,29 @@ class SearchViewController: BaseViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let dict = sender as? [String: Any] else {
+            return
+        }
+        
         if segue.identifier == "showCard" {
-            if let dest = segue.destination as? CardViewController,
-                let dict = sender as? [String: Any] {
-                
-                dest.cardIndex = dict["cardIndex"] as! Int
-                dest.cards = dict["cards"] as? [CMCard]
+            guard let dest = segue.destination as? CardViewController else {
+                return
             }
+            
+            dest.cardIndex = dict["cardIndex"] as! Int
+            dest.cards = dict["cards"] as? [CMCard]
+            
         } else if segue.identifier == "showCardModal" {
-            if let nav = segue.destination as? UINavigationController {
-                if let dest = nav.childViewControllers.first as? CardViewController,
-                    let dict = sender as? [String: Any] {
-                    dest.cardIndex = dict["cardIndex"] as! Int
-                    dest.cards = dict["cards"] as? [CMCard]
-                    dest.title = dest.cards?[dest.cardIndex].name
-                }
+            guard let nav = segue.destination as? UINavigationController else {
+                return
             }
+            guard let dest = nav.childViewControllers.first as? CardViewController else {
+                return
+            }
+            
+            dest.cardIndex = dict["cardIndex"] as! Int
+            dest.cards = dict["cards"] as? [CMCard]
+            dest.title = dest.cards?[dest.cardIndex].name
         }
     }
 
@@ -149,7 +156,7 @@ class SearchViewController: BaseViewController {
         if let fetchRequest = fetchRequest {
             request = fetchRequest
         } else {
-            request = NSFetchRequest(entityName: "CMCard")
+            request = CMCard.fetchRequest()
             request!.predicate = NSPredicate(format: "name = nil")
             request!.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
                                         NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy),
@@ -174,37 +181,38 @@ class SearchViewController: BaseViewController {
         case "grid":
             if let collectionView = collectionView {
                 ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: searchSectionName, configuration: { cell, item, indexPath in
-                    var card: CMCard?
+                    var c: CMCard?
                     
                     if let item = item as? CMCard {
-                        card = item
+                        c = item
                     } else if let item = item as? CMCardLegality {
-                        card = item.card
+                        c = item.card
                     }
                     
-                    if let card = card,
-                        let imageView = cell.viewWithTag(100) as? UIImageView {
+                    guard let card = c,
+                        let imageView = cell.viewWithTag(100) as? UIImageView else {
+                        return
+                    }
+                    
+                    if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
+                        imageView.image = image
+                    } else {
+                        imageView.image = ManaKit.sharedInstance.cardBack(card)
                         
-                        if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
-                            imageView.image = image
-                        } else {
-                            imageView.image = ManaKit.sharedInstance.cardBack(card)
-                            
-                            firstly {
-                                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-                            }.done { (image: UIImage?) in
-                                if let image = image {
-                                    UIView.transition(with: imageView,
-                                                      duration: 1.0,
-                                                      options: .transitionFlipFromLeft,
-                                                      animations: {
-                                                          imageView.image = image
-                                                      },
-                                                      completion: nil)
-                                }
-                            }.catch { error in
-                                print("\(error)")
+                        firstly {
+                            ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+                        }.done { (image: UIImage?) in
+                            if let image = image {
+                                UIView.transition(with: imageView,
+                                                  duration: 1.0,
+                                                  options: .transitionFlipFromLeft,
+                                                  animations: {
+                                                      imageView.image = image
+                                                  },
+                                                  completion: nil)
                             }
+                        }.catch { error in
+                            print("\(error)")
                         }
                     }
                 })
@@ -278,50 +286,52 @@ class SearchViewController: BaseViewController {
     }
     
     func updateData(_ notification: Notification) {
-        if let userInfo = notification.userInfo as? [String: Any] {
-            let defaults = defaultsValue()
-            var searchSectionName = defaults["searchSectionName"] as! String
-            var searchSortBy = defaults["searchSortBy"] as! String
-            var searchSecondSortBy = defaults["searchSecondSortBy"] as! String
-            var searchOrderBy = defaults["searchOrderBy"] as! Bool
-            var searchDisplayBy = defaults["searchDisplayBy"] as! String
-            
-            if let value = userInfo["searchSortBy"] as? String {
-                searchSortBy = value
-                
-                switch searchSortBy {
-                case "name":
-                    searchSectionName = "nameSection"
-                    searchSecondSortBy = "name"
-                case "typeSection":
-                    searchSectionName = "typeSection"
-                    searchSecondSortBy = "name"
-                default:
-                    ()
-                }
-            }
-            
-            if let value = userInfo["searchOrderBy"] as? Bool {
-                searchOrderBy = value
-            }
-            
-            if let value = userInfo["searchDisplayBy"] as? String {
-                searchDisplayBy = value
-            }
-            
-            UserDefaults.standard.set(searchSectionName, forKey: "searchSectionName")
-            UserDefaults.standard.set(searchSortBy, forKey: "searchSortBy")
-            UserDefaults.standard.set(searchSecondSortBy, forKey: "searchSecondSortBy")
-            UserDefaults.standard.set(searchOrderBy, forKey: "searchOrderBy")
-            UserDefaults.standard.set(searchDisplayBy, forKey: "searchDisplayBy")
-            UserDefaults.standard.synchronize()
-            
-            updateDataDisplay()
+        guard let userInfo = notification.userInfo as? [String: Any] else {
+            return
         }
+        
+        let defaults = defaultsValue()
+        var searchSectionName = defaults["searchSectionName"] as! String
+        var searchSortBy = defaults["searchSortBy"] as! String
+        var searchSecondSortBy = defaults["searchSecondSortBy"] as! String
+        var searchOrderBy = defaults["searchOrderBy"] as! Bool
+        var searchDisplayBy = defaults["searchDisplayBy"] as! String
+        
+        if let value = userInfo["searchSortBy"] as? String {
+            searchSortBy = value
+            
+            switch searchSortBy {
+            case "name":
+                searchSectionName = "nameSection"
+                searchSecondSortBy = "name"
+            case "typeSection":
+                searchSectionName = "typeSection"
+                searchSecondSortBy = "name"
+            default:
+                ()
+            }
+        }
+        
+        if let value = userInfo["searchOrderBy"] as? Bool {
+            searchOrderBy = value
+        }
+        
+        if let value = userInfo["searchDisplayBy"] as? String {
+            searchDisplayBy = value
+        }
+        
+        UserDefaults.standard.set(searchSectionName, forKey: "searchSectionName")
+        UserDefaults.standard.set(searchSortBy, forKey: "searchSortBy")
+        UserDefaults.standard.set(searchSecondSortBy, forKey: "searchSecondSortBy")
+        UserDefaults.standard.set(searchOrderBy, forKey: "searchOrderBy")
+        UserDefaults.standard.set(searchDisplayBy, forKey: "searchDisplayBy")
+        UserDefaults.standard.synchronize()
+        
+        updateDataDisplay()
     }
 
     func updateFavorites(_ notification: Notification) {
-        let newRequest:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+        let newRequest = CMCard.fetchRequest()
         let names = FirebaseManager.sharedInstance.favorites.map({ $0.id })
         
         newRequest.predicate = NSPredicate(format: "id IN %@", names)
@@ -406,7 +416,7 @@ class SearchViewController: BaseViewController {
     }
     
     func createSearchRequest() -> NSFetchRequest<NSFetchRequestResult>? {
-        let newRequest:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+        let newRequest = CMCard.fetchRequest()
         var predicate: NSPredicate?
         
         let defaults = defaultsValue()
@@ -620,28 +630,34 @@ extension SearchViewController : UITableViewDataSource {
         
         switch searchDisplayBy {
         case "grid":
-            if let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") {
-                if let collectionView = c.viewWithTag(100) as? UICollectionView {
-                    self.collectionView = collectionView
-                    collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "Header")
-                    collectionView.delegate = self
-                    
-                    if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        let width = tableView.frame.size.width
-                        var height = tableView.frame.size.height - kCardTableViewCellHeight
-                        if let tableHeaderView = tableView.tableHeaderView {
-                            height -= tableHeaderView.frame.size.height
-                        }
-
-                        flowLayout.itemSize = cardSize(inFrame: CGSize(width: width, height: height))
-                        flowLayout.minimumInteritemSpacing = CGFloat(0)
-                        flowLayout.minimumLineSpacing = CGFloat(10)
-                        flowLayout.headerReferenceSize = CGSize(width: width, height: 22)
-                        flowLayout.sectionHeadersPinToVisibleBounds = true
-                    }
-                }
-                cell = c
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") else {
+                return UITableViewCell(frame: CGRect.zero)
             }
+            guard let collectionView = c.viewWithTag(100) as? UICollectionView else {
+                return UITableViewCell(frame: CGRect.zero)
+            }
+            
+            
+            self.collectionView = collectionView
+            collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "Header")
+            collectionView.delegate = self
+            
+            if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                let width = tableView.frame.size.width
+                var height = tableView.frame.size.height - kCardTableViewCellHeight
+                if let tableHeaderView = tableView.tableHeaderView {
+                    height -= tableHeaderView.frame.size.height
+                }
+
+                flowLayout.itemSize = cardSize(inFrame: CGSize(width: width, height: height))
+                flowLayout.minimumInteritemSpacing = CGFloat(0)
+                flowLayout.minimumLineSpacing = CGFloat(10)
+                flowLayout.headerReferenceSize = CGSize(width: width, height: 22)
+                flowLayout.sectionHeadersPinToVisibleBounds = true
+            }
+            
+            cell = c
+            
         default:
             ()
         }

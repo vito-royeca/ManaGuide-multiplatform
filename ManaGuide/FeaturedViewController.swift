@@ -78,40 +78,53 @@ class FeaturedViewController: BaseViewController {
         flowLayoutHeight = (view.frame.size.height / 3) - 50
         tableView.reloadData()
         
-        if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.randomCards.rawValue, section: 0)) {
-            if let carouselView = cell.viewWithTag(100) as? iCarousel {
-                carouselView.reloadData()
-            }
+        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.randomCards.rawValue, section: 0)) else {
+            return
         }
+        guard let carouselView = cell.viewWithTag(100) as? iCarousel else {
+            return
+        }
+        
+        carouselView.reloadData()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showCard" {
-            if let dest = segue.destination as? CardViewController,
-                let dict = sender as? [String: Any] {
-                dest.cardIndex = dict["cardIndex"] as! Int
-                dest.cards = dict["cards"] as? [CMCard]
+            guard let dest = segue.destination as? CardViewController,
+                let dict = sender as? [String: Any] else {
+                return
             }
+            dest.cardIndex = dict["cardIndex"] as! Int
+            dest.cards = dict["cards"] as? [CMCard]
+            
         } else if segue.identifier == "showCardModal" {
-            if let nav = segue.destination as? UINavigationController {
-                if let dest = nav.childViewControllers.first as? CardViewController,
-                    let dict = sender as? [String: Any] {
-                    dest.cardIndex = dict["cardIndex"] as! Int
-                    dest.cards = dict["cards"] as? [CMCard]
-                    dest.title = dest.cards?[dest.cardIndex].name
-                }
+            guard let nav = segue.destination as? UINavigationController else {
+                return
             }
+            guard let dest = nav.childViewControllers.first as? CardViewController,
+                let dict = sender as? [String: Any] else {
+                return
+            }
+            
+            dest.cardIndex = dict["cardIndex"] as! Int
+            dest.cards = dict["cards"] as? [CMCard]
+            dest.title = dest.cards?[dest.cardIndex].name
+            
         } else if segue.identifier == "showSet" {
-            if let dest = segue.destination as? SetViewController,
-                let set = sender as? CMSet {
-                
-                dest.title = set.name
-                dest.set = set
+            guard let dest = segue.destination as? SetViewController,
+                let set = sender as? CMSet else {
+                return
             }
+            
+            dest.title = set.name
+            dest.set = set
+
         } else if segue.identifier == "showSets" {
-            if let dest = segue.destination as? SetsViewController {
-                dest.title = "Sets"
+            guard let dest = segue.destination as? SetsViewController else {
+                return
             }
+            
+            dest.title = "Sets"
         }
     }
 
@@ -128,39 +141,46 @@ class FeaturedViewController: BaseViewController {
     }
     
     func showSlide() {
-        if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.randomCards.rawValue, section: 0)) {
-            if let carouselView = cell.viewWithTag(100) as? iCarousel {
-                var index = carouselView.currentItemIndex
-                index += 1
-                
-                carouselView.scrollToItem(at: index, animated: true)
-            }
+        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.randomCards.rawValue, section: 0)) else {
+            return
         }
+        guard let carouselView = cell.viewWithTag(100) as? iCarousel else {
+            return
+        }
+        
+        var index = carouselView.currentItemIndex
+        index += 1
+        
+        carouselView.scrollToItem(at: index, animated: true)
     }
     
     func fetchRandomCards() {
-        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+        let request = CMCard.fetchRequest()
         request.predicate = NSPredicate(format: "multiverseid != 0")
         
         randomCards = [CMCard]()
-        if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
-            repeat {
-                let card = result[Int(arc4random_uniform(UInt32(result.count)))]
-                if !randomCards!.contains(card) {
-                    randomCards!.append(card)
-                }
-            } while randomCards!.count <= 5
+        guard let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] else {
+            return
         }
+        
+        repeat {
+            let card = result[Int(arc4random_uniform(UInt32(result.count)))]
+            if !randomCards!.contains(card) {
+                randomCards!.append(card)
+            }
+        } while randomCards!.count <= 5
     }
     
     func fetchLatestSets() {
-        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMSet")
+        let request = CMSet.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
         request.fetchLimit = 10
         
-        if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMSet] {
-            latestSets = result
+        guard let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMSet] else {
+            return
         }
+        
+        latestSets = result
     }
     
     func fetchTopRated() {
@@ -182,12 +202,14 @@ class FeaturedViewController: BaseViewController {
     func showTopRated(cards: [CMCard]) {
         topRated = cards
         
-        if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topRated.rawValue, section: 0)) {
-            for v in cell.contentView.subviews {
-                if let collectionView = v as? UICollectionView {
-                    collectionView.reloadData()
-                    break
-                }
+        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topRated.rawValue, section: 0)) else {
+            return
+        }
+        
+        for v in cell.contentView.subviews {
+            if let collectionView = v as? UICollectionView {
+                collectionView.reloadData()
+                break
             }
         }
     }
@@ -195,12 +217,14 @@ class FeaturedViewController: BaseViewController {
     func showTopViewed(cards: [CMCard]) {
         topViewed = cards
         
-        if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topViewed.rawValue, section: 0)) {
-            for v in cell.contentView.subviews {
-                if let collectionView = v as? UICollectionView {
-                    collectionView.reloadData()
-                    break
-                }
+        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topViewed.rawValue, section: 0)) else {
+            return
+        }
+        
+        for v in cell.contentView.subviews {
+            if let collectionView = v as? UICollectionView {
+                collectionView.reloadData()
+                break
             }
         }
     }
@@ -226,119 +250,133 @@ extension FeaturedViewController : UITableViewDataSource {
 
         switch indexPath.row {
         case FeaturedViewControllerSection.randomCards.rawValue:
-            if let c = tableView.dequeueReusableCell(withIdentifier: "RandomCell") {
-                if let carouselView = c.viewWithTag(100) as? iCarousel {
-                    carouselView.dataSource = self
-                    carouselView.delegate = self
-                    carouselView.type = .linear
-                    carouselView.isPagingEnabled = true
-                    carouselView.currentItemIndex = 3
-                }
-                
-                cell = c
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "RandomCell") else {
+                return UITableViewCell(frame: CGRect.zero)
             }
+            guard let carouselView = c.viewWithTag(100) as? iCarousel else {
+                return UITableViewCell(frame: CGRect.zero)
+            }
+            
+            carouselView.dataSource = self
+            carouselView.delegate = self
+            carouselView.type = .linear
+            carouselView.isPagingEnabled = true
+            carouselView.currentItemIndex = 3
+            cell = c
+            
         case FeaturedViewControllerSection.latestSets.rawValue:
-            if let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell") {
-                if let titleLabel = c.viewWithTag(100) as? UILabel {
-                    titleLabel.text = FeaturedViewControllerSection.latestSets.description
-                }
-                
-                if let showAllButton = c.viewWithTag(200) as? UIButton {
-                    showAllButton.addTarget(self, action: #selector(self.showAllSets(_:)), for: .touchUpInside)
-                }
-                
-                var collectionView: UICollectionView?
-                for v in c.contentView.subviews {
-                    if let cv = v as? UICollectionView {
-                        collectionView = cv
-                        break
-                    }
-                }
-                
-                if let collectionView = collectionView {
-                    if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        let divisor = CGFloat(UIDevice.current.userInterfaceIdiom == .phone ? 3 : 4)
-                        let width = (view.frame.size.width / divisor) - 20
-                        flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
-                        flowLayout.scrollDirection = .horizontal
-                        flowLayout.minimumInteritemSpacing = CGFloat(5)
-                        flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
-                    }
-                    
-                    collectionView.dataSource = self
-                    collectionView.delegate = self
-                    collectionView.tag = FeaturedViewControllerSection.latestSets.rawValue
-                    collectionView.reloadData()
-                }
-                
-                cell = c
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell") else {
+                return UITableViewCell(frame: CGRect.zero)
             }
+            
+            guard let titleLabel = c.viewWithTag(100) as? UILabel,
+                let showAllButton = c.viewWithTag(200) as? UIButton else {
+                return UITableViewCell(frame: CGRect.zero)
+            }
+            
+            titleLabel.text = FeaturedViewControllerSection.latestSets.description
+            showAllButton.addTarget(self, action: #selector(self.showAllSets(_:)), for: .touchUpInside)
+            
+            var collectionView: UICollectionView?
+            for v in c.contentView.subviews {
+                if let cv = v as? UICollectionView {
+                    collectionView = cv
+                    break
+                }
+            }
+            
+            if let collectionView = collectionView {
+                if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                    let divisor = CGFloat(UIDevice.current.userInterfaceIdiom == .phone ? 3 : 4)
+                    let width = (view.frame.size.width / divisor) - 20
+                    flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
+                    flowLayout.scrollDirection = .horizontal
+                    flowLayout.minimumInteritemSpacing = CGFloat(5)
+                    flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
+                }
+                
+                collectionView.dataSource = self
+                collectionView.delegate = self
+                collectionView.tag = FeaturedViewControllerSection.latestSets.rawValue
+                collectionView.reloadData()
+            }
+            
+            cell = c
+            
         case FeaturedViewControllerSection.topRated.rawValue:
-            if let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell") {
-                if let titleLabel = c.viewWithTag(100) as? UILabel {
-                    titleLabel.text = FeaturedViewControllerSection.topRated.description
-                }
-                
-                if let showAllButton = c.viewWithTag(200) as? UIButton {
-                    showAllButton.isHidden = true
-                }
-                
-                var collectionView: UICollectionView?
-                for v in c.contentView.subviews {
-                    if let cv = v as? UICollectionView {
-                        collectionView = cv
-                        break
-                    }
-                }
-                
-                if let collectionView = collectionView {
-                    if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        let width = flowLayoutHeight + (flowLayoutHeight / 2)
-                        flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
-                        flowLayout.scrollDirection = .horizontal
-                        flowLayout.minimumInteritemSpacing = CGFloat(5)
-                        flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
-                    }
-                    
-                    collectionView.dataSource = self
-                    collectionView.delegate = self
-                    collectionView.tag = FeaturedViewControllerSection.topRated.rawValue
-                }
-                cell = c
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell") else {
+                return UITableViewCell(frame: CGRect.zero)
             }
+            
+            guard let titleLabel = c.viewWithTag(100) as? UILabel,
+                let showAllButton = c.viewWithTag(200) as? UIButton else {
+                return UITableViewCell(frame: CGRect.zero)
+            }
+            
+            titleLabel.text = FeaturedViewControllerSection.topRated.description
+            showAllButton.isHidden = true
+            
+                
+            var collectionView: UICollectionView?
+            for v in c.contentView.subviews {
+                if let cv = v as? UICollectionView {
+                    collectionView = cv
+                    break
+                }
+            }
+            
+            if let collectionView = collectionView {
+                if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                    let width = flowLayoutHeight + (flowLayoutHeight / 2)
+                    flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
+                    flowLayout.scrollDirection = .horizontal
+                    flowLayout.minimumInteritemSpacing = CGFloat(5)
+                    flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
+                }
+                
+                collectionView.dataSource = self
+                collectionView.delegate = self
+                collectionView.tag = FeaturedViewControllerSection.topRated.rawValue
+            }
+            cell = c
+            
         case FeaturedViewControllerSection.topViewed.rawValue:
-            if let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell") {
-                if let titleLabel = c.viewWithTag(100) as? UILabel {
-                    titleLabel.text = FeaturedViewControllerSection.topViewed.description
-                }
-                
-                if let showAllButton = c.viewWithTag(200) as? UIButton {
-                    showAllButton.isHidden = true
-                }
-                
-                var collectionView: UICollectionView?
-                for v in c.contentView.subviews {
-                    if let cv = v as? UICollectionView {
-                        collectionView = cv
-                        break
-                    }
-                }
-                
-                if let collectionView = collectionView {
-                    if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        let width = flowLayoutHeight + (flowLayoutHeight / 2)
-                        flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
-                        flowLayout.scrollDirection = .horizontal
-                        flowLayout.minimumInteritemSpacing = CGFloat(5)
-                        flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
-                    }
-                    
-                    collectionView.dataSource = self
-                    collectionView.delegate = self
-                    collectionView.tag = FeaturedViewControllerSection.topViewed.rawValue
-                }
-                cell = c
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell") else {
+                return UITableViewCell(frame: CGRect.zero)
             }
+            
+            guard let titleLabel = c.viewWithTag(100) as? UILabel,
+                let showAllButton = c.viewWithTag(200) as? UIButton else {
+                return UITableViewCell(frame: CGRect.zero)
+            }
+            
+            titleLabel.text = FeaturedViewControllerSection.topViewed.description
+            showAllButton.isHidden = true
+            
+                
+            var collectionView: UICollectionView?
+            for v in c.contentView.subviews {
+                if let cv = v as? UICollectionView {
+                    collectionView = cv
+                    break
+                }
+            }
+            
+            if let collectionView = collectionView {
+                if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                    let width = flowLayoutHeight + (flowLayoutHeight / 2)
+                    flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
+                    flowLayout.scrollDirection = .horizontal
+                    flowLayout.minimumInteritemSpacing = CGFloat(5)
+                    flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
+                }
+                
+                collectionView.dataSource = self
+                collectionView.delegate = self
+                collectionView.tag = FeaturedViewControllerSection.topViewed.rawValue
+            }
+            cell = c
+            
         default:
             ()
         }
@@ -548,7 +586,6 @@ extension FeaturedViewController : iCarouselDataSource {
         if let v = view as? RandomCardView {
             rcv = v
         } else {
-            
             if let r = Bundle.main.loadNibNamed("RandomCardView", owner: self, options: nil)?.first as? RandomCardView {
                 let height = tableView.frame.size.height / 3
                 var width = tableView.frame.size.width
@@ -577,28 +614,32 @@ extension FeaturedViewController : iCarouselDataSource {
 // MARK: iCarouselDelegate
 extension FeaturedViewController : iCarouselDelegate {
     func carouselCurrentItemIndexDidChange(_ carousel: iCarousel) {
-        if let rcv = carousel.itemView(at: carousel.currentItemIndex) as? RandomCardView {
-            for v in carousel.visibleItemViews {
-                if let a = v as? RandomCardView {
-                    if rcv == a {
-                        a.showNameandSet()
-                    } else {
-                        a.hideNameandSet()
-                    }
+        guard let rcv = carousel.itemView(at: carousel.currentItemIndex) as? RandomCardView else {
+            return
+        }
+        
+        for v in carousel.visibleItemViews {
+            if let a = v as? RandomCardView {
+                if rcv == a {
+                    a.showNameandSet()
+                } else {
+                    a.hideNameandSet()
                 }
             }
         }
     }
     
     func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
-        if let randomCards = randomCards {
-            let card = randomCards[index]
-            
-            let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-            let sender = ["cardIndex": 0,
-                          "cards": [card]] as [String : Any]
-            performSegue(withIdentifier: identifier, sender: sender)
+        guard let randomCards = randomCards else {
+            return
         }
+        
+        let card = randomCards[index]
+        
+        let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
+        let sender = ["cardIndex": 0,
+                      "cards": [card]] as [String : Any]
+        performSegue(withIdentifier: identifier, sender: sender)
     }
     
     func carousel(_ carousel: iCarousel, valueFor option: iCarouselOption, withDefault value: CGFloat) -> CGFloat {

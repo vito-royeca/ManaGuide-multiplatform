@@ -11,7 +11,7 @@ import ManaKit
 import PDFKit
 import WebKit
 
-class PDFViewerViewController: UIViewController {
+class PDFViewerViewController: BaseViewController {
 
     // MARK: Variables
     var url: URL?

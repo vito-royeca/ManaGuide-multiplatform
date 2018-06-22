@@ -9,6 +9,7 @@
 import UIKit
 import DATASource
 import Firebase
+import ManaKit
 import SDWebImage
 
 enum AccountViewControllerSection: Int {
@@ -41,7 +42,7 @@ enum AccountViewControllerSection: Int {
     }
 }
 
-class AccountViewController: UIViewController {
+class AccountViewController: BaseViewController {
 
     // MARK Outlets
     @IBOutlet weak var loginButton: UIBarButtonItem!
@@ -85,19 +86,26 @@ class AccountViewController: UIViewController {
         }
         
         if segue.identifier == "showLogin" {
-            if let dest = segue.destination as? UINavigationController {
-                if let loginVC = dest.childViewControllers.first as? LoginViewController {
-                    if let actionAfterLogin = dict["actionAfterLogin"] as? ((Bool) -> Void) {
-                        loginVC.actionAfterLogin = actionAfterLogin
-                    }
-                }
+            guard let dest = segue.destination as? UINavigationController else {
+                return
             }
+            guard let loginVC = dest.childViewControllers.first as? LoginViewController else {
+                return
+            }
+            guard let actionAfterLogin = dict["actionAfterLogin"] as? ((Bool) -> Void) else {
+                return
+            }
+            
+            loginVC.actionAfterLogin = actionAfterLogin
+            
         } else if segue.identifier == "showSearch" {
-            if let dest = segue.destination as? SearchViewController {
-                dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
-                dest.title = dict["title"] as? String
-                dest.customSectionName = "nameSection"
+            guard let dest = segue.destination as? SearchViewController else {
+                return
             }
+            
+            dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
+            dest.title = dict["title"] as? String
+            dest.customSectionName = "nameSection"
         }
     }
     
@@ -136,50 +144,61 @@ extension AccountViewController : UITableViewDataSource {
         
         switch indexPath.section {
         case AccountViewControllerSection.accountHeader.rawValue:
-            if let c = tableView.dequeueReusableCell(withIdentifier: "AccountCell") {
-                if let imageView = c.viewWithTag(100) as? UIImageView,
-                    let label = c.viewWithTag(200) as? UILabel {
-                
-                    imageView.layer.cornerRadius = imageView.frame.height / 2
-                    
-                    if let user = Auth.auth().currentUser {
-                        imageView.sd_setImage(with: user.photoURL, completed: {(image: UIImage?, error: Error?, cacheType: SDImageCacheType, imageURL: URL?) in
-                            if image == nil {
-                                imageView.image = UIImage(bgIcon: .FAUserCircle, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAUserCircle, topTextColor: UIColor.clear, bgLarge: true, size: CGSize(width: 60, height: 60))
-                            }
-                        })
-                        label.text = user.displayName
-                    } else {
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "AccountCell") else {
+                return UITableViewCell(frame: CGRect.zero)
+            }
+            guard let imageView = c.viewWithTag(100) as? UIImageView,
+                let label = c.viewWithTag(200) as? UILabel else {
+                    return UITableViewCell(frame: CGRect.zero)
+            }
+            
+            imageView.layer.cornerRadius = imageView.frame.height / 2
+            
+            if let user = Auth.auth().currentUser {
+                imageView.sd_setImage(with: user.photoURL, completed: {(image: UIImage?, error: Error?, cacheType: SDImageCacheType, imageURL: URL?) in
+                    if image == nil {
                         imageView.image = UIImage(bgIcon: .FAUserCircle, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAUserCircle, topTextColor: UIColor.clear, bgLarge: true, size: CGSize(width: 60, height: 60))
-                        label.text = "Not logged in"
                     }
-                }
-                
-                c.accessoryType = .none
-                cell = c
+                })
+                label.text = user.displayName
+            } else {
+                imageView.image = UIImage(bgIcon: .FAUserCircle, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAUserCircle, topTextColor: UIColor.clear, bgLarge: true, size: CGSize(width: 60, height: 60))
+                label.text = "Not logged in"
             }
+            
+            c.accessoryType = .none
+            cell = c
+
         case AccountViewControllerSection.favorites.rawValue:
-            if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") {
-                if let label = c.textLabel,
-                    let imageView = c.imageView {
-                    imageView.image = AccountViewControllerSection.favorites.imageIcon
-                    label.text = AccountViewControllerSection.favorites.description
-                }
-                
-                c.accessoryType = .disclosureIndicator
-                cell = c
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") else {
+                return UITableViewCell(frame: CGRect.zero)
             }
+            guard let label = c.textLabel,
+                let imageView = c.imageView else {
+                return UITableViewCell(frame: CGRect.zero)
+            }
+            
+            imageView.image = AccountViewControllerSection.favorites.imageIcon
+            label.text = AccountViewControllerSection.favorites.description
+            
+            c.accessoryType = .disclosureIndicator
+            cell = c
+
         case AccountViewControllerSection.ratedCards.rawValue:
-            if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") {
-                if let label = c.textLabel,
-                    let imageView = c.imageView {
-                    imageView.image = AccountViewControllerSection.ratedCards.imageIcon
-                    label.text = AccountViewControllerSection.ratedCards.description
-                }
-                
-                c.accessoryType = .disclosureIndicator
-                cell = c
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") else {
+                return UITableViewCell(frame: CGRect.zero)
             }
+            guard let label = c.textLabel,
+                let imageView = c.imageView else {
+                return UITableViewCell(frame: CGRect.zero)
+            }
+            
+            imageView.image = AccountViewControllerSection.ratedCards.imageIcon
+            label.text = AccountViewControllerSection.ratedCards.description
+            
+            c.accessoryType = .disclosureIndicator
+            cell = c
+
         default:
             ()
         }
@@ -237,7 +256,7 @@ extension AccountViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case AccountViewControllerSection.favorites.rawValue:
-            let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+            let request = CMCard.fetchRequest()
             let names = FirebaseManager.sharedInstance.favorites.map({ $0.id })
             
             request.predicate = NSPredicate(format: "id IN %@", names)
@@ -247,7 +266,7 @@ extension AccountViewController : UITableViewDelegate {
             performSegue(withIdentifier: "showSearch", sender: ["title": "Favorites",
                                                                 "request": request])
         case AccountViewControllerSection.ratedCards.rawValue:
-            let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+            let request = CMCard.fetchRequest()
             let names = FirebaseManager.sharedInstance.ratedCards.map({ $0.id })
             
             request.predicate = NSPredicate(format: "id IN %@", names)

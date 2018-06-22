@@ -28,7 +28,6 @@
                         <rect key="frame" x="16" y="8" width="180" height="21"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="180" id="P2o-rh-XAl"/>
-                            <constraint firstAttribute="height" constant="21" id="hsb-fF-m0z"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
@@ -58,7 +57,6 @@
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$100" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Dq-Ee-vS8">
                         <rect key="frame" x="198" y="8" width="60" height="21"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="21" id="7EX-B9-I9o"/>
                             <constraint firstAttribute="width" constant="60" id="9X5-9i-qeI"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>

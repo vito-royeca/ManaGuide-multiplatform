@@ -10,7 +10,7 @@ import UIKit
 import DATASource
 import ManaKit
 
-class ArtistsViewController: UIViewController {
+class ArtistsViewController: BaseViewController {
 
     // MARK: Constants
     let searchController = UISearchController(searchResultsController: nil)
@@ -49,12 +49,13 @@ class ArtistsViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showSearch" {
-            if let dest = segue.destination as? SearchViewController,
-                let dict = sender as? [String: Any] {
-                
-                dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
-                dest.title = dict["title"] as? String
+            guard let dest = segue.destination as? SearchViewController,
+                let dict = sender as? [String: Any] else {
+                return
             }
+            
+            dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
+            dest.title = dict["title"] as? String
         }
     }
     
@@ -66,7 +67,7 @@ class ArtistsViewController: UIViewController {
         if let fetchRequest = fetchRequest {
             request = fetchRequest
         } else {
-            request = NSFetchRequest(entityName: "CMArtist")
+            request = CMArtist.fetchRequest()
             
             request!.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
                                         NSSortDescriptor(key: "lastName", ascending: true),
@@ -74,16 +75,18 @@ class ArtistsViewController: UIViewController {
         }
         
         ds = DATASource(tableView: tableView, cellIdentifier: "Cell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: "nameSection", configuration: { cell, item, indexPath in
-            if let artist = item as? CMArtist {
-                cell.textLabel?.text = artist.name
+            guard let artist = item as? CMArtist else {
+                return
             }
+            
+            cell.textLabel?.text = artist.name
         })
         
-        if let ds = ds {
-            ds.delegate = self
-            return ds
+        guard let d = ds else {
+            return nil
         }
-        return nil
+        d.delegate = self
+        return d
     }
     
     func updateSections() {
@@ -125,30 +128,31 @@ class ArtistsViewController: UIViewController {
     }
 
     func doSearch() {
+        guard let text = searchController.searchBar.text else {
+            return
+        }
         var newRequest:NSFetchRequest<NSFetchRequestResult>?
         
-        if let text = searchController.searchBar.text {
-            if text.count > 0 {
-                newRequest = NSFetchRequest(entityName: "CMArtist")
-                
-                newRequest!.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                               NSSortDescriptor(key: "lastName", ascending: true),
-                                               NSSortDescriptor(key: "firstName", ascending: true)]
-                
-                if text.count == 1 {
-                    newRequest!.predicate = NSPredicate(format: "firstName BEGINSWITH[cd] %@ OR lastName BEGINSWITH[cd] %@", text, text)
-                } else if text.count > 1 {
-                    newRequest!.predicate = NSPredicate(format: "firstName CONTAINS[cd] %@ OR lastName CONTAINS[cd] %@", text, text)
-                }
-                dataSource = getDataSource(newRequest)
-                updateSections()
-                tableView.reloadData()
-                
-            } else {
-                dataSource = getDataSource(nil)
-                updateSections()
-                tableView.reloadData()
+        if text.count > 0 {
+            newRequest = CMArtist.fetchRequest()
+            
+            newRequest!.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                           NSSortDescriptor(key: "lastName", ascending: true),
+                                           NSSortDescriptor(key: "firstName", ascending: true)]
+            
+            if text.count == 1 {
+                newRequest!.predicate = NSPredicate(format: "firstName BEGINSWITH[cd] %@ OR lastName BEGINSWITH[cd] %@", text, text)
+            } else if text.count > 1 {
+                newRequest!.predicate = NSPredicate(format: "firstName CONTAINS[cd] %@ OR lastName CONTAINS[cd] %@", text, text)
             }
+            dataSource = getDataSource(newRequest)
+            updateSections()
+            tableView.reloadData()
+            
+        } else {
+            dataSource = getDataSource(nil)
+            updateSections()
+            tableView.reloadData()
         }
     }
 }
@@ -156,18 +160,20 @@ class ArtistsViewController: UIViewController {
 // MARK: UITableViewDelegate
 extension ArtistsViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let artist = dataSource!.object(indexPath) as? CMArtist {
-            let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-            let predicate = NSPredicate(format: "artist_.name = %@", artist.name!)
-            
-            request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                       NSSortDescriptor(key: "name", ascending: true),
-                                       NSSortDescriptor(key: "set.releaseDate", ascending: true)]
-            request.predicate = predicate
-            
-            performSegue(withIdentifier: "showSearch", sender: ["request": request,
-                                                                "title": artist.name!])
+        guard let artist = dataSource!.object(indexPath) as? CMArtist else {
+            return
         }
+
+        let request = CMCard.fetchRequest()
+        let predicate = NSPredicate(format: "artist_.name = %@", artist.name!)
+        
+        request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                   NSSortDescriptor(key: "name", ascending: true),
+                                   NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+        request.predicate = predicate
+        
+        performSegue(withIdentifier: "showSearch", sender: ["request": request,
+                                                            "title": artist.name!])
     }
 }
 

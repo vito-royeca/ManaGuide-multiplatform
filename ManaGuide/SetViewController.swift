@@ -100,29 +100,37 @@ class SetViewController: BaseViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showCard" {
-            if let dest = segue.destination as? CardViewController,
-                let dict = sender as? [String: Any] {
-                
-                dest.cardIndex = dict["cardIndex"] as! Int
-                dest.cards = dict["cards"] as? [CMCard]
+            guard let dest = segue.destination as? CardViewController,
+                let dict = sender as? [String: Any] else {
+                return
             }
+            
+            dest.cardIndex = dict["cardIndex"] as! Int
+            dest.cards = dict["cards"] as? [CMCard]
+            
         } else if segue.identifier == "showCardModal" {
-            if let nav = segue.destination as? UINavigationController {
-                if let dest = nav.childViewControllers.first as? CardViewController,
-                    let dict = sender as? [String: Any] {
-                    dest.cardIndex = dict["cardIndex"] as! Int
-                    dest.cards = dict["cards"] as? [CMCard]
-                    dest.title = dest.cards?[dest.cardIndex].name
-                }
+            guard let nav = segue.destination as? UINavigationController else {
+                return
             }
+            
+            guard let dest = nav.childViewControllers.first as? CardViewController,
+                let dict = sender as? [String: Any] else {
+                return
+            }
+            
+            dest.cardIndex = dict["cardIndex"] as! Int
+            dest.cards = dict["cards"] as? [CMCard]
+            dest.title = dest.cards?[dest.cardIndex].name
+            
         } else if segue.identifier == "showSearch" {
-            if let dest = segue.destination as? SearchViewController,
-                let request = sender as? NSFetchRequest<NSFetchRequestResult> {
-                
-                dest.request = request
-                dest.title = "Search Results"
-                dest.customSectionName = "nameSection"
+            guard let dest = segue.destination as? SearchViewController,
+                let request = sender as? NSFetchRequest<NSFetchRequestResult> else {
+                return
             }
+            
+            dest.request = request
+            dest.title = "Search Results"
+            dest.customSectionName = "nameSection"
         }
     }
     
@@ -182,7 +190,7 @@ class SetViewController: BaseViewController {
         if let fetchRequest = fetchRequest {
             request = fetchRequest
         } else {
-            request = NSFetchRequest(entityName: "CMCard")
+            request = CMCard.fetchRequest()
             
             request!.sortDescriptors = [NSSortDescriptor(key: setSectionName, ascending: setOrderBy),
                                         NSSortDescriptor(key: setSecondSortBy, ascending: setOrderBy)]
@@ -192,39 +200,43 @@ class SetViewController: BaseViewController {
         switch setDisplayBy {
         case "list":
             ds = DATASource(tableView: tableView, cellIdentifier: "CardCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName == "numberOrder" ? nil : setSectionName, configuration: { cell, item, indexPath in
-                if let card = item as? CMCard,
-                    let cardCell = cell as? CardTableViewCell {
-                    
-                    cardCell.card = card
-                    cardCell.updateDataDisplay()
+                
+                guard let card = item as? CMCard,
+                    let cardCell = cell as? CardTableViewCell else {
+                    return
                 }
+                
+                cardCell.card = card
+                cardCell.updateDataDisplay()
             })
         case "grid":
             if let collectionView = collectionView {
                 ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName == "numberOrder" ? nil : setSectionName, configuration: { cell, item, indexPath in
-                    if let card = item as? CMCard {
-                        if let imageView = cell.viewWithTag(100) as? UIImageView {
-                            if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
-                                imageView.image = image
-                            } else {
-                                imageView.image = ManaKit.sharedInstance.cardBack(card)
-                                
-                                firstly {
-                                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-                                }.done { (image: UIImage?) in
-                                    if let image = image {
-                                        UIView.transition(with: imageView,
-                                                          duration: 1.0,
-                                                          options: .transitionFlipFromLeft,
-                                                          animations: {
-                                                              imageView.image = image
-                                                          },
-                                                          completion: nil)
-                                    }
-                                }.catch { error in
-                                    print("\(error)")
-                                }
+                    
+                    guard let card = item as? CMCard,
+                        let imageView = cell.viewWithTag(100) as? UIImageView else {
+                        return
+                    }
+                            
+                    if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
+                        imageView.image = image
+                    } else {
+                        imageView.image = ManaKit.sharedInstance.cardBack(card)
+                        
+                        firstly {
+                            ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+                        }.done { (image: UIImage?) in
+                            if let image = image {
+                                UIView.transition(with: imageView,
+                                                  duration: 1.0,
+                                                  options: .transitionFlipFromLeft,
+                                                  animations: {
+                                                      imageView.image = image
+                                                  },
+                                                  completion: nil)
                             }
+                        }.catch { error in
+                            print("\(error)")
                         }
                     }
                 })
@@ -233,11 +245,12 @@ class SetViewController: BaseViewController {
             ()
         }
     
-        if let ds = ds {
-            ds.delegate = self
-            return ds
+        guard let d = ds else {
+            return nil
         }
-        return nil
+        
+        d.delegate = self
+        return d
     }
     
     func updateSections() {
@@ -293,7 +306,6 @@ class SetViewController: BaseViewController {
                 ()
             }
             
-            
             var sections = 0
             switch contentSegmentedControl.selectedSegmentIndex {
             case SetViewControllerSegmentedIndex.cards.rawValue:
@@ -325,55 +337,57 @@ class SetViewController: BaseViewController {
     }
     
     func updateData(_ notification: Notification) {
-        if let userInfo = notification.userInfo as? [String: Any] {
-            let defaults = defaultsValue()
-            var setSectionName = defaults["setSectionName"] as! String
-            var setSortBy = defaults["setSortBy"] as! String
-            var setSecondSortBy = defaults["setSecondSortBy"] as! String
-            var setOrderBy = defaults["setOrderBy"] as! Bool
-            var setDisplayBy = defaults["setDisplayBy"] as! String
-            
-            if let value = userInfo["setSortBy"] as? String {
-                setSortBy = value
-                
-                switch setSortBy {
-                case "name":
-                    setSectionName = "nameSection"
-                    setSecondSortBy = "name"
-                case "numberOrder":
-                    setSectionName = "numberOrder"
-                    setSecondSortBy = "name"
-                case "typeSection":
-                    setSectionName = "typeSection"
-                    setSecondSortBy = "name"
-                case "rarity_.name":
-                    setSectionName = "rarity_.name"
-                    setSecondSortBy = "name"
-                case "artist_.name":
-                    setSectionName = "artist_.name"
-                    setSecondSortBy = "name"
-                default:
-                    ()
-                }
-            }
-            
-            if let value = userInfo["setOrderBy"] as? Bool {
-                setOrderBy = value
-            }
-            
-            if let value = userInfo["setDisplayBy"] as? String {
-                setDisplayBy = value
-            }
-            
-            UserDefaults.standard.set(setSectionName, forKey: "setSectionName")
-            UserDefaults.standard.set(setSortBy, forKey: "setSortBy")
-            UserDefaults.standard.set(setSecondSortBy, forKey: "setSecondSortBy")
-            UserDefaults.standard.set(setOrderBy, forKey: "setOrderBy")
-            UserDefaults.standard.set(setDisplayBy, forKey: "setDisplayBy")
-            UserDefaults.standard.synchronize()
-            
-            updateDataDisplay()
+        guard let userInfo = notification.userInfo as? [String: Any] else {
+            return
         }
+        
+        let defaults = defaultsValue()
+        var setSectionName = defaults["setSectionName"] as! String
+        var setSortBy = defaults["setSortBy"] as! String
+        var setSecondSortBy = defaults["setSecondSortBy"] as! String
+        var setOrderBy = defaults["setOrderBy"] as! Bool
+        var setDisplayBy = defaults["setDisplayBy"] as! String
+        
+        if let value = userInfo["setSortBy"] as? String {
+            setSortBy = value
+            
+            switch setSortBy {
+            case "name":
+                setSectionName = "nameSection"
+                setSecondSortBy = "name"
+            case "numberOrder":
+                setSectionName = "numberOrder"
+                setSecondSortBy = "name"
+            case "typeSection":
+                setSectionName = "typeSection"
+                setSecondSortBy = "name"
+            case "rarity_.name":
+                setSectionName = "rarity_.name"
+                setSecondSortBy = "name"
+            case "artist_.name":
+                setSectionName = "artist_.name"
+                setSecondSortBy = "name"
+            default:
+                ()
+            }
+        }
+        
+        if let value = userInfo["setOrderBy"] as? Bool {
+            setOrderBy = value
+        }
+        
+        if let value = userInfo["setDisplayBy"] as? String {
+            setDisplayBy = value
+        }
+        
+        UserDefaults.standard.set(setSectionName, forKey: "setSectionName")
+        UserDefaults.standard.set(setSortBy, forKey: "setSortBy")
+        UserDefaults.standard.set(setSecondSortBy, forKey: "setSecondSortBy")
+        UserDefaults.standard.set(setOrderBy, forKey: "setOrderBy")
+        UserDefaults.standard.set(setDisplayBy, forKey: "setDisplayBy")
+        UserDefaults.standard.synchronize()
+        
+        updateDataDisplay()
     }
     
     func defaultsValue() -> [String: Any] {
@@ -435,39 +449,40 @@ class SetViewController: BaseViewController {
         var newRequest:NSFetchRequest<NSFetchRequestResult>?
         let defaults = defaultsValue()
         
-        if let setSectionName = defaults["setSectionName"] as? String,
+        guard let setSectionName = defaults["setSectionName"] as? String,
             let setSecondSortBy = defaults["setSecondSortBy"] as? String,
             let setOrderBy = defaults["setOrderBy"] as? Bool,
-            let searchDisplayBy = defaults["setDisplayBy"] as? String {
+            let searchDisplayBy = defaults["setDisplayBy"] as? String else {
+            return
+        }
         
-            if let text = searchController.searchBar.text {
-                if text.count > 0 {
-                    newRequest = NSFetchRequest(entityName: "CMCard")
-                    
-                    newRequest!.sortDescriptors = [NSSortDescriptor(key: setSectionName, ascending: setOrderBy),
-                                                   NSSortDescriptor(key: setSecondSortBy, ascending: setOrderBy)]
-                    
-                    if text.count == 1 {
-                        newRequest!.predicate = NSPredicate(format: "set.code = %@ AND name BEGINSWITH[cd] %@", set!.code!, text)
-                    } else if text.count > 1 {
-                        newRequest!.predicate = NSPredicate(format: "set.code = %@ AND (name CONTAINS[cd] %@ OR name CONTAINS[cd] %@)", set!.code!, text, text)
-                    }
-                    dataSource = getDataSource(newRequest)
-                    
-                } else {
-                    dataSource = getDataSource(nil)
+        if let text = searchController.searchBar.text {
+            if text.count > 0 {
+                newRequest = CMCard.fetchRequest()
+                
+                newRequest!.sortDescriptors = [NSSortDescriptor(key: setSectionName, ascending: setOrderBy),
+                                               NSSortDescriptor(key: setSecondSortBy, ascending: setOrderBy)]
+                
+                if text.count == 1 {
+                    newRequest!.predicate = NSPredicate(format: "set.code = %@ AND name BEGINSWITH[cd] %@", set!.code!, text)
+                } else if text.count > 1 {
+                    newRequest!.predicate = NSPredicate(format: "set.code = %@ AND (name CONTAINS[cd] %@ OR name CONTAINS[cd] %@)", set!.code!, text, text)
                 }
+                dataSource = getDataSource(newRequest)
+                
+            } else {
+                dataSource = getDataSource(nil)
             }
-        
-            updateSections()
-            switch searchDisplayBy {
-            case "list":
-                tableView.reloadData()
-            case "grid":
-                collectionView?.reloadData()
-            default:
-                ()
-            }
+        }
+    
+        updateSections()
+        switch searchDisplayBy {
+        case "list":
+            tableView.reloadData()
+        case "grid":
+            collectionView?.reloadData()
+        default:
+            ()
         }
     }
 }
@@ -489,36 +504,44 @@ extension SetViewController : UITableViewDataSource {
         case SetViewControllerSegmentedIndex.cards.rawValue:
             switch setDisplayBy {
             case "grid":
-                if let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") {
-                    if let collectionView = c.viewWithTag(100) as? UICollectionView {
-                        self.collectionView = collectionView
-                        collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "Header")
-                        collectionView.delegate = self
-                        
-                        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                            let width = tableView.frame.size.width
-                            let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
-                            
-                            flowLayout.itemSize = cardSize(inFrame: CGSize(width: width, height: height))
-                            flowLayout.minimumInteritemSpacing = CGFloat(0)
-                            flowLayout.minimumLineSpacing = CGFloat(10)
-                            flowLayout.headerReferenceSize = CGSize(width: width, height: 22)
-                            flowLayout.sectionHeadersPinToVisibleBounds = true
-                        }
-                    }
-                    cell = c
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") else {
+                    return UITableViewCell(frame: CGRect.zero)
                 }
+                guard let collectionView = c.viewWithTag(100) as? UICollectionView else {
+                    return UITableViewCell(frame: CGRect.zero)
+                }
+                
+                self.collectionView = collectionView
+                collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "Header")
+                collectionView.delegate = self
+                
+                if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                    let width = tableView.frame.size.width
+                    let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
+                    
+                    flowLayout.itemSize = cardSize(inFrame: CGSize(width: width, height: height))
+                    flowLayout.minimumInteritemSpacing = CGFloat(0)
+                    flowLayout.minimumLineSpacing = CGFloat(10)
+                    flowLayout.headerReferenceSize = CGSize(width: width, height: 22)
+                    flowLayout.sectionHeadersPinToVisibleBounds = true
+                }
+                
+                cell = c
+                
             default:
                 ()
             }
         case SetViewControllerSegmentedIndex.wiki.rawValue:
-            if let c = tableView.dequeueReusableCell(withIdentifier: "SetInfoCell") as? BrowserTableViewCell,
-                let set = set {
-                c.webView.delegate = self
-                let request = URLRequest(url: wikiURL(ofSet: set)!, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 10.0)
-                c.webView.loadRequest(request)
-                cell = c
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "SetInfoCell") as? BrowserTableViewCell,
+                let set = set else {
+                return UITableViewCell(frame: CGRect.zero)
             }
+            
+            c.webView.delegate = self
+            let request = URLRequest(url: wikiURL(ofSet: set)!, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 10.0)
+            c.webView.loadRequest(request)
+            cell = c
+            
         default:
             ()
         }
@@ -663,48 +686,52 @@ extension SetViewController : UICollectionViewDelegate {
 // MARK: UIWebViewDelegate
 extension SetViewController : UIWebViewDelegate {
     func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
-        
+        guard let url = request.url else {
+            return false
+        }
+        guard let host = url.host else {
+            return false
+        }
         var willLoad = false
-        if let url = request.url {
-            if let host = url.host {
-                if host.contains("gamepedia.com") {
-                    willLoad = true
-                } else if host.contains("magiccards.info") ||
-                    host.contains("scryfall.com") {
-                    // Show the card instead opening the link!!!
-                    let urlComponents = URLComponents(string: url.absoluteString)
-                    let queryItems = urlComponents?.queryItems
-                    let q = queryItems?.filter({$0.name == "q"}).first
-                    if let value = q?.value {
-                        let r = value.index(value.startIndex, offsetBy: 1)
-                        let cardName = value.substring(from: r).replacingOccurrences(of: "+", with: " ")
-                                       .replacingOccurrences(of: "\"", with: "")
-                        
-                        let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-                        request.predicate = NSPredicate(format: "name = %@", cardName)
-                        request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                                    NSSortDescriptor(key: "name", ascending: true)]
-                        
-                        let results = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
-                        if results.count == 1 {
-                            if let card = results.first as? CMCard {
-                                if UIDevice.current.userInterfaceIdiom == .phone {
-                                    performSegue(withIdentifier: "showCard", sender: ["cardIndex": 0 as Any,
-                                                                                      "cards": [card]])
-                                } else if UIDevice.current.userInterfaceIdiom == .pad {
-                                    performSegue(withIdentifier: "showCardModal", sender: ["cardIndex": 0 as Any,
-                                                                                           "cards": [card]])
-                                }
-                            }
-                        } else if results.count > 1 {
-                            performSegue(withIdentifier: "showSearch", sender: request)
-                        } else {
-                            let alertVC = UIAlertController(title: "Card Not found", message: "The card: \(cardName) was not found in the database", preferredStyle: .alert)
-                            let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
-                            alertVC.addAction(okAction)
-                            present(alertVC, animated: true, completion: nil)
+        
+        if host.contains("gamepedia.com") {
+            willLoad = true
+        } else if host.contains("magiccards.info") ||
+            host.contains("scryfall.com") {
+            
+            // Show the card instead opening the link!!!
+            let urlComponents = URLComponents(string: url.absoluteString)
+            let queryItems = urlComponents?.queryItems
+            let q = queryItems?.filter({$0.name == "q"}).first
+            
+            if let value = q?.value {
+                let r = value.index(value.startIndex, offsetBy: 1)
+                let cardName = value.substring(from: r).replacingOccurrences(of: "+", with: " ")
+                               .replacingOccurrences(of: "\"", with: "")
+                
+                let request = CMCard.fetchRequest()
+                request.predicate = NSPredicate(format: "name = %@", cardName)
+                request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                            NSSortDescriptor(key: "name", ascending: true)]
+                
+                let results = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
+                if results.count == 1 {
+                    if let card = results.first as? CMCard {
+                        if UIDevice.current.userInterfaceIdiom == .phone {
+                            performSegue(withIdentifier: "showCard", sender: ["cardIndex": 0 as Any,
+                                                                              "cards": [card]])
+                        } else if UIDevice.current.userInterfaceIdiom == .pad {
+                            performSegue(withIdentifier: "showCardModal", sender: ["cardIndex": 0 as Any,
+                                                                                   "cards": [card]])
                         }
                     }
+                } else if results.count > 1 {
+                    performSegue(withIdentifier: "showSearch", sender: request)
+                } else {
+                    let alertVC = UIAlertController(title: "Card Not found", message: "The card: \(cardName) was not found in the database", preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                    alertVC.addAction(okAction)
+                    present(alertVC, animated: true, completion: nil)
                 }
             }
         }
@@ -719,21 +746,25 @@ extension SetViewController : UIWebViewDelegate {
     func webViewDidFinishLoad(_ webView: UIWebView) {
         MBProgressHUD.hide(for: webView, animated: true)
         
-        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? BrowserTableViewCell {
-            cell.backButton.isEnabled = webView.canGoBack
-            cell.forwardButton.isEnabled = webView.canGoForward
-            cell.refreshButton.isEnabled = true
+        guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? BrowserTableViewCell else {
+            return
         }
+        
+        cell.backButton.isEnabled = webView.canGoBack
+        cell.forwardButton.isEnabled = webView.canGoForward
+        cell.refreshButton.isEnabled = true
     }
     
     func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
         MBProgressHUD.hide(for: webView, animated: true)
         
-        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? BrowserTableViewCell {
-            cell.backButton.isEnabled = webView.canGoBack
-            cell.forwardButton.isEnabled = webView.canGoForward
-            cell.refreshButton.isEnabled = true
+        guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? BrowserTableViewCell else {
+            return
         }
+        
+        cell.backButton.isEnabled = webView.canGoBack
+        cell.forwardButton.isEnabled = webView.canGoForward
+        cell.refreshButton.isEnabled = true
         
         var html = "<html><body><center>"
         html.append(error.localizedDescription)

@@ -69,12 +69,13 @@ class SetsViewController: BaseViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showSet" {
-            if let dest = segue.destination as? SetViewController,
-                let set = sender as? CMSet {
-                
-                dest.set = set
-                dest.title = set.name
+            guard let dest = segue.destination as? SetViewController,
+                let set = sender as? CMSet else {
+                return
             }
+            
+            dest.set = set
+            dest.title = set.name
         }
     }
 
@@ -95,33 +96,35 @@ class SetsViewController: BaseViewController {
         if let fetchRequest = fetchRequest {
             request = fetchRequest
         } else {
-            request = NSFetchRequest(entityName: "CMSet")
+            request = CMSet.fetchRequest()
             request!.sortDescriptors = [NSSortDescriptor(key: setsSectionName, ascending: setsOrderBy),
                                         NSSortDescriptor(key: setsSecondSortBy, ascending: setsOrderBy)]
         }
         
         let ds = DATASource(tableView: tableView, cellIdentifier: "SetCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setsSectionName, configuration: { cell, item, indexPath in
-            if let set = item as? CMSet {
-                if let label = cell.contentView.viewWithTag(100) as? UILabel {
-                    label.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-                    label.textColor = UIColor.black
-                }
-                if let label = cell.contentView.viewWithTag(200) as? UILabel {
-                    label.text = set.name
-                    label.adjustsFontSizeToFitWidth = true
-                }
-                if let label = cell.contentView.viewWithTag(300) as? UILabel {
-                    label.text = set.code
-                    label.adjustsFontSizeToFitWidth = true
-                }
-                if let label = cell.contentView.viewWithTag(400) as? UILabel {
-                    label.text = set.releaseDate
-                    label.adjustsFontSizeToFitWidth = true
-                }
-                if let label = cell.contentView.viewWithTag(500) as? UILabel {
-                    label.text = "\(set.cards!.allObjects.count) cards"
-                    label.adjustsFontSizeToFitWidth = true
-                }
+            guard let set = item as? CMSet else {
+                return
+            }
+            
+            if let label = cell.contentView.viewWithTag(100) as? UILabel {
+                label.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+                label.textColor = UIColor.black
+            }
+            if let label = cell.contentView.viewWithTag(200) as? UILabel {
+                label.text = set.name
+                label.adjustsFontSizeToFitWidth = true
+            }
+            if let label = cell.contentView.viewWithTag(300) as? UILabel {
+                label.text = set.code
+                label.adjustsFontSizeToFitWidth = true
+            }
+            if let label = cell.contentView.viewWithTag(400) as? UILabel {
+                label.text = set.releaseDate
+                label.adjustsFontSizeToFitWidth = true
+            }
+            if let label = cell.contentView.viewWithTag(500) as? UILabel {
+                label.text = "\(set.cards!.allObjects.count) cards"
+                label.adjustsFontSizeToFitWidth = true
             }
         })
         
@@ -177,43 +180,45 @@ class SetsViewController: BaseViewController {
     }
 
     func updateData(_ notification: Notification) {
-        if let userInfo = notification.userInfo as? [String: Any] {
-            let defaults = defaultsValue()
-            var setsSectionName = defaults["setsSectionName"] as! String
-            var setsSortBy = defaults["setsSortBy"] as! String
-            var setsSecondSortBy = defaults["setsSecondSortBy"] as! String
-            var setsOrderBy = defaults["setsOrderBy"] as! Bool
-            
-            if let value = userInfo["setsSortBy"] as? String {
-                setsSortBy = value
-                
-                switch setsSortBy {
-                case "releaseDate":
-                    setsSectionName = "yearSection"
-                    setsSecondSortBy = "releaseDate"
-                case "name":
-                    setsSectionName = "nameSection"
-                    setsSecondSortBy = "name"
-                case "type_.name":
-                    setsSectionName = "typeSection"
-                    setsSecondSortBy = "name"
-                default:
-                    ()
-                }
-            }
-            
-            if let value = userInfo["setsOrderBy"] as? Bool {
-                setsOrderBy = value
-            }
-            
-            UserDefaults.standard.set(setsSectionName, forKey: "setsSectionName")
-            UserDefaults.standard.set(setsSortBy, forKey: "setsSortBy")
-            UserDefaults.standard.set(setsSecondSortBy, forKey: "setsSecondSortBy")
-            UserDefaults.standard.set(setsOrderBy, forKey: "setsOrderBy")
-            UserDefaults.standard.synchronize()
-            
-            updateDataDisplay()
+        guard let userInfo = notification.userInfo as? [String: Any] else {
+            return
         }
+        
+        let defaults = defaultsValue()
+        var setsSectionName = defaults["setsSectionName"] as! String
+        var setsSortBy = defaults["setsSortBy"] as! String
+        var setsSecondSortBy = defaults["setsSecondSortBy"] as! String
+        var setsOrderBy = defaults["setsOrderBy"] as! Bool
+        
+        if let value = userInfo["setsSortBy"] as? String {
+            setsSortBy = value
+            
+            switch setsSortBy {
+            case "releaseDate":
+                setsSectionName = "yearSection"
+                setsSecondSortBy = "releaseDate"
+            case "name":
+                setsSectionName = "nameSection"
+                setsSecondSortBy = "name"
+            case "type_.name":
+                setsSectionName = "typeSection"
+                setsSecondSortBy = "name"
+            default:
+                ()
+            }
+        }
+        
+        if let value = userInfo["setsOrderBy"] as? Bool {
+            setsOrderBy = value
+        }
+        
+        UserDefaults.standard.set(setsSectionName, forKey: "setsSectionName")
+        UserDefaults.standard.set(setsSortBy, forKey: "setsSortBy")
+        UserDefaults.standard.set(setsSecondSortBy, forKey: "setsSecondSortBy")
+        UserDefaults.standard.set(setsOrderBy, forKey: "setsOrderBy")
+        UserDefaults.standard.synchronize()
+        
+        updateDataDisplay()
     }
     
     func defaultsValue() -> [String: Any] {
@@ -247,33 +252,35 @@ class SetsViewController: BaseViewController {
     }
     
     func doSearch() {
+        guard let text = searchController.searchBar.text else {
+            return
+        }
+        
         var newRequest:NSFetchRequest<NSFetchRequestResult>?
         let defaults = defaultsValue()
         let setsSectionName = defaults["setsSectionName"] as! String
         let setsSecondSortBy = defaults["setsSecondSortBy"] as! String
         let setsOrderBy = defaults["setsOrderBy"] as! Bool
         
-        if let text = searchController.searchBar.text {
-            if text.count > 0 {
-                newRequest = NSFetchRequest(entityName: "CMSet")
-                
-                newRequest!.sortDescriptors = [NSSortDescriptor(key: setsSectionName, ascending: setsOrderBy),
-                                            NSSortDescriptor(key: setsSecondSortBy, ascending: setsOrderBy)]
-                
-                if text.count == 1 {
-                    newRequest!.predicate = NSPredicate(format: "name BEGINSWITH[cd] %@", text)
-                } else if text.count > 1 {
-                    newRequest!.predicate = NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@", text, text)
-                }
-                dataSource = getDataSource(newRequest)
-                updateSections()
-                tableView.reloadData()
-                
-            } else {
-                dataSource = getDataSource(nil)
-                updateSections()
-                tableView.reloadData()
+        if text.count > 0 {
+            newRequest = CMSet.fetchRequest()
+            
+            newRequest!.sortDescriptors = [NSSortDescriptor(key: setsSectionName, ascending: setsOrderBy),
+                                        NSSortDescriptor(key: setsSecondSortBy, ascending: setsOrderBy)]
+            
+            if text.count == 1 {
+                newRequest!.predicate = NSPredicate(format: "name BEGINSWITH[cd] %@", text)
+            } else if text.count > 1 {
+                newRequest!.predicate = NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@", text, text)
             }
+            dataSource = getDataSource(newRequest)
+            updateSections()
+            tableView.reloadData()
+            
+        } else {
+            dataSource = getDataSource(nil)
+            updateSections()
+            tableView.reloadData()
         }
     }
 }

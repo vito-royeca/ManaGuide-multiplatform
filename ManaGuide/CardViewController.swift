@@ -130,7 +130,7 @@ class CardViewController: BaseViewController {
             if let printings_ = card.printings_ {
                 let sets = printings_.allObjects as! [CMSet]
                 var filteredSets = [CMSet]()
-                let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                let request = CMCard.fetchRequest()
                 
                 if let set = card.set {
                     filteredSets = sets.filter({ $0.code != set.code})
@@ -333,69 +333,76 @@ class CardViewController: BaseViewController {
     }
 
     func showUpdateRatingDialog() {
-        if let cards = cards {
-            let card = cards[cardIndex]
-            var rating = Double(0)
-            
-            // get user's rating for this card, if there is
-            for c in FirebaseManager.sharedInstance.ratedCards {
-                if c.id == card.id {
-                    rating = c.rating
-                    break
-                }
-            }
-            
-            let ratingView = CosmosView(frame: CGRect.zero)
-            ratingView.rating = rating
-            ratingView.settings.emptyBorderColor = kGlobalTintColor
-            ratingView.settings.filledBorderColor = kGlobalTintColor
-            ratingView.settings.filledColor = kGlobalTintColor
-            ratingView.settings.fillMode = .full
-            
-            let nyAlertController = NYAlertViewController(nibName: nil, bundle: nil)
-            let confirmAction = NYAlertAction(title: "Ok", style: .default, handler: {(action: NYAlertAction?) -> Void in
-                self.dismiss(animated: false, completion: nil)
-                
-                MBProgressHUD.showAdded(to: self.view, animated: true)
-                FirebaseManager.sharedInstance.updateCardRatings(card.id!, rating: ratingView.rating, firstAttempt: true)
-            })
-            let cancelAction = NYAlertAction(title: "Cancel", style: .default, handler:  {(action: NYAlertAction?) -> Void in
-                self.dismiss(animated: false, completion: nil)
-            })
-
-            nyAlertController.title = "Rating"
-            nyAlertController.message = rating > 0 ? "Update your rating for this card." : "Submit your rating for this card."
-            nyAlertController.buttonColor = kGlobalTintColor
-            nyAlertController.addAction(cancelAction)
-            nyAlertController.addAction(confirmAction)
-            nyAlertController.alertViewContentView = ratingView
-            
-            self.present(nyAlertController, animated: true, completion: nil)
+        guard let cards = cards else {
+            return
         }
+        
+        
+        let card = cards[cardIndex]
+        var rating = Double(0)
+        
+        // get user's rating for this card, if there is
+        for c in FirebaseManager.sharedInstance.ratedCards {
+            if c.id == card.id {
+                rating = c.rating
+                break
+            }
+        }
+        
+        let ratingView = CosmosView(frame: CGRect.zero)
+        ratingView.rating = rating
+        ratingView.settings.emptyBorderColor = kGlobalTintColor
+        ratingView.settings.filledBorderColor = kGlobalTintColor
+        ratingView.settings.filledColor = kGlobalTintColor
+        ratingView.settings.fillMode = .full
+        
+        let nyAlertController = NYAlertViewController(nibName: nil, bundle: nil)
+        let confirmAction = NYAlertAction(title: "Ok", style: .default, handler: {(action: NYAlertAction?) -> Void in
+            self.dismiss(animated: false, completion: nil)
+            
+            MBProgressHUD.showAdded(to: self.view, animated: true)
+            FirebaseManager.sharedInstance.updateCardRatings(card.id!, rating: ratingView.rating, firstAttempt: true)
+        })
+        let cancelAction = NYAlertAction(title: "Cancel", style: .default, handler:  {(action: NYAlertAction?) -> Void in
+            self.dismiss(animated: false, completion: nil)
+        })
+
+        nyAlertController.title = "Rating"
+        nyAlertController.message = rating > 0 ? "Update your rating for this card." : "Submit your rating for this card."
+        nyAlertController.buttonColor = kGlobalTintColor
+        nyAlertController.addAction(cancelAction)
+        nyAlertController.addAction(confirmAction)
+        nyAlertController.alertViewContentView = ratingView
+        
+        self.present(nyAlertController, animated: true, completion: nil)
     }
     
     func incrementCardViews() {
-        if let cards = cards {
-            let card = cards[cardIndex]
-            FirebaseManager.sharedInstance.incrementCardViews(card.id!, firstAttempt: true)
+        guard let cards = cards else {
+            return
         }
+        
+        let card = cards[cardIndex]
+        FirebaseManager.sharedInstance.incrementCardViews(card.id!, firstAttempt: true)
     }
     
     func toggleCardFavorite() {
-        if let cards = cards {
-            let card = cards[cardIndex]
-            var isFavorite = false
-            
-            for c in FirebaseManager.sharedInstance.favorites {
-                if c.id == card.id {
-                    isFavorite = true
-                    break
-                }
-            }
-            
-            MBProgressHUD.showAdded(to: view, animated: true)
-            FirebaseManager.sharedInstance.toggleCardFavorite(card.id!, favorite: !isFavorite, firstAttempt: true)
+        guard let cards = cards else {
+            return
         }
+        
+        let card = cards[cardIndex]
+        var isFavorite = false
+        
+        for c in FirebaseManager.sharedInstance.favorites {
+            if c.id == card.id {
+                isFavorite = true
+                break
+            }
+        }
+        
+        MBProgressHUD.showAdded(to: view, animated: true)
+        FirebaseManager.sharedInstance.toggleCardFavorite(card.id!, favorite: !isFavorite, firstAttempt: true)
     }
     
     func reloadCardActionRows(_ notification: Notification) {
@@ -452,8 +459,6 @@ class CardViewController: BaseViewController {
     }
     
     func handleLink(_ tapGesture: UITapGestureRecognizer) {
-        // TODO: handle tap here...
-        
         guard let label = tapGesture.view as? UILabel else {
             return
         }
@@ -561,110 +566,118 @@ extension CardViewController : UITableViewDataSource {
             
             switch indexPath.section {
             case CardViewControllerImageSection.pricing.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell") {
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell") else {
+                    return UITableViewCell(frame: CGRect.zero)
+                }
+                
+                if let label = c.viewWithTag(100) as? UILabel {
+                    label.text = "NA"
+                }
+                if let label = c.viewWithTag(200) as? UILabel {
+                    label.text = "NA"
+                }
+                if let label = c.viewWithTag(300) as? UILabel {
+                    label.text = "NA"
+                }
+                if let label = c.viewWithTag(400) as? UILabel {
+                    label.text = "NA"
+                }
+                
+                firstly {
+                    ManaKit.sharedInstance.fetchTCGPlayerCardPricing(card: card)
+                }.done { (pricing: CMCardPricing?) in
+                    guard let pricing = pricing else {
+                        return
+                    }
+                    
                     if let label = c.viewWithTag(100) as? UILabel {
-                        label.text = "NA"
+                        label.text = pricing.low > 0 ? String(format: "$%.2f", pricing.low) : "NA"
                     }
                     if let label = c.viewWithTag(200) as? UILabel {
-                        label.text = "NA"
+                        label.text = pricing.average > 0 ? String(format: "$%.2f", pricing.average) : "NA"
                     }
                     if let label = c.viewWithTag(300) as? UILabel {
-                        label.text = "NA"
+                        label.text = pricing.high > 0 ? String(format: "$%.2f", pricing.high) : "NA"
                     }
                     if let label = c.viewWithTag(400) as? UILabel {
-                        label.text = "NA"
+                        label.text = pricing.foil > 0 ? String(format: "$%.2f", pricing.foil) : "NA"
                     }
+                }.catch { error in
                     
-                    firstly {
-                        ManaKit.sharedInstance.fetchTCGPlayerCardPricing(card: card)
-                    }.done { (pricing: CMCardPricing?) in
-                        if let pricing = pricing {
-                            if let label = c.viewWithTag(100) as? UILabel {
-                                label.text = pricing.low > 0 ? String(format: "$%.2f", pricing.low) : "NA"
-                            }
-                            if let label = c.viewWithTag(200) as? UILabel {
-                                label.text = pricing.average > 0 ? String(format: "$%.2f", pricing.average) : "NA"
-                            }
-                            if let label = c.viewWithTag(300) as? UILabel {
-                                label.text = pricing.high > 0 ? String(format: "$%.2f", pricing.high) : "NA"
-                            }
-                            if let label = c.viewWithTag(400) as? UILabel {
-                                label.text = pricing.foil > 0 ? String(format: "$%.2f", pricing.foil) : "NA"
-                            }
-                        }
-                    }.catch { error in
-                        
-                    }
-                    
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
                 }
+                
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
+                
             case CardViewControllerImageSection.image.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "CarouselCell") {
-                    if let carouselView = c.viewWithTag(100) as? iCarousel {
-                        carouselView.dataSource = self
-                        carouselView.delegate = self
-                        carouselView.type = .coverFlow2
-                        carouselView.isPagingEnabled = true
-                        carouselView.currentItemIndex = cardIndex
-                        
-                        if let imageView = carouselView.itemView(at: cardIndex) as? UIImageView {
-                            showImage(ofCard: card, inImageView: imageView)
-                        }
-                    }
-                    
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "CarouselCell"),
+                    let carouselView = c.viewWithTag(100) as? iCarousel else {
+                    return UITableViewCell(frame: CGRect.zero)
                 }
+                
+                carouselView.dataSource = self
+                carouselView.delegate = self
+                carouselView.type = .coverFlow2
+                carouselView.isPagingEnabled = true
+                carouselView.currentItemIndex = cardIndex
+            
+                if let imageView = carouselView.itemView(at: cardIndex) as? UIImageView {
+                    showImage(ofCard: card, inImageView: imageView)
+                }
+            
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
+                
             case CardViewControllerImageSection.actions.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "ActionsCell") {
-                    
-                    if let ratingView = c.viewWithTag(100) as? CosmosView {
-                        ratingView.didFinishTouchingCosmos = { _ in
-                            self.ratingAction()
-                        }
-                        ratingView.rating = card.rating //Double(arc4random_uniform(5) + 1)
-                        ratingView.settings.emptyBorderColor = kGlobalTintColor
-                        ratingView.settings.filledBorderColor = kGlobalTintColor
-                        ratingView.settings.filledColor = kGlobalTintColor
-                        ratingView.settings.fillMode = .precise
-                    }
-                    if let label = c.viewWithTag(101) as? UILabel {
-                        label.text = "\(card.ratings) Rating\(card.ratings > 1 ? "s" : "")"
-                    }
-                    if let label = c.viewWithTag(200) as? UILabel {
-                        var isFavorite = false
-                        
-                        for c in FirebaseManager.sharedInstance.favorites {
-                            if c.id == card.id {
-                                isFavorite = true
-                                break
-                            }
-                        }
-                        if isFavorite {
-                            label.setFAText(prefixText: "", icon: .FAHeart, postfixText: "", size: CGFloat(30))
-                        } else {
-                            label.setFAText(prefixText: "", icon: .FAHeartO, postfixText: "", size: CGFloat(30))
-                        }
-                        
-                        if let taps = label.gestureRecognizers {
-                            for tap in taps {
-                                label.removeGestureRecognizer(tap)
-                            }
-                        }
-                        label.addGestureRecognizer(favoriteTapGestureRecognizer)
-                        label.textColor = kGlobalTintColor
-                    }
-                    if let label = c.viewWithTag(300) as? UILabel {
-                        label.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
-                    }
-                    
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "ActionsCell") else {
+                    return UITableViewCell(frame: CGRect.zero)
                 }
+                
+                if let ratingView = c.viewWithTag(100) as? CosmosView {
+                    ratingView.didFinishTouchingCosmos = { _ in
+                        self.ratingAction()
+                    }
+                    ratingView.rating = card.rating //Double(arc4random_uniform(5) + 1)
+                    ratingView.settings.emptyBorderColor = kGlobalTintColor
+                    ratingView.settings.filledBorderColor = kGlobalTintColor
+                    ratingView.settings.filledColor = kGlobalTintColor
+                    ratingView.settings.fillMode = .precise
+                }
+                if let label = c.viewWithTag(101) as? UILabel {
+                    label.text = "\(card.ratings) Rating\(card.ratings > 1 ? "s" : "")"
+                }
+                if let label = c.viewWithTag(200) as? UILabel {
+                    var isFavorite = false
+                    
+                    for c in FirebaseManager.sharedInstance.favorites {
+                        if c.id == card.id {
+                            isFavorite = true
+                            break
+                        }
+                    }
+                    if isFavorite {
+                        label.setFAText(prefixText: "", icon: .FAHeart, postfixText: "", size: CGFloat(30))
+                    } else {
+                        label.setFAText(prefixText: "", icon: .FAHeartO, postfixText: "", size: CGFloat(30))
+                    }
+                    
+                    if let taps = label.gestureRecognizers {
+                        for tap in taps {
+                            label.removeGestureRecognizer(tap)
+                        }
+                    }
+                    label.addGestureRecognizer(favoriteTapGestureRecognizer)
+                    label.textColor = kGlobalTintColor
+                }
+                if let label = c.viewWithTag(300) as? UILabel {
+                    label.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
+                }
+                
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
                 
             default:
                 ()
@@ -675,215 +688,253 @@ extension CardViewController : UITableViewDataSource {
             
             switch indexPath.section {
             case CardViewControllerDetailsSection.manaCost.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") {
-                    if let label = c.textLabel {
-                        if let text = card.manaCost {
-                            label.attributedText = MGUtilities.addSymbols(toText: "\(text))", pointSize: label.font.pointSize)
-                        } else {
-                            label.text = " "
-                        }
-                    }
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                    let label = c.textLabel else {
+                    return UITableViewCell(frame: CGRect.zero)
                 }
+                
+                if let text = card.manaCost {
+                    label.attributedText = NSAttributedString(symbol: text, pointSize: label.font.pointSize)
+                } else {
+                    label.text = " "
+                }
+                
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
+                
             case CardViewControllerDetailsSection.type.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") {
-                    if let label = c.textLabel {
-                        if let _ = card.type_ {
-                            label.attributedText = MGUtilities.composeType(of: card, pointSize: label.font.pointSize)
-                            label.adjustsFontSizeToFitWidth = true
-                        } else {
-                            label.text = " "
-                            label.adjustsFontSizeToFitWidth = false
-                        }
-                        
-                    }
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                    let label = c.textLabel else {
+                    return UITableViewCell(frame: CGRect.zero)
                 }
+                
+                if let _ = card.type_ {
+                    label.attributedText = MGUtilities.composeType(of: card, pointSize: label.font.pointSize)
+                    label.adjustsFontSizeToFitWidth = true
+                } else {
+                    label.text = " "
+                    label.adjustsFontSizeToFitWidth = false
+                }
+                
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
+                
             case CardViewControllerDetailsSection.oracleText.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
-                    if let label = c.viewWithTag(100) as? UILabel {
-                        if let text = card.text {
-                            label.attributedText = MGUtilities.addSymbols(toText: "\n\(text)\n", pointSize: label.font.pointSize)
-                        } else {
-                            label.text = " "
-                        }
-                    }
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
+                    let label = c.viewWithTag(100) as? UILabel else {
+                    return UITableViewCell(frame: CGRect.zero)
                 }
+                
+                if let text = card.text {
+                    label.attributedText = NSAttributedString(symbol: "\n\(text)\n ", pointSize: label.font.pointSize)
+                } else {
+                    label.text = " "
+                }
+                
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
+                
             case CardViewControllerDetailsSection.originalText.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
-                    if let label = c.viewWithTag(100) as? UILabel {
-                        if let text = card.originalText {
-                            label.attributedText = MGUtilities.addSymbols(toText: "\n\(text)\n", pointSize: label.font.pointSize)
-                        } else {
-                            label.text = " "
-                        }
-                    }
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
+                    let label = c.viewWithTag(100) as? UILabel else {
+                    return UITableViewCell(frame: CGRect.zero)
                 }
+                
+                if let text = card.originalText {
+                    label.attributedText = NSAttributedString(symbol: "\n\(text)\n ", pointSize: label.font.pointSize)
+                } else {
+                    label.text = " "
+                }
+                    
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
+                
             case CardViewControllerDetailsSection.flavorText.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
-                    if let label = c.viewWithTag(100) as? UILabel {
-                        if let text = card.flavor {
-                            label.text = "\n\(text)\n"
-                        } else {
-                            label.text = " "
-                        }
-                    }
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
+                    let label = c.viewWithTag(100) as? UILabel else {
+                    return UITableViewCell(frame: CGRect.zero)
                 }
+                
+                if let text = card.flavor {
+                    label.text = "\n\(text)\n"
+                } else {
+                    label.text = " "
+                }
+                
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
+                
             case CardViewControllerDetailsSection.artist.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
-                    if let artist = card.artist_ {
-                        c.textLabel?.adjustsFontSizeToFitWidth = true
-                        c.textLabel?.text = artist.name
-                        c.detailTextLabel?.text = "More Cards"
-                    } else {
-                        c.textLabel?.text = " "
-                        c.detailTextLabel?.text = " "
-                    }
-                    c.selectionStyle = .default
-                    c.accessoryType = .disclosureIndicator
-                    cell = c
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
+                    let label = c.textLabel,
+                    let detailTextLabel = c.detailTextLabel else {
+                    return UITableViewCell(frame: CGRect.zero)
                 }
+                
+                if let artist = card.artist_ {
+                    label.adjustsFontSizeToFitWidth = true
+                    label.text = artist.name
+                    detailTextLabel.text = "More Cards"
+                } else {
+                    label.text = " "
+                    detailTextLabel.text = " "
+                }
+                c.selectionStyle = .default
+                c.accessoryType = .disclosureIndicator
+                cell = c
+                
             case CardViewControllerDetailsSection.set.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
-                    if let set = card.set,
-                        let label = c.textLabel {
-                        
-                        let attributedString = NSMutableAttributedString(string: "\(ManaKit.sharedInstance.keyruneUnicode(forSet: set)!)",
-                            attributes: [NSFontAttributeName: UIFont(name: "Keyrune", size: 17)!,
-                                         NSForegroundColorAttributeName: ManaKit.sharedInstance.keyruneColor(forRarity: card.rarity_!)!])
-                        
-                        attributedString.append(NSMutableAttributedString(string: " \(set.name!)",
-                            attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]))
-                        
-                        label.attributedText = attributedString
-                        label.adjustsFontSizeToFitWidth = true
-                        c.detailTextLabel?.text = "More Cards"
-                    } else {
-                        c.textLabel?.text = " "
-                        c.detailTextLabel?.text = " "
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
+                    let label = c.textLabel,
+                    let detailTextLabel = c.detailTextLabel,
+                    let set = card.set else {
+                    return UITableViewCell(frame: CGRect.zero)
+                }
+                
+                let attributedString = NSMutableAttributedString(string: "\(ManaKit.sharedInstance.keyruneUnicode(forSet: set)!)",
+                    attributes: [NSFontAttributeName: UIFont(name: "Keyrune", size: 17)!,
+                                 NSForegroundColorAttributeName: ManaKit.sharedInstance.keyruneColor(forRarity: card.rarity_!)!])
+                
+                attributedString.append(NSMutableAttributedString(string: " \(set.name!)",
+                    attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]))
+                
+                label.attributedText = attributedString
+                label.adjustsFontSizeToFitWidth = true
+                detailTextLabel.text = "More Cards"
+                
+                
+                c.selectionStyle = .default
+                c.accessoryType = .disclosureIndicator
+                cell = c
+                
+            case CardViewControllerDetailsSection.otherPrintings.rawValue:
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
+                    return UITableViewCell(frame: CGRect.zero)
+                }
+                
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
+                
+            case CardViewControllerDetailsSection.otherNames.rawValue:
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                    let label = c.textLabel else {
+                    return UITableViewCell(frame: CGRect.zero)
+                }
+                
+                var otherCard: CMCard?
+                
+                if let names_ = card.names_ {
+                    if let array = names_.allObjects as? [CMCard] {
+                        let array2 = array.filter({ $0.name != card.name})
+                        if array2.count > 0 {
+                            otherCard = array2[indexPath.row]
+                        }
                     }
+                }
+
+                if let otherCard = otherCard {
+                    label.text = otherCard.name
                     c.selectionStyle = .default
                     c.accessoryType = .disclosureIndicator
-                    cell = c
-                }
-            case CardViewControllerDetailsSection.otherPrintings.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") {
+                } else {
+                    label.text = " "
                     c.selectionStyle = .none
                     c.accessoryType = .none
-                    cell = c
                 }
-            case CardViewControllerDetailsSection.otherNames.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") {
-                    if let label = c.textLabel {
-                        var otherCard: CMCard?
-                        
-                        if let names_ = card.names_ {
-                            if let array = names_.allObjects as? [CMCard] {
-                                let array2 = array.filter({ $0.name != card.name})
-                                if array2.count > 0 {
-                                    otherCard = array2[indexPath.row]
-                                }
-                            }
-                        }
-
-                        if let otherCard = otherCard {
-                            label.text = otherCard.name
-                            c.selectionStyle = .default
-                            c.accessoryType = .disclosureIndicator
-                        } else {
-                            label.text = " "
-                            c.selectionStyle = .none
-                            c.accessoryType = .none
-                        }
-                    }
-                    
-                    cell = c
-                }
+                
+                cell = c
+                
             case CardViewControllerDetailsSection.variations.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") {
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
+                    return UITableViewCell(frame: CGRect.zero)
                 }
+                
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
+                
             case CardViewControllerDetailsSection.rulings.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
-                    if let rulings_ = card.rulings_,
-                        let label = c.viewWithTag(100) as? UILabel {
-                        let array = rulings_.allObjects.sorted(by: {(first: Any, second: Any) -> Bool in
-                            if let a = first as? CMRuling,
-                                let b = second as? CMRuling {
-                                if let aDate = a.date,
-                                    let bDate = b.date {
-                                    return aDate > bDate
-                                }
-                            }
-                            return false
-                        }) as! [CMRuling]
-                        var contents = ""
-                        
-                        if array.count > 0 {
-                            let ruling = array[indexPath.row]
-                            
-                            if let date = ruling.date {
-                                contents.append(date)
-                            }
-                            if let text = ruling.text {
-                                if contents.count > 0 {
-                                    contents.append("\n\n")
-                                }
-                                contents.append(text)
-                            }
-                        } else {
-                            contents = " "
-                        }
-                        
-                        label.attributedText = MGUtilities.addSymbols(toText: contents, pointSize: label.font.pointSize)
-                    }
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
+                    let label = c.viewWithTag(100) as? UILabel,
+                    let rulings_ = card.rulings_ else {
+                    return UITableViewCell(frame: CGRect.zero)
                 }
-            case CardViewControllerDetailsSection.legalities.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") {
-                    if let cardLegalities_ = card.cardLegalities_ {
-                        let array = cardLegalities_.allObjects as! [CMCardLegality]
-                        
-                        if array.count > 0 {
-                            let cardLegality = array[indexPath.row]
-                            c.textLabel?.text = cardLegality.format!.name
-                            c.detailTextLabel?.text = cardLegality.legality!.name
-                        } else {
-                            c.textLabel?.text = " "
-                            c.detailTextLabel?.text = " "
+                
+                let array = rulings_.allObjects.sorted(by: {(first: Any, second: Any) -> Bool in
+                    if let a = first as? CMRuling,
+                        let b = second as? CMRuling {
+                        if let aDate = a.date,
+                            let bDate = b.date {
+                            return aDate > bDate
                         }
                     }
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
-                }
-            case CardViewControllerDetailsSection.otherDetails.rawValue:
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
-                    if let label = c.viewWithTag(100) as? UILabel {
-                        label.attributedText = MGUtilities.composeOtherDetails(forCard: card)
+                    return false
+                }) as! [CMRuling]
+                
+                
+                if array.count > 0 {
+                    let ruling = array[indexPath.row]
+                    var contents = ""
+                    
+                    if let date = ruling.date {
+                        contents.append(date)
+                    }
+                    if let text = ruling.text {
+                        if contents.count > 0 {
+                            contents.append("\n\n")
+                        }
+                        contents.append(text)
                     }
                     
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
+                    label.attributedText = NSAttributedString(symbol: contents, pointSize: label.font.pointSize)
+                } else {
+                    label.text = " "
                 }
+                
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
+                
+            case CardViewControllerDetailsSection.legalities.rawValue:
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
+                    let label = c.textLabel,
+                    let detailTextLabel = c.detailTextLabel,
+                    let cardLegalities_ = card.cardLegalities_ else {
+                    return UITableViewCell(frame: CGRect.zero)
+                }
+                
+                let array = cardLegalities_.allObjects as! [CMCardLegality]
+                
+                if array.count > 0 {
+                    let cardLegality = array[indexPath.row]
+                    label.text = cardLegality.format!.name
+                    detailTextLabel.text = cardLegality.legality!.name
+                } else {
+                    label.text = " "
+                    detailTextLabel.text = " "
+                }
+                    
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
+                
+            case CardViewControllerDetailsSection.otherDetails.rawValue:
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
+                    let label = c.viewWithTag(100) as? UILabel else {
+                    return UITableViewCell(frame: CGRect.zero)
+                }
+                
+                label.attributedText = MGUtilities.composeOtherDetails(forCard: card)
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
+                
             default:
                 ()
             }
@@ -894,46 +945,49 @@ extension CardViewController : UITableViewDataSource {
             let count = suppliers.allObjects.count
             
             if count == 0 {
-                if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
-                    if let label = c.viewWithTag(100) as? UILabel {
-                        guard let note = card.storePricingNote else {
-                            return UITableViewCell(frame: CGRect.zero)
-                        }
-                        label.attributedText = MGUtilities.convertToHtml(note)
-                        label.isUserInteractionEnabled = true
-                        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleLink(_:))))
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
+                    let label = c.viewWithTag(100) as? UILabel,
+                    let note = card.storePricingNote else {
+                    return UITableViewCell(frame: CGRect.zero)
+                }
+                
+                label.attributedText = NSAttributedString(html: note)
+                label.isUserInteractionEnabled = true
+                label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleLink(_:))))
+            
+                c.selectionStyle = .none
+                c.accessoryType = .none
+                cell = c
+                
+            } else {
+                if indexPath.row <= count - 1 {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: "StoreCell") as? StoreTableViewCell,
+                        let suppliers = card.suppliers,
+                        let supplier = suppliers.allObjects[indexPath.row] as? CMSupplier else {
+                        return UITableViewCell(frame: CGRect.zero)
                     }
+                    
+                    c.delegate = self
+                    c.display(supplier)
+                
                     c.selectionStyle = .none
                     c.accessoryType = .none
                     cell = c
-                }
-            } else {
-                if indexPath.row <= count - 1 {
-                    if let c = tableView.dequeueReusableCell(withIdentifier: "StoreCell") as? StoreTableViewCell {
-                        if let suppliers = card.suppliers {
-                            if let supplier = suppliers.allObjects[indexPath.row] as? CMSupplier {
-                                c.delegate = self
-                                c.display(supplier)
-                            }
-                        }
-                        c.selectionStyle = .none
-                        c.accessoryType = .none
-                        cell = c
-                    }
+                    
                 } else {
-                    if let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell") {
-                        if let label = c.viewWithTag(100) as? UILabel {
-                            guard let note = card.storePricingNote else {
-                                return UITableViewCell(frame: CGRect.zero)
-                            }
-                            label.attributedText = MGUtilities.convertToHtml(note)
-                            label.isUserInteractionEnabled = true
-                            label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleLink(_:))))
-                        }
-                        c.selectionStyle = .none
-                        c.accessoryType = .none
-                        cell = c
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
+                        let label = c.viewWithTag(100) as? UILabel,
+                        let note = card.storePricingNote else {
+                            return UITableViewCell(frame: CGRect.zero)
                     }
+                    
+                    label.attributedText = NSAttributedString(html: note)
+                    label.isUserInteractionEnabled = true
+                    label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleLink(_:))))
+                    
+                    c.selectionStyle = .none
+                    c.accessoryType = .none
+                    cell = c
                 }
             }
         }
@@ -1182,7 +1236,7 @@ extension CardViewController : UITableViewDelegate {
             switch indexPath.section {
             case CardViewControllerDetailsSection.artist.rawValue:
                 if let artist = card.artist_ {
-                    let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                    let request = CMCard.fetchRequest()
                     let predicate = NSPredicate(format: "artist_.name = %@", artist.name!)
                     
                     request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),

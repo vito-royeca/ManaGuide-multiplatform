@@ -107,7 +107,7 @@ enum MoreViewControllerListRow: Int {
     }
 }
 
-class MoreViewController: UIViewController {
+class MoreViewController: BaseViewController {
     
     // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
@@ -120,21 +120,26 @@ class MoreViewController: UIViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let dict = sender as? [String: Any] else {
+            return
+        }
+        
         if segue.identifier == "showPDF" {
-            if let dest = segue.destination as? PDFViewerViewController,
-                let dict = sender as? [String: Any] {
-                
-                dest.url = dict["url"] as? URL
-                dest.title = dict["title"] as? String
+            guard let dest = segue.destination as? PDFViewerViewController else {
+                return
             }
+            
+            dest.url = dict["url"] as? URL
+            dest.title = dict["title"] as? String
+            
         } else if segue.identifier == "showSearch" {
-            if let dest = segue.destination as? SearchViewController,
-                let dict = sender as? [String: Any] {
-                
-                dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
-                dest.title = dict["title"] as? String
-                dest.customSectionName = "nameSection"
+            guard let dest = segue.destination as? SearchViewController else {
+                return
             }
+            
+            dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
+            dest.title = dict["title"] as? String
+            dest.customSectionName = "nameSection"
         }
     }
 
@@ -256,7 +261,7 @@ extension MoreViewController : UITableViewDelegate {
             case MoreViewControllerListRow.bannedAndRestricted.rawValue:
                 performSegue(withIdentifier: "showBannedAndRestricted", sender: nil)
             case MoreViewControllerListRow.reserved.rawValue:
-                let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
+                let request = CMCard.fetchRequest()
                 request.predicate = NSPredicate(format: "reserved = true")
                 request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
                                            NSSortDescriptor(key: "name", ascending: true),

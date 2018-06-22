@@ -19,6 +19,7 @@ class RandomCardView: UIView {
 
     // MARK: Variables
     var card: CMCard?
+//    var contrastColor: UIColor?
     
     // MARK: Outlets
     @IBOutlet weak var nameLabel: UILabel!
@@ -33,74 +34,80 @@ class RandomCardView: UIView {
     
     // MARK: Custom methods
     func showImage() {
-        if let card = card {
+        guard let card = card else {
+            return
+        }
         
-            if let image = ManaKit.sharedInstance.cardImage(card, imageType: .artCrop) {
-                cropImageView.image = image
-            } else {
-                cropImageView.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
-                
-                firstly {
-                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
-                }.done { (image: UIImage?) in
-                    if let image = image {
-//                        self.averageColor = image.averageColor
-                        
-                        UIView.transition(with: self.cropImageView,
-                                          duration: 1.0,
-                                          options: .transitionCrossDissolve,
-                                          animations: {
-                                              self.cropImageView.image = image
-                                          },
-                                          completion: nil)
-                        
-                    }
-                }.catch { error in
-                    print("\(error)")
+        if let image = ManaKit.sharedInstance.cardImage(card, imageType: .artCrop) {
+            cropImageView.image = image
+        } else {
+            cropImageView.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
+            
+            firstly {
+                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
+            }.done { (image: UIImage?) in
+                guard let image = image else {
+                    return
                 }
+                
+//                self.averageColor = image.averageColor
+            
+                UIView.transition(with: self.cropImageView,
+                                  duration: 1.0,
+                                  options: .transitionCrossDissolve,
+                                  animations: {
+                                      self.cropImageView.image = image
+                                  },
+                                  completion: nil)
+                
+            }.catch { error in
+                print("\(error)")
             }
         }
     }
     
     func showNameandSet() {
-        if let card = card {
-            nameLabel.text = card.name
-            nameLabel.textColor = UIColor.white
+        guard let card = card else {
+            return
+        }
+        
+        
+        nameLabel.text = card.name
+        nameLabel.textColor = UIColor.white
+        
+        if let releaseDate = card.set!.releaseDate {
+            let isModern = ManaKit.sharedInstance.isModern(card)
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
             
-            if let releaseDate = card.set!.releaseDate {
-                let isModern = ManaKit.sharedInstance.isModern(card)
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd"
+            if let m15Date = formatter.date(from: "2014-07-18"),
+                let setReleaseDate = formatter.date(from: releaseDate) {
                 
-                if let m15Date = formatter.date(from: "2014-07-18"),
-                    let setReleaseDate = formatter.date(from: releaseDate) {
+                let shadowColor = UIColor.lightGray
+                var shadowOffset = CGSize(width: 0, height: 1)
+                
+                if setReleaseDate.compare(m15Date) == .orderedSame ||
+                    setReleaseDate.compare(m15Date) == .orderedDescending {
+                    nameLabel.font = magic2015Font
                     
-                    let shadowColor = UIColor.lightGray
-                    var shadowOffset = CGSize(width: 0, height: 1)
+                } else {
+                    nameLabel.font = isModern ? eightEditionFont : preEightEditionFont
                     
-                    if setReleaseDate.compare(m15Date) == .orderedSame ||
-                        setReleaseDate.compare(m15Date) == .orderedDescending {
-                        nameLabel.font = magic2015Font
-                        
-                    } else {
-                        nameLabel.font = isModern ? eightEditionFont : preEightEditionFont
-                        
-                        if !isModern {
-                            shadowOffset = CGSize(width: 1, height: 1)
-                        }
+                    if !isModern {
+                        shadowOffset = CGSize(width: 1, height: 1)
                     }
-                    
-                    nameLabel.shadowColor = shadowColor
-                    nameLabel.shadowOffset = shadowOffset
                 }
+                
+                nameLabel.shadowColor = shadowColor
+                nameLabel.shadowOffset = shadowOffset
             }
-            
-            if let set = card.set,
-                let rarity = card.rarity_ {
-                setIcon.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-                setIcon.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: rarity)
-                setIcon.backgroundColor = UIColor.white
-            }
+        }
+        
+        if let set = card.set,
+            let rarity = card.rarity_ {
+            setIcon.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+            setIcon.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: rarity)
+            setIcon.backgroundColor = UIColor.white
         }
     }
     
@@ -110,3 +117,5 @@ class RandomCardView: UIView {
         setIcon.backgroundColor = UIColor.clear
     }
 }
+
+

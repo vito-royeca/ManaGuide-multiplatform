@@ -11,7 +11,7 @@ import DATASource
 import Font_Awesome_Swift
 import ManaKit
 
-class ComprehensiveRulesViewController: UIViewController {
+class ComprehensiveRulesViewController: BaseViewController {
     // MARK: Constants
     let searchController = UISearchController(searchResultsController: nil)
 
@@ -46,7 +46,7 @@ class ComprehensiveRulesViewController: UIViewController {
         tableView.keyboardDismissMode = .onDrag
         
         if request == nil {
-            request = NSFetchRequest(entityName: "CMRule")
+            request = CMRule.fetchRequest()
             request!.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
             request!.predicate = NSPredicate(format: "parent = nil")
         }
@@ -65,35 +65,38 @@ class ComprehensiveRulesViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showRule" {
-            if let dest = segue.destination as? ComprehensiveRulesViewController,
-                let cell = sender as? UITableViewCell {
-                
-                if let indexPath = tableView.indexPath(for: cell) {
-                    if let r = dataSource!.object(indexPath) as? CMRule {
-                        let newRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMRule")
-                        newRequest.sortDescriptors = [NSSortDescriptor(key: "term", ascending: true)]
-                        newRequest.predicate = NSPredicate(format: "parent = %@", r)
-                        
-                        dest.request = newRequest
-                        dest.rule = r
-                        if r.term == "Glossary" {
-                            dest.sectionName = "termSection"
-                        }
-                        
-                        var string = ""
-                        if let term = r.term {
-                            string.append("\(term)")
-                        }
-                        if let definition = r.definition {
-                            if string.count > 0 {
-                                string.append(". ")
-                            }
-                            string.append(definition)
-                        }
-                        dest.title = string
-                    }
-                }
+            guard let dest = segue.destination as? ComprehensiveRulesViewController,
+                let cell = sender as? UITableViewCell else {
+                return
             }
+            guard let indexPath = tableView.indexPath(for: cell) else {
+                return
+            }
+            guard let r = dataSource!.object(indexPath) as? CMRule else {
+                return
+            }
+            
+            let newRequest = CMRule.fetchRequest()
+            newRequest.sortDescriptors = [NSSortDescriptor(key: "term", ascending: true)]
+            newRequest.predicate = NSPredicate(format: "parent = %@", r)
+            
+            dest.request = newRequest
+            dest.rule = r
+            if r.term == "Glossary" {
+                dest.sectionName = "termSection"
+            }
+            
+            var string = ""
+            if let term = r.term {
+                string.append("\(term)")
+            }
+            if let definition = r.definition {
+                if string.count > 0 {
+                    string.append(". ")
+                }
+                string.append(definition)
+            }
+            dest.title = string
         }
     }
     
@@ -102,68 +105,69 @@ class ComprehensiveRulesViewController: UIViewController {
         var ds: DATASource?
 
         ds = DATASource(tableView: tableView, cellIdentifier: "DynamicHeightCell", fetchRequest: fetchRequest!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: sectionName, configuration: { cell, item, indexPath in
-            if let r = item as? CMRule,
-                let label = cell.viewWithTag(100) as? UILabel {
-                
-                if let children = r.children {
-                    if children.allObjects.count > 0 {
-                        cell.accessoryType = .disclosureIndicator
-                        cell.selectionStyle = .default
+            guard let r = item as? CMRule,
+                let label = cell.viewWithTag(100) as? UILabel else {
+                return
+            }
+            
+            if let children = r.children {
+                if children.allObjects.count > 0 {
+                    cell.accessoryType = .disclosureIndicator
+                    cell.selectionStyle = .default
+                    
+                } else {
+                    if let _ = r.parent {
+                        cell.accessoryType = .none
+                        cell.selectionStyle = .none
                         
                     } else {
-                        if let _ = r.parent {
-                            cell.accessoryType = .none
-                            cell.selectionStyle = .none
-                            
-                        } else {
-                            cell.accessoryType = .disclosureIndicator
-                            cell.selectionStyle = .default
-                        }
+                        cell.accessoryType = .disclosureIndicator
+                        cell.selectionStyle = .default
                     }
                 }
-                
-                label.attributedText = self.attributedTextFor(r)
             }
+            
+            label.attributedText = self.attributedTextFor(r)
         })
         
-        if let ds = ds {
-            ds.delegate = self
-            return ds
+        guard let d = ds else {
+            return nil
         }
-
-        return ds
+        d.delegate = self
+        return d
     }
     
     func updateSections() {
-        if let dataSource = dataSource,
-            let rule = rule {
-            
-            if rule.term == "Glossary" {
-                if let children = rule.children {
-                    if let glossaries = children.allObjects as? [CMRule] {
-                        sectionIndexTitles = [String]()
-                        sectionTitles = [String]()
+        guard let dataSource = dataSource,
+            let rule = rule else {
+            return
+        }
+        
+        if rule.term == "Glossary" {
+            if let children = rule.children {
+                if let glossaries = children.allObjects as? [CMRule] {
+                    sectionIndexTitles = [String]()
+                    sectionTitles = [String]()
+                    
+                    for glossary in glossaries {
+                        let prefix = String(glossary.term!.prefix(1))
                         
-                        for glossary in glossaries {
-                            let prefix = String(glossary.term!.prefix(1))
-                            
-                            if !sectionIndexTitles.contains(prefix) {
-                                sectionIndexTitles.append(prefix)
-                            }
+                        if !sectionIndexTitles.contains(prefix) {
+                            sectionIndexTitles.append(prefix)
                         }
-                        
-                        let sections = dataSource.numberOfSections(in: tableView)
-                        if sections > 0 {
-                            for i in 0...sections - 1 {
-                                if let sectionTitle = dataSource.titleForHeader(i) {
-                                    sectionTitles.append(sectionTitle)
-                                }
-                            }
-                        }
-                        
-                        sectionIndexTitles.sort()
-                        sectionTitles.sort()
                     }
+                    
+                    let sections = dataSource.numberOfSections(in: tableView)
+                    if sections > 0 {
+                        for i in 0...sections - 1 {
+                            if let sectionTitle = dataSource.titleForHeader(i) {
+                                sectionTitles.append(sectionTitle)
+                            }
+                        }
+                    }
+                    
+                    sectionIndexTitles.sort()
+                    sectionTitles.sort()
                 }
             }
         }
@@ -176,47 +180,49 @@ class ComprehensiveRulesViewController: UIViewController {
         let bigBoldFontAttributes = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 17)]
         let smallFontAttributes = [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]
         
-        if let children = rule.children {
-            if children.allObjects.count > 0 {
-                attributedString = singleLineAttributedStringFor(rule, withAttributes: bigFontAttributes)
-                
-                if let text = text {
-                    if text.count > 0 {
-                        highlight(attributedString: attributedString, withAttributes: bigFontAttributes, fromText: text)
-                    }
+        guard let children = rule.children else {
+            return attributedString
+        }
+        
+        if children.allObjects.count > 0 {
+            attributedString = singleLineAttributedStringFor(rule, withAttributes: bigFontAttributes)
+            
+            if let text = text {
+                if text.count > 0 {
+                    highlight(attributedString: attributedString, withAttributes: bigFontAttributes, fromText: text)
                 }
-                
-            } else {
-                if let _ = rule.parent {
-                    if let term = rule.term {
-                        let tmp = NSMutableAttributedString(string: term, attributes: bigBoldFontAttributes)
-                        
-                        if let text = text {
-                            if text.count > 0 {
-                                highlight(attributedString: tmp, withAttributes: bigBoldFontAttributes, fromText: text)
-                            }
-                        }
-                        attributedString.append(tmp)
-                    }
-
-                    if let definition = rule.definition {
-                        let tmp = MGUtilities.addSymbols(toText: "\n\n\(definition)", pointSize: CGFloat(17))
-                        
-                        if let text = text {
-                            if text.count > 0 {
-                                highlight(attributedString: tmp, withAttributes: smallFontAttributes, fromText: text)
-                            }
-                        }
-                        attributedString.append(tmp)
-                    }
-                    
-                } else {
-                    attributedString = singleLineAttributedStringFor(rule, withAttributes: bigBoldFontAttributes)
+            }
+            
+        } else {
+            if let _ = rule.parent {
+                if let term = rule.term {
+                    let tmp = NSMutableAttributedString(string: term, attributes: bigBoldFontAttributes)
                     
                     if let text = text {
                         if text.count > 0 {
-                            highlight(attributedString: attributedString, withAttributes: bigBoldFontAttributes, fromText: text)
+                            highlight(attributedString: tmp, withAttributes: bigBoldFontAttributes, fromText: text)
                         }
+                    }
+                    attributedString.append(tmp)
+                }
+
+                if let definition = rule.definition {
+                    let tmp = NSMutableAttributedString(symbol: "\n\n\(definition)", pointSize: CGFloat(17))
+                    
+                    if let text = text {
+                        if text.count > 0 {
+                            highlight(attributedString: tmp, withAttributes: smallFontAttributes, fromText: text)
+                        }
+                    }
+                    attributedString.append(tmp)
+                }
+                
+            } else {
+                attributedString = singleLineAttributedStringFor(rule, withAttributes: bigBoldFontAttributes)
+                
+                if let text = text {
+                    if text.count > 0 {
+                        highlight(attributedString: attributedString, withAttributes: bigBoldFontAttributes, fromText: text)
                     }
                 }
             }
@@ -275,51 +281,58 @@ class ComprehensiveRulesViewController: UIViewController {
     }
     
     func doSearch() {
+        guard let text = searchController.searchBar.text else {
+            return
+        }
+        
         var newRequest:NSFetchRequest<NSFetchRequestResult>?
 
-        if let text = searchController.searchBar.text {
-            if text.count > 0 {
-                newRequest = NSFetchRequest(entityName: "CMRule")
-                
-                newRequest!.sortDescriptors = [NSSortDescriptor(key: "termSection", ascending: true),
-                                            NSSortDescriptor(key: "term", ascending: true)]
-                
-                if text.count == 1 {
-                    newRequest!.predicate = NSPredicate(format: "term BEGINSWITH[cd] %@", text)
-                } else if text.count > 1 {
-                    let predicates = [NSPredicate(format: "term CONTAINS[cd] %@", text),
-                                      NSPredicate(format: "definition CONTAINS[cd] %@", text)]
-                    newRequest!.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
-                }
-                dataSource = getDataSource(newRequest, sectionName: nil)
-                sectionIndexTitles = [String]()
-                sectionTitles = [String]()
-            } else {
-                dataSource = getDataSource(request, sectionName: nil)
-                if let rule = rule {
-                    if rule.term == "Glossary" {
-                        updateSections()
-                    }
+        if text.count > 0 {
+            newRequest = CMRule.fetchRequest()
+            
+            newRequest!.sortDescriptors = [NSSortDescriptor(key: "termSection", ascending: true),
+                                        NSSortDescriptor(key: "term", ascending: true)]
+            
+            if text.count == 1 {
+                newRequest!.predicate = NSPredicate(format: "term BEGINSWITH[cd] %@", text)
+            } else if text.count > 1 {
+                let predicates = [NSPredicate(format: "term CONTAINS[cd] %@", text),
+                                  NSPredicate(format: "definition CONTAINS[cd] %@", text)]
+                newRequest!.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+            }
+            dataSource = getDataSource(newRequest, sectionName: nil)
+            sectionIndexTitles = [String]()
+            sectionTitles = [String]()
+        } else {
+            dataSource = getDataSource(request, sectionName: nil)
+            if let rule = rule {
+                if rule.term == "Glossary" {
+                    updateSections()
                 }
             }
-            
-            tableView.reloadData()
         }
+        
+        tableView.reloadData()
+        
     }
 }
 
 // MARK: UITableViewDelegate
 extension ComprehensiveRulesViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if let r = dataSource!.object(indexPath) as? CMRule {
-            if let children = r.children {
-                if children.allObjects.count > 0 {
-                    return indexPath
-                }
-            }
+        guard let r = dataSource!.object(indexPath) as? CMRule else {
+            return nil
         }
         
-        return nil
+        guard let children = r.children else {
+            return nil
+        }
+        
+        guard children.allObjects.count > 0 else {
+            return nil
+        }
+        
+        return indexPath
     }
 }
 

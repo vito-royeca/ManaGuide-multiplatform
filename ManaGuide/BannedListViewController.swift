@@ -10,7 +10,7 @@ import UIKit
 import DATASource
 import ManaKit
 
-class BannedListViewController: UIViewController {
+class BannedListViewController: BaseViewController {
 
     // MARK: Variables
     var dataSource: DATASource?
@@ -32,13 +32,14 @@ class BannedListViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showSearch" {
-            if let dest = segue.destination as? SearchViewController,
-            let dict = sender as? [String: Any] {
-                
-                dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
-                dest.title = dict["title"] as? String
-                dest.customSectionName = "legality.name"
+            guard let dest = segue.destination as? SearchViewController,
+                let dict = sender as? [String: Any] else {
+                return
             }
+            
+            dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
+            dest.title = dict["title"] as? String
+            dest.customSectionName = "legality.name"
         }
     }
     
@@ -50,24 +51,25 @@ class BannedListViewController: UIViewController {
         if let fetchRequest = fetchRequest {
             request = fetchRequest
         } else {
-            request = NSFetchRequest(entityName: "CMFormat")
+            request = CMFormat.fetchRequest()
             
             request!.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
             request!.predicate = NSPredicate(format: "ANY cardLegalities.legality.name IN %@", ["Banned", "Restricted"])
         }
         
         ds = DATASource(tableView: tableView, cellIdentifier: "Cell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: "nameSection", configuration: { cell, item, indexPath in
-            if let format = item as? CMFormat {
-                
-                cell.textLabel?.text = format.name
+            guard let format = item as? CMFormat else {
+                return
             }
+            
+            cell.textLabel?.text = format.name
         })
         
-        if let ds = ds {
-            ds.delegate = self
-            return ds
+        guard let d = ds else {
+            return nil
         }
-        return nil
+        d.delegate = self
+        return d
     }
     
     func updateSections() {
@@ -102,21 +104,22 @@ class BannedListViewController: UIViewController {
 // MARK: UITableViewDelegate
 extension BannedListViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let format = dataSource!.object(indexPath) as? CMFormat {
-//            let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCard")
-            
-//            let predicate = NSPredicate(format: "SUBQUERY(cardLegalities_, $c, $c.legality.name IN %@ && $c.format.name IN %@).@count > 0", ["Banned", "Restricted"], [format.name!])
-            
-            let request:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CMCardLegality")
-            let predicate = NSPredicate(format: "legality.name IN %@ AND format.name IN %@", ["Banned", "Restricted"], [format.name!])
-            
-            request.sortDescriptors = [NSSortDescriptor(key: "legality.name", ascending: true),
-                                        NSSortDescriptor(key: "card.name", ascending: true)]
-            request.predicate = predicate
-            
-            performSegue(withIdentifier: "showSearch", sender: ["request": request,
-                                                                "title": format.name!])
+        guard let format = dataSource!.object(indexPath) as? CMFormat else {
+            return
         }
+        guard let name = format.name else {
+            return
+        }
+        
+        let request = CMCardLegality.fetchRequest()
+        let predicate = NSPredicate(format: "legality.name IN %@ AND format.name IN %@", ["Banned", "Restricted"], [name])
+        
+        request.sortDescriptors = [NSSortDescriptor(key: "legality.name", ascending: true),
+                                    NSSortDescriptor(key: "card.name", ascending: true)]
+        request.predicate = predicate
+        
+        performSegue(withIdentifier: "showSearch", sender: ["request": request,
+                                                            "title": name])
     }
 }
 

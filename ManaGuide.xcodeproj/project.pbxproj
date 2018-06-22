@@ -260,7 +260,6 @@
 				1195B2F320D4F1720026EA99 /* ManaGuide-Bridging-Header.h */,
 				1195B2F420D4F1720026EA99 /* ManaGuideTests-Bridging-Header.h */,
 				1195B2F520D4F1720026EA99 /* ManaGuideUITests-Bridging-Header.h */,
-				1195B2F220D4F14A0026EA99 /* 3rdParty */,
 				11E2E3EB20D11AFD00F9DB47 /* ManaGuide.entitlements */,
 				1140F0CF1F42CBD80023E107 /* Utilities */,
 				110BB4F91F207C6400086841 /* AppDelegate.swift */,
@@ -353,13 +352,6 @@
 				1127329720D2480F00910D77 /* UIImage+AverageColor.swift */,
 			);
 			name = Utilities;
-			sourceTree = "<group>";
-		};
-		1195B2F220D4F14A0026EA99 /* 3rdParty */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = 3rdParty;
 			sourceTree = "<group>";
 		};
 		CCCF4703A6CA69F4288EC386 /* Pods */ = {
