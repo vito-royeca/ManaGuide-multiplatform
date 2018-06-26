@@ -46,7 +46,9 @@ class FacebookShareActivity: UIActivity {
     }
     
     open override var activityImage : UIImage? {
-        return UIImage(named: "\(activityType!.rawValue)\(FacebookShareActivity.activityCategory.rawValue)", in: Bundle(for: FacebookShareActivity.self), compatibleWith: nil)
+        return UIImage(named: "\(activityType!.rawValue)\(FacebookShareActivity.activityCategory.rawValue)",
+                       in: Bundle(for: FacebookShareActivity.self),
+                       compatibleWith: nil)
     }
     
     open override func canPerform(withActivityItems activityItems: [Any]) -> Bool {

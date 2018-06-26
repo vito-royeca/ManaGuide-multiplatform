@@ -38,7 +38,9 @@ class TwitterShareActivity: UIActivity {
     }
     
     open override var activityImage : UIImage? {
-        return UIImage(named: "\(activityType!.rawValue)\(TwitterShareActivity.activityCategory.rawValue)", in: Bundle(for: TwitterShareActivity.self), compatibleWith: nil)
+        return UIImage(named: "\(activityType!.rawValue)\(TwitterShareActivity.activityCategory.rawValue)",
+                       in: Bundle(for: TwitterShareActivity.self),
+                       compatibleWith: nil)
     }
     
     open override func canPerform(withActivityItems activityItems: [Any]) -> Bool {

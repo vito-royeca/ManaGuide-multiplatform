@@ -69,9 +69,23 @@ enum MoreViewControllerRuleRow: Int {
              .tournament,
              .ipr,
              .jar:
-            return UIImage(bgIcon: .FAFilePdfO, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAFilePdfO, topTextColor: UIColor.clear, bgLarge: false, size: CGSize(width: 20, height: 20))
+            return UIImage(bgIcon: .FAFilePdfO,
+                           orientation: UIImageOrientation.up,
+                           bgTextColor: UIColor.lightGray,
+                           bgBackgroundColor: UIColor.clear,
+                           topIcon: .FAFilePdfO,
+                           topTextColor: UIColor.clear,
+                           bgLarge: false,
+                           size: CGSize(width: 20, height: 20))
         case .comprehensive:
-            return UIImage(bgIcon: .FADatabase, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FADatabase, topTextColor: UIColor.clear, bgLarge: false, size: CGSize(width: 20, height: 20))
+            return UIImage(bgIcon: .FADatabase,
+                           orientation: UIImageOrientation.up,
+                           bgTextColor: UIColor.lightGray,
+                           bgBackgroundColor: UIColor.clear,
+                           topIcon: .FADatabase,
+                           topTextColor: UIColor.clear,
+                           bgLarge: false,
+                           size: CGSize(width: 20, height: 20))
         }
     }
     
@@ -96,9 +110,30 @@ enum MoreViewControllerListRow: Int {
     
     var imageIcon : UIImage {
         switch self {
-        case .bannedAndRestricted: return UIImage(bgIcon: .FABan, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FABan, topTextColor: UIColor.clear, bgLarge: false, size: CGSize(width: 20, height: 20))
-        case .reserved: return UIImage(bgIcon: .FAArchive, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAArchive, topTextColor: UIColor.clear, bgLarge: false, size: CGSize(width: 20, height: 20))
-        case .artists: return UIImage(bgIcon: .FAPaintBrush, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAPaintBrush, topTextColor: UIColor.clear, bgLarge: false, size: CGSize(width: 20, height: 20))
+        case .bannedAndRestricted: return UIImage(bgIcon: .FABan,
+                                                  orientation: UIImageOrientation.up,
+                                                  bgTextColor: UIColor.lightGray,
+                                                  bgBackgroundColor: UIColor.clear,
+                                                  topIcon: .FABan,
+                                                  topTextColor: UIColor.clear,
+                                                  bgLarge: false,
+                                                  size: CGSize(width: 20, height: 20))
+        case .reserved: return UIImage(bgIcon: .FAArchive,
+                                       orientation: UIImageOrientation.up,
+                                       bgTextColor: UIColor.lightGray,
+                                       bgBackgroundColor: UIColor.clear,
+                                       topIcon: .FAArchive,
+                                       topTextColor: UIColor.clear,
+                                       bgLarge: false,
+                                       size: CGSize(width: 20, height: 20))
+        case .artists: return UIImage(bgIcon: .FAPaintBrush,
+                                      orientation: UIImageOrientation.up,
+                                      bgTextColor: UIColor.lightGray,
+                                      bgBackgroundColor: UIColor.clear,
+                                      topIcon: .FAPaintBrush,
+                                      topTextColor: UIColor.clear,
+                                      bgLarge: false,
+                                      size: CGSize(width: 20, height: 20))
         }
     }
     
@@ -236,45 +271,66 @@ extension MoreViewController : UITableViewDataSource {
 // MARK: UITableViewDelegate
 extension MoreViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        var identifier = ""
+        var sender: [String: Any]?
+        
         switch indexPath.section {
         case MoreViewControllerSection.rules.rawValue:
             switch indexPath.row {
             case MoreViewControllerRuleRow.basic.rawValue:
-                performSegue(withIdentifier: "showPDF", sender: ["url": URL(fileURLWithPath: MoreViewControllerRuleRow.basic.filePath!),
-                                                                 "title": MoreViewControllerRuleRow.basic.description])
+                identifier = "showPDF"
+                sender = ["url": URL(fileURLWithPath: MoreViewControllerRuleRow.basic.filePath!),
+                          "title": MoreViewControllerRuleRow.basic.description]
+                
             case MoreViewControllerRuleRow.comprehensive.rawValue:
-                performSegue(withIdentifier: "showComprehensiveRules", sender: nil)
+                identifier = "showComprehensiveRules"
+                sender = nil
+                
             case MoreViewControllerRuleRow.tournament.rawValue:
-                performSegue(withIdentifier: "showPDF", sender: ["url": URL(fileURLWithPath: MoreViewControllerRuleRow.tournament.filePath!),
-                                                                 "title": MoreViewControllerRuleRow.tournament.description])
+                identifier = "showPDF"
+                sender = ["url": URL(fileURLWithPath: MoreViewControllerRuleRow.tournament.filePath!),
+                          "title": MoreViewControllerRuleRow.tournament.description]
+                
             case MoreViewControllerRuleRow.ipr.rawValue:
-                performSegue(withIdentifier: "showPDF", sender: ["url": URL(fileURLWithPath: MoreViewControllerRuleRow.ipr.filePath!),
-                                                                 "title": MoreViewControllerRuleRow.ipr.description])
+                identifier = "showPDF"
+                sender = ["url": URL(fileURLWithPath: MoreViewControllerRuleRow.ipr.filePath!),
+                          "title": MoreViewControllerRuleRow.ipr.description]
+                
             case MoreViewControllerRuleRow.jar.rawValue:
-                performSegue(withIdentifier: "showPDF", sender: ["url": URL(fileURLWithPath: MoreViewControllerRuleRow.jar.filePath!),
-                                                                 "title": MoreViewControllerRuleRow.jar.description])
+                identifier = "showPDF"
+                sender = ["url": URL(fileURLWithPath: MoreViewControllerRuleRow.jar.filePath!),
+                          "title": MoreViewControllerRuleRow.jar.description]
+
             default:
                 ()
             }
         case MoreViewControllerSection.lists.rawValue:
             switch indexPath.row {
             case MoreViewControllerListRow.bannedAndRestricted.rawValue:
-                performSegue(withIdentifier: "showBannedAndRestricted", sender: nil)
+                identifier = "showBannedAndRestricted"
+                sender = nil
+                
             case MoreViewControllerListRow.reserved.rawValue:
                 let request = CMCard.fetchRequest()
                 request.predicate = NSPredicate(format: "reserved = true")
                 request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
                                            NSSortDescriptor(key: "name", ascending: true),
                                            NSSortDescriptor(key: "set.releaseDate", ascending: true)]
-                performSegue(withIdentifier: "showSearch", sender: ["title": "Reserved List",
-                                                                    "request": request])
+                identifier = "showSearch"
+                sender = ["title": "Reserved List",
+                          "request": request]
+                
             case MoreViewControllerListRow.artists.rawValue:
-                performSegue(withIdentifier: "showArtists", sender: nil)
+                identifier = "showArtists"
+                sender = nil
+                
             default:
                 ()
             }
         default:
             ()
         }
+        
+        performSegue(withIdentifier: identifier, sender: sender)
     }
 }

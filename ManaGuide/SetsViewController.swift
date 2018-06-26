@@ -36,8 +36,13 @@ class SetsViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+                                                  object:nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.updateData(_:)),
+                                               name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+                                               object: nil)
         
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
@@ -70,11 +75,13 @@ class SetsViewController: BaseViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showSet" {
             guard let dest = segue.destination as? SetViewController,
-                let set = sender as? CMSet else {
+                let dict = sender as? [String: Any],
+                let setMID = dict["setMID"] as? NSManagedObjectID,
+                let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet else {
                 return
             }
             
-            dest.set = set
+            dest.setMID = setMID
             dest.title = set.name
         }
     }
@@ -87,11 +94,15 @@ class SetsViewController: BaseViewController {
     }
     
     func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
-        var request:NSFetchRequest<NSFetchRequestResult>?
         let defaults = defaultsValue()
-        let setsSectionName = defaults["setsSectionName"] as! String
-        let setsSecondSortBy = defaults["setsSecondSortBy"] as! String
-        let setsOrderBy = defaults["setsOrderBy"] as! Bool
+        
+        guard let setsSectionName = defaults["setsSectionName"] as? String,
+            let setsSecondSortBy = defaults["setsSecondSortBy"] as? String,
+            let setsOrderBy = defaults["setsOrderBy"] as? Bool else {
+            return nil
+        }
+        
+        var request:NSFetchRequest<NSFetchRequestResult>?
         
         if let fetchRequest = fetchRequest {
             request = fetchRequest
@@ -101,32 +112,34 @@ class SetsViewController: BaseViewController {
                                         NSSortDescriptor(key: setsSecondSortBy, ascending: setsOrderBy)]
         }
         
-        let ds = DATASource(tableView: tableView, cellIdentifier: "SetCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setsSectionName, configuration: { cell, item, indexPath in
-            guard let set = item as? CMSet else {
-                return
+        let configuration = { (cell: UITableViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void in
+            guard let set = item as? CMSet,
+                let label100 = cell.contentView.viewWithTag(100) as? UILabel,
+                let label200 = cell.contentView.viewWithTag(200) as? UILabel,
+                let label300 = cell.contentView.viewWithTag(300) as? UILabel,
+                let label400 = cell.contentView.viewWithTag(400) as? UILabel,
+                let label500 = cell.contentView.viewWithTag(500) as? UILabel else {
+                    return
             }
             
-            if let label = cell.contentView.viewWithTag(100) as? UILabel {
-                label.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-                label.textColor = UIColor.black
-            }
-            if let label = cell.contentView.viewWithTag(200) as? UILabel {
-                label.text = set.name
-                label.adjustsFontSizeToFitWidth = true
-            }
-            if let label = cell.contentView.viewWithTag(300) as? UILabel {
-                label.text = set.code
-                label.adjustsFontSizeToFitWidth = true
-            }
-            if let label = cell.contentView.viewWithTag(400) as? UILabel {
-                label.text = set.releaseDate
-                label.adjustsFontSizeToFitWidth = true
-            }
-            if let label = cell.contentView.viewWithTag(500) as? UILabel {
-                label.text = "\(set.cards!.allObjects.count) cards"
-                label.adjustsFontSizeToFitWidth = true
-            }
-        })
+            label100.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+            label100.textColor = UIColor.black
+            label200.text = set.name
+            label200.adjustsFontSizeToFitWidth = true
+            label300.text = set.code
+            label300.adjustsFontSizeToFitWidth = true
+            label400.text = set.releaseDate
+            label400.adjustsFontSizeToFitWidth = true
+            label500.text = "\(set.cards!.allObjects.count) cards"
+            label500.adjustsFontSizeToFitWidth = true
+        }
+        
+        let ds = DATASource(tableView: tableView,
+                            cellIdentifier: "SetCell",
+                            fetchRequest: request!,
+                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
+                            sectionName: setsSectionName,
+                            configuration: configuration)
         
         ds.delegate = self
         return ds
@@ -288,8 +301,11 @@ class SetsViewController: BaseViewController {
 // MARK: UITableViewDelegate
 extension SetsViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let set = dataSource!.object(indexPath)
-        performSegue(withIdentifier: "showSet", sender: set)
+        guard let dataSource = dataSource,
+            let set = dataSource.object(indexPath) else {
+            return
+        }
+        performSegue(withIdentifier: "showSet", sender: ["setMID": set.objectID])
     }
 }
 

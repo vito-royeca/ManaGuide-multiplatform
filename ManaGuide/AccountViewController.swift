@@ -31,9 +31,23 @@ enum AccountViewControllerSection: Int {
         case .accountHeader:
             return nil
         case .favorites:
-            return UIImage(bgIcon: .FAHeart, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAHeart, topTextColor: UIColor.clear, bgLarge: false, size: CGSize(width: 20, height: 20))
+            return UIImage(bgIcon: .FAHeart,
+                           orientation: UIImageOrientation.up,
+                           bgTextColor: UIColor.lightGray,
+                           bgBackgroundColor: UIColor.clear,
+                           topIcon: .FAHeart,
+                           topTextColor: UIColor.clear,
+                           bgLarge: false,
+                           size: CGSize(width: 20, height: 20))
         case .ratedCards:
-            return UIImage(bgIcon: .FAStar, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAStar, topTextColor: UIColor.clear, bgLarge: false, size: CGSize(width: 20, height: 20))
+            return UIImage(bgIcon: .FAStar,
+                           orientation: UIImageOrientation.up,
+                           bgTextColor: UIColor.lightGray,
+                           bgBackgroundColor: UIColor.clear,
+                           topIcon: .FAStar,
+                           topTextColor: UIColor.clear,
+                           bgLarge: false,
+                           size: CGSize(width: 20, height: 20))
         }
     }
     
@@ -157,12 +171,26 @@ extension AccountViewController : UITableViewDataSource {
             if let user = Auth.auth().currentUser {
                 imageView.sd_setImage(with: user.photoURL, completed: {(image: UIImage?, error: Error?, cacheType: SDImageCacheType, imageURL: URL?) in
                     if image == nil {
-                        imageView.image = UIImage(bgIcon: .FAUserCircle, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAUserCircle, topTextColor: UIColor.clear, bgLarge: true, size: CGSize(width: 60, height: 60))
+                        imageView.image = UIImage(bgIcon: .FAUserCircle,
+                                                  orientation: UIImageOrientation.up,
+                                                  bgTextColor: UIColor.lightGray,
+                                                  bgBackgroundColor: UIColor.clear,
+                                                  topIcon: .FAUserCircle,
+                                                  topTextColor: UIColor.clear,
+                                                  bgLarge: true,
+                                                  size: CGSize(width: 60, height: 60))
                     }
                 })
                 label.text = user.displayName
             } else {
-                imageView.image = UIImage(bgIcon: .FAUserCircle, orientation: UIImageOrientation.up, bgTextColor: UIColor.lightGray, bgBackgroundColor: UIColor.clear, topIcon: .FAUserCircle, topTextColor: UIColor.clear, bgLarge: true, size: CGSize(width: 60, height: 60))
+                imageView.image = UIImage(bgIcon: .FAUserCircle,
+                                          orientation: UIImageOrientation.up,
+                                          bgTextColor: UIColor.lightGray,
+                                          bgBackgroundColor: UIColor.clear,
+                                          topIcon: .FAUserCircle,
+                                          topTextColor: UIColor.clear,
+                                          bgLarge: true,
+                                          size: CGSize(width: 60, height: 60))
                 label.text = "Not logged in"
             }
             

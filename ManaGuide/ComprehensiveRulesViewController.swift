@@ -102,12 +102,10 @@ class ComprehensiveRulesViewController: BaseViewController {
     
     // MARK: Custom methods
     func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?, sectionName: String?) -> DATASource? {
-        var ds: DATASource?
-
-        ds = DATASource(tableView: tableView, cellIdentifier: "DynamicHeightCell", fetchRequest: fetchRequest!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: sectionName, configuration: { cell, item, indexPath in
+        let configuration = { (cell: UITableViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void in
             guard let r = item as? CMRule,
                 let label = cell.viewWithTag(100) as? UILabel else {
-                return
+                    return
             }
             
             if let children = r.children {
@@ -128,13 +126,17 @@ class ComprehensiveRulesViewController: BaseViewController {
             }
             
             label.attributedText = self.attributedTextFor(r)
-        })
-        
-        guard let d = ds else {
-            return nil
         }
-        d.delegate = self
-        return d
+        
+        let ds = DATASource(tableView: tableView,
+                            cellIdentifier: "DynamicHeightCell",
+                            fetchRequest: fetchRequest!,
+                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
+                            sectionName: sectionName,
+                            configuration: configuration)
+        ds.delegate = self
+
+        return ds
     }
     
     func updateSections() {

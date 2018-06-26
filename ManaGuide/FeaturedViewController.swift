@@ -39,10 +39,10 @@ enum FeaturedViewControllerSection: Int {
 class FeaturedViewController: BaseViewController {
 
     // MARK: Variables
-    var randomCards: [CMCard]?
-    var topRated: [CMCard]?
-    var topViewed: [CMCard]?
-    var latestSets: [CMSet]?
+    var randomCardMIDs: [NSManagedObjectID]?
+    var topRated: [NSManagedObjectID]?
+    var topViewed: [NSManagedObjectID]?
+    var latestSetMIDs: [NSManagedObjectID]?
     var randomCardView: RandomCardView?
     var slideshowTimer: Timer?
     var randomCardsTimer: Timer?
@@ -91,33 +91,43 @@ class FeaturedViewController: BaseViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showCard" {
             guard let dest = segue.destination as? CardViewController,
-                let dict = sender as? [String: Any] else {
+                let dict = sender as? [String: Any],
+                let cardIndex = dict["cardIndex"] as? Int,
+                let cardMIDs = dict["cardMIDs"] as? [NSManagedObjectID] else {
                 return
             }
-            dest.cardIndex = dict["cardIndex"] as! Int
-            dest.cards = dict["cards"] as? [CMCard]
+            
+            dest.cardIndex = cardIndex
+            dest.cardMIDs = cardMIDs
             
         } else if segue.identifier == "showCardModal" {
-            guard let nav = segue.destination as? UINavigationController else {
-                return
-            }
-            guard let dest = nav.childViewControllers.first as? CardViewController,
-                let dict = sender as? [String: Any] else {
+            guard let nav = segue.destination as? UINavigationController,
+                let dest = nav.childViewControllers.first as? CardViewController,
+                let dict = sender as? [String: Any],
+                let cardIndex = dict["cardIndex"] as? Int,
+                let cardMIDs = dict["cardMIDs"] as? [NSManagedObjectID] else {
                 return
             }
             
-            dest.cardIndex = dict["cardIndex"] as! Int
-            dest.cards = dict["cards"] as? [CMCard]
-            dest.title = dest.cards?[dest.cardIndex].name
+            let cardMID = cardMIDs[cardIndex]
+            guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
+                return
+            }
+            
+            dest.cardIndex = cardIndex
+            dest.cardMIDs = cardMIDs
+            dest.title = card.name
             
         } else if segue.identifier == "showSet" {
             guard let dest = segue.destination as? SetViewController,
-                let set = sender as? CMSet else {
+                let dict = sender as? [String: Any],
+                let setMID = dict["setMID"] as? NSManagedObjectID,
+                let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet else {
                 return
             }
             
             dest.title = set.name
-            dest.set = set
+            dest.setMID = setMID
 
         } else if segue.identifier == "showSets" {
             guard let dest = segue.destination as? SetsViewController else {
@@ -130,7 +140,11 @@ class FeaturedViewController: BaseViewController {
 
     // MARK: Custom methods
     func startSlideShow() {
-        slideshowTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(showSlide), userInfo: nil, repeats: true)
+        slideshowTimer = Timer.scheduledTimer(timeInterval: 5,
+                                              target: self,
+                                              selector: #selector(showSlide),
+                                              userInfo: nil,
+                                              repeats: true)
     }
     
     func stopSlideShow() {
@@ -158,17 +172,18 @@ class FeaturedViewController: BaseViewController {
         let request = CMCard.fetchRequest()
         request.predicate = NSPredicate(format: "multiverseid != 0")
         
-        randomCards = [CMCard]()
+        randomCardMIDs = [NSManagedObjectID]()
         guard let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] else {
             return
         }
         
         repeat {
             let card = result[Int(arc4random_uniform(UInt32(result.count)))]
-            if !randomCards!.contains(card) {
-                randomCards!.append(card)
+            let cardMID = card.objectID
+            if !randomCardMIDs!.contains(cardMID) {
+                randomCardMIDs!.append(cardMID)
             }
-        } while randomCards!.count <= 5
+        } while randomCardMIDs!.count <= 5
     }
     
     func fetchLatestSets() {
@@ -180,27 +195,27 @@ class FeaturedViewController: BaseViewController {
             return
         }
         
-        latestSets = result
+        latestSetMIDs = result.map({ $0.objectID })
     }
     
     func fetchTopRated() {
-        FirebaseManager.sharedInstance.monitorTopRated(completion: { (cards) in
+        FirebaseManager.sharedInstance.monitorTopRated(completion: { cardMIDs in
             DispatchQueue.main.async {
-                self.showTopRated(cards: cards)
+                self.showTopRated(cardMIDs: cardMIDs)
             }
         })
     }
     
     func fetchTopViewed() {
-        FirebaseManager.sharedInstance.monitorTopViewed(completion: { (cards) in
+        FirebaseManager.sharedInstance.monitorTopViewed(completion: { cardMIDs in
             DispatchQueue.main.async {
-                self.showTopViewed(cards: cards)
+                self.showTopViewed(cardMIDs: cardMIDs)
             }
         })
     }
 
-    func showTopRated(cards: [CMCard]) {
-        topRated = cards
+    func showTopRated(cardMIDs: [NSManagedObjectID]) {
+        topRated = cardMIDs
         
         guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topRated.rawValue, section: 0)) else {
             return
@@ -214,8 +229,8 @@ class FeaturedViewController: BaseViewController {
         }
     }
     
-    func showTopViewed(cards: [CMCard]) {
-        topViewed = cards
+    func showTopViewed(cardMIDs: [NSManagedObjectID]) {
+        topViewed = cardMIDs
         
         guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topViewed.rawValue, section: 0)) else {
             return
@@ -250,10 +265,8 @@ extension FeaturedViewController : UITableViewDataSource {
 
         switch indexPath.row {
         case FeaturedViewControllerSection.randomCards.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "RandomCell") else {
-                return UITableViewCell(frame: CGRect.zero)
-            }
-            guard let carouselView = c.viewWithTag(100) as? iCarousel else {
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "RandomCell"),
+                let carouselView = c.viewWithTag(100) as? iCarousel else {
                 return UITableViewCell(frame: CGRect.zero)
             }
             
@@ -265,11 +278,8 @@ extension FeaturedViewController : UITableViewDataSource {
             cell = c
             
         case FeaturedViewControllerSection.latestSets.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell") else {
-                return UITableViewCell(frame: CGRect.zero)
-            }
-            
-            guard let titleLabel = c.viewWithTag(100) as? UILabel,
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell"),
+                let titleLabel = c.viewWithTag(100) as? UILabel,
                 let showAllButton = c.viewWithTag(200) as? UIButton else {
                 return UITableViewCell(frame: CGRect.zero)
             }
@@ -304,11 +314,8 @@ extension FeaturedViewController : UITableViewDataSource {
             cell = c
             
         case FeaturedViewControllerSection.topRated.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell") else {
-                return UITableViewCell(frame: CGRect.zero)
-            }
-            
-            guard let titleLabel = c.viewWithTag(100) as? UILabel,
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell"),
+                let titleLabel = c.viewWithTag(100) as? UILabel,
                 let showAllButton = c.viewWithTag(200) as? UIButton else {
                 return UITableViewCell(frame: CGRect.zero)
             }
@@ -341,11 +348,8 @@ extension FeaturedViewController : UITableViewDataSource {
             cell = c
             
         case FeaturedViewControllerSection.topViewed.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell") else {
-                return UITableViewCell(frame: CGRect.zero)
-            }
-            
-            guard let titleLabel = c.viewWithTag(100) as? UILabel,
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell"),
+                let titleLabel = c.viewWithTag(100) as? UILabel,
                 let showAllButton = c.viewWithTag(200) as? UIButton else {
                 return UITableViewCell(frame: CGRect.zero)
             }
@@ -353,7 +357,6 @@ extension FeaturedViewController : UITableViewDataSource {
             titleLabel.text = FeaturedViewControllerSection.topViewed.description
             showAllButton.isHidden = true
             
-                
             var collectionView: UICollectionView?
             for v in c.contentView.subviews {
                 if let cv = v as? UICollectionView {
@@ -419,8 +422,8 @@ extension FeaturedViewController : UICollectionViewDataSource {
                 count = topViewed.count
             }
         case FeaturedViewControllerSection.latestSets.rawValue:
-            if let latestSets = latestSets {
-                count = latestSets.count
+            if let latestSetMIDs = latestSetMIDs {
+                count = latestSetMIDs.count
             }
         default:
             ()
@@ -434,101 +437,115 @@ extension FeaturedViewController : UICollectionViewDataSource {
         
         switch collectionView.tag {
         case FeaturedViewControllerSection.latestSets.rawValue:
-            let set = latestSets![indexPath.row]
-            
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SetItemCell", for: indexPath)
-            if let label = cell?.viewWithTag(100) as? UILabel {
-                label.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-            }
-            if let label = cell?.viewWithTag(200) as? UILabel {
-                label.text = set.name
-            }
-
-        case FeaturedViewControllerSection.topRated.rawValue:
-            let card = topRated![indexPath.row]
+            let setMID = latestSetMIDs![indexPath.row]
             
+            guard let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet,
+                let label100 = cell?.viewWithTag(100) as? UILabel,
+                let label200 = cell?.viewWithTag(200) as? UILabel else {
+                return cell!
+            }
+            label100.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+            label200.text = set.name
+            
+        case FeaturedViewControllerSection.topRated.rawValue:
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TopRatedItemCell", for: indexPath)
-            if let thumbnailImage = cell?.viewWithTag(100) as? UIImageView {
-                thumbnailImage.layer.cornerRadius = 10
-                
-                if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
-                    thumbnailImage.image = croppedImage
-                } else {
-                    thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
+            let cardMID = topRated![indexPath.row]
+            
+            guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard,
+                let rarity = card.rarity_,
+                let set = card.set,
+                let thumbnailImage = cell?.viewWithTag(100) as? UIImageView,
+                let label200 = cell?.viewWithTag(200) as? UILabel,
+                let label300 = cell?.viewWithTag(300) as? UILabel,
+                let ratingView = cell?.viewWithTag(400) as? CosmosView else {
+                return cell!
+            }
+        
+            thumbnailImage.layer.cornerRadius = 10
+            if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
+                thumbnailImage.image = croppedImage
+            } else {
+                thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
 
-                    firstly {
-                        ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
-                    }.done { (image: UIImage?) in
-                        UIView.transition(with: thumbnailImage,
-                                          duration: 1.0,
-                                          options: .transitionCrossDissolve,
-                                          animations: {
-                                              thumbnailImage.image = image
-                                          },
-                                          completion: nil)
-                    }.catch { error in
-                            
+                firstly {
+                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
+                }.done { (image: UIImage?) in
+                    guard let image = image else {
+                        return
                     }
+                    
+                    let animations = {
+                        thumbnailImage.image = image
+                    }
+                    UIView.transition(with: thumbnailImage,
+                                      duration: 1.0,
+                                      options: .transitionCrossDissolve,
+                                      animations: animations,
+                                      completion: nil)
+                }.catch { error in
+                    
                 }
             }
-            if let label = cell?.viewWithTag(200) as? UILabel,
-                let rarity = card.rarity_,
-                let set = card.set {
-                label.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-                label.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: rarity)
-                label.layer.cornerRadius = label.frame.height / 2
-            }
-            if let label = cell?.viewWithTag(300) as? UILabel {
-                label.text = card.name
-            }
-            if let ratingView = cell?.viewWithTag(400) as? CosmosView {
-                ratingView.rating = card.rating
-                ratingView.settings.emptyBorderColor = kGlobalTintColor
-                ratingView.settings.filledBorderColor = kGlobalTintColor
-                ratingView.settings.filledColor = kGlobalTintColor
-                ratingView.settings.fillMode = .precise
-            }
+        
+            
+            label200.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+            label200.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: rarity)
+            label200.layer.cornerRadius = label200.frame.height / 2
+            label300.text = card.name
+            
+            ratingView.rating = card.rating
+            ratingView.settings.emptyBorderColor = kGlobalTintColor
+            ratingView.settings.filledBorderColor = kGlobalTintColor
+            ratingView.settings.filledColor = kGlobalTintColor
+            ratingView.settings.fillMode = .precise
             
         case FeaturedViewControllerSection.topViewed.rawValue:
-            let card = topViewed![indexPath.row]
-            
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TopViewedItemCell", for: indexPath)
-            if let thumbnailImage = cell?.viewWithTag(100) as? UIImageView {
-                thumbnailImage.layer.cornerRadius = 10
+            let cardMID = topViewed![indexPath.row]
+            
+            guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard,
+                let rarity = card.rarity_,
+                let set = card.set,
+                let thumbnailImage = cell?.viewWithTag(100) as? UIImageView,
+                let label200 = cell?.viewWithTag(200) as? UILabel,
+                let label300 = cell?.viewWithTag(300) as? UILabel,
+                let label400 = cell?.viewWithTag(400) as? UILabel else {
+                return cell!
+            }
+            
+            thumbnailImage.layer.cornerRadius = 10
+            if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
+                thumbnailImage.image = croppedImage
+            } else {
+                thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
                 
-                if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
-                    thumbnailImage.image = croppedImage
-                } else {
-                    thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
-                    
-                    firstly {
-                        ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
-                    }.done { (image: UIImage?) in
-                        UIView.transition(with: thumbnailImage,
-                                          duration: 1.0,
-                                          options: .transitionCrossDissolve,
-                                          animations: {
-                                              thumbnailImage.image = image
-                                          },
-                                          completion: nil)
-                    }.catch { error in
-                            
+                firstly {
+                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
+                }.done { (image: UIImage?) in
+                    guard let image = image else {
+                        return
                     }
+                    
+                    let animations = {
+                        thumbnailImage.image = image
+                    }
+                    UIView.transition(with: thumbnailImage,
+                                      duration: 1.0,
+                                      options: .transitionCrossDissolve,
+                                      animations: animations,
+                                      completion: nil)
+                }.catch { error in
+                    
                 }
             }
-            if let label = cell?.viewWithTag(200) as? UILabel,
-                let rarity = card.rarity_,
-                let set = card.set {
-                label.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-                label.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: rarity)
-                label.layer.cornerRadius = label.frame.height / 2
-            }
-            if let label = cell?.viewWithTag(300) as? UILabel {
-                label.text = card.name
-            }
-            if let label = cell?.viewWithTag(400) as? UILabel {
-                label.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
-            }
+            
+            label200.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+            label200.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: rarity)
+            label200.layer.cornerRadius = label200.frame.height / 2
+            label300.text = card.name
+            label400.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
+            
         default:
             ()
         }
@@ -544,21 +561,21 @@ extension FeaturedViewController : UICollectionViewDataSource {
 extension FeaturedViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         var identifier = ""
-        var sender: Any?
+        var sender: [String: Any]?
         
         switch collectionView.tag {
         case FeaturedViewControllerSection.topRated.rawValue:
             identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
             sender = ["cardIndex": indexPath.row,
-                      "cards": topRated!]
+                      "cardMIDs": topRated!]
         case FeaturedViewControllerSection.topViewed.rawValue:
             identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
             sender = ["cardIndex": indexPath.row,
-                      "cards": topViewed!]
+                      "cardMIDs": topViewed!]
         case FeaturedViewControllerSection.latestSets.rawValue:
-            let set = latestSets![indexPath.row]
+            let setMID = latestSetMIDs![indexPath.row]
             identifier = "showSet"
-            sender = set
+            sender = ["setMID": setMID]
             
         default:
             ()
@@ -573,8 +590,8 @@ extension FeaturedViewController : iCarouselDataSource {
     func numberOfItems(in carousel: iCarousel) -> Int {
         var items = 0
         
-        if let randomCards = randomCards {
-            items = randomCards.count
+        if let randomCardMIDs = randomCardMIDs {
+            items = randomCardMIDs.count
         }
         return items
     }
@@ -599,15 +616,16 @@ extension FeaturedViewController : iCarouselDataSource {
             }
         }
         
-        if let rcv = rcv,
-            let randomCards = randomCards {
-            let card = randomCards[index]
-            rcv.card = card
-            rcv.hideNameandSet()
-            rcv.showImage()
+        guard let rcvNew = rcv,
+            let randomCardMIDs = randomCardMIDs,
+            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: randomCardMIDs[index]) as? CMCard else {
+            return rcv!
         }
         
-        return rcv!
+        rcvNew.card = card
+        rcvNew.hideNameandSet()
+        rcvNew.showImage()
+        return rcvNew
     }
 }
 
@@ -630,15 +648,14 @@ extension FeaturedViewController : iCarouselDelegate {
     }
     
     func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
-        guard let randomCards = randomCards else {
+        guard let randomCardMIDs = randomCardMIDs,
+            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: randomCardMIDs[index]) as? CMCard else {
             return
         }
         
-        let card = randomCards[index]
-        
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": 0,
-                      "cards": [card]] as [String : Any]
+                      "cardMIDs": [card.objectID]] as [String : Any]
         performSegue(withIdentifier: identifier, sender: sender)
     }
     

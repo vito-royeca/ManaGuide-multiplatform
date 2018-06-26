@@ -27,7 +27,6 @@ class SearchViewController: BaseViewController {
     var request:NSFetchRequest<NSFetchRequestResult>?
     var customSectionName: String?
     var firstLoad = false
-//    var searchKeyword: String?
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
@@ -48,11 +47,21 @@ class SearchViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+                                                  object:nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.updateData(_:)),
+                                               name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+                                               object: nil)
         if title == "Favorites" {
-            NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object:nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(self.updateFavorites(_:)), name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object: nil)
+            NotificationCenter.default.removeObserver(self,
+                                                      name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                                      object:nil)
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(self.updateFavorites(_:)),
+                                                   name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                                   object: nil)
         }
 
         searchController.searchResultsUpdater = self
@@ -96,24 +105,30 @@ class SearchViewController: BaseViewController {
         }
         
         if segue.identifier == "showCard" {
-            guard let dest = segue.destination as? CardViewController else {
+            guard let dest = segue.destination as? CardViewController,
+                let cardIndex = dict["cardIndex"] as? Int,
+                let cardMIDs = dict["cardMIDs"] as? [NSManagedObjectID] else {
                 return
             }
             
-            dest.cardIndex = dict["cardIndex"] as! Int
-            dest.cards = dict["cards"] as? [CMCard]
+            dest.cardIndex = cardIndex
+            dest.cardMIDs = cardMIDs
             
         } else if segue.identifier == "showCardModal" {
-            guard let nav = segue.destination as? UINavigationController else {
-                return
-            }
-            guard let dest = nav.childViewControllers.first as? CardViewController else {
+            guard let nav = segue.destination as? UINavigationController,
+                let dest = nav.childViewControllers.first as? CardViewController,
+                let cardIndex = dict["cardIndex"] as? Int,
+                let cardMIDs = dict["cardMIDs"] as? [NSManagedObjectID] else {
                 return
             }
             
-            dest.cardIndex = dict["cardIndex"] as! Int
-            dest.cards = dict["cards"] as? [CMCard]
-            dest.title = dest.cards?[dest.cardIndex].name
+            let cardMID = cardMIDs[cardIndex]
+            guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
+                return
+            }
+            dest.cardIndex = cardIndex
+            dest.cardMIDs = cardMIDs
+            dest.title = card.name
         }
     }
 
@@ -165,58 +180,80 @@ class SearchViewController: BaseViewController {
 
         switch searchDisplayBy {
         case "list":
-            ds = DATASource(tableView: tableView, cellIdentifier: "CardCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: searchSectionName, configuration: { cell, item, indexPath in
-                if let card = item as? CMCard,
-                    let cardCell = cell as? CardTableViewCell {
-                    
-                    cardCell.card = card
+            let configuration = { (cell: UITableViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void in
+                guard let cardCell = cell as? CardTableViewCell else {
+                    return
+                }
+                
+                if let card = item as? CMCard {
+                    cardCell.cardMID = card.objectID
                     cardCell.updateDataDisplay()
-                } else if let cardLegality = item as? CMCardLegality,
-                    let cardCell = cell as? CardTableViewCell {
-                    
-                    cardCell.card = cardLegality.card
+                } else if let cardLegality = item as? CMCardLegality {
+                    cardCell.cardMID = cardLegality.card?.objectID
                     cardCell.updateDataDisplay()
                 }
-            })
-        case "grid":
-            if let collectionView = collectionView {
-                ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: searchSectionName, configuration: { cell, item, indexPath in
-                    var c: CMCard?
-                    
-                    if let item = item as? CMCard {
-                        c = item
-                    } else if let item = item as? CMCardLegality {
-                        c = item.card
-                    }
-                    
-                    guard let card = c,
-                        let imageView = cell.viewWithTag(100) as? UIImageView else {
-                        return
-                    }
-                    
-                    if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
-                        imageView.image = image
-                    } else {
-                        imageView.image = ManaKit.sharedInstance.cardBack(card)
-                        
-                        firstly {
-                            ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-                        }.done { (image: UIImage?) in
-                            if let image = image {
-                                UIView.transition(with: imageView,
-                                                  duration: 1.0,
-                                                  options: .transitionFlipFromLeft,
-                                                  animations: {
-                                                      imageView.image = image
-                                                  },
-                                                  completion: nil)
-                            }
-                        }.catch { error in
-                            print("\(error)")
-                        }
-                    }
-                })
             }
+            
+            ds = DATASource(tableView: tableView,
+                            cellIdentifier: "CardCell",
+                            fetchRequest: request!,
+                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
+                            sectionName: searchSectionName,
+                            configuration: configuration)
+            
+        case "grid":
+            guard let collectionView = collectionView else {
+                return nil
+            }
+            
+            let configuration = { (cell: UICollectionViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void  in
+                var c: CMCard?
+                
+                if let item = item as? CMCard {
+                    c = item
+                } else if let item = item as? CMCardLegality {
+                    c = item.card
+                }
+                
+                guard let card = c,
+                    let imageView = cell.viewWithTag(100) as? UIImageView else {
+                        return
+                }
+                
+                if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
+                    imageView.image = image
+                } else {
+                    imageView.image = ManaKit.sharedInstance.cardBack(card)
+                    
+                    firstly {
+                        ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+                    }.done { (image: UIImage?) in
+                        guard let image = image else {
+                            return
+                        }
+                        
+                        let animations = {
+                            imageView.image = image
+                        }
+                        UIView.transition(with: imageView,
+                                          duration: 1.0,
+                                          options: .transitionFlipFromLeft,
+                                          animations: animations,
+                                          completion: nil)
+                            
+                    }.catch { error in
+                        print("\(error)")
+                    }
+                }
+            }
+            
+            ds = DATASource(collectionView: collectionView,
+                            cellIdentifier: "CardImageCell",
+                            fetchRequest: request!,
+                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
+                            sectionName: searchSectionName,
+                            configuration: configuration)
+            
         default:
             ()
         }
@@ -235,7 +272,7 @@ class SearchViewController: BaseViewController {
             sectionTitles = [String]()
             
             let defaults = defaultsValue()
-            let searchSectionName = customSectionName != nil ? customSectionName : defaults["searchSectionName"] as? String //defaults["searchSectionName"] as! String
+            let searchSectionName = customSectionName != nil ? customSectionName : defaults["searchSectionName"] as? String
             
             switch searchSectionName {
             case "nameSection"?:
@@ -707,10 +744,10 @@ extension SearchViewController : UITableViewDelegate {
         
         if UIDevice.current.userInterfaceIdiom == .phone {
             performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
-                                                              "cards": cards])
+                                                              "cardMIDs": cards.map({ $0.objectID })])
         } else if UIDevice.current.userInterfaceIdiom == .pad {
             performSegue(withIdentifier: "showCardModal", sender: ["cardIndex": cardIndex as Any,
-                                                                   "cards": cards])
+                                                                   "cardMIDs": cards.map({ $0.objectID })])
         }
     }
     
@@ -805,7 +842,7 @@ extension SearchViewController : UICollectionViewDelegate {
         
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": cardIndex as Any,
-                      "cards": cards]
+                      "cardMIDs": cards.map({ $0.objectID })]
         performSegue(withIdentifier: identifier, sender: sender)
     }
 }

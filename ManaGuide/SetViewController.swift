@@ -37,7 +37,7 @@ class SetViewController: BaseViewController {
     let searchController = UISearchController(searchResultsController: nil)
 
     // MARK: Variables
-    var set:CMSet?
+    var setMID: NSManagedObjectID?
     var dataSource: DATASource?
     var sectionIndexTitles = [String]()
     var sectionTitles = [String]()
@@ -66,8 +66,13 @@ class SetViewController: BaseViewController {
         // Do any additional setup after loading the view.
         contentSegmentedControl.setFAIcon(icon: .FADatabase, forSegmentAtIndex: 0)
         contentSegmentedControl.setFAIcon(icon: .FAWikipediaW, forSegmentAtIndex: 1)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateData(_:)), name: NSNotification.Name(rawValue: kIASKAppSettingChanged), object: nil)
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+                                                  object:nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.updateData(_:)),
+                                               name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+                                               object: nil)
         
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
@@ -101,26 +106,32 @@ class SetViewController: BaseViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showCard" {
             guard let dest = segue.destination as? CardViewController,
-                let dict = sender as? [String: Any] else {
+                let dict = sender as? [String: Any],
+                let cardIndex = dict["cardIndex"] as? Int,
+                let cardMIDs = dict["cardMIDs"] as? [NSManagedObjectID] else {
                 return
             }
             
-            dest.cardIndex = dict["cardIndex"] as! Int
-            dest.cards = dict["cards"] as? [CMCard]
+            dest.cardIndex = cardIndex
+            dest.cardMIDs = cardMIDs
             
         } else if segue.identifier == "showCardModal" {
-            guard let nav = segue.destination as? UINavigationController else {
+            guard let nav = segue.destination as? UINavigationController,
+                let dest = nav.childViewControllers.first as? CardViewController,
+                let dict = sender as? [String: Any],
+                let cardIndex = dict["cardIndex"] as? Int,
+                let cardMIDs = dict["cardMIDs"] as? [NSManagedObjectID] else {
                 return
             }
             
-            guard let dest = nav.childViewControllers.first as? CardViewController,
-                let dict = sender as? [String: Any] else {
+            let cardMID = cardMIDs[cardIndex]
+            guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
                 return
             }
             
-            dest.cardIndex = dict["cardIndex"] as! Int
-            dest.cards = dict["cards"] as? [CMCard]
-            dest.title = dest.cards?[dest.cardIndex].name
+            dest.cardIndex = cardIndex
+            dest.cardMIDs = cardMIDs
+            dest.title = card.name
             
         } else if segue.identifier == "showSearch" {
             guard let dest = segue.destination as? SearchViewController,
@@ -179,6 +190,12 @@ class SetViewController: BaseViewController {
     }
     
     func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
+        guard let setMID = setMID,
+            let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet,
+            let code = set.code else {
+            return nil
+        }
+        
         var request:NSFetchRequest<NSFetchRequestResult>?
         let defaults = defaultsValue()
         let setSectionName = defaults["setSectionName"] as! String
@@ -194,53 +211,72 @@ class SetViewController: BaseViewController {
             
             request!.sortDescriptors = [NSSortDescriptor(key: setSectionName, ascending: setOrderBy),
                                         NSSortDescriptor(key: setSecondSortBy, ascending: setOrderBy)]
-            request!.predicate = NSPredicate(format: "set.code = %@", set!.code!)
+            request!.predicate = NSPredicate(format: "set.code = %@", code)
         }
         
         switch setDisplayBy {
         case "list":
-            ds = DATASource(tableView: tableView, cellIdentifier: "CardCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName == "numberOrder" ? nil : setSectionName, configuration: { cell, item, indexPath in
-                
+            let configuration = { (cell: UITableViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void  in
                 guard let card = item as? CMCard,
                     let cardCell = cell as? CardTableViewCell else {
-                    return
+                        return
                 }
                 
-                cardCell.card = card
+                cardCell.cardMID = card.objectID
                 cardCell.updateDataDisplay()
-            })
-        case "grid":
-            if let collectionView = collectionView {
-                ds = DATASource(collectionView: collectionView, cellIdentifier: "CardImageCell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: setSectionName == "numberOrder" ? nil : setSectionName, configuration: { cell, item, indexPath in
-                    
-                    guard let card = item as? CMCard,
-                        let imageView = cell.viewWithTag(100) as? UIImageView else {
-                        return
-                    }
-                            
-                    if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
-                        imageView.image = image
-                    } else {
-                        imageView.image = ManaKit.sharedInstance.cardBack(card)
-                        
-                        firstly {
-                            ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-                        }.done { (image: UIImage?) in
-                            if let image = image {
-                                UIView.transition(with: imageView,
-                                                  duration: 1.0,
-                                                  options: .transitionFlipFromLeft,
-                                                  animations: {
-                                                      imageView.image = image
-                                                  },
-                                                  completion: nil)
-                            }
-                        }.catch { error in
-                            print("\(error)")
-                        }
-                    }
-                })
             }
+            
+            ds = DATASource(tableView: tableView,
+                            cellIdentifier: "CardCell",
+                            fetchRequest: request!,
+                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
+                            sectionName: setSectionName == "numberOrder" ? nil : setSectionName,
+                            configuration: configuration)
+            
+        case "grid":
+            guard let collectionView = collectionView else {
+                return nil
+            }
+            
+            let configuration = { (cell: UICollectionViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void in
+                guard let card = item as? CMCard,
+                    let imageView = cell.viewWithTag(100) as? UIImageView else {
+                        return
+                }
+                
+                if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
+                    imageView.image = image
+                } else {
+                    imageView.image = ManaKit.sharedInstance.cardBack(card)
+                    
+                    firstly {
+                        ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+                    }.done { (image: UIImage?) in
+                        guard let image = image else {
+                            return
+                        }
+                        
+                        let animations = {
+                            imageView.image = image
+                        }
+                        UIView.transition(with: imageView,
+                                          duration: 1.0,
+                                          options: .transitionFlipFromLeft,
+                                          animations: animations,
+                                          completion: nil)
+                    }.catch { error in
+                        print("\(error)")
+                    }
+                }
+            }
+            
+            ds = DATASource(collectionView: collectionView,
+                            cellIdentifier: "CardImageCell",
+                            fetchRequest: request!,
+                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
+                            sectionName: setSectionName == "numberOrder" ? nil : setSectionName,
+                            configuration: configuration)
+            
         default:
             ()
         }
@@ -248,7 +284,6 @@ class SetViewController: BaseViewController {
         guard let d = ds else {
             return nil
         }
-        
         d.delegate = self
         return d
     }
@@ -342,11 +377,11 @@ class SetViewController: BaseViewController {
         }
         
         let defaults = defaultsValue()
-        var setSectionName = defaults["setSectionName"] as! String
-        var setSortBy = defaults["setSortBy"] as! String
-        var setSecondSortBy = defaults["setSecondSortBy"] as! String
-        var setOrderBy = defaults["setOrderBy"] as! Bool
-        var setDisplayBy = defaults["setDisplayBy"] as! String
+        var setSectionName = defaults["setSectionName"] as? String
+        var setSortBy = defaults["setSortBy"] as? String
+        var setSecondSortBy = defaults["setSecondSortBy"] as? String
+        var setOrderBy = defaults["setOrderBy"] as? Bool
+        var setDisplayBy = defaults["setDisplayBy"] as? String
         
         if let value = userInfo["setSortBy"] as? String {
             setSortBy = value
@@ -446,15 +481,19 @@ class SetViewController: BaseViewController {
     }
     
     func doSearch() {
-        var newRequest:NSFetchRequest<NSFetchRequestResult>?
         let defaults = defaultsValue()
         
-        guard let setSectionName = defaults["setSectionName"] as? String,
+        guard let setMID = setMID,
+            let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet,
+            let code = set.code,
+            let setSectionName = defaults["setSectionName"] as? String,
             let setSecondSortBy = defaults["setSecondSortBy"] as? String,
             let setOrderBy = defaults["setOrderBy"] as? Bool,
             let searchDisplayBy = defaults["setDisplayBy"] as? String else {
             return
         }
+        
+        var newRequest:NSFetchRequest<NSFetchRequestResult>?
         
         if let text = searchController.searchBar.text {
             if text.count > 0 {
@@ -464,9 +503,9 @@ class SetViewController: BaseViewController {
                                                NSSortDescriptor(key: setSecondSortBy, ascending: setOrderBy)]
                 
                 if text.count == 1 {
-                    newRequest!.predicate = NSPredicate(format: "set.code = %@ AND name BEGINSWITH[cd] %@", set!.code!, text)
+                    newRequest!.predicate = NSPredicate(format: "set.code = %@ AND name BEGINSWITH[cd] %@", code, text)
                 } else if text.count > 1 {
-                    newRequest!.predicate = NSPredicate(format: "set.code = %@ AND (name CONTAINS[cd] %@ OR name CONTAINS[cd] %@)", set!.code!, text, text)
+                    newRequest!.predicate = NSPredicate(format: "set.code = %@ AND (name CONTAINS[cd] %@ OR name CONTAINS[cd] %@)", code, text, text)
                 }
                 dataSource = getDataSource(newRequest)
                 
@@ -532,13 +571,14 @@ extension SetViewController : UITableViewDataSource {
                 ()
             }
         case SetViewControllerSegmentedIndex.wiki.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "SetInfoCell") as? BrowserTableViewCell,
-                let set = set else {
+            guard let setMID = setMID,
+                let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet,
+                let c = tableView.dequeueReusableCell(withIdentifier: "SetInfoCell") as? BrowserTableViewCell else {
                 return UITableViewCell(frame: CGRect.zero)
             }
             
-            c.webView.delegate = self
             let request = URLRequest(url: wikiURL(ofSet: set)!, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 10.0)
+            c.webView.delegate = self
             c.webView.loadRequest(request)
             cell = c
             
@@ -553,12 +593,15 @@ extension SetViewController : UITableViewDataSource {
 // MARK: UITableViewDelegate
 extension SetViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let defaults = defaultsValue()
-        let setDisplayBy = defaults["setDisplayBy"] as! String
         var height = CGFloat(0)
 
         switch contentSegmentedControl.selectedSegmentIndex {
         case SetViewControllerSegmentedIndex.cards.rawValue:
+            let defaults = defaultsValue()
+            guard let setDisplayBy = defaults["setDisplayBy"] as? String else {
+                return height
+            }
+            
             switch setDisplayBy {
             case "list":
                 height = kCardTableViewCellHeight
@@ -584,7 +627,7 @@ extension SetViewController : UITableViewDelegate {
             let cardIndex = cards.index(of: card!)
             let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
             let sender = ["cardIndex": cardIndex as Any,
-                          "cards": cards]
+                          "cardMIDs": cards.map({ $0.objectID })]
             performSegue(withIdentifier: identifier, sender: sender)
         default:
             ()
@@ -592,11 +635,13 @@ extension SetViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let defaults = defaultsValue()
-        let setDisplayBy = defaults["setDisplayBy"] as! String
-
         switch contentSegmentedControl.selectedSegmentIndex {
         case SetViewControllerSegmentedIndex.cards.rawValue:
+            let defaults = defaultsValue()
+            guard let setDisplayBy = defaults["setDisplayBy"] as? String else {
+                return
+            }
+            
             switch setDisplayBy {
             case "grid":
                 dataSource = getDataSource(nil)
@@ -677,7 +722,7 @@ extension SetViewController : UICollectionViewDelegate {
         let cardIndex = cards.index(of: card!)
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": cardIndex as Any,
-                      "cards": cards]
+                      "cardMIDs": cards.map({ $0.objectID })]
         
         performSegue(withIdentifier: identifier, sender: sender)
     }
@@ -686,12 +731,11 @@ extension SetViewController : UICollectionViewDelegate {
 // MARK: UIWebViewDelegate
 extension SetViewController : UIWebViewDelegate {
     func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
-        guard let url = request.url else {
+        guard let url = request.url,
+            let host = url.host else {
             return false
         }
-        guard let host = url.host else {
-            return false
-        }
+        
         var willLoad = false
         
         if host.contains("gamepedia.com") {
@@ -719,10 +763,10 @@ extension SetViewController : UIWebViewDelegate {
                     if let card = results.first as? CMCard {
                         if UIDevice.current.userInterfaceIdiom == .phone {
                             performSegue(withIdentifier: "showCard", sender: ["cardIndex": 0 as Any,
-                                                                              "cards": [card]])
+                                                                              "cardMIDs": [card.objectID]])
                         } else if UIDevice.current.userInterfaceIdiom == .pad {
                             performSegue(withIdentifier: "showCardModal", sender: ["cardIndex": 0 as Any,
-                                                                                   "cards": [card]])
+                                                                                   "cardMIDs": [card.objectID]])
                         }
                     }
                 } else if results.count > 1 {

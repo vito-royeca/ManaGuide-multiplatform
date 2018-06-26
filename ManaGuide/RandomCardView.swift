@@ -50,14 +50,13 @@ class RandomCardView: UIView {
                     return
                 }
                 
-//                self.averageColor = image.averageColor
-            
+                let animations = {
+                    self.cropImageView.image = image
+                }
                 UIView.transition(with: self.cropImageView,
                                   duration: 1.0,
                                   options: .transitionCrossDissolve,
-                                  animations: {
-                                      self.cropImageView.image = image
-                                  },
+                                  animations: animations,
                                   completion: nil)
                 
             }.catch { error in

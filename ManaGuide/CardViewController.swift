@@ -60,8 +60,8 @@ enum CardViewControllerDetailsSection : Int {
     case flavorText
     case artist
     case set
-    case otherPrintings
     case otherNames
+    case otherPrintings
     case variations
     case rulings
     case legalities
@@ -77,8 +77,8 @@ enum CardViewControllerDetailsSection : Int {
         case .flavorText: return "Flavor Text"
         case .artist: return "Artist"
         case .set: return "Set"
-        case .otherPrintings: return "Other Printings"
         case .otherNames: return "Other Names"
+        case .otherPrintings: return "Other Printings"
         case .variations: return "Variations"
         case .rulings: return "Rulings"
         case .legalities: return "Legalities"
@@ -94,13 +94,13 @@ enum CardViewControllerDetailsSection : Int {
 class CardViewController: BaseViewController {
     // MARK: Variables
     var cardIndex = 0
-    var cards: [CMCard]?
-    var otherPrintings: [CMCard]?
+    var cardMIDs: [NSManagedObjectID]?
+    var otherPrintingMIDs: [NSManagedObjectID]?
     var otherPrintingsCollectionView: UICollectionView?
-    var variations: [CMCard]?
+    var variationMIDs: [NSManagedObjectID]?
     var variationsCollectionView: UICollectionView?
-    var segmentedIndex: CardViewControllerSegmentedIndex = .image
     var cardViewIncremented = false
+    var firstAppearance = true
     
     // MARK: Outlets
     @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
@@ -110,18 +110,16 @@ class CardViewController: BaseViewController {
     
     // MARK: Actions
     @IBAction func contentAction(_ sender: UISegmentedControl) {
-        segmentedIndex = CardViewControllerSegmentedIndex(rawValue: sender.selectedSegmentIndex)!
-        
-        guard let cards = cards else {
+        guard let card = loadCard(atIndex: cardIndex) else {
             return
         }
-        let card = cards[cardIndex]
         
-        if segmentedIndex == .image {
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case CardViewControllerSegmentedIndex.image.rawValue:
             tableView.reloadData()
             tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
             
-        } else if segmentedIndex == .details {
+        case CardViewControllerSegmentedIndex.details.rawValue:
             if !cardViewIncremented {
                 cardViewIncremented = true
                 incrementCardViews()
@@ -141,38 +139,46 @@ class CardViewController: BaseViewController {
                                            NSSortDescriptor(key: "mciNumber", ascending: true)]
                 request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, filteredSets.map({$0.code}))
                 
-                otherPrintings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMCard]
+                if let otherPrintings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMCard] {
+                    otherPrintingMIDs = [NSManagedObjectID]()
+                    for c in otherPrintings {
+                        otherPrintingMIDs!.append(c.objectID)
+                    }
+                }
             }
             
-            if let variations = card.variations_ {
-                self.variations = variations.allObjects as? [CMCard]
-            } else {
-                variations = [CMCard]()
+            variationMIDs = [NSManagedObjectID]()
+            if let variations_ = card.variations_ {
+                if let variations = variations_.allObjects as? [CMCard] {
+                    for variation in variations {
+                        variationMIDs!.append(variation.objectID)
+                    }
+                }
             }
             tableView.reloadData()
             tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
             
-        } else if segmentedIndex == .store {
+        case CardViewControllerSegmentedIndex.store.rawValue:
             tableView.reloadData()
+            
             MBProgressHUD.showAdded(to: tableView, animated: true)
-
             firstly {
-                ManaKit.sharedInstance.fetchTCGPlayerStorePricing(card: card)
+                ManaKit.sharedInstance.fetchTCGPlayerStorePricing(cardMID: card.objectID)
             }.done {
                 MBProgressHUD.hide(for: self.tableView, animated: true)
-                self.tableView.reloadData()
             }.catch { error in
-                
+                    
             }
+            
+        default:
+            ()
         }
     }
     
     @IBAction func activityAction(_ sender: UIBarButtonItem) {
-        guard let cards = cards else {
+        guard let card = loadCard(atIndex: cardIndex) else {
             return
         }
-        
-        let card = cards[cardIndex]
         
         if let _ = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
             showActivityViewController(sender, card: card)
@@ -217,6 +223,12 @@ class CardViewController: BaseViewController {
     }
     
     // MARK: Overrides
+    deinit {
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name.NSManagedObjectContextObjectsDidChange,
+                                                  object: nil)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -227,84 +239,189 @@ class CardViewController: BaseViewController {
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         tableView.register(UINib(nibName: "StoreTableViewCell", bundle: nil), forCellReuseIdentifier: "StoreCell")
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadCardActionRows(_:)), name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kCardViewsUpdatedNotification), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadCardActionRows(_:)), name: NSNotification.Name(rawValue: kCardViewsUpdatedNotification), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadCardActionRows(_:)), name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object: nil)
-        
-        guard let cards = cards else {
+        guard let card = loadCard(atIndex: cardIndex) else {
             return
         }
-        
-        let card = cards[cardIndex]
         title = card.name
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                                  object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(reloadViewController(_:)),
+                                               name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                               object: nil)
+        
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: kCardViewsUpdatedNotification),
+                                                  object:nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(reloadViewController(_:)),
+                                               name: NSNotification.Name(rawValue: kCardViewsUpdatedNotification),
+                                               object: nil)
+        
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                                  object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(reloadViewController(_:)),
+                                               name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                               object: nil)
+        
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name.NSManagedObjectContextObjectsDidChange,
+                                                  object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(changeNotification(_:)),
+                                               name: NSNotification.Name.NSManagedObjectContextObjectsDidChange,
+                                               object: nil)
+        
+        if firstAppearance {
+            firstAppearance = false
+        } else {
+            reloadViewController(Notification(name: NSNotification.Name.NSManagedObjectContextObjectsDidChange))
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                                  object: nil)
+        
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: kCardViewsUpdatedNotification),
+                                                  object:nil)
+        
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                                  object: nil)
+        
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name.NSManagedObjectContextObjectsDidChange,
+                                                  object: nil)
+    }
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         tableView.reloadData()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showCard" {
-            if let dest = segue.destination as? CardViewController {
-                var cards: [CMCard]?
+            guard let dest = segue.destination as? CardViewController else {
+                return
+            }
+            
+            var destCardMIDs: [NSManagedObjectID]?
+            
+            if let cell = sender as? UICollectionViewCell {
+                var parentView = cell.superview
+                while parentView is UICollectionView != true {
+                    parentView = parentView?.superview
+                }
                 
-                if let cell = sender as? UICollectionViewCell {
-                    var parentView = cell.superview
-                    while parentView is UICollectionView != true {
-                        parentView = parentView?.superview
-                    }
-                    
-                    if let parentView = parentView {
-                        if parentView == otherPrintingsCollectionView {
-                            if let otherPrintingsCollectionView = otherPrintingsCollectionView,
-                                let otherPrintings = otherPrintings {
-                                cards = [otherPrintings[otherPrintingsCollectionView.indexPath(for: cell)!.item]]
-                            }
-                        } else if parentView == variationsCollectionView {
-                            if let variationsCollectionView = variationsCollectionView,
-                                let variations = variations {
-                                cards = [variations[variationsCollectionView.indexPath(for: cell)!.item]]
-                            }
+                if let parentView = parentView {
+                    if parentView == otherPrintingsCollectionView {
+                        if let otherPrintingsCollectionView = otherPrintingsCollectionView,
+                            let otherPrintingMIDs = otherPrintingMIDs {
+                            destCardMIDs = [otherPrintingMIDs[otherPrintingsCollectionView.indexPath(for: cell)!.item]]
+                        }
+                    } else if parentView == variationsCollectionView {
+                        if let variationsCollectionView = variationsCollectionView,
+                            let variationMIDs = variationMIDs {
+                            destCardMIDs = [variationMIDs[variationsCollectionView.indexPath(for: cell)!.item]]
                         }
                     }
-                } else if let dict = sender as? [String: Any]  {
-                    if let card = dict["card"] as? CMCard {
-                        cards = [card]
-                    }
                 }
-                
-                dest.cards = cards
-                dest.cardIndex = 0
+            } else if let dict = sender as? [String: Any]  {
+                if let cardMID = dict["cardMID"] as? NSManagedObjectID {
+                    destCardMIDs = [cardMID]
+                }
             }
+            
+            dest.cardMIDs = destCardMIDs
+            dest.cardIndex = 0
+            
         } else if segue.identifier == "showSearch" {
-            if let dest = segue.destination as? SearchViewController,
-                let dict = sender as? [String: Any] {
-                
-                dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
-                dest.title = dict["title"] as? String
+            guard let dest = segue.destination as? SearchViewController,
+                let dict = sender as? [String: Any] else {
+                return
             }
+            
+            dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
+            dest.title = dict["title"] as? String
+            
         } else if segue.identifier == "showSet" {
-            if let dest = segue.destination as? SetViewController,
-                let set = sender as? CMSet {
-                
-                dest.title = set.name
-                dest.set = set
+            guard let dest = segue.destination as? SetViewController,
+                let dict = sender as? [String: Any],
+                let setMID = dict["setMID"] as? NSManagedObjectID,
+                let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet else {
+                return
             }
+            
+            dest.title = set.name
+            dest.setMID = setMID
+            
         } else if segue.identifier == "showLogin" {
-            if let dest = segue.destination as? UINavigationController {
-                if let loginVC = dest.childViewControllers.first as? LoginViewController,
-                    let dict = sender as? [String: Any] {
-                    if let actionAfterLogin = dict["actionAfterLogin"] as? ((Bool) -> Void) {
-                        loginVC.actionAfterLogin = actionAfterLogin
-                    }
-                }
+            guard let dest = segue.destination as? UINavigationController,
+                let loginVC = dest.childViewControllers.first as? LoginViewController,
+                let dict = sender as? [String: Any],
+                let actionAfterLogin = dict["actionAfterLogin"] as? ((Bool) -> Void) else {
+                return
+            }
+                    
+            loginVC.actionAfterLogin = actionAfterLogin
+        }
+    }
+    
+    func reloadViewController(_ notification: Notification) {
+        DispatchQueue.main.async {
+            MBProgressHUD.hide(for: self.view, animated: true)
+            
+            switch self.contentSegmentedControl.selectedSegmentIndex {
+            case CardViewControllerSegmentedIndex.image.rawValue:
+                self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.pricing.rawValue),
+                                               IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)],
+                                          with: .automatic)
+            case CardViewControllerSegmentedIndex.store.rawValue:
+                self.tableView.reloadData()
+            default:
+                ()
             }
         }
     }
     
+    // MARK: Core Data notifications
+    func changeNotification(_ notification: Notification) {
+        guard let card = loadCard(atIndex: cardIndex) else {
+            return
+        }
+        
+        var willReload = false
+        
+        if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] {
+            if let set = updatedObjects as? NSSet {
+                for o in set.allObjects {
+                    if let c = o as? CMCard {
+                        if c.objectID == card.objectID {
+                            willReload = true
+                            break
+                        }
+                    }
+                }
+            }
+        }
+        
+        if willReload {
+            reloadViewController(notification)
+        }
+    }
+
     // MARK: Custom methods
     func showActivityViewController(_ sender: UIBarButtonItem, card: CMCard) {
         let provider = CardActivityItemProvider(card)
@@ -333,12 +450,10 @@ class CardViewController: BaseViewController {
     }
 
     func showUpdateRatingDialog() {
-        guard let cards = cards else {
+        guard let card = loadCard(atIndex: cardIndex) else {
             return
         }
         
-        
-        let card = cards[cardIndex]
         var rating = Double(0)
         
         // get user's rating for this card, if there is
@@ -378,24 +493,22 @@ class CardViewController: BaseViewController {
     }
     
     func incrementCardViews() {
-        guard let cards = cards else {
+        guard let card = loadCard(atIndex: cardIndex) else {
             return
         }
         
-        let card = cards[cardIndex]
         FirebaseManager.sharedInstance.incrementCardViews(card.id!, firstAttempt: true)
     }
     
     func toggleCardFavorite() {
-        guard let cards = cards else {
+        guard let card = loadCard(atIndex: cardIndex) else {
             return
         }
         
-        let card = cards[cardIndex]
         var isFavorite = false
         
         for c in FirebaseManager.sharedInstance.favorites {
-            if c.id == card.id {
+            if c.objectID == card.objectID {
                 isFavorite = true
                 break
             }
@@ -403,19 +516,6 @@ class CardViewController: BaseViewController {
         
         MBProgressHUD.showAdded(to: view, animated: true)
         FirebaseManager.sharedInstance.toggleCardFavorite(card.id!, favorite: !isFavorite, firstAttempt: true)
-    }
-    
-    func reloadCardActionRows(_ notification: Notification) {
-        if let userInfo = notification.userInfo {
-            if let card = userInfo["card"] as? CMCard {
-                cards?[cardIndex] = card
-            }
-        }
-        
-        MBProgressHUD.hide(for: view, animated: true)
-        if segmentedIndex == .image {
-            tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
-        }
     }
     
     func showImage(ofCard card: CMCard, inImageView imageView: UIImageView) {
@@ -427,16 +527,19 @@ class CardViewController: BaseViewController {
             firstly {
                 ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
             }.done { (image: UIImage?) in
-                
-                if let image = image {
-                    UIView.transition(with: imageView,
-                                      duration: 1.0,
-                                      options: .transitionCrossDissolve,
-                                      animations: {
-                                          imageView.image = image
-                                      },
-                                      completion: nil)
+                guard let image = image else {
+                    return
                 }
+                
+                let animations = {
+                    imageView.image = image
+                }
+                UIView.transition(with: imageView,
+                                  duration: 1.0,
+                                  options: .transitionCrossDissolve,
+                                  animations: animations,
+                                  completion: nil)
+                
             }.catch { error in
                 print("\(error)")
             }
@@ -444,15 +547,15 @@ class CardViewController: BaseViewController {
     }
     
     func movePhotoTo(index: Int) {
-        cardIndex = index
-        cardViewIncremented = false
-        
-        if let cards = cards {
-            let card = cards[cardIndex]
-            title = card.name
+        guard let card = loadCard(atIndex: index) else {
+            return
         }
         
-        if segmentedIndex == .image {
+        cardIndex = index
+        cardViewIncremented = false
+        title = card.name
+        
+        if contentSegmentedControl.selectedSegmentIndex == CardViewControllerSegmentedIndex.image.rawValue {
             tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.pricing.rawValue),
                                       IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
         }
@@ -490,22 +593,65 @@ class CardViewController: BaseViewController {
             open(url)
         }
     }
+    
+    func updatePricing(_ pricingMID: NSManagedObjectID?, inCell cell: UITableViewCell) {
+        guard let label100 = cell.viewWithTag(100) as? UILabel,
+             let label200 = cell.viewWithTag(200) as? UILabel,
+             let label300 = cell.viewWithTag(300) as? UILabel,
+             let label400 = cell.viewWithTag(400) as? UILabel else {
+            return
+        }
+                
+        if let pricingMID = pricingMID {
+            guard let pricing = ManaKit.sharedInstance.dataStack?.mainContext.object(with: pricingMID) as? CMCardPricing else {
+                label100.text = "NA"
+                label200.text = "NA"
+                label300.text = "NA"
+                label400.text = "NA"
+                return
+            }
+        
+            label100.text = pricing.low > 0 ? String(format: "$%.2f", pricing.low) : "NA"
+            label200.text = pricing.average > 0 ? String(format: "$%.2f", pricing.average) : "NA"
+            label300.text = pricing.high > 0 ? String(format: "$%.2f", pricing.high) : "NA"
+            label400.text = pricing.foil > 0 ? String(format: "$%.2f", pricing.foil) : "NA"
+
+        } else {
+            label100.text = "NA"
+            label200.text = "NA"
+            label300.text = "NA"
+            label400.text = "NA"
+        }
+    }
+    
+    func loadCard(atIndex index: Int) -> CMCard? {
+        guard let cardMIDs = cardMIDs else {
+            return nil
+        }
+        let cardMID = cardMIDs[index]
+        
+        guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
+            return nil
+        }
+        
+        return card
+    }
 }
 
 // MARK: UITableViewDataSource
 extension CardViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let cards = cards else {
+        guard let card = loadCard(atIndex: cardIndex) else {
             return 0
         }
         
-        let card = cards[cardIndex]
         var rows = 0
         
-        switch segmentedIndex {
-        case .image:
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case CardViewControllerSegmentedIndex.image.rawValue:
             rows = 1
-        case .details:
+            
+        case CardViewControllerSegmentedIndex.details.rawValue:
             switch section {
             case CardViewControllerDetailsSection.otherNames.rawValue:
                 if let names_ = card.names_ {
@@ -527,11 +673,15 @@ extension CardViewController : UITableViewDataSource {
             default:
                 rows = 1
             }
-        case .store:
+            
+        case CardViewControllerSegmentedIndex.store.rawValue:
             guard let suppliers = card.suppliers else {
                 return rows
             }
             rows = suppliers.count + 1
+            
+        default:
+            ()
         }
         
         return rows
@@ -540,28 +690,29 @@ extension CardViewController : UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         var sections = 0
         
-        switch segmentedIndex {
-        case .image:
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case CardViewControllerSegmentedIndex.image.rawValue:
             sections = CardViewControllerImageSection.count
-        case .details:
+        case CardViewControllerSegmentedIndex.details.rawValue:
             sections = CardViewControllerDetailsSection.count
-        case .store:
+        case CardViewControllerSegmentedIndex.store.rawValue:
             sections = 1
+        default:
+            ()
         }
         
         return sections
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cards = cards else {
+        guard let card = loadCard(atIndex: cardIndex) else {
             return UITableViewCell(frame: CGRect.zero)
         }
         
-        let card = cards[cardIndex]
         var cell: UITableViewCell?
         
-        switch segmentedIndex {
-        case .image:
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case CardViewControllerSegmentedIndex.image.rawValue:
             tableView.separatorStyle = .none
             
             switch indexPath.section {
@@ -570,40 +721,12 @@ extension CardViewController : UITableViewDataSource {
                     return UITableViewCell(frame: CGRect.zero)
                 }
                 
-                if let label = c.viewWithTag(100) as? UILabel {
-                    label.text = "NA"
-                }
-                if let label = c.viewWithTag(200) as? UILabel {
-                    label.text = "NA"
-                }
-                if let label = c.viewWithTag(300) as? UILabel {
-                    label.text = "NA"
-                }
-                if let label = c.viewWithTag(400) as? UILabel {
-                    label.text = "NA"
-                }
-                
                 firstly {
-                    ManaKit.sharedInstance.fetchTCGPlayerCardPricing(card: card)
-                }.done { (pricing: CMCardPricing?) in
-                    guard let pricing = pricing else {
-                        return
-                    }
-                    
-                    if let label = c.viewWithTag(100) as? UILabel {
-                        label.text = pricing.low > 0 ? String(format: "$%.2f", pricing.low) : "NA"
-                    }
-                    if let label = c.viewWithTag(200) as? UILabel {
-                        label.text = pricing.average > 0 ? String(format: "$%.2f", pricing.average) : "NA"
-                    }
-                    if let label = c.viewWithTag(300) as? UILabel {
-                        label.text = pricing.high > 0 ? String(format: "$%.2f", pricing.high) : "NA"
-                    }
-                    if let label = c.viewWithTag(400) as? UILabel {
-                        label.text = pricing.foil > 0 ? String(format: "$%.2f", pricing.foil) : "NA"
-                    }
+                    ManaKit.sharedInstance.fetchTCGPlayerCardPricing(cardMID: card.objectID)
+                }.done { (pricingMID: NSManagedObjectID?) in
+                    self.updatePricing(pricingMID, inCell: c)
                 }.catch { error in
-                    
+                    self.updatePricing(nil, inCell: c)
                 }
                 
                 c.selectionStyle = .none
@@ -631,49 +754,43 @@ extension CardViewController : UITableViewDataSource {
                 cell = c
                 
             case CardViewControllerImageSection.actions.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "ActionsCell") else {
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "ActionsCell"),
+                    let ratingView = c.viewWithTag(100) as? CosmosView,
+                    let label101 = c.viewWithTag(101) as? UILabel,
+                    let label200 = c.viewWithTag(200) as? UILabel,
+                    let label300 = c.viewWithTag(300) as? UILabel else {
                     return UITableViewCell(frame: CGRect.zero)
                 }
                 
-                if let ratingView = c.viewWithTag(100) as? CosmosView {
-                    ratingView.didFinishTouchingCosmos = { _ in
-                        self.ratingAction()
-                    }
-                    ratingView.rating = card.rating //Double(arc4random_uniform(5) + 1)
-                    ratingView.settings.emptyBorderColor = kGlobalTintColor
-                    ratingView.settings.filledBorderColor = kGlobalTintColor
-                    ratingView.settings.filledColor = kGlobalTintColor
-                    ratingView.settings.fillMode = .precise
+                
+                ratingView.didFinishTouchingCosmos = { _ in
+                    self.ratingAction()
                 }
-                if let label = c.viewWithTag(101) as? UILabel {
-                    label.text = "\(card.ratings) Rating\(card.ratings > 1 ? "s" : "")"
-                }
-                if let label = c.viewWithTag(200) as? UILabel {
-                    var isFavorite = false
-                    
-                    for c in FirebaseManager.sharedInstance.favorites {
-                        if c.id == card.id {
-                            isFavorite = true
-                            break
-                        }
+                ratingView.rating = card.rating //Double(arc4random_uniform(5) + 1)
+                ratingView.settings.emptyBorderColor = kGlobalTintColor
+                ratingView.settings.filledBorderColor = kGlobalTintColor
+                ratingView.settings.filledColor = kGlobalTintColor
+                ratingView.settings.fillMode = .precise
+                
+                label101.text = "\(card.ratings) Rating\(card.ratings > 1 ? "s" : "")"
+                
+                var isFavorite = false
+                for c in FirebaseManager.sharedInstance.favorites {
+                    if c.id == card.id {
+                        isFavorite = true
+                        break
                     }
-                    if isFavorite {
-                        label.setFAText(prefixText: "", icon: .FAHeart, postfixText: "", size: CGFloat(30))
-                    } else {
-                        label.setFAText(prefixText: "", icon: .FAHeartO, postfixText: "", size: CGFloat(30))
-                    }
-                    
-                    if let taps = label.gestureRecognizers {
-                        for tap in taps {
-                            label.removeGestureRecognizer(tap)
-                        }
-                    }
-                    label.addGestureRecognizer(favoriteTapGestureRecognizer)
-                    label.textColor = kGlobalTintColor
                 }
-                if let label = c.viewWithTag(300) as? UILabel {
-                    label.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
+                if let taps = label200.gestureRecognizers {
+                    for tap in taps {
+                        label200.removeGestureRecognizer(tap)
+                    }
                 }
+                label200.setFAText(prefixText: "", icon: isFavorite ? .FAHeart : .FAHeartO, postfixText: "", size: CGFloat(30))
+                label200.addGestureRecognizer(favoriteTapGestureRecognizer)
+                label200.textColor = kGlobalTintColor
+                
+                label300.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
                 
                 c.selectionStyle = .none
                 c.accessoryType = .none
@@ -683,7 +800,7 @@ extension CardViewController : UITableViewDataSource {
                 ()
             }
             
-        case .details:
+        case CardViewControllerSegmentedIndex.details.rawValue:
             tableView.separatorStyle = .singleLine
             
             switch indexPath.section {
@@ -762,7 +879,7 @@ extension CardViewController : UITableViewDataSource {
                 if let text = card.flavor {
                     label.text = "\n\(text)\n"
                 } else {
-                    label.text = " "
+                    label.text = "\n"
                 }
                 
                 c.selectionStyle = .none
@@ -811,20 +928,11 @@ extension CardViewController : UITableViewDataSource {
                 c.selectionStyle = .default
                 c.accessoryType = .disclosureIndicator
                 cell = c
-                
-            case CardViewControllerDetailsSection.otherPrintings.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
-                    return UITableViewCell(frame: CGRect.zero)
-                }
-                
-                c.selectionStyle = .none
-                c.accessoryType = .none
-                cell = c
-                
+
             case CardViewControllerDetailsSection.otherNames.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
                     let label = c.textLabel else {
-                    return UITableViewCell(frame: CGRect.zero)
+                        return UITableViewCell(frame: CGRect.zero)
                 }
                 
                 var otherCard: CMCard?
@@ -837,7 +945,7 @@ extension CardViewController : UITableViewDataSource {
                         }
                     }
                 }
-
+                
                 if let otherCard = otherCard {
                     label.text = otherCard.name
                     c.selectionStyle = .default
@@ -848,6 +956,15 @@ extension CardViewController : UITableViewDataSource {
                     c.accessoryType = .none
                 }
                 
+                cell = c
+
+            case CardViewControllerDetailsSection.otherPrintings.rawValue:
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
+                    return UITableViewCell(frame: CGRect.zero)
+                }
+                
+                c.selectionStyle = .none
+                c.accessoryType = .none
                 cell = c
                 
             case CardViewControllerDetailsSection.variations.rawValue:
@@ -894,7 +1011,7 @@ extension CardViewController : UITableViewDataSource {
                     
                     label.attributedText = NSAttributedString(symbol: contents, pointSize: label.font.pointSize)
                 } else {
-                    label.text = " "
+                    label.text = "\n"
                 }
                 
                 c.selectionStyle = .none
@@ -938,7 +1055,8 @@ extension CardViewController : UITableViewDataSource {
             default:
                 ()
             }
-        case .store:
+            
+        case CardViewControllerSegmentedIndex.store.rawValue:
             guard let suppliers = card.suppliers else {
                 return UITableViewCell(frame: CGRect.zero)
             }
@@ -946,15 +1064,17 @@ extension CardViewController : UITableViewDataSource {
             
             if count == 0 {
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                    let label = c.viewWithTag(100) as? UILabel,
-                    let note = card.storePricingNote else {
+                    let label = c.viewWithTag(100) as? UILabel else {
                     return UITableViewCell(frame: CGRect.zero)
                 }
                 
-                label.attributedText = NSAttributedString(html: note)
-                label.isUserInteractionEnabled = true
-                label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleLink(_:))))
-            
+                label.attributedText = NSAttributedString(html: "<html><center>No data found.</center></html>")
+                label.isUserInteractionEnabled = false
+                if let taps = label.gestureRecognizers {
+                    for tap in taps {
+                        label.removeGestureRecognizer(tap)
+                    }
+                }
                 c.selectionStyle = .none
                 c.accessoryType = .none
                 cell = c
@@ -990,21 +1110,23 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             }
+            
+        default:
+            ()
         }
         
         return cell!
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        guard let cards = cards else {
+        guard let card = loadCard(atIndex: cardIndex) else {
             return nil
         }
         
-        let card = cards[cardIndex]
         var headerTitle: String?
         
-        switch segmentedIndex {
-        case .details:
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case CardViewControllerSegmentedIndex.details.rawValue:
             switch section {
             case CardViewControllerDetailsSection.manaCost.rawValue:
                 headerTitle = CardViewControllerDetailsSection.manaCost.description
@@ -1020,14 +1142,6 @@ extension CardViewController : UITableViewDataSource {
                 headerTitle = CardViewControllerDetailsSection.artist.description
             case CardViewControllerDetailsSection.set.rawValue:
                 headerTitle = CardViewControllerDetailsSection.set.description
-            case CardViewControllerDetailsSection.otherPrintings.rawValue:
-                headerTitle = CardViewControllerDetailsSection.otherPrintings.description
-                var count = 0
-                
-                if let otherPrintings = otherPrintings {
-                    count = otherPrintings.count
-                }
-                headerTitle?.append(": \(count)")
             case CardViewControllerDetailsSection.otherNames.rawValue:
                 headerTitle = CardViewControllerDetailsSection.otherNames.description
                 var count = 0
@@ -1039,12 +1153,20 @@ extension CardViewController : UITableViewDataSource {
                     }
                 }
                 headerTitle?.append(": \(count)")
+            case CardViewControllerDetailsSection.otherPrintings.rawValue:
+                headerTitle = CardViewControllerDetailsSection.otherPrintings.description
+                var count = 0
+                
+                if let otherPrintingMIDs = otherPrintingMIDs {
+                    count = otherPrintingMIDs.count
+                }
+                headerTitle?.append(": \(count)")
             case CardViewControllerDetailsSection.variations.rawValue:
                 headerTitle = CardViewControllerDetailsSection.variations.description
                 var count = 0
                 
-                if let variations = variations {
-                    count = variations.count
+                if let variationMIDs = variationMIDs {
+                    count = variationMIDs.count
                 }
                 headerTitle?.append(": \(count)")
             case CardViewControllerDetailsSection.rulings.rawValue:
@@ -1079,37 +1201,43 @@ extension CardViewController : UITableViewDataSource {
 // MARK: UITableViewDelegate
 extension CardViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        switch segmentedIndex {
-        case .details:
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case CardViewControllerSegmentedIndex.details.rawValue:
             switch indexPath.section {
             case CardViewControllerDetailsSection.otherPrintings.rawValue:
-                if let collectionView = cell.viewWithTag(100) as? UICollectionView{
-                    if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        let width = CGFloat(100)
-                        let height = CGFloat(72)
-                        flowLayout.itemSize = CGSize(width: width, height: height)
-                        flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
-                    }
-                    
-                    collectionView.dataSource = self
-                    collectionView.delegate = self
-                    otherPrintingsCollectionView = collectionView
-                    collectionView.reloadData()
+                guard let collectionView = cell.viewWithTag(100) as? UICollectionView else {
+                    return
                 }
+                
+                if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                    let width = CGFloat(100)
+                    let height = CGFloat(72)
+                    flowLayout.itemSize = CGSize(width: width, height: height)
+                    flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
+                }
+                
+                collectionView.dataSource = self
+                collectionView.delegate = self
+                otherPrintingsCollectionView = collectionView
+                collectionView.reloadData()
+                
             case CardViewControllerDetailsSection.variations.rawValue:
-                if let collectionView = cell.viewWithTag(100) as? UICollectionView {
-                    if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        let width = CGFloat(100)
-                        let height = CGFloat(72)
-                        flowLayout.itemSize = CGSize(width: width, height: height)
-                        flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
-                    }
-                    
-                    collectionView.dataSource = self
-                    collectionView.delegate = self
-                    variationsCollectionView = collectionView
-                    collectionView.reloadData()
+                guard let collectionView = cell.viewWithTag(100) as? UICollectionView else {
+                    return
                 }
+                
+                if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                    let width = CGFloat(100)
+                    let height = CGFloat(72)
+                    flowLayout.itemSize = CGSize(width: width, height: height)
+                    flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
+                }
+                
+                collectionView.dataSource = self
+                collectionView.delegate = self
+                variationsCollectionView = collectionView
+                collectionView.reloadData()
+                
             default:
                 ()
             }
@@ -1119,15 +1247,14 @@ extension CardViewController : UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let cards = cards else {
+        guard let card = loadCard(atIndex: cardIndex) else {
             return CGFloat(0)
         }
         
-        let card = cards[cardIndex]
         var height = CGFloat(0)
         
-        switch segmentedIndex {
-        case .image:
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case CardViewControllerSegmentedIndex.image.rawValue:
             switch indexPath.section {
             case CardViewControllerImageSection.pricing.rawValue:
                 height = 44
@@ -1139,7 +1266,7 @@ extension CardViewController : UITableViewDelegate {
                 ()
             }
             
-        case .details:
+        case CardViewControllerSegmentedIndex.details.rawValue:
             switch indexPath.section {
             case CardViewControllerDetailsSection.otherPrintings.rawValue,
                  CardViewControllerDetailsSection.variations.rawValue:
@@ -1147,7 +1274,8 @@ extension CardViewController : UITableViewDelegate {
             default:
                 height = UITableViewAutomaticDimension
             }
-        case .store:
+            
+        case CardViewControllerSegmentedIndex.store.rawValue:
             guard let suppliers = card.suppliers else {
                 return CGFloat(0)
             }
@@ -1162,6 +1290,9 @@ extension CardViewController : UITableViewDelegate {
                     height = UITableViewAutomaticDimension
                 }
             }
+            
+        default:
+            ()
         }
         
         return height
@@ -1172,14 +1303,14 @@ extension CardViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        guard let cards = cards else {
+        guard let card = loadCard(atIndex: cardIndex) else {
             return nil
         }
-        let card = cards[cardIndex]
+        
         var path: IndexPath?
         
-        switch segmentedIndex {
-        case .details:
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case CardViewControllerSegmentedIndex.details.rawValue:
             switch indexPath.section {
             case CardViewControllerDetailsSection.artist.rawValue,
                  CardViewControllerDetailsSection.set.rawValue:
@@ -1203,21 +1334,6 @@ extension CardViewController : UITableViewDelegate {
             default:
                 ()
             }
-        /*case .store:
-            guard let suppliers = card.suppliers else {
-                return nil
-            }
-            let count = suppliers.allObjects.count
-            
-            if count == 0 {
-                path = indexPath
-            } else {
-                if indexPath.row <= count - 1 {
-                    return nil
-                } else {
-                    path = indexPath
-                }
-            }*/
         default:
             ()
         }
@@ -1226,31 +1342,36 @@ extension CardViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let cards = cards else {
+        guard let card = loadCard(atIndex: cardIndex) else {
             return
         }
-        let card = cards[cardIndex]
         
-        switch segmentedIndex {
-        case .details:
+        switch contentSegmentedControl.selectedSegmentIndex {
+        case CardViewControllerSegmentedIndex.details.rawValue:
             switch indexPath.section {
             case CardViewControllerDetailsSection.artist.rawValue:
-                if let artist = card.artist_ {
-                    let request = CMCard.fetchRequest()
-                    let predicate = NSPredicate(format: "artist_.name = %@", artist.name!)
-                    
-                    request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                               NSSortDescriptor(key: "name", ascending: true),
-                                               NSSortDescriptor(key: "set.releaseDate", ascending: true)]
-                    request.predicate = predicate
-                    
-                    performSegue(withIdentifier: "showSearch", sender: ["request": request,
-                                                                        "title": artist.name!])
+                guard let artist = card.artist_ else {
+                    return
                 }
+                
+                let request = CMCard.fetchRequest()
+                let predicate = NSPredicate(format: "artist_.name = %@", artist.name!)
+                
+                request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                           NSSortDescriptor(key: "name", ascending: true),
+                                           NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+                request.predicate = predicate
+                
+                performSegue(withIdentifier: "showSearch", sender: ["request": request,
+                                                                    "title": artist.name!])
+                
             case CardViewControllerDetailsSection.set.rawValue:
-                if let set = card.set {
-                    performSegue(withIdentifier: "showSet", sender: set)
+                guard let set = card.set else {
+                    return
                 }
+                
+                performSegue(withIdentifier: "showSet", sender: ["setMID": set.objectID])
+                
             case CardViewControllerDetailsSection.otherNames.rawValue:
                 var otherCard: CMCard?
                 
@@ -1263,30 +1384,15 @@ extension CardViewController : UITableViewDelegate {
                     }
                 }
                 
-                if let otherCard = otherCard {
-                    performSegue(withIdentifier: "showCard", sender: ["card": otherCard])
+                guard let oc = otherCard else {
+                    return
                 }
+                
+                performSegue(withIdentifier: "showCard", sender: ["card": oc])
+                
             default:
                 ()
             }
-        /*case .store:
-            guard let suppliers = card.suppliers else {
-                return
-            }
-            guard let note = card.storePricingNote else {
-                return
-            }
-            let count = suppliers.allObjects.count
-            
-            if count == 0 {
-                
-            } else {
-                if indexPath.row <= count - 1 {
-                    return
-                } else {
-                    
-                }
-            }*/
         default:
             ()
         }
@@ -1299,12 +1405,12 @@ extension CardViewController : UICollectionViewDataSource {
         var items = 0
         
         if collectionView == otherPrintingsCollectionView {
-            if let otherPrintings = otherPrintings {
-                items = otherPrintings.count
+            if let otherPrintingMIDs = otherPrintingMIDs {
+                items = otherPrintingMIDs.count
             }
         } else if collectionView == variationsCollectionView {
-            if let variations = variations {
-                items = variations.count
+            if let variationMIDs = variationMIDs {
+                items = variationMIDs.count
             }
         }
 
@@ -1316,43 +1422,49 @@ extension CardViewController : UICollectionViewDataSource {
         var card: CMCard?
         
         if collectionView == otherPrintingsCollectionView {
-            if let otherPrintings = otherPrintings {
-                card = otherPrintings[indexPath.row]
+            if let otherPrintingMIDs = otherPrintingMIDs {
+                card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: otherPrintingMIDs[indexPath.row]) as? CMCard
             }
         } else if collectionView == variationsCollectionView {
-            if let variations = variations {
-                card = variations[indexPath.row]
+            if let variationMIDs = variationMIDs {
+                card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: variationMIDs[indexPath.row]) as? CMCard
             }
         }
         
-        if let card = card,
+        guard let c = card,
             let thumbnailImage = cell.viewWithTag(100) as? UIImageView,
-            let setImage = cell.viewWithTag(200) as? UILabel {
-            
-            if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
-                thumbnailImage.image = croppedImage
-            } else {
-                thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
-                
-                firstly {
-                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
-                }.done { (image: UIImage?) in
-                    UIView.transition(with: thumbnailImage,
-                                      duration: 1.0,
-                                      options: .transitionCrossDissolve,
-                                      animations: {
-                                        thumbnailImage.image = image
-                                      },
-                                      completion: nil)
-                }.catch { error in
-                        
-                }
-            }
-            
-            setImage.layer.cornerRadius = setImage.frame.height / 2
-            setImage.text = ManaKit.sharedInstance.keyruneUnicode(forSet: card.set!)
-            setImage.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: card.rarity_!)
+            let setImage = cell.viewWithTag(200) as? UILabel else {
+            return cell
         }
+        
+        if let croppedImage = ManaKit.sharedInstance.croppedImage(c) {
+            thumbnailImage.image = croppedImage
+        } else {
+            thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
+            
+            firstly {
+                ManaKit.sharedInstance.downloadImage(ofCard: c, imageType: .artCrop)
+            }.done { (image: UIImage?) in
+                guard let image = image else {
+                    return
+                }
+                
+                let animations = {
+                    thumbnailImage.image = image
+                }
+                UIView.transition(with: thumbnailImage,
+                                  duration: 1.0,
+                                  options: .transitionCrossDissolve,
+                                  animations: animations,
+                                  completion: nil)
+            }.catch { error in
+                
+            }
+        }
+        
+        setImage.layer.cornerRadius = setImage.frame.height / 2
+        setImage.text = ManaKit.sharedInstance.keyruneUnicode(forSet: c.set!)
+        setImage.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: c.rarity_!)
         
         return cell
     }
@@ -1373,16 +1485,15 @@ extension CardViewController : UICollectionViewDelegate {
 // MARK: iCarouselDataSource
 extension CardViewController : iCarouselDataSource {
     func numberOfItems(in carousel: iCarousel) -> Int {
-        var items = 0
-        
-        if let cards = cards {
-            items = cards.count
+        guard let cardMIDs = cardMIDs else {
+            return 0
         }
-        return items
+        
+        return cardMIDs.count
     }
     
     func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
-        var imageView: UIImageView?
+        var imageView = UIImageView(frame: CGRect.zero)
         
         //reuse view if available, otherwise create a new view
         if let v = view as? UIImageView {
@@ -1392,23 +1503,22 @@ extension CardViewController : iCarouselDataSource {
             let height = tableView.frame.size.height - 88
             let width = tableView.frame.size.width - 40
             imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: width, height: height))
-            imageView!.contentMode = .scaleAspectFit
+            imageView.contentMode = .scaleAspectFit
 
             // add drop shadow
-            imageView!.layer.shadowColor = UIColor(red:0.00, green:0.00, blue:0.00, alpha:0.45).cgColor
-            imageView!.layer.shadowOffset = CGSize(width: 1, height: 1)
-            imageView!.layer.shadowOpacity = 1
-            imageView!.layer.shadowRadius = 6.0
-            imageView!.clipsToBounds = false
+            imageView.layer.shadowColor = UIColor(red:0.00, green:0.00, blue:0.00, alpha:0.45).cgColor
+            imageView.layer.shadowOffset = CGSize(width: 1, height: 1)
+            imageView.layer.shadowOpacity = 1
+            imageView.layer.shadowRadius = 6.0
+            imageView.clipsToBounds = false
         }
         
-        if let imageView = imageView,
-            let cards = cards {
-            let card = cards[index]
-            showImage(ofCard: card, inImageView: imageView)
+        guard let card = loadCard(atIndex: index) else {
+            return imageView
         }
         
-        return imageView!
+        showImage(ofCard: card, inImageView: imageView)
+        return imageView
     }
 }
 
@@ -1419,14 +1529,16 @@ extension CardViewController : iCarouselDelegate {
     }
     
     func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
-        guard let cards = cards else {
+        guard let cardMIDs = cardMIDs else {
             return
         }
         
         var photos = [ManaGuidePhoto]()
         
-        for card in cards {
-            photos.append(ManaGuidePhoto(card: card))
+        for cardMID in cardMIDs {
+            if let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard {
+                photos.append(ManaGuidePhoto(card: card))
+            }
         }
         
         if let browser = IDMPhotoBrowser(photos: photos) {
@@ -1460,3 +1572,4 @@ extension CardViewController : StoreTableViewCellDelegate {
         UIApplication.shared.open(link)
     }
 }
+

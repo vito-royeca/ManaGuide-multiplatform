@@ -46,7 +46,6 @@ class BannedListViewController: BaseViewController {
     // MARK: Custom methods
     func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
         var request:NSFetchRequest<NSFetchRequestResult>?
-        var ds: DATASource?
         
         if let fetchRequest = fetchRequest {
             request = fetchRequest
@@ -57,19 +56,24 @@ class BannedListViewController: BaseViewController {
             request!.predicate = NSPredicate(format: "ANY cardLegalities.legality.name IN %@", ["Banned", "Restricted"])
         }
         
-        ds = DATASource(tableView: tableView, cellIdentifier: "Cell", fetchRequest: request!, mainContext: ManaKit.sharedInstance.dataStack!.mainContext, sectionName: "nameSection", configuration: { cell, item, indexPath in
-            guard let format = item as? CMFormat else {
+        let configuration = { (cell: UITableViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void  in
+            guard let format = item as? CMFormat,
+                let label = cell.textLabel else {
                 return
             }
             
-            cell.textLabel?.text = format.name
-        })
-        
-        guard let d = ds else {
-            return nil
+            label.text = format.name
         }
-        d.delegate = self
-        return d
+        
+        let ds = DATASource(tableView: tableView,
+                            cellIdentifier: "Cell",
+                            fetchRequest: request!,
+                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
+                            sectionName: "nameSection",
+                            configuration: configuration)
+        ds.delegate = self
+        
+        return ds
     }
     
     func updateSections() {

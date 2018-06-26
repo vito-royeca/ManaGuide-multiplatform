@@ -49,7 +49,8 @@ class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
     }
     
     func imageLoadingComplete() {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: IDMPhoto_LOADING_DID_END_NOTIFICATION), object: self)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: IDMPhoto_LOADING_DID_END_NOTIFICATION),
+                                        object: self)
     }
 
 }

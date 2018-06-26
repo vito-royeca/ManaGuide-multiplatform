@@ -119,10 +119,15 @@ class FirebaseManager: NSObject {
                 
                 card.rating = fcard.rating == nil ? rating : fcard.rating!
                 card.ratings = fcard.ratings == nil ? Int32(1) : Int32(fcard.ratings!.count)
-                try! ManaKit.sharedInstance.dataStack!.mainContext.save()
                 
-                NotificationCenter.default.post(name: Notification.Name(rawValue: kCardRatingUpdatedNotification), object: nil, userInfo: ["card": card])
-                self.updateUserRatings(key, rating: rating, firstAttempt: true)
+                ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                    try! backgroundContext.save()
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: kCardRatingUpdatedNotification),
+                                                    object: nil,
+                                                    userInfo: ["card": card])
+                    
+                    self.updateUserRatings(key, rating: rating, firstAttempt: true)
+                }
                 
             } else {
                 // retry again, if we were aborted from above
@@ -165,8 +170,13 @@ class FirebaseManager: NSObject {
                 }
                 
                 card.views = Int64(fcard.views == nil ? 1 : fcard.views!)
-                try! ManaKit.sharedInstance.dataStack!.mainContext.save()
-                NotificationCenter.default.post(name: Notification.Name(rawValue: kCardViewsUpdatedNotification), object: nil, userInfo: ["card": card])
+                
+                ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                    try! backgroundContext.save()
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: kCardViewsUpdatedNotification),
+                                                    object: nil,
+                                                    userInfo: ["card": card])
+                }
 
             } else {
                 // retry again, if we were aborted from above
@@ -257,7 +267,7 @@ class FirebaseManager: NSObject {
     }
     
     // MARK: Data monitors
-    func monitorTopRated(completion: @escaping ([CMCard]) -> Void) {
+    func monitorTopRated(completion: @escaping ([NSManagedObjectID]) -> Void) {
         let ref = Database.database().reference().child("cards")
         let query = ref.queryOrdered(byChild: FCCard.Keys.Rating).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopRated)
         
@@ -276,14 +286,16 @@ class FirebaseManager: NSObject {
                 }
             }
             
-            try! ManaKit.sharedInstance.dataStack!.mainContext.save()
-            completion(cards.sorted(by: { $0.rating > $1.rating }))
+            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                try! backgroundContext.save()
+                completion(cards.sorted(by: { $0.rating > $1.rating }).map({ $0.objectID }))
+            }
         })
         
         queries["topRated"] = query
     }
 
-    func monitorTopViewed(completion: @escaping ([CMCard]) -> Void) {
+    func monitorTopViewed(completion: @escaping ([NSManagedObjectID]) -> Void) {
         let ref = Database.database().reference().child("cards")
         let query = ref.queryOrdered(byChild: FCCard.Keys.Views).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopViewed)
         
@@ -301,8 +313,10 @@ class FirebaseManager: NSObject {
                 }
             }
             
-            try! ManaKit.sharedInstance.dataStack!.mainContext.save()
-            completion(cards.sorted(by: { $0.views > $1.views }))
+            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                try! backgroundContext.save()
+                completion(cards.sorted(by: { $0.views > $1.views }).map({ $0.objectID }))
+            }
         })
         
         queries["topViewed"] = query
@@ -316,12 +330,16 @@ class FirebaseManager: NSObject {
                 if let value = snapshot.value as? [String : Any] {
                     if let dict = value["favorites"] as? [String : Any] {
                         self.favorites = self.cards(withIds: Array(dict.keys))
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object: nil, userInfo: nil)
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                                        object: nil,
+                                                        userInfo: nil)
                     }
                     
                     if let dict = value["ratedCards"] as? [String : Any] {
                         self.ratedCards = self.cards(withIds: Array(dict.keys))
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification), object: nil, userInfo: nil)
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                                        object: nil,
+                                                        userInfo: nil)
                     }
                 }
             })
@@ -348,8 +366,12 @@ class FirebaseManager: NSObject {
         userRef = nil
         favorites = [CMCard]()
         ratedCards = [CMCard]()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: kFavoriteToggleNotification), object: nil, userInfo: nil)
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification), object: nil, userInfo: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                        object: nil,
+                                        userInfo: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                        object: nil,
+                                        userInfo: nil)
     }
     
     // MARK: Custom methods
