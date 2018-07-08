@@ -10,6 +10,7 @@ import UIKit
 import Cosmos
 import DATASource
 import Font_Awesome_Swift
+import InAppSettingsKit
 import iCarousel
 import ManaKit
 import MBProgressHUD
@@ -49,16 +50,35 @@ class FeaturedViewController: BaseViewController {
     var flowLayoutHeight = CGFloat(0)
     
     // MARK: Outlets
+    @IBOutlet weak var rightMenuButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
+
+    // MARK: Actions
+    @IBAction func rightMenuAction(_ sender: UIBarButtonItem) {
+        showSettingsMenu(file: "Featured")
+    }
     
     // MARK: Overrides
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+                                                  object:nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.updateData(_:)),
+                                               name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+                                               object: nil)
+        
+        rightMenuButton.image = UIImage.init(icon: .FABars,
+                                             size: CGSize(width: 30, height: 30),
+                                             textColor: .white,
+                                             backgroundColor: .clear)
+        rightMenuButton.title = nil
+        
         fetchRandomCards()
         fetchLatestSets()
-        randomCardsTimer = Timer.scheduledTimer(timeInterval: 60 * 5, target: self, selector: #selector(fetchRandomCards), userInfo: nil, repeats: true)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -139,7 +159,57 @@ class FeaturedViewController: BaseViewController {
     }
 
     // MARK: Custom methods
+    func updateData(_ notification: Notification) {
+        guard let userInfo = notification.userInfo as? [String: Any] else {
+            return
+        }
+        
+//        let defaults = defaultsValue()
+//        var searchSectionName = defaults["searchSectionName"] as! String
+//        var searchSortBy = defaults["searchSortBy"] as! String
+//        var searchSecondSortBy = defaults["searchSecondSortBy"] as! String
+//        var searchOrderBy = defaults["searchOrderBy"] as! Bool
+//        var searchDisplayBy = defaults["searchDisplayBy"] as! String
+//
+//        if let value = userInfo["searchSortBy"] as? String {
+//            searchSortBy = value
+//
+//            switch searchSortBy {
+//            case "name":
+//                searchSectionName = "nameSection"
+//                searchSecondSortBy = "name"
+//            case "typeSection":
+//                searchSectionName = "typeSection"
+//                searchSecondSortBy = "name"
+//            default:
+//                ()
+//            }
+//        }
+//
+//        if let value = userInfo["searchOrderBy"] as? Bool {
+//            searchOrderBy = value
+//        }
+//
+//        if let value = userInfo["searchDisplayBy"] as? String {
+//            searchDisplayBy = value
+//        }
+//
+//        UserDefaults.standard.set(searchSectionName, forKey: "searchSectionName")
+//        UserDefaults.standard.set(searchSortBy, forKey: "searchSortBy")
+//        UserDefaults.standard.set(searchSecondSortBy, forKey: "searchSecondSortBy")
+//        UserDefaults.standard.set(searchOrderBy, forKey: "searchOrderBy")
+//        UserDefaults.standard.set(searchDisplayBy, forKey: "searchDisplayBy")
+//        UserDefaults.standard.synchronize()
+//
+//        updateDataDisplay()
+    }
+    
     func startSlideShow() {
+        randomCardsTimer = Timer.scheduledTimer(timeInterval: 60 * 5,
+                                                target: self,
+                                                selector: #selector(fetchRandomCards),
+                                                userInfo: nil, repeats: true)
+
         slideshowTimer = Timer.scheduledTimer(timeInterval: 5,
                                               target: self,
                                               selector: #selector(showSlide),
@@ -148,6 +218,11 @@ class FeaturedViewController: BaseViewController {
     }
     
     func stopSlideShow() {
+        if randomCardsTimer != nil {
+            randomCardsTimer!.invalidate()
+        }
+        randomCardsTimer = nil
+        
         if slideshowTimer != nil {
             slideshowTimer!.invalidate()
         }
@@ -470,8 +545,8 @@ extension FeaturedViewController : UICollectionViewDataSource {
 
                 firstly {
                     ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
-                }.done { (image: UIImage?) in
-                    guard let image = image else {
+                }.done {
+                    guard let image = ManaKit.sharedInstance.croppedImage(card) else {
                         return
                     }
                     
@@ -522,8 +597,8 @@ extension FeaturedViewController : UICollectionViewDataSource {
                 
                 firstly {
                     ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
-                }.done { (image: UIImage?) in
-                    guard let image = image else {
+                }.done {
+                    guard let image = ManaKit.sharedInstance.croppedImage(card) else {
                         return
                     }
                     
@@ -622,7 +697,7 @@ extension FeaturedViewController : iCarouselDataSource {
             return rcv!
         }
         
-        rcvNew.card = card
+        rcvNew.cardMID = card.objectID
         rcvNew.hideNameandSet()
         rcvNew.showImage()
         return rcvNew
@@ -672,4 +747,6 @@ extension FeaturedViewController : iCarouselDelegate {
         return returnValue
     }
 }
+
+
 

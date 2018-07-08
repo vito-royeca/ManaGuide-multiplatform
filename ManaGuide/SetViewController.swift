@@ -251,8 +251,8 @@ class SetViewController: BaseViewController {
                     
                     firstly {
                         ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-                    }.done { (image: UIImage?) in
-                        guard let image = image else {
+                    }.done {
+                        guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) else {
                             return
                         }
                         
@@ -261,7 +261,7 @@ class SetViewController: BaseViewController {
                         }
                         UIView.transition(with: imageView,
                                           duration: 1.0,
-                                          options: .transitionFlipFromLeft,
+                                          options: .transitionFlipFromRight,
                                           animations: animations,
                                           completion: nil)
                     }.catch { error in

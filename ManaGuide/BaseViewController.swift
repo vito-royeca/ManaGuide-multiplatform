@@ -13,6 +13,7 @@ class BaseViewController: UIViewController {
 
     // MARK: Variables
     var tapBGGesture: UITapGestureRecognizer?
+    var settingsView: SettingsViewController?
     
     // MARK: Overrides
     override func viewDidLoad() {
@@ -45,8 +46,6 @@ class BaseViewController: UIViewController {
     func showSettingsMenu(file: String) {
         if let mm_drawerController = mm_drawerController {
             if let navigationVC = mm_drawerController.rightDrawerViewController as? UINavigationController {
-                var settingsView:SettingsViewController?
-                
                 for drawer in navigationVC.viewControllers {
                     if drawer is SettingsViewController {
                         settingsView = drawer as? SettingsViewController

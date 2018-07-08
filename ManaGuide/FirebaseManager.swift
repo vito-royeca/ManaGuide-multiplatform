@@ -21,8 +21,8 @@ class FirebaseManager: NSObject {
     private var online = false
     
     // MARK: user data
-    var favorites = [CMCard]()
-    var ratedCards = [CMCard]()
+    var favoriteMIDs = [NSManagedObjectID]()
+    var ratedCardMIDs = [NSManagedObjectID]()
     
     // MARK: update methods
     func updateUser(email: String?, photoURL: URL?, displayName: String?, completion: @escaping (_ error: Error?) -> Void) {
@@ -113,7 +113,8 @@ class FirebaseManager: NSObject {
                 }
                 let fcard = FCCard(snapshot: snapshot)
                 
-                guard let card = self.cards(withIds: [snapshot.key]).first else {
+                guard let cardMID = self.cardMIDs(withIds: [snapshot.key]).first,
+                    let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
                     return
                 }
                 
@@ -165,7 +166,8 @@ class FirebaseManager: NSObject {
                 }
                 let fcard = FCCard(snapshot: snapshot)
                 
-                guard let card = self.cards(withIds: [snapshot.key]).first else {
+                guard let cardMID = self.cardMIDs(withIds: [snapshot.key]).first,
+                    let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
                     return
                 }
                 
@@ -278,10 +280,12 @@ class FirebaseManager: NSObject {
                 if let c = child as? DataSnapshot {
                     let fcard = FCCard(snapshot: c)
                     
-                    if let card = self.cards(withIds: [c.key]).first {
-                        card.rating = fcard.rating == nil ? 0 : fcard.rating!
-                        card.ratings = fcard.ratings == nil ? Int32(0) : Int32(fcard.ratings!.count)
-                        cards.append(card)
+                    if let cardMID = self.cardMIDs(withIds: [c.key]).first {
+                        if let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard {
+                            card.rating = fcard.rating == nil ? 0 : fcard.rating!
+                            card.ratings = fcard.ratings == nil ? Int32(0) : Int32(fcard.ratings!.count)
+                            cards.append(card)
+                        }
                     }
                 }
             }
@@ -306,9 +310,11 @@ class FirebaseManager: NSObject {
                 if let c = child as? DataSnapshot {
                     let fcard = FCCard(snapshot: c)
                     
-                    if let card = self.cards(withIds: [c.key]).first {
-                        card.views = Int64(fcard.views == nil ? 0 : fcard.views!)
-                        cards.append(card)
+                    if let cardMID = self.cardMIDs(withIds: [c.key]).first {
+                        if let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard {
+                            card.views = Int64(fcard.views == nil ? 0 : fcard.views!)
+                            cards.append(card)
+                        }
                     }
                 }
             }
@@ -329,14 +335,14 @@ class FirebaseManager: NSObject {
             userRef!.observe(.value, with: { snapshot in
                 if let value = snapshot.value as? [String : Any] {
                     if let dict = value["favorites"] as? [String : Any] {
-                        self.favorites = self.cards(withIds: Array(dict.keys))
+                        self.favoriteMIDs = self.cardMIDs(withIds: Array(dict.keys))
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
                                                         object: nil,
                                                         userInfo: nil)
                     }
                     
                     if let dict = value["ratedCards"] as? [String : Any] {
-                        self.ratedCards = self.cards(withIds: Array(dict.keys))
+                        self.ratedCardMIDs = self.cardMIDs(withIds: Array(dict.keys))
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
                                                         object: nil,
                                                         userInfo: nil)
@@ -364,8 +370,8 @@ class FirebaseManager: NSObject {
         }
         
         userRef = nil
-        favorites = [CMCard]()
-        ratedCards = [CMCard]()
+        favoriteMIDs = [NSManagedObjectID]()
+        ratedCardMIDs = [NSManagedObjectID]()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
                                         object: nil,
                                         userInfo: nil)
@@ -375,13 +381,27 @@ class FirebaseManager: NSObject {
     }
     
     // MARK: Custom methods
-    func cards(withIds ids: [String]) -> [CMCard] {
+    func cardMIDs(withIds ids: [String]) -> [NSManagedObjectID] {
         let request = CMCard.fetchRequest()
         request.predicate = NSPredicate(format: "id IN %@", ids)
-        var cards = [CMCard]()
+        var array = [NSManagedObjectID]()
         
         if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
-            cards = result
+            for card in result {
+                array.append(card.objectID)
+            }
+        }
+        
+        return array
+    }
+    
+    func cards(withMIDs mids: [NSManagedObjectID]) -> [CMCard] {
+        var cards = [CMCard]()
+        
+        for mid in mids {
+            if let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: mid) as? CMCard {
+                cards.append(card)
+            }
         }
         
         return cards

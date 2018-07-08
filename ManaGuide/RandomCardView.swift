@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 import ManaKit
 import PromiseKit
 
@@ -18,7 +19,7 @@ class RandomCardView: UIView {
     let magic2015Font            = UIFont(name: "Beleren", size: 20.0)
 
     // MARK: Variables
-    var card: CMCard?
+    var cardMID: NSManagedObjectID?
 //    var contrastColor: UIColor?
     
     // MARK: Outlets
@@ -34,7 +35,8 @@ class RandomCardView: UIView {
     
     // MARK: Custom methods
     func showImage() {
-        guard let card = card else {
+        guard let cardMID = cardMID,
+            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
             return
         }
         
@@ -45,8 +47,8 @@ class RandomCardView: UIView {
             
             firstly {
                 ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
-            }.done { (image: UIImage?) in
-                guard let image = image else {
+            }.done {
+                guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .artCrop) else {
                     return
                 }
                 
@@ -66,10 +68,10 @@ class RandomCardView: UIView {
     }
     
     func showNameandSet() {
-        guard let card = card else {
-            return
+        guard let cardMID = cardMID,
+            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
+                return
         }
-        
         
         nameLabel.text = card.name
         nameLabel.textColor = UIColor.white

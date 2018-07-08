@@ -167,7 +167,7 @@ class CardViewController: BaseViewController {
             }.done {
                 MBProgressHUD.hide(for: self.tableView, animated: true)
             }.catch { error in
-                    
+                MBProgressHUD.hide(for: self.tableView, animated: true)
             }
             
         default:
@@ -186,12 +186,12 @@ class CardViewController: BaseViewController {
             MBProgressHUD.showAdded(to: view, animated: true)
             firstly {
                 ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-            }.done { (image: UIImage?) in
+            }.done {
                 MBProgressHUD.hide(for: self.view, animated: true)
                 self.showActivityViewController(sender, card: card)
                 
             }.catch { error in
-                    print("\(error)")
+                print("\(error)")
             }
         }
     }
@@ -425,7 +425,8 @@ class CardViewController: BaseViewController {
     // MARK: Custom methods
     func showActivityViewController(_ sender: UIBarButtonItem, card: CMCard) {
         let provider = CardActivityItemProvider(card)
-        let activityVC = UIActivityViewController(activityItems: [provider], applicationActivities: [FacebookShareActivity(parent: self), TwitterShareActivity(parent: self)])
+        let activityVC = UIActivityViewController(activityItems: [provider],
+                                                  applicationActivities: [FacebookShareActivity(parent: self), TwitterShareActivity(parent: self)])
 
         var excludedActivityTypes: [UIActivityType] = [.addToReadingList, .openInIBooks, .postToFacebook, .postToTwitter]
         if #available(iOS 11.0, *) {
@@ -441,7 +442,7 @@ class CardViewController: BaseViewController {
             // user did not cancel
             if success {
                 if let e = error {
-                    print("error saving meme: \(e.localizedDescription)")
+                    print("error: \(e.localizedDescription)")
                 }
                 self.dismiss(animated: true, completion: nil)
             }
@@ -450,16 +451,17 @@ class CardViewController: BaseViewController {
     }
 
     func showUpdateRatingDialog() {
-        guard let card = loadCard(atIndex: cardIndex) else {
+        guard let card = loadCard(atIndex: cardIndex),
+            let id = card.id else {
             return
         }
         
         var rating = Double(0)
         
         // get user's rating for this card, if there is
-        for c in FirebaseManager.sharedInstance.ratedCards {
-            if c.id == card.id {
-                rating = c.rating
+        for mid in FirebaseManager.sharedInstance.ratedCardMIDs {
+            if mid == card.objectID {
+                rating = card.rating
                 break
             }
         }
@@ -476,7 +478,7 @@ class CardViewController: BaseViewController {
             self.dismiss(animated: false, completion: nil)
             
             MBProgressHUD.showAdded(to: self.view, animated: true)
-            FirebaseManager.sharedInstance.updateCardRatings(card.id!, rating: ratingView.rating, firstAttempt: true)
+            FirebaseManager.sharedInstance.updateCardRatings(id, rating: ratingView.rating, firstAttempt: true)
         })
         let cancelAction = NYAlertAction(title: "Cancel", style: .default, handler:  {(action: NYAlertAction?) -> Void in
             self.dismiss(animated: false, completion: nil)
@@ -493,29 +495,31 @@ class CardViewController: BaseViewController {
     }
     
     func incrementCardViews() {
-        guard let card = loadCard(atIndex: cardIndex) else {
+        guard let card = loadCard(atIndex: cardIndex),
+            let id = card.id else {
             return
         }
         
-        FirebaseManager.sharedInstance.incrementCardViews(card.id!, firstAttempt: true)
+        FirebaseManager.sharedInstance.incrementCardViews(id, firstAttempt: true)
     }
     
     func toggleCardFavorite() {
-        guard let card = loadCard(atIndex: cardIndex) else {
+        guard let card = loadCard(atIndex: cardIndex),
+            let id = card.id else {
             return
         }
         
         var isFavorite = false
         
-        for c in FirebaseManager.sharedInstance.favorites {
-            if c.objectID == card.objectID {
+        for mid in FirebaseManager.sharedInstance.favoriteMIDs {
+            if mid == card.objectID {
                 isFavorite = true
                 break
             }
         }
         
         MBProgressHUD.showAdded(to: view, animated: true)
-        FirebaseManager.sharedInstance.toggleCardFavorite(card.id!, favorite: !isFavorite, firstAttempt: true)
+        FirebaseManager.sharedInstance.toggleCardFavorite(id, favorite: !isFavorite, firstAttempt: true)
     }
     
     func showImage(ofCard card: CMCard, inImageView imageView: UIImageView) {
@@ -526,8 +530,8 @@ class CardViewController: BaseViewController {
             
             firstly {
                 ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-            }.done { (image: UIImage?) in
-                guard let image = image else {
+            }.done {
+                guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) else {
                     return
                 }
                 
@@ -594,34 +598,20 @@ class CardViewController: BaseViewController {
         }
     }
     
-    func updatePricing(_ pricingMID: NSManagedObjectID?, inCell cell: UITableViewCell) {
-        guard let label100 = cell.viewWithTag(100) as? UILabel,
-             let label200 = cell.viewWithTag(200) as? UILabel,
-             let label300 = cell.viewWithTag(300) as? UILabel,
-             let label400 = cell.viewWithTag(400) as? UILabel else {
+    func updatePricing(inCell cell: UITableViewCell) {
+        guard let card = loadCard(atIndex: cardIndex),
+            let pricing = ManaKit.sharedInstance.findObject("CMCardPricing", objectFinder: ["card.id": card.id as AnyObject], createIfNotFound: true) as? CMCardPricing,
+            let label100 = cell.viewWithTag(100) as? UILabel,
+            let label200 = cell.viewWithTag(200) as? UILabel,
+            let label300 = cell.viewWithTag(300) as? UILabel,
+            let label400 = cell.viewWithTag(400) as? UILabel else {
             return
         }
-                
-        if let pricingMID = pricingMID {
-            guard let pricing = ManaKit.sharedInstance.dataStack?.mainContext.object(with: pricingMID) as? CMCardPricing else {
-                label100.text = "NA"
-                label200.text = "NA"
-                label300.text = "NA"
-                label400.text = "NA"
-                return
-            }
         
-            label100.text = pricing.low > 0 ? String(format: "$%.2f", pricing.low) : "NA"
-            label200.text = pricing.average > 0 ? String(format: "$%.2f", pricing.average) : "NA"
-            label300.text = pricing.high > 0 ? String(format: "$%.2f", pricing.high) : "NA"
-            label400.text = pricing.foil > 0 ? String(format: "$%.2f", pricing.foil) : "NA"
-
-        } else {
-            label100.text = "NA"
-            label200.text = "NA"
-            label300.text = "NA"
-            label400.text = "NA"
-        }
+        label100.text = pricing.low > 0 ? String(format: "$%.2f", pricing.low) : "NA"
+        label200.text = pricing.average > 0 ? String(format: "$%.2f", pricing.average) : "NA"
+        label300.text = pricing.high > 0 ? String(format: "$%.2f", pricing.high) : "NA"
+        label400.text = pricing.foil > 0 ? String(format: "$%.2f", pricing.foil) : "NA"
     }
     
     func loadCard(atIndex index: Int) -> CMCard? {
@@ -723,10 +713,10 @@ extension CardViewController : UITableViewDataSource {
                 
                 firstly {
                     ManaKit.sharedInstance.fetchTCGPlayerCardPricing(cardMID: card.objectID)
-                }.done { (pricingMID: NSManagedObjectID?) in
-                    self.updatePricing(pricingMID, inCell: c)
+                }.done {
+                    self.updatePricing(inCell: c)
                 }.catch { error in
-                    self.updatePricing(nil, inCell: c)
+                    self.updatePricing(inCell: c)
                 }
                 
                 c.selectionStyle = .none
@@ -775,8 +765,8 @@ extension CardViewController : UITableViewDataSource {
                 label101.text = "\(card.ratings) Rating\(card.ratings > 1 ? "s" : "")"
                 
                 var isFavorite = false
-                for c in FirebaseManager.sharedInstance.favorites {
-                    if c.id == card.id {
+                for mid in FirebaseManager.sharedInstance.favoriteMIDs {
+                    if mid == card.objectID {
                         isFavorite = true
                         break
                     }
@@ -1068,7 +1058,11 @@ extension CardViewController : UITableViewDataSource {
                     return UITableViewCell(frame: CGRect.zero)
                 }
                 
-                label.attributedText = NSAttributedString(html: "<html><center>No data found.</center></html>")
+                if card.storePricingLastUpdate == nil {
+                    label.attributedText = NSAttributedString(html: "<html><center>Loading...</center></html>")
+                } else {
+                    label.attributedText = NSAttributedString(html: "<html><center>No data found.</center></html>")
+                }
                 label.isUserInteractionEnabled = false
                 if let taps = label.gestureRecognizers {
                     for tap in taps {
@@ -1444,8 +1438,8 @@ extension CardViewController : UICollectionViewDataSource {
             
             firstly {
                 ManaKit.sharedInstance.downloadImage(ofCard: c, imageType: .artCrop)
-            }.done { (image: UIImage?) in
-                guard let image = image else {
+            }.done {
+                guard let image = ManaKit.sharedInstance.croppedImage(c) else {
                     return
                 }
                 
@@ -1537,7 +1531,7 @@ extension CardViewController : iCarouselDelegate {
         
         for cardMID in cardMIDs {
             if let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard {
-                photos.append(ManaGuidePhoto(card: card))
+                photos.append(ManaGuidePhoto(cardMID: card.objectID))
             }
         }
         

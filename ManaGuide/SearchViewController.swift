@@ -26,7 +26,7 @@ class SearchViewController: BaseViewController {
     var collectionView: UICollectionView?
     var request:NSFetchRequest<NSFetchRequestResult>?
     var customSectionName: String?
-    var firstLoad = false
+    var firstAppearance = true
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
@@ -54,16 +54,7 @@ class SearchViewController: BaseViewController {
                                                selector: #selector(self.updateData(_:)),
                                                name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                object: nil)
-        if title == "Favorites" {
-            NotificationCenter.default.removeObserver(self,
-                                                      name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
-                                                      object:nil)
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(self.updateFavorites(_:)),
-                                                   name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
-                                                   object: nil)
-        }
-
+        
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Keyword"
@@ -76,14 +67,17 @@ class SearchViewController: BaseViewController {
             tableView.tableHeaderView = searchController.searchBar
         }
         
-        
-        rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
+        rightMenuButton.image = UIImage.init(icon: .FABars,
+                                             size: CGSize(width: 30, height: 30),
+                                             textColor: .white,
+                                             backgroundColor: .clear)
         rightMenuButton.title = nil
         
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         tableView.keyboardDismissMode = .onDrag
         
         statusLabel.text = "  Loading..."
+        updateDataDisplay()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -92,11 +86,50 @@ class SearchViewController: BaseViewController {
         if #available(iOS 11.0, *) {
             navigationItem.hidesSearchBarWhenScrolling = true
         }
-
-        if !firstLoad {
-            firstLoad = true
-            updateDataDisplay()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if title == "Favorites" {
+            NotificationCenter.default.removeObserver(self,
+                                                      name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                                      object:nil)
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(self.updateFavorites(_:)),
+                                                   name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                                   object: nil)
+        } else if title == "Rated Cards" {
+            NotificationCenter.default.removeObserver(self,
+                                                      name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                                      object:nil)
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(self.updateRatedCards(_:)),
+                                                   name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                                   object: nil)
         }
+        
+        if firstAppearance {
+            firstAppearance = false
+        } else {
+            if title == "Favorites" {
+                updateFavorites(Notification(name: NSNotification.Name(rawValue: kFavoriteToggleNotification)))
+            } else if title == "Rated Cards" {
+                updateRatedCards(Notification(name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification)))
+            }
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                                  object:nil)
+        
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                                  object:nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -227,8 +260,8 @@ class SearchViewController: BaseViewController {
                     
                     firstly {
                         ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-                    }.done { (image: UIImage?) in
-                        guard let image = image else {
+                    }.done {
+                        guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) else {
                             return
                         }
                         
@@ -237,7 +270,7 @@ class SearchViewController: BaseViewController {
                         }
                         UIView.transition(with: imageView,
                                           duration: 1.0,
-                                          options: .transitionFlipFromLeft,
+                                          options: .transitionFlipFromRight,
                                           animations: animations,
                                           completion: nil)
                             
@@ -368,14 +401,26 @@ class SearchViewController: BaseViewController {
     }
 
     func updateFavorites(_ notification: Notification) {
-        let newRequest = CMCard.fetchRequest()
-        let names = FirebaseManager.sharedInstance.favorites.map({ $0.id })
-        
-        newRequest.predicate = NSPredicate(format: "id IN %@", names)
-        newRequest.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+        request = CMCard.fetchRequest()
+        let mids = FirebaseManager.sharedInstance.favoriteMIDs
+        let cards = FirebaseManager.sharedInstance.cards(withMIDs: mids)
+
+        request!.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
+        request!.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
                                    NSSortDescriptor(key: "name", ascending: true),
                                    NSSortDescriptor(key: "set.releaseDate", ascending: true)]
-        self.request = newRequest
+        updateDataDisplay()
+    }
+    
+    func updateRatedCards(_ notification: Notification) {
+        request = CMCard.fetchRequest()
+        let mids = FirebaseManager.sharedInstance.ratedCardMIDs
+        let cards = FirebaseManager.sharedInstance.cards(withMIDs: mids)
+        
+        request!.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
+        request!.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                    NSSortDescriptor(key: "name", ascending: true),
+                                    NSSortDescriptor(key: "set.releaseDate", ascending: true)]
         updateDataDisplay()
     }
     

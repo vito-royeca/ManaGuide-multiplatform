@@ -825,8 +825,14 @@
                     </view>
                     <navigationItem key="navigationItem" title="Featured" id="U2n-yh-Oe7">
                         <barButtonItem key="backBarButtonItem" title=" " id="4i7-VD-yHv"/>
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="MEY-H7-tus">
+                            <connections>
+                                <action selector="rightMenuAction:" destination="VzP-Cv-mX8" id="nDR-Cd-VYC"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="rightMenuButton" destination="MEY-H7-tus" id="Efp-fW-KZK"/>
                         <outlet property="tableView" destination="M3W-ac-1Xr" id="Xri-TQ-5zd"/>
                         <segue destination="8F9-G6-Erf" kind="show" identifier="showSets" id="2hF-2U-vi0"/>
                         <segue destination="aOj-40-y9v" kind="show" identifier="showSet" id="Mbq-CH-LY8"/>
@@ -966,11 +972,11 @@
                         <viewControllerLayoutGuide type="bottom" id="841-wA-QXv"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="eGO-g0-CCv">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="uA5-1d-p4e">
-                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardCell" rowHeight="88" id="xxb-st-kEj">
@@ -1429,28 +1435,6 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MessageCell" rowHeight="88" id="dSG-Xc-Ytf">
-                                        <rect key="frame" x="0.0" y="540" width="414" height="88"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dSG-Xc-Ytf" id="t0O-Dh-1g5">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="87.666666666666671"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="100" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1JH-NB-VRr">
-                                                    <rect key="frame" x="0.0" y="0.0" width="414" height="87.666666666666657"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="1JH-NB-VRr" firstAttribute="leading" secondItem="t0O-Dh-1g5" secondAttribute="leadingMargin" id="3vu-av-rU5"/>
-                                                <constraint firstItem="1JH-NB-VRr" firstAttribute="top" secondItem="t0O-Dh-1g5" secondAttribute="topMargin" id="8sz-pE-hQ2"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="1JH-NB-VRr" secondAttribute="bottom" id="PqJ-nQ-VmV"/>
-                                                <constraint firstItem="1JH-NB-VRr" firstAttribute="trailing" secondItem="t0O-Dh-1g5" secondAttribute="trailingMargin" id="pAY-Wu-md7"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
                                 </prototypes>
                                 <connections>
                                     <outlet property="dataSource" destination="v6L-wJ-qRt" id="4Dv-7A-R1U"/>
@@ -1826,9 +1810,9 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="Vbm-cg-ye0"/>
-        <segue reference="X4a-uC-2tC"/>
-        <segue reference="J88-7q-TTb"/>
-        <segue reference="xMx-O9-Y4N"/>
+        <segue reference="Ubl-6g-hH9"/>
+        <segue reference="sDJ-KE-8ls"/>
+        <segue reference="Mbq-CH-LY8"/>
         <segue reference="whl-Hr-bZH"/>
     </inferredMetricsTieBreakers>
 </document>

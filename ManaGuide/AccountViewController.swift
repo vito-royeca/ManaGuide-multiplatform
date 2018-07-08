@@ -285,9 +285,10 @@ extension AccountViewController : UITableViewDelegate {
         switch indexPath.section {
         case AccountViewControllerSection.favorites.rawValue:
             let request = CMCard.fetchRequest()
-            let names = FirebaseManager.sharedInstance.favorites.map({ $0.id })
+            let mids = FirebaseManager.sharedInstance.favoriteMIDs
+            let cards = FirebaseManager.sharedInstance.cards(withMIDs: mids)
             
-            request.predicate = NSPredicate(format: "id IN %@", names)
+            request.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
             request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
                                        NSSortDescriptor(key: "name", ascending: true),
                                        NSSortDescriptor(key: "set.releaseDate", ascending: true)]
@@ -295,9 +296,10 @@ extension AccountViewController : UITableViewDelegate {
                                                                 "request": request])
         case AccountViewControllerSection.ratedCards.rawValue:
             let request = CMCard.fetchRequest()
-            let names = FirebaseManager.sharedInstance.ratedCards.map({ $0.id })
+            let mids = FirebaseManager.sharedInstance.ratedCardMIDs
+            let cards = FirebaseManager.sharedInstance.cards(withMIDs: mids)
             
-            request.predicate = NSPredicate(format: "id IN %@", names)
+            request.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
             request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
                                        NSSortDescriptor(key: "name", ascending: true),
                                        NSSortDescriptor(key: "set.releaseDate", ascending: true)]

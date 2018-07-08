@@ -7,17 +7,18 @@
 //
 
 import UIKit
+import CoreData
 import IDMPhotoBrowser
 import ManaKit
 import PromiseKit
 
 class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
-    var card: CMCard?
+    var cardMID: NSManagedObjectID?
     var progressUpdateBlock: IDMProgressUpdateBlock?
     private var _underlyingImage: UIImage?
     
-    init(card: CMCard) {
-        self.card = card
+    init(cardMID: NSManagedObjectID) {
+        self.cardMID = cardMID
     }
     
     func underlyingImage() -> UIImage? {
@@ -25,10 +26,15 @@ class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
     }
     
     func loadUnderlyingImageAndNotify() {
+        guard let cardMID = cardMID,
+            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
+            return
+        }
+        
         firstly {
-            ManaKit.sharedInstance.downloadImage(ofCard: card!, imageType: .normal)
-        }.done { (image: UIImage?) in
-            self._underlyingImage = image
+            ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+        }.done {
+            self._underlyingImage = ManaKit.sharedInstance.cardImage(card, imageType: .normal)
             self.imageLoadingComplete()
         }.catch { error in
             self.unloadUnderlyingImage()
@@ -41,7 +47,12 @@ class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
     }
     
     func placeholderImage() -> UIImage? {
-        return ManaKit.sharedInstance.cardBack(card!)
+        guard let cardMID = cardMID,
+            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
+            return nil
+        }
+        
+        return ManaKit.sharedInstance.cardBack(card)
     }
     
     func caption() -> String? {

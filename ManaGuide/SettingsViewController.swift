@@ -8,30 +8,65 @@
 
 import UIKit
 import InAppSettingsKit
+import ManaKit
 
 class SettingsViewController: IASKAppSettingsViewController {
 
     // MARK: Overrides
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//
-//        // Do any additional setup after loading the view.
-//        if let backButton = navigationItem.backBarButtonItem {
-//            backButton.title = " "
-//            backButton.tintColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
-//        }
-//    }
-//
-//    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        
-//        let cell = super.tableView(tableView, cellForRowAt: indexPath)
-//        cell.tintColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
-//        
-//        for v in cell.contentView.subviews {
-//            if let uiswitch = v as? UISwitch {
-//                uiswitch.onTintColor = UIColor(red:0.41, green:0.12, blue:0.00, alpha:1.0) // maroon
-//            }
-//        }
-//        return cell
-//    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Do any additional setup after loading the view.
+        delegate = self
+        
+        let slideshowEnabled = UserDefaults.standard.bool(forKey: "slideshowRandom")
+        hiddenKeys = slideshowEnabled ? nil : Set(["slideshowSet"])
+    }
+}
+
+// MARK: IASKSettingsDelegate
+extension SettingsViewController: IASKSettingsDelegate {
+    func settingsViewControllerDidEnd(_ sender: IASKAppSettingsViewController!) {
+        
+    }
+    
+    func settingsViewController(_ sender: IASKAppSettingsViewController!, titlesFor specifier: IASKSpecifier!) -> [Any]! {
+        var array = [String]()
+        
+        if specifier.key() == "slideshowSet" {
+            let request = CMSet.fetchRequest()
+            request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false),
+                                       NSSortDescriptor(key: "name", ascending: true)]
+            
+            guard let sets = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMSet] else {
+                return array
+            }
+            
+            for set in sets {
+                array.append(set.name!)
+            }
+        }
+        
+        return array
+    }
+    
+    func settingsViewController(_ sender: IASKAppSettingsViewController!, valuesFor specifier: IASKSpecifier!) -> [Any]! {
+        var array = [String]()
+        
+        if specifier.key() == "slideshowSet" {
+            let request = CMSet.fetchRequest()
+            request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false),
+                                       NSSortDescriptor(key: "name", ascending: true)]
+            
+            guard let sets = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMSet] else {
+                return array
+            }
+            
+            for set in sets {
+                array.append(set.code!)
+            }
+        }
+        
+        return array
+    }
 }
