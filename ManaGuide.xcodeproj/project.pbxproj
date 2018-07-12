@@ -1217,7 +1217,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C4CE1DB1E2C9DB75A64D04D9 /* Pods-ManaGuideTests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 43CD66539H;
@@ -1236,7 +1235,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CEBCED249B0EC6D5748BA775 /* Pods-ManaGuideTests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 43CD66539H;
@@ -1254,7 +1252,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 16CE1263B7BD598033CE1752 /* Pods-ManaGuideUITests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 43CD66539H;
 				INFOPLIST_FILE = ManaGuideUITests/Info.plist;
@@ -1272,7 +1269,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2C8C1EAFD37CC486643EE4F2 /* Pods-ManaGuideUITests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 43CD66539H;
 				INFOPLIST_FILE = ManaGuideUITests/Info.plist;

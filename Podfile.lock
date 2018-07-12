@@ -6,12 +6,12 @@ PODS:
     - Bolts/Tasks
   - Bolts/Tasks (1.9.0)
   - Cosmos (11.0.3)
-  - Crashlytics (3.10.3):
-    - Fabric (~> 1.7.8)
+  - Crashlytics (3.10.5):
+    - Fabric (~> 1.7.9)
   - DACircularProgress (2.3.1)
   - DATASource (7.0.2)
   - DATAStack (8.0.2)
-  - Fabric (1.7.8)
+  - Fabric (1.7.9)
   - FBSDKCoreKit (4.34.0):
     - Bolts (~> 1.7)
   - FBSDKLoginKit (4.34.0):
@@ -242,11 +242,11 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   Cosmos: eb506859929f4add2d2aec822a27efb2f718a95d
-  Crashlytics: 2aea305161a2122492698c75af27f2b98aa49a25
+  Crashlytics: 7f2e38d302d9da96475b3d64d86fb29e31a542b7
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
   DATASource: b86db74542b5b27d4d2af43ae698022f19507379
   DATAStack: 9c415f6e7733eafb9cf5c076613bfb5958c407cb
-  Fabric: fba4684a95df789565b0b27fc5b6e68f1755af32
+  Fabric: a2917d3895e4c1569b9c3170de7320ea1b1e6661
   FBSDKCoreKit: 0ff57f093b85c8c9d5aba697d3edf68a8960ce78
   FBSDKLoginKit: 8c78f57a145afb756e4755e69195ebe08a42466e
   FBSDKMessengerShareKit: 41c0b1a667d685c9433f993eb9611b3d5074e1cb
