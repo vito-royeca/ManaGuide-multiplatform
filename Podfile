@@ -2,6 +2,7 @@ platform :ios, "9.0"
 use_frameworks!
 
 def default_pods
+    pod 'ChameleonFramework/Swift', :git => 'https://github.com/ViccAlexander/Chameleon.git'
     pod 'Cosmos', '~> 11.0'
     pod 'DATASource'
     pod 'DATAStack'

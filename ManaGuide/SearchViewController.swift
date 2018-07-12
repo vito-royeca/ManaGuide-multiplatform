@@ -24,9 +24,9 @@ class SearchViewController: BaseViewController {
     var sectionIndexTitles = [String]()
     var sectionTitles = [String]()
     var collectionView: UICollectionView?
-    var request:NSFetchRequest<NSFetchRequestResult>?
+    var request: NSFetchRequest<NSFetchRequestResult>?
     var customSectionName: String?
-    var firstLoad = false
+    var firstLoad = true
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
@@ -55,9 +55,9 @@ class SearchViewController: BaseViewController {
                                                name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                object: nil)
         
-        searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Keyword"
+        searchController.searchResultsUpdater = self
         definesPresentationContext = true
         
         if #available(iOS 11.0, *) {
@@ -104,15 +104,14 @@ class SearchViewController: BaseViewController {
         }
         
         if firstLoad {
-            firstLoad = false
-        } else {
             if title == "Favorites" {
                 updateFavorites(Notification(name: NSNotification.Name(rawValue: kFavoriteToggleNotification)))
             } else if title == "Rated Cards" {
                 updateRatedCards(Notification(name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification)))
             }
-            
             updateDataDisplay()
+            
+            firstLoad = false
         }
     }
     
@@ -169,12 +168,15 @@ class SearchViewController: BaseViewController {
 
     // MARK: Custom methods
     func updateDataDisplay() {
-        let defaults = defaultsValue()
-        let searchDisplayBy = defaults["searchDisplayBy"] as! String
+        let searchGenerator = SearchRequestGenerator()
+        
+        guard let searchDisplayBy = searchGenerator.defaultValue(for: "searchDisplayBy") as? String else {
+            return
+        }
         
         switch searchDisplayBy {
         case "list":
-            dataSource = getDataSource(request != nil ? request : createSearchRequest())
+            dataSource = getDataSource(request != nil ? request : searchGenerator.createSearchRequest(query: searchController.searchBar.text, oldRequest: nil))
             updateSections()
             statusLabel.text = "  \(dataSource!.all().count) items"
         case "grid":
@@ -189,12 +191,13 @@ class SearchViewController: BaseViewController {
     }
     
     func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
+        let searchGenerator = SearchRequestGenerator()
         var request:NSFetchRequest<NSFetchRequestResult>?
-        let defaults = defaultsValue()
-        let searchSectionName = customSectionName != nil ? customSectionName : defaults["searchSectionName"] as? String
-        let searchSecondSortBy = defaults["searchSecondSortBy"] as? String
-        let searchOrderBy = defaults["searchOrderBy"] as! Bool
-        let searchDisplayBy = defaults["searchDisplayBy"] as! String
+        
+        let searchSectionName = customSectionName != nil ? customSectionName : searchGenerator.defaultValue(for: "searchSectionName") as? String
+        let searchSecondSortBy = searchGenerator.defaultValue(for: "searchSecondSortBy") as? String
+        let searchOrderBy = searchGenerator.defaultValue(for: "searchOrderBy") as! Bool
+        let searchDisplayBy = searchGenerator.defaultValue(for: "searchDisplayBy") as! String
         var ds: DATASource?
 
         if let fetchRequest = fetchRequest {
@@ -300,8 +303,8 @@ class SearchViewController: BaseViewController {
             sectionIndexTitles = [String]()
             sectionTitles = [String]()
             
-            let defaults = defaultsValue()
-            let searchSectionName = customSectionName != nil ? customSectionName : defaults["searchSectionName"] as? String
+            let searchGenerator = SearchRequestGenerator()
+            let searchSectionName = customSectionName != nil ? customSectionName : searchGenerator.defaultValue(for: "searchSectionName") as? String
             
             switch searchSectionName {
             case "nameSection"?:
@@ -352,46 +355,8 @@ class SearchViewController: BaseViewController {
     }
     
     func updateData(_ notification: Notification) {
-        guard let userInfo = notification.userInfo as? [String: Any] else {
-            return
-        }
-        
-        let defaults = defaultsValue()
-        var searchSectionName = defaults["searchSectionName"] as! String
-        var searchSortBy = defaults["searchSortBy"] as! String
-        var searchSecondSortBy = defaults["searchSecondSortBy"] as! String
-        var searchOrderBy = defaults["searchOrderBy"] as! Bool
-        var searchDisplayBy = defaults["searchDisplayBy"] as! String
-        
-        if let value = userInfo["searchSortBy"] as? String {
-            searchSortBy = value
-            
-            switch searchSortBy {
-            case "name":
-                searchSectionName = "nameSection"
-                searchSecondSortBy = "name"
-            case "typeSection":
-                searchSectionName = "typeSection"
-                searchSecondSortBy = "name"
-            default:
-                ()
-            }
-        }
-        
-        if let value = userInfo["searchOrderBy"] as? Bool {
-            searchOrderBy = value
-        }
-        
-        if let value = userInfo["searchDisplayBy"] as? String {
-            searchDisplayBy = value
-        }
-        
-        UserDefaults.standard.set(searchSectionName, forKey: "searchSectionName")
-        UserDefaults.standard.set(searchSortBy, forKey: "searchSortBy")
-        UserDefaults.standard.set(searchSecondSortBy, forKey: "searchSecondSortBy")
-        UserDefaults.standard.set(searchOrderBy, forKey: "searchOrderBy")
-        UserDefaults.standard.set(searchDisplayBy, forKey: "searchDisplayBy")
-        UserDefaults.standard.synchronize()
+        let searchGenerator = SearchRequestGenerator()
+        searchGenerator.syncValues(notification)
         
         updateDataDisplay()
     }
@@ -421,11 +386,13 @@ class SearchViewController: BaseViewController {
     }
     
     func doSearch() {
-        dataSource = getDataSource(createSearchRequest())
+        let searchGenerator = SearchRequestGenerator()
+        let text = searchController.searchBar.text
+        dataSource = getDataSource(searchGenerator.createSearchRequest(query: text, oldRequest: request))
         updateSections()
-
-        let defaults = defaultsValue()
-        if let searchDisplayBy = defaults["searchDisplayBy"] as? String {
+    
+        
+        if let searchDisplayBy = searchGenerator.defaultValue(for: "searchDisplayBy") as? String {
             switch searchDisplayBy {
             case "list":
                 tableView.reloadData()
@@ -436,260 +403,7 @@ class SearchViewController: BaseViewController {
             }
         }
         
-        statusLabel.text = "  \(dataSource!.all().count) items"
-    }
-
-    // MARK: Search filters
-    func defaultsValue() -> [String: Any] {
-        var values = [String: Any]()
-        
-        // displayers
-        if let value = UserDefaults.standard.value(forKey: "searchSectionName") as? String {
-            values["searchSectionName"] = value
-        } else {
-            values["searchSectionName"] = "nameSection"
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchSortBy") as? String {
-            values["searchSortBy"] = value
-        } else {
-            values["searchSortBy"] = "name"
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchSecondSortBy") as? String {
-            values["searchSecondSortBy"] = value
-        } else {
-            values["searchSecondSortBy"] = "name"
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchOrderBy") as? Bool {
-            values["searchOrderBy"] = value
-        } else {
-            values["searchOrderBy"] = true
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchDisplayBy") as? String {
-            values["searchDisplayBy"] = value
-        } else {
-            values["searchDisplayBy"] = "list"
-        }
-        //
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordName") as? Bool {
-            values["searchKeywordName"] = value
-        } else {
-            values["searchKeywordName"] = true
-        }
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordText") as? Bool {
-            values["searchKeywordText"] = value
-        } else {
-            values["searchKeywordText"] = false
-        }
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordFlavor") as? Bool {
-            values["searchKeywordFlavor"] = value
-        } else {
-            values["searchKeywordFlavor"] = false
-        }
-        
-        return values
-    }
-    
-    func createSearchRequest() -> NSFetchRequest<NSFetchRequestResult>? {
-        let newRequest = CMCard.fetchRequest()
-        var predicate: NSPredicate?
-        
-        let defaults = defaultsValue()
-        
-        // displayers
-        let searchSectionName = defaults["searchSectionName"] as! String
-        let searchSecondSortBy = defaults["searchSecondSortBy"] as! String
-        let searchOrderBy = defaults["searchOrderBy"] as! Bool
-        
-        if let kp = createKeywordPredicate() {
-            predicate = kp
-        }
-        
-        // create a negative predicate, i.e. search for cards with nil name which results to zero
-        if predicate == nil && request == nil {
-            predicate = NSPredicate(format: "name = nil")
-        }
-        
-        if let request = request {
-            var predicates = [NSPredicate]()
-            
-            if let predicate = predicate {
-                predicates.append(predicate)
-            }
-            if let predicate = request.predicate {
-                predicates.append(predicate)
-            }
-            
-            if predicates.count > 0 {
-                predicate = NSCompoundPredicate.init(andPredicateWithSubpredicates: predicates)
-            }
-        }
-        
-        print("\(predicate!)")
-        newRequest.predicate = predicate
-        newRequest.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
-                                      NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy),
-                                      NSSortDescriptor(key: "set.releaseDate", ascending: searchOrderBy),
-                                      NSSortDescriptor(key: "numberOrder", ascending: searchOrderBy)]
-        
-        return newRequest
-    }
-    
-    func createKeywordPredicate() -> NSPredicate? {
-        let searchKeyword = searchController.searchBar.text
-        let defaults = defaultsValue()
-        var predicate: NSPredicate?
-        var subpredicates = [NSPredicate]()
-        
-        // keyword filters
-        let searchKeywordName = defaults["searchKeywordName"] as! Bool
-        let searchKeywordText = defaults["searchKeywordText"] as! Bool
-        let searchKeywordFlavor = defaults["searchKeywordFlavor"] as! Bool
-        
-        // process keyword filter
-        if searchKeywordName {
-            if let text = searchKeyword {
-                if text.count == 1 {
-                    subpredicates.append(NSPredicate(format: "name BEGINSWITH[cd] %@", text))
-                } else if text.count > 1{
-                    subpredicates.append(NSPredicate(format: "name CONTAINS[cd] %@", text))
-                }
-            }
-        }
-        if searchKeywordText {
-            if let text = searchKeyword {
-                if text.count == 1 {
-                    subpredicates.append(NSPredicate(format: "text BEGINSWITH[cd] %@ OR originalText BEGINSWITH[cd] %@", text, text))
-                } else if text.count > 1{
-                    subpredicates.append(NSPredicate(format: "text CONTAINS[cd] %@ OR originalText CONTAINS[cd] %@", text, text))
-                }
-            }
-        }
-        if searchKeywordFlavor {
-            if let text = searchKeyword {
-                if text.count == 1 {
-                    subpredicates.append(NSPredicate(format: "flavor BEGINSWITH[cd] %@", text))
-                } else if text.count > 1{
-                    subpredicates.append(NSPredicate(format: "flavor CONTAINS[cd] %@", text))
-                }
-            }
-        }
-        
-        if subpredicates.count > 1 {
-            predicate = NSCompoundPredicate(orPredicateWithSubpredicates: subpredicates)
-        } else {
-            predicate = subpredicates.first
-        }
-        
-        return predicate
-    }
-    
-    func createManaCostPredicate() -> NSPredicate? {
-        // TODO: double check X, Y, and Z manaCosts
-        var predicate: NSPredicate?
-        var subpredicates = [NSPredicate]()
-        var arrayColors = [String]()
-
-        // color filters
-        var searchColorIdentityBlack = false
-        var searchColorIdentityBlue = false
-        var searchColorIdentityGreen = false
-        var searchColorIdentityRed = false
-        var searchColorIdentityWhite = false
-        var searchColorIdentityColorless = false
-        var searchColorIdentityBoolean = "or"
-        var searchColorIdentityNot = false
-        var searchColorIdentityMatch = "contains"
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityBlack") as? Bool {
-            searchColorIdentityBlack = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityBlue") as? Bool {
-            searchColorIdentityBlue = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityGreen") as? Bool {
-            searchColorIdentityGreen = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityRed") as? Bool {
-            searchColorIdentityRed = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityWhite") as? Bool {
-            searchColorIdentityWhite = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityColorless") as? Bool {
-            searchColorIdentityColorless = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityBoolean") as? String {
-            searchColorIdentityBoolean = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityNot") as? Bool {
-            searchColorIdentityNot = value
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchColorIdentityMatch") as? String {
-            searchColorIdentityMatch = value
-        }
-        
-        // process color filter
-        if searchColorIdentityBlack {
-            arrayColors.append("Black")
-        }
-        if searchColorIdentityBlue {
-            arrayColors.append("Blue")
-        }
-        if searchColorIdentityGreen {
-            arrayColors.append("Green")
-        }
-        if searchColorIdentityRed {
-            arrayColors.append("Red")
-        }
-        if searchColorIdentityWhite {
-            arrayColors.append("White")
-        }
-        if searchColorIdentityColorless {
-            
-        }
-        
-        if searchColorIdentityMatch == "contains" {
-            subpredicates.append(NSPredicate(format: "ANY colorIdentities_.name IN %@", arrayColors))
-        } else {
-            for color in arrayColors {
-                subpredicates.append(NSPredicate(format: "ANY colorIdentities_.name == %@", color))
-            }
-        }
-        
-        if subpredicates.count > 0 {
-            if searchColorIdentityBoolean == "and" {
-                let colorPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: subpredicates)
-                if predicate == nil {
-                    predicate = colorPredicate
-                } else {
-                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate!, colorPredicate])
-                }
-            } else if searchColorIdentityBoolean == "or" {
-                let colorPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: subpredicates)
-                if predicate == nil {
-                    predicate = colorPredicate
-                } else {
-                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate!, colorPredicate])
-                }
-            }
-            if searchColorIdentityNot {
-                predicate = NSCompoundPredicate(notPredicateWithSubpredicate: predicate!)
-            }
-        }
-        
-        return predicate
+        self.statusLabel.text = "  \(self.dataSource!.all().count) items"
     }
 }
 
@@ -702,8 +416,8 @@ extension SearchViewController : UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let defaults = defaultsValue()
-        let searchDisplayBy = defaults["searchDisplayBy"] as! String
+        let searchGenerator = SearchRequestGenerator()
+        let searchDisplayBy = searchGenerator.defaultValue(for: "searchDisplayBy") as! String
         var cell: UITableViewCell?
         
         switch searchDisplayBy {
@@ -747,8 +461,8 @@ extension SearchViewController : UITableViewDataSource {
 // MARK: UITableViewDelegate
 extension SearchViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let defaults = defaultsValue()
-        let searchDisplayBy = defaults["searchDisplayBy"] as! String
+        let searchGenerator = SearchRequestGenerator()
+        let searchDisplayBy = searchGenerator.defaultValue(for: "searchDisplayBy") as! String
         var height = CGFloat(0)
         
         switch searchDisplayBy {
@@ -782,7 +496,6 @@ extension SearchViewController : UITableViewDelegate {
             cardIndex = cardLegalities.index(of: c)!
         }
         
-        
         if UIDevice.current.userInterfaceIdiom == .phone {
             performSegue(withIdentifier: "showCard", sender: ["cardIndex": cardIndex as Any,
                                                               "cardMIDs": cards.map({ $0.objectID })])
@@ -793,12 +506,12 @@ extension SearchViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let defaults = defaultsValue()
-        let searchDisplayBy = defaults["searchDisplayBy"] as! String
+        let searchGenerator = SearchRequestGenerator()
+        let searchDisplayBy = searchGenerator.defaultValue(for: "searchDisplayBy") as! String
         
         switch searchDisplayBy {
         case "grid":
-            dataSource = getDataSource(request != nil ? request : createSearchRequest())
+            dataSource = getDataSource(request != nil ? request : searchGenerator.createSearchRequest(query: searchController.searchBar.text, oldRequest: request))
             updateSections()
         default:
             ()
@@ -815,8 +528,8 @@ extension SearchViewController : DATASourceDelegate {
     
     // tell table which section corresponds to section title/index (e.g. "B",1))
     func dataSource(_ dataSource: DATASource, tableView: UITableView, sectionForSectionIndexTitle title: String, atIndex index: Int) -> Int {
-        let defaults = defaultsValue()
-        let searchOrderBy = defaults["searchOrderBy"] as! Bool
+        let searchGenerator = SearchRequestGenerator()
+        let searchOrderBy = searchGenerator.defaultValue(for: "searchOrderBy") as! Bool
         var sectionIndex = 0
         
         for i in 0...sectionTitles.count - 1 {
@@ -895,5 +608,4 @@ extension SearchViewController : UISearchResultsUpdating {
         perform(#selector(doSearch), with: nil, afterDelay: 0.5)
     }
 }
-
 

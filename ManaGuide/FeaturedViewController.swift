@@ -50,32 +50,26 @@ class FeaturedViewController: BaseViewController {
     var flowLayoutHeight = CGFloat(0)
     
     // MARK: Outlets
-    @IBOutlet weak var rightMenuButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
 
-    // MARK: Actions
-    @IBAction func rightMenuAction(_ sender: UIBarButtonItem) {
-        showSettingsMenu(file: "Featured")
-    }
-    
     // MARK: Overrides
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
-                                                  object:nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.updateData(_:)),
-                                               name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
-                                               object: nil)
+//        NotificationCenter.default.removeObserver(self,
+//                                                  name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+//                                                  object:nil)
+//        NotificationCenter.default.addObserver(self,
+//                                               selector: #selector(self.updateData(_:)),
+//                                               name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+//                                               object: nil)
         
-        rightMenuButton.image = UIImage.init(icon: .FABars,
-                                             size: CGSize(width: 30, height: 30),
-                                             textColor: .white,
-                                             backgroundColor: .clear)
-        rightMenuButton.title = nil
+//        rightMenuButton.image = UIImage.init(icon: .FABars,
+//                                             size: CGSize(width: 30, height: 30),
+//                                             textColor: .white,
+//                                             backgroundColor: .clear)
+//        rightMenuButton.title = nil
         
         fetchRandomCards()
         fetchLatestSets()
@@ -159,11 +153,11 @@ class FeaturedViewController: BaseViewController {
     }
 
     // MARK: Custom methods
-    func updateData(_ notification: Notification) {
-        guard let userInfo = notification.userInfo as? [String: Any] else {
-            return
-        }
-        
+//    func updateData(_ notification: Notification) {
+//        guard let userInfo = notification.userInfo as? [String: Any] else {
+//            return
+//        }
+//
 //        let defaults = defaultsValue()
 //        var searchSectionName = defaults["searchSectionName"] as! String
 //        var searchSortBy = defaults["searchSortBy"] as! String
@@ -202,7 +196,7 @@ class FeaturedViewController: BaseViewController {
 //        UserDefaults.standard.synchronize()
 //
 //        updateDataDisplay()
-    }
+//    }
     
     func startSlideShow() {
         randomCardsTimer = Timer.scheduledTimer(timeInterval: 60 * 5,
@@ -528,7 +522,6 @@ extension FeaturedViewController : UICollectionViewDataSource {
             let cardMID = topRated![indexPath.row]
             
             guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard,
-                let rarity = card.rarity_,
                 let set = card.set,
                 let thumbnailImage = cell?.viewWithTag(100) as? UIImageView,
                 let label200 = cell?.viewWithTag(200) as? UILabel,
@@ -565,7 +558,7 @@ extension FeaturedViewController : UICollectionViewDataSource {
         
             
             label200.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-            label200.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: rarity)
+            label200.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
             label200.layer.cornerRadius = label200.frame.height / 2
             label300.text = card.name
             
@@ -580,7 +573,6 @@ extension FeaturedViewController : UICollectionViewDataSource {
             let cardMID = topViewed![indexPath.row]
             
             guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard,
-                let rarity = card.rarity_,
                 let set = card.set,
                 let thumbnailImage = cell?.viewWithTag(100) as? UIImageView,
                 let label200 = cell?.viewWithTag(200) as? UILabel,
@@ -616,7 +608,7 @@ extension FeaturedViewController : UICollectionViewDataSource {
             }
             
             label200.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-            label200.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: rarity)
+            label200.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
             label200.layer.cornerRadius = label200.frame.height / 2
             label300.text = card.name
             label400.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))

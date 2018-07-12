@@ -825,14 +825,8 @@
                     </view>
                     <navigationItem key="navigationItem" title="Featured" id="U2n-yh-Oe7">
                         <barButtonItem key="backBarButtonItem" title=" " id="4i7-VD-yHv"/>
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="MEY-H7-tus">
-                            <connections>
-                                <action selector="rightMenuAction:" destination="VzP-Cv-mX8" id="nDR-Cd-VYC"/>
-                            </connections>
-                        </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="rightMenuButton" destination="MEY-H7-tus" id="Efp-fW-KZK"/>
                         <outlet property="tableView" destination="M3W-ac-1Xr" id="Xri-TQ-5zd"/>
                         <segue destination="8F9-G6-Erf" kind="show" identifier="showSets" id="2hF-2U-vi0"/>
                         <segue destination="aOj-40-y9v" kind="show" identifier="showSet" id="Mbq-CH-LY8"/>
@@ -1099,11 +1093,11 @@
                         <viewControllerLayoutGuide type="bottom" id="tqU-jq-t3l"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="fcE-qX-xlo">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="XTg-F2-G7x">
-                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BasicCell" textLabel="bGb-Ks-SVK" style="IBUITableViewCellStyleDefault" id="gLf-9z-exN">
@@ -1652,7 +1646,6 @@
                                                 <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Z2o-S7-Rfc">
                                                     <rect key="frame" x="14" y="14" width="60" height="60"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" constant="60" id="6SS-u8-520"/>
                                                         <constraint firstAttribute="width" constant="60" id="bvL-Y3-vPj"/>
                                                     </constraints>
                                                     <userDefinedRuntimeAttributes>
@@ -1809,10 +1802,10 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Vbm-cg-ye0"/>
+        <segue reference="raG-Jp-fAl"/>
         <segue reference="jVZ-a8-OYH"/>
         <segue reference="lLZ-BR-fAo"/>
         <segue reference="Mbq-CH-LY8"/>
-        <segue reference="whl-Hr-bZH"/>
+        <segue reference="ad4-Pa-Oso"/>
     </inferredMetricsTieBreakers>
 </document>

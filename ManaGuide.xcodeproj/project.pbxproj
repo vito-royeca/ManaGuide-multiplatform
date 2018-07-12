@@ -19,10 +19,16 @@
 		111D5A6C20AF57590046285B /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D5A6B20AF57590046285B /* ArtistsViewController.swift */; };
 		111D5A6D20AF57590046285B /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D5A6B20AF57590046285B /* ArtistsViewController.swift */; };
 		111D5A6E20AF57590046285B /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D5A6B20AF57590046285B /* ArtistsViewController.swift */; };
-		1127329820D2480F00910D77 /* UIImage+AverageColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1127329720D2480F00910D77 /* UIImage+AverageColor.swift */; };
-		1127329920D2480F00910D77 /* UIImage+AverageColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1127329720D2480F00910D77 /* UIImage+AverageColor.swift */; };
-		1127329A20D2480F00910D77 /* UIImage+AverageColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1127329720D2480F00910D77 /* UIImage+AverageColor.swift */; };
 		113661591F2F912500DCBB41 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 113661581F2F912500DCBB41 /* data */; };
+		1138A3C920F76D590023423C /* Throttler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3C820F76D590023423C /* Throttler.swift */; };
+		1138A3CA20F76D590023423C /* Throttler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3C820F76D590023423C /* Throttler.swift */; };
+		1138A3CB20F76D590023423C /* Throttler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3C820F76D590023423C /* Throttler.swift */; };
+		1138A3CD20F76E870023423C /* ThrottlingSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3CC20F76E870023423C /* ThrottlingSearchController.swift */; };
+		1138A3CE20F76E870023423C /* ThrottlingSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3CC20F76E870023423C /* ThrottlingSearchController.swift */; };
+		1138A3CF20F76E870023423C /* ThrottlingSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3CC20F76E870023423C /* ThrottlingSearchController.swift */; };
+		1138A3D120F786E00023423C /* SearchRequestGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3D020F786E00023423C /* SearchRequestGenerator.swift */; };
+		1138A3D220F786E00023423C /* SearchRequestGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3D020F786E00023423C /* SearchRequestGenerator.swift */; };
+		1138A3D320F786E00023423C /* SearchRequestGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3D020F786E00023423C /* SearchRequestGenerator.swift */; };
 		1140F0C71F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
 		1140F0C81F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
 		1140F0C91F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
@@ -141,8 +147,10 @@
 		110BB5291F20891D00086841 /* FeaturedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeaturedViewController.swift; sourceTree = "<group>"; };
 		110BB52C1F20892B00086841 /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		111D5A6B20AF57590046285B /* ArtistsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistsViewController.swift; sourceTree = "<group>"; };
-		1127329720D2480F00910D77 /* UIImage+AverageColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+AverageColor.swift"; sourceTree = "<group>"; };
 		113661581F2F912500DCBB41 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = "<group>"; };
+		1138A3C820F76D590023423C /* Throttler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Throttler.swift; sourceTree = "<group>"; };
+		1138A3CC20F76E870023423C /* ThrottlingSearchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThrottlingSearchController.swift; sourceTree = "<group>"; };
+		1138A3D020F786E00023423C /* SearchRequestGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRequestGenerator.swift; sourceTree = "<group>"; };
 		1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1140F0CB1F42CA500023E107 /* FCCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FCCard.swift; sourceTree = "<group>"; };
 		1140F0D01F42CC020023E107 /* FirebaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
@@ -322,10 +330,13 @@
 				1150BCED20B92E4700A36FCD /* LoginViewController.swift */,
 				1165CD721F377395006CC433 /* MoreViewController.swift */,
 				11F336B120BBB47B0007552F /* PDFViewerViewController.swift */,
+				1138A3D020F786E00023423C /* SearchRequestGenerator.swift */,
 				110BB52C1F20892B00086841 /* SearchViewController.swift */,
 				1147B7561F223607004EF296 /* SetsViewController.swift */,
 				1147B7651F224874004EF296 /* SettingsViewController.swift */,
 				1147B7621F224198004EF296 /* SetViewController.swift */,
+				1138A3C820F76D590023423C /* Throttler.swift */,
+				1138A3CC20F76E870023423C /* ThrottlingSearchController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -349,7 +360,6 @@
 				11F3BA3020D4141900511388 /* MGUtilities.swift */,
 				118FDC7620D515E5002FA5E8 /* ShareActivity.xcassets */,
 				11FC811120D52D0D001407C6 /* TwitterShareActivity.swift */,
-				1127329720D2480F00910D77 /* UIImage+AverageColor.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -575,6 +585,7 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-ManaGuideTests/Pods-ManaGuideTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
+				"${BUILT_PRODUCTS_DIR}/ChameleonFramework/ChameleonFramework.framework",
 				"${BUILT_PRODUCTS_DIR}/Cosmos/Cosmos.framework",
 				"${BUILT_PRODUCTS_DIR}/DACircularProgress/DACircularProgress.framework",
 				"${BUILT_PRODUCTS_DIR}/DATASource/DATASource.framework",
@@ -614,6 +625,7 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ChameleonFramework.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Cosmos.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DACircularProgress.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DATASource.framework",
@@ -731,6 +743,7 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-ManaGuideUITests/Pods-ManaGuideUITests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
+				"${BUILT_PRODUCTS_DIR}/ChameleonFramework/ChameleonFramework.framework",
 				"${BUILT_PRODUCTS_DIR}/Cosmos/Cosmos.framework",
 				"${BUILT_PRODUCTS_DIR}/DACircularProgress/DACircularProgress.framework",
 				"${BUILT_PRODUCTS_DIR}/DATASource/DATASource.framework",
@@ -770,6 +783,7 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ChameleonFramework.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Cosmos.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DACircularProgress.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DATASource.framework",
@@ -863,6 +877,7 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-ManaGuide/Pods-ManaGuide-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
+				"${BUILT_PRODUCTS_DIR}/ChameleonFramework/ChameleonFramework.framework",
 				"${BUILT_PRODUCTS_DIR}/Cosmos/Cosmos.framework",
 				"${BUILT_PRODUCTS_DIR}/DACircularProgress/DACircularProgress.framework",
 				"${BUILT_PRODUCTS_DIR}/DATASource/DATASource.framework",
@@ -902,6 +917,7 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ChameleonFramework.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Cosmos.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DACircularProgress.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DATASource.framework",
@@ -952,7 +968,10 @@
 			files = (
 				1147B7571F223607004EF296 /* SetsViewController.swift in Sources */,
 				11F336B220BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
+				1138A3C920F76D590023423C /* Throttler.swift in Sources */,
 				1147B7661F224874004EF296 /* SettingsViewController.swift in Sources */,
+				1138A3D120F786E00023423C /* SearchRequestGenerator.swift in Sources */,
+				1138A3CD20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
 				1147B7631F224198004EF296 /* SetViewController.swift in Sources */,
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
 				1150BCEE20B92E4700A36FCD /* LoginViewController.swift in Sources */,
@@ -965,7 +984,6 @@
 				1140F0D11F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
-				1127329820D2480F00910D77 /* UIImage+AverageColor.swift in Sources */,
 				118FDC7320D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
 				1140F0CC1F42CA500023E107 /* FCCard.swift in Sources */,
 				11C7B45520D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */,
@@ -986,12 +1004,15 @@
 			files = (
 				118FDC7420D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
 				1150BCEF20B92E4700A36FCD /* LoginViewController.swift in Sources */,
+				1138A3CA20F76D590023423C /* Throttler.swift in Sources */,
 				11F3BA3220D4141900511388 /* MGUtilities.swift in Sources */,
 				11C7B45620D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */,
 				1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				118281B220B67FA500865172 /* AccountViewController.swift in Sources */,
 				11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
+				1138A3D220F786E00023423C /* SearchRequestGenerator.swift in Sources */,
+				1138A3CE20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
 				118FDC7020D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
 				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
@@ -999,7 +1020,6 @@
 				11447EB720D177F700DFF5C7 /* RandomCardView.swift in Sources */,
 				111D5A6D20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				11448A6320CD3849008EFC40 /* Constants.swift in Sources */,
-				1127329920D2480F00910D77 /* UIImage+AverageColor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1009,8 +1029,8 @@
 			files = (
 				110BB52E1F20892B00086841 /* SearchViewController.swift in Sources */,
 				11F336B420BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
+				1138A3CB20F76D590023423C /* Throttler.swift in Sources */,
 				1147B7581F223607004EF296 /* SetsViewController.swift in Sources */,
-				1127329A20D2480F00910D77 /* UIImage+AverageColor.swift in Sources */,
 				11C7B45720D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */,
 				11FC811420D52D0D001407C6 /* TwitterShareActivity.swift in Sources */,
 				1141A84020D00F4A00554872 /* SnapshotHelper.swift in Sources */,
@@ -1022,6 +1042,7 @@
 				1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */,
 				1140F0D31F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				118281B320B67FA500865172 /* AccountViewController.swift in Sources */,
+				1138A3CF20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
 				11448A6420CD3849008EFC40 /* Constants.swift in Sources */,
 				11F3BA3320D4141900511388 /* MGUtilities.swift in Sources */,
 				11E4374B1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
@@ -1033,6 +1054,7 @@
 				11B2AA341F29DE490067E833 /* CardViewController.swift in Sources */,
 				111D5A6E20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				1165CD741F377395006CC433 /* MoreViewController.swift in Sources */,
+				1138A3D320F786E00023423C /* SearchRequestGenerator.swift in Sources */,
 				1147B75B1F22379F004EF296 /* BaseViewController.swift in Sources */,
 				110BB52B1F20891D00086841 /* FeaturedViewController.swift in Sources */,
 			);

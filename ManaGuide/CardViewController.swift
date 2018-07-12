@@ -899,21 +899,24 @@ extension CardViewController : UITableViewDataSource {
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
                     let label = c.textLabel,
                     let detailTextLabel = c.detailTextLabel,
-                    let set = card.set else {
+                    let set = card.set,
+                    let setName = set.name,
+                    let keyruneUnicode = ManaKit.sharedInstance.keyruneUnicode(forSet: set),
+                    let keyruneColor = ManaKit.sharedInstance.keyruneColor(forCard: card) else {
                     return UITableViewCell(frame: CGRect.zero)
                 }
                 
-                let attributedString = NSMutableAttributedString(string: "\(ManaKit.sharedInstance.keyruneUnicode(forSet: set)!)",
-                    attributes: [NSFontAttributeName: UIFont(name: "Keyrune", size: 17)!,
-                                 NSForegroundColorAttributeName: ManaKit.sharedInstance.keyruneColor(forRarity: card.rarity_!)!])
+                let attributes = [NSFontAttributeName: UIFont(name: "Keyrune", size: 17)!,
+                                  NSForegroundColorAttributeName: keyruneColor]
+                let attributedString = NSMutableAttributedString(string: keyruneUnicode,
+                                                                 attributes: attributes)
                 
-                attributedString.append(NSMutableAttributedString(string: " \(set.name!)",
+                attributedString.append(NSMutableAttributedString(string: " \(setName)",
                     attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]))
                 
                 label.attributedText = attributedString
                 label.adjustsFontSizeToFitWidth = true
                 detailTextLabel.text = "More Cards"
-                
                 
                 c.selectionStyle = .default
                 c.accessoryType = .disclosureIndicator
@@ -1458,7 +1461,7 @@ extension CardViewController : UICollectionViewDataSource {
         
         setImage.layer.cornerRadius = setImage.frame.height / 2
         setImage.text = ManaKit.sharedInstance.keyruneUnicode(forSet: c.set!)
-        setImage.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: c.rarity_!)
+        setImage.textColor = ManaKit.sharedInstance.keyruneColor(forCard: c)
         
         return cell
     }

@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 // Look and feel
-let kGlobalTintColor = UIColor(red:0.00, green:0.69, blue:0.00, alpha:1.0) // #00AF00
+let kGlobalTintColor = UIColor(red:0.23, green:0.35, blue:0.60, alpha:1.0) // #3b5998
 
 // TCGPlayer
 let kTCGPlayerPartnerKey       = "ManaGuide"

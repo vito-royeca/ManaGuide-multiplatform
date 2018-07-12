@@ -7,7 +7,9 @@
 //
 
 import UIKit
+
 import CoreData
+import ChameleonFramework
 import ManaKit
 import PromiseKit
 
@@ -42,8 +44,10 @@ class RandomCardView: UIView {
         
         if let image = ManaKit.sharedInstance.cardImage(card, imageType: .artCrop) {
             cropImageView.image = image
+            updateNameLabelColorFrom(image: image)
         } else {
             cropImageView.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
+            self.updateNameLabelColorFrom(image: cropImageView.image!)
             
             firstly {
                 ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
@@ -60,6 +64,8 @@ class RandomCardView: UIView {
                                   options: .transitionCrossDissolve,
                                   animations: animations,
                                   completion: nil)
+                self.updateNameLabelColorFrom(image: image)
+                
                 
             }.catch { error in
                 print("\(error)")
@@ -74,7 +80,6 @@ class RandomCardView: UIView {
         }
         
         nameLabel.text = card.name
-        nameLabel.textColor = UIColor.white
         
         if let releaseDate = card.set!.releaseDate {
             let isModern = ManaKit.sharedInstance.isModern(card)
@@ -84,30 +89,19 @@ class RandomCardView: UIView {
             if let m15Date = formatter.date(from: "2014-07-18"),
                 let setReleaseDate = formatter.date(from: releaseDate) {
                 
-                let shadowColor = UIColor.lightGray
-                var shadowOffset = CGSize(width: 0, height: 1)
-                
                 if setReleaseDate.compare(m15Date) == .orderedSame ||
                     setReleaseDate.compare(m15Date) == .orderedDescending {
                     nameLabel.font = magic2015Font
                     
                 } else {
                     nameLabel.font = isModern ? eightEditionFont : preEightEditionFont
-                    
-                    if !isModern {
-                        shadowOffset = CGSize(width: 1, height: 1)
-                    }
                 }
-                
-                nameLabel.shadowColor = shadowColor
-                nameLabel.shadowOffset = shadowOffset
             }
         }
         
-        if let set = card.set,
-            let rarity = card.rarity_ {
+        if let set = card.set {
             setIcon.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-            setIcon.textColor = ManaKit.sharedInstance.keyruneColor(forRarity: rarity)
+            setIcon.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
             setIcon.backgroundColor = UIColor.white
         }
     }
@@ -116,6 +110,16 @@ class RandomCardView: UIView {
         nameLabel.text = ""
         setIcon.text = ""
         setIcon.backgroundColor = UIColor.clear
+    }
+    
+    func updateNameLabelColorFrom(image: UIImage) {
+        let averageColor = AverageColorFromImage(image)
+        let shadowColor = averageColor
+        let shadowOffset = CGSize(width: 2, height: 2)
+
+        nameLabel.textColor = UIColor.white
+        nameLabel.shadowColor = shadowColor
+        nameLabel.shadowOffset = shadowOffset
     }
 }
 

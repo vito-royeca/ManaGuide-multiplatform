@@ -42,7 +42,7 @@ class SetViewController: BaseViewController {
     var sectionIndexTitles = [String]()
     var sectionTitles = [String]()
     var collectionView: UICollectionView?
-    var firstLoad = false
+    var firstLoad = true
     
     // MARK: Outlets
     @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
@@ -97,8 +97,8 @@ class SetViewController: BaseViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if !firstLoad {
-            firstLoad = true
+        if firstLoad {
+            firstLoad = false
             updateDataDisplay()
         }
     }
