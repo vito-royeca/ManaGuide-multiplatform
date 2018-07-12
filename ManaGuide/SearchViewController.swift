@@ -26,7 +26,7 @@ class SearchViewController: BaseViewController {
     var collectionView: UICollectionView?
     var request:NSFetchRequest<NSFetchRequestResult>?
     var customSectionName: String?
-    var firstAppearance = true
+    var firstLoad = false
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
@@ -75,9 +75,7 @@ class SearchViewController: BaseViewController {
         
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         tableView.keyboardDismissMode = .onDrag
-        
-        statusLabel.text = "  Loading..."
-        updateDataDisplay()
+        statusLabel.text = " Loading..."
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -86,11 +84,7 @@ class SearchViewController: BaseViewController {
         if #available(iOS 11.0, *) {
             navigationItem.hidesSearchBarWhenScrolling = true
         }
-    }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
         if title == "Favorites" {
             NotificationCenter.default.removeObserver(self,
                                                       name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
@@ -109,14 +103,16 @@ class SearchViewController: BaseViewController {
                                                    object: nil)
         }
         
-        if firstAppearance {
-            firstAppearance = false
+        if firstLoad {
+            firstLoad = false
         } else {
             if title == "Favorites" {
                 updateFavorites(Notification(name: NSNotification.Name(rawValue: kFavoriteToggleNotification)))
             } else if title == "Rated Cards" {
                 updateRatedCards(Notification(name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification)))
             }
+            
+            updateDataDisplay()
         }
     }
     

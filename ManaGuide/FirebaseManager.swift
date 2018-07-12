@@ -273,6 +273,7 @@ class FirebaseManager: NSObject {
         let ref = Database.database().reference().child("cards")
         let query = ref.queryOrdered(byChild: FCCard.Keys.Rating).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopRated)
         
+        ref.keepSynced(true)
         query.observe(.value, with: { snapshot in
             var cards = [CMCard]()
             
@@ -303,6 +304,7 @@ class FirebaseManager: NSObject {
         let ref = Database.database().reference().child("cards")
         let query = ref.queryOrdered(byChild: FCCard.Keys.Views).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopViewed)
         
+        ref.keepSynced(true)
         query.observe(.value, with: { snapshot in
             var cards = [CMCard]()
             
@@ -353,6 +355,9 @@ class FirebaseManager: NSObject {
     }
     
     func demonitorTopCharts() {
+        let ref = Database.database().reference().child("cards")
+        ref.keepSynced(false)
+        
         if let query = queries["topViewed"] {
             query.removeAllObservers()
             queries["topViewed"] = nil
