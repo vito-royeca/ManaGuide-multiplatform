@@ -56,21 +56,11 @@ class BannedListViewController: BaseViewController {
             request!.predicate = NSPredicate(format: "ANY cardLegalities.legality.name IN %@", ["Banned", "Restricted"])
         }
         
-        let configuration = { (cell: UITableViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void  in
-            guard let format = item as? CMFormat,
-                let label = cell.textLabel else {
-                return
-            }
-            
-            label.text = format.name
-        }
-        
         let ds = DATASource(tableView: tableView,
                             cellIdentifier: "Cell",
                             fetchRequest: request!,
                             mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: "nameSection",
-                            configuration: configuration)
+                            sectionName: "nameSection")
         ds.delegate = self
         
         return ds
@@ -146,6 +136,15 @@ extension BannedListViewController : DATASourceDelegate {
         }
         
         return sectionIndex
+    }
+    
+    func dataSource(_ dataSource: DATASource, configureTableViewCell cell: UITableViewCell, withItem item: NSManagedObject, atIndexPath indexPath: IndexPath) {
+        guard let format = item as? CMFormat,
+            let label = cell.textLabel else {
+                return
+        }
+        
+        label.text = format.name
     }
 }
 

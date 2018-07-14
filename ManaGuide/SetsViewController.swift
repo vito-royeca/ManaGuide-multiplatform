@@ -112,34 +112,11 @@ class SetsViewController: BaseViewController {
                                         NSSortDescriptor(key: setsSecondSortBy, ascending: setsOrderBy)]
         }
         
-        let configuration = { (cell: UITableViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void in
-            guard let set = item as? CMSet,
-                let label100 = cell.contentView.viewWithTag(100) as? UILabel,
-                let label200 = cell.contentView.viewWithTag(200) as? UILabel,
-                let label300 = cell.contentView.viewWithTag(300) as? UILabel,
-                let label400 = cell.contentView.viewWithTag(400) as? UILabel,
-                let label500 = cell.contentView.viewWithTag(500) as? UILabel else {
-                    return
-            }
-            
-            label100.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-            label100.textColor = UIColor.black
-            label200.text = set.name
-            label200.adjustsFontSizeToFitWidth = true
-            label300.text = set.code
-            label300.adjustsFontSizeToFitWidth = true
-            label400.text = set.releaseDate
-            label400.adjustsFontSizeToFitWidth = true
-            label500.text = "\(set.cards!.allObjects.count) cards"
-            label500.adjustsFontSizeToFitWidth = true
-        }
-        
         let ds = DATASource(tableView: tableView,
                             cellIdentifier: "SetCell",
                             fetchRequest: request!,
                             mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: setsSectionName,
-                            configuration: configuration)
+                            sectionName: setsSectionName)
         
         ds.delegate = self
         return ds
@@ -334,6 +311,29 @@ extension SetsViewController : DATASourceDelegate {
         }
 
         return sectionIndex
+    }
+    
+    func dataSource(_ dataSource: DATASource, configureTableViewCell cell: UITableViewCell, withItem item: NSManagedObject, atIndexPath indexPath: IndexPath) {
+        guard let set = item as? CMSet,
+            let label100 = cell.contentView.viewWithTag(100) as? UILabel,
+            let label200 = cell.contentView.viewWithTag(200) as? UILabel,
+            let label300 = cell.contentView.viewWithTag(300) as? UILabel,
+            let label400 = cell.contentView.viewWithTag(400) as? UILabel,
+            let label500 = cell.contentView.viewWithTag(500) as? UILabel else {
+                
+            return
+        }
+        
+        label100.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+        label100.textColor = UIColor.black
+        label200.text = set.name
+        label200.adjustsFontSizeToFitWidth = true
+        label300.text = set.code
+        label300.adjustsFontSizeToFitWidth = true
+        label400.text = set.releaseDate
+        label400.adjustsFontSizeToFitWidth = true
+        label500.text = "\(set.cards!.allObjects.count) cards"
+        label500.adjustsFontSizeToFitWidth = true
     }
 }
 

@@ -102,38 +102,11 @@ class ComprehensiveRulesViewController: BaseViewController {
     
     // MARK: Custom methods
     func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?, sectionName: String?) -> DATASource? {
-        let configuration = { (cell: UITableViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void in
-            guard let r = item as? CMRule,
-                let label = cell.viewWithTag(100) as? UILabel else {
-                    return
-            }
-            
-            if let children = r.children {
-                if children.allObjects.count > 0 {
-                    cell.accessoryType = .disclosureIndicator
-                    cell.selectionStyle = .default
-                    
-                } else {
-                    if let _ = r.parent {
-                        cell.accessoryType = .none
-                        cell.selectionStyle = .none
-                        
-                    } else {
-                        cell.accessoryType = .disclosureIndicator
-                        cell.selectionStyle = .default
-                    }
-                }
-            }
-            
-            label.attributedText = self.attributedTextFor(r)
-        }
-        
         let ds = DATASource(tableView: tableView,
                             cellIdentifier: "DynamicHeightCell",
                             fetchRequest: fetchRequest!,
                             mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: sectionName,
-                            configuration: configuration)
+                            sectionName: sectionName)
         ds.delegate = self
 
         return ds
@@ -358,6 +331,32 @@ extension ComprehensiveRulesViewController : DATASourceDelegate {
         }
 
         return sectionIndex
+    }
+    
+    func dataSource(_ dataSource: DATASource, configureTableViewCell cell: UITableViewCell, withItem item: NSManagedObject, atIndexPath indexPath: IndexPath) {
+        guard let r = item as? CMRule,
+            let label = cell.viewWithTag(100) as? UILabel else {
+                return
+        }
+        
+        if let children = r.children {
+            if children.allObjects.count > 0 {
+                cell.accessoryType = .disclosureIndicator
+                cell.selectionStyle = .default
+                
+            } else {
+                if let _ = r.parent {
+                    cell.accessoryType = .none
+                    cell.selectionStyle = .none
+                    
+                } else {
+                    cell.accessoryType = .disclosureIndicator
+                    cell.selectionStyle = .default
+                }
+            }
+        }
+        
+        label.attributedText = self.attributedTextFor(r)
     }
 }
 

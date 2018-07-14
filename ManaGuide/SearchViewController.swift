@@ -179,9 +179,11 @@ class SearchViewController: BaseViewController {
             dataSource = getDataSource(request != nil ? request : searchGenerator.createSearchRequest(query: searchController.searchBar.text, oldRequest: nil))
             updateSections()
             statusLabel.text = "  \(dataSource!.all().count) items"
+            statusLabel.isHidden = false
         case "grid":
             tableView.dataSource = self
             statusLabel.text = "  0 items"
+            statusLabel.isHidden = true
         default:
             ()
         }
@@ -212,80 +214,23 @@ class SearchViewController: BaseViewController {
 
         switch searchDisplayBy {
         case "list":
-            let configuration = { (cell: UITableViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void in
-                guard let cardCell = cell as? CardTableViewCell else {
-                    return
-                }
-                
-                if let card = item as? CMCard {
-                    cardCell.cardMID = card.objectID
-                    cardCell.updateDataDisplay()
-                } else if let cardLegality = item as? CMCardLegality {
-                    cardCell.cardMID = cardLegality.card?.objectID
-                    cardCell.updateDataDisplay()
-                }
-            }
-            
             ds = DATASource(tableView: tableView,
                             cellIdentifier: "CardCell",
                             fetchRequest: request!,
                             mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: searchSectionName,
-                            configuration: configuration)
-            
+                            sectionName: searchSectionName)
+
         case "grid":
             guard let collectionView = collectionView else {
                 return nil
             }
-            
-            let configuration = { (cell: UICollectionViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void  in
-                var c: CMCard?
-                
-                if let item = item as? CMCard {
-                    c = item
-                } else if let item = item as? CMCardLegality {
-                    c = item.card
-                }
-                
-                guard let card = c,
-                    let imageView = cell.viewWithTag(100) as? UIImageView else {
-                        return
-                }
-                
-                if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
-                    imageView.image = image
-                } else {
-                    imageView.image = ManaKit.sharedInstance.cardBack(card)
-                    
-                    firstly {
-                        ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-                    }.done {
-                        guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) else {
-                            return
-                        }
-                        
-                        let animations = {
-                            imageView.image = image
-                        }
-                        UIView.transition(with: imageView,
-                                          duration: 1.0,
-                                          options: .transitionFlipFromRight,
-                                          animations: animations,
-                                          completion: nil)
-                            
-                    }.catch { error in
-                        print("\(error)")
-                    }
-                }
-            }
-            
+
             ds = DATASource(collectionView: collectionView,
                             cellIdentifier: "CardImageCell",
                             fetchRequest: request!,
                             mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: searchSectionName,
-                            configuration: configuration)
-            
+                            sectionName: searchSectionName)
+
         default:
             ()
         }
@@ -570,6 +515,61 @@ extension SearchViewController : DATASourceDelegate {
         }
         
         return v
+    }
+    
+    func dataSource(_ dataSource: DATASource, configureTableViewCell cell: UITableViewCell, withItem item: NSManagedObject, atIndexPath indexPath: IndexPath) {
+        guard let cardCell = cell as? CardTableViewCell else {
+            return
+        }
+        
+        if let card = item as? CMCard {
+            cardCell.cardMID = card.objectID
+            cardCell.updateDataDisplay()
+        } else if let cardLegality = item as? CMCardLegality {
+            cardCell.cardMID = cardLegality.card?.objectID
+            cardCell.updateDataDisplay()
+        }
+    }
+    
+    func dataSource(_ dataSource: DATASource, configureCollectionViewCell cell: UICollectionViewCell, withItem item: NSManagedObject, atIndexPath indexPath: IndexPath) {
+        var c: CMCard?
+        
+        if let item = item as? CMCard {
+            c = item
+        } else if let item = item as? CMCardLegality {
+            c = item.card
+        }
+        
+        guard let card = c,
+            let imageView = cell.viewWithTag(100) as? UIImageView else {
+                return
+        }
+        
+        if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
+            imageView.image = image
+        } else {
+            imageView.image = ManaKit.sharedInstance.cardBack(card)
+            
+            firstly {
+                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+            }.done {
+                guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) else {
+                    return
+                }
+                
+                let animations = {
+                    imageView.image = image
+                }
+                UIView.transition(with: imageView,
+                                  duration: 1.0,
+                                  options: .transitionFlipFromRight,
+                                  animations: animations,
+                                  completion: nil)
+                    
+            }.catch { error in
+                print("\(error)")
+            }
+        }
     }
 }
 

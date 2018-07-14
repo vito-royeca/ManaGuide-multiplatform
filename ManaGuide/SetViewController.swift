@@ -216,66 +216,22 @@ class SetViewController: BaseViewController {
         
         switch setDisplayBy {
         case "list":
-            let configuration = { (cell: UITableViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void  in
-                guard let card = item as? CMCard,
-                    let cardCell = cell as? CardTableViewCell else {
-                        return
-                }
-                
-                cardCell.cardMID = card.objectID
-                cardCell.updateDataDisplay()
-            }
-            
             ds = DATASource(tableView: tableView,
                             cellIdentifier: "CardCell",
                             fetchRequest: request!,
                             mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: setSectionName == "numberOrder" ? nil : setSectionName,
-                            configuration: configuration)
+                            sectionName: setSectionName == "numberOrder" ? nil : setSectionName)
             
         case "grid":
             guard let collectionView = collectionView else {
                 return nil
             }
             
-            let configuration = { (cell: UICollectionViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void in
-                guard let card = item as? CMCard,
-                    let imageView = cell.viewWithTag(100) as? UIImageView else {
-                        return
-                }
-                
-                if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
-                    imageView.image = image
-                } else {
-                    imageView.image = ManaKit.sharedInstance.cardBack(card)
-                    
-                    firstly {
-                        ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-                    }.done {
-                        guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) else {
-                            return
-                        }
-                        
-                        let animations = {
-                            imageView.image = image
-                        }
-                        UIView.transition(with: imageView,
-                                          duration: 1.0,
-                                          options: .transitionFlipFromRight,
-                                          animations: animations,
-                                          completion: nil)
-                    }.catch { error in
-                        print("\(error)")
-                    }
-                }
-            }
-            
             ds = DATASource(collectionView: collectionView,
                             cellIdentifier: "CardImageCell",
                             fetchRequest: request!,
                             mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: setSectionName == "numberOrder" ? nil : setSectionName,
-                            configuration: configuration)
+                            sectionName: setSectionName == "numberOrder" ? nil : setSectionName)
             
         default:
             ()
@@ -711,6 +667,48 @@ extension SetViewController : DATASourceDelegate {
         }
         
         return v
+    }
+    
+    func dataSource(_ dataSource: DATASource, configureTableViewCell cell: UITableViewCell, withItem item: NSManagedObject, atIndexPath indexPath: IndexPath) {
+        guard let card = item as? CMCard,
+            let cardCell = cell as? CardTableViewCell else {
+                return
+        }
+        
+        cardCell.cardMID = card.objectID
+        cardCell.updateDataDisplay()
+    }
+    
+    func dataSource(_ dataSource: DATASource, configureCollectionViewCell cell: UICollectionViewCell, withItem item: NSManagedObject, atIndexPath indexPath: IndexPath) {
+        guard let card = item as? CMCard,
+            let imageView = cell.viewWithTag(100) as? UIImageView else {
+                return
+        }
+        
+        if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
+            imageView.image = image
+        } else {
+            imageView.image = ManaKit.sharedInstance.cardBack(card)
+            
+            firstly {
+                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+            }.done {
+                guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) else {
+                    return
+                }
+                
+                let animations = {
+                    imageView.image = image
+                }
+                UIView.transition(with: imageView,
+                                  duration: 1.0,
+                                  options: .transitionFlipFromRight,
+                                  animations: animations,
+                                  completion: nil)
+            }.catch { error in
+                print("\(error)")
+            }
+        }
     }
 }
 

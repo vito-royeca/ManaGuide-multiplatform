@@ -73,21 +73,11 @@ class ArtistsViewController: BaseViewController {
                                         NSSortDescriptor(key: "firstName", ascending: true)]
         }
         
-        let configuration = { (cell: UITableViewCell, item: NSManagedObject, indexPath: IndexPath) -> Void  in
-            guard let artist = item as? CMArtist,
-                let label = cell.textLabel else {
-                return
-            }
-            
-            label.text = artist.name
-        }
-        
         let ds = DATASource(tableView: tableView,
                             cellIdentifier: "Cell",
                             fetchRequest: request!,
                             mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: "nameSection",
-                            configuration: configuration)
+                            sectionName: "nameSection")
         ds.delegate = self
 
         return ds
@@ -200,6 +190,15 @@ extension ArtistsViewController : DATASourceDelegate {
         }
         
         return sectionIndex
+    }
+    
+    func dataSource(_ dataSource: DATASource, configureTableViewCell cell: UITableViewCell, withItem item: NSManagedObject, atIndexPath indexPath: IndexPath) {
+        guard let artist = item as? CMArtist,
+            let label = cell.textLabel else {
+                return
+        }
+        
+        label.text = artist.name
     }
 }
 
