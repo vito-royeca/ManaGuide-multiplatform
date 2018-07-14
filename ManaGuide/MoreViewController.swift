@@ -313,9 +313,6 @@ extension MoreViewController : UITableViewDelegate {
             case MoreViewControllerListRow.reserved.rawValue:
                 let request = CMCard.fetchRequest()
                 request.predicate = NSPredicate(format: "reserved = true")
-                request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                           NSSortDescriptor(key: "name", ascending: true),
-                                           NSSortDescriptor(key: "set.releaseDate", ascending: true)]
                 identifier = "showSearch"
                 sender = ["title": "Reserved List",
                           "request": request]

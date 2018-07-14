@@ -37,7 +37,7 @@ class SetViewController: BaseViewController {
     let searchController = UISearchController(searchResultsController: nil)
 
     // MARK: Variables
-    var setMID: NSManagedObjectID?
+    var set: CMSet?
     var dataSource: DATASource?
     var sectionIndexTitles = [String]()
     var sectionTitles = [String]()
@@ -151,8 +151,11 @@ class SetViewController: BaseViewController {
     
     // MARK: Custom methods
     func updateDataDisplay() {
-        let defaults = defaultsValue()
-        let setDisplayBy = defaults["setDisplayBy"] as! String
+        let searchGenerator = SearchRequestGenerator()
+        
+        guard let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
+            return
+        }
         
         switch contentSegmentedControl.selectedSegmentIndex {
         case SetViewControllerSegmentedIndex.cards.rawValue:
@@ -163,7 +166,7 @@ class SetViewController: BaseViewController {
                 tableView.tableHeaderView = searchController.searchBar
             }
             
-            switch setDisplayBy {
+            switch displayBy {
             case "list":
                 dataSource = getDataSource(nil)
                 updateSections()
@@ -190,37 +193,46 @@ class SetViewController: BaseViewController {
     }
     
     func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
-        guard let setMID = setMID,
-            let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet,
-            let code = set.code else {
-            return nil
+        let searchGenerator = SearchRequestGenerator()
+        
+        guard let set = set,
+            let code = set.code,
+            let sortBy = searchGenerator.searchValue(for: .sortBy) as? String,
+            let secondSortBy = searchGenerator.searchValue(for: .secondSortBy) as? String,
+            let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool,
+            let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
+                return nil
         }
         
+        var sectionName = searchGenerator.searchValue(for: .sectionName) as? String
+        var sortDescriptors: [NSSortDescriptor]?
         var request:NSFetchRequest<NSFetchRequestResult>?
-        let defaults = defaultsValue()
-        let setSectionName = defaults["setSectionName"] as! String
-        let setSecondSortBy = defaults["setSecondSortBy"] as! String
-        let setOrderBy = defaults["setOrderBy"] as! Bool
-        let setDisplayBy = defaults["setDisplayBy"] as! String
         var ds: DATASource?
+
+        if sortBy == "numberOrder" {
+            sectionName = nil
+            sortDescriptors = [NSSortDescriptor(key: sortBy, ascending: orderBy)]
+        } else {
+            sortDescriptors = [NSSortDescriptor(key: sectionName, ascending: orderBy),
+                               NSSortDescriptor(key: secondSortBy, ascending: orderBy)]
+        }
         
         if let fetchRequest = fetchRequest {
             request = fetchRequest
+            request!.sortDescriptors = sortDescriptors
         } else {
             request = CMCard.fetchRequest()
-            
-            request!.sortDescriptors = [NSSortDescriptor(key: setSectionName, ascending: setOrderBy),
-                                        NSSortDescriptor(key: setSecondSortBy, ascending: setOrderBy)]
+            request!.sortDescriptors = sortDescriptors
             request!.predicate = NSPredicate(format: "set.code = %@", code)
         }
         
-        switch setDisplayBy {
+        switch displayBy {
         case "list":
             ds = DATASource(tableView: tableView,
                             cellIdentifier: "CardCell",
                             fetchRequest: request!,
                             mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: setSectionName == "numberOrder" ? nil : setSectionName)
+                            sectionName: sectionName)
             
         case "grid":
             guard let collectionView = collectionView else {
@@ -231,7 +243,7 @@ class SetViewController: BaseViewController {
                             cellIdentifier: "CardImageCell",
                             fetchRequest: request!,
                             mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: setSectionName == "numberOrder" ? nil : setSectionName)
+                            sectionName: sectionName)
             
         default:
             ()
@@ -245,80 +257,94 @@ class SetViewController: BaseViewController {
     }
     
     func updateSections() {
-        if let dataSource = dataSource {
-            let cards = dataSource.all() as [CMCard]
-            sectionIndexTitles = [String]()
-            sectionTitles = [String]()
-            
-            let defaults = defaultsValue()
-            let setSectionName = defaults["setSectionName"] as! String
-            let setDisplayBy = defaults["setDisplayBy"] as! String
-            
-            switch setSectionName {
-            case "nameSection":
-                for card in cards {
-                    if let nameSection = card.nameSection {
-                        if !sectionIndexTitles.contains(nameSection) {
-                            sectionIndexTitles.append(nameSection)
-                        }
+        guard let dataSource = dataSource else {
+            return
+        }
+        let cards = dataSource.all() as [CMCard]
+        let searchGenerator = SearchRequestGenerator()
+        let sectionName = searchGenerator.searchValue(for: .sectionName) as? String
+        let sortBy = searchGenerator.searchValue(for: .sortBy) as? String
+        let displayBy = searchGenerator.searchValue(for: .displayBy) as? String
+
+        sectionIndexTitles = [String]()
+        sectionTitles = [String]()
+        
+        if sortBy == "numberOrder" {
+            return
+        }
+        
+        switch sectionName {
+        case "nameSection":
+            for card in cards {
+                if let nameSection = card.nameSection {
+                    if !sectionIndexTitles.contains(nameSection) {
+                        sectionIndexTitles.append(nameSection)
                     }
                 }
-            case "typeSection":
-                for card in cards {
-                    if let typeSection = card.typeSection {
-                        let prefix = String(typeSection.prefix(1))
-                        
-                        if !sectionIndexTitles.contains(prefix) {
-                            sectionIndexTitles.append(prefix)
-                        }
-                    }
-                }
-            case "rarity_.name":
-                for card in cards {
-                    if let rarity = card.rarity_ {
-                        let prefix = String(rarity.name!.prefix(1))
-                        
-                        if !sectionIndexTitles.contains(prefix) {
-                            sectionIndexTitles.append(prefix)
-                        }
-                    }
-                }
-            case "artist_.name":
-                for card in cards {
-                    if let artist = card.artist_ {
-                        let prefix = String(artist.name!.prefix(1))
-                        
-                        if !sectionIndexTitles.contains(prefix) {
-                            sectionIndexTitles.append(prefix)
-                        }
-                    }
-                }
-            default:
-                ()
             }
-            
-            var sections = 0
-            switch contentSegmentedControl.selectedSegmentIndex {
-            case SetViewControllerSegmentedIndex.cards.rawValue:
-                switch setDisplayBy {
-                case "list":
-                    sections = dataSource.numberOfSections(in: tableView)
-                case "grid":
-                    if let collectionView = collectionView {
-                        sections = dataSource.numberOfSections(in: collectionView)
+        case "typeSection":
+            for card in cards {
+                if let typeSection = card.typeSection {
+                    let prefix = String(typeSection.prefix(1))
+                    
+                    if !sectionIndexTitles.contains(prefix) {
+                        sectionIndexTitles.append(prefix)
                     }
-                default:
-                    ()
                 }
-            default:
-                ()
             }
-            
-            if sections > 0 {
-                for i in 0...sections - 1 {
-                    if let sectionTitle = dataSource.titleForHeader(i) {
-                        sectionTitles.append(sectionTitle)
+        
+        case "rarity_.name":
+            for card in cards {
+                if let rarity = card.rarity_ {
+                    let prefix = String(rarity.name!.prefix(1))
+                    
+                    if !sectionIndexTitles.contains(prefix) {
+                        sectionIndexTitles.append(prefix)
                     }
+                }
+            }
+        case "artist_.name":
+            for card in cards {
+                if let artist = card.artist_ {
+                    let prefix = String(artist.name!.prefix(1))
+                    
+                    if !sectionIndexTitles.contains(prefix) {
+                        sectionIndexTitles.append(prefix)
+                    }
+                }
+            }
+        case "legality.name"?:
+            let cardLegalities = dataSource.all() as [CMCardLegality]
+            for cardLegality in cardLegalities {
+                if let legality = cardLegality.legality {
+                    let prefix = String(legality.name!.prefix(1))
+                    
+                    if !sectionIndexTitles.contains(prefix) {
+                        sectionIndexTitles.append(prefix)
+                    }
+                }
+            }
+        default:
+            ()
+        }
+        
+        var sections = 0
+        switch displayBy {
+        case "list":
+            sections = dataSource.numberOfSections(in: tableView)
+        case "grid":
+            if let collectionView = collectionView {
+                sections = dataSource.numberOfSections(in: collectionView)
+            }
+        default:
+            ()
+        }
+        
+        
+        if sections > 0 {
+            for i in 0...sections - 1 {
+                if let sectionTitle = dataSource.titleForHeader(i) {
+                    sectionTitles.append(sectionTitle)
                 }
             }
         }
@@ -328,93 +354,10 @@ class SetViewController: BaseViewController {
     }
     
     func updateData(_ notification: Notification) {
-        guard let userInfo = notification.userInfo as? [String: Any] else {
-            return
-        }
-        
-        let defaults = defaultsValue()
-        var setSectionName = defaults["setSectionName"] as? String
-        var setSortBy = defaults["setSortBy"] as? String
-        var setSecondSortBy = defaults["setSecondSortBy"] as? String
-        var setOrderBy = defaults["setOrderBy"] as? Bool
-        var setDisplayBy = defaults["setDisplayBy"] as? String
-        
-        if let value = userInfo["setSortBy"] as? String {
-            setSortBy = value
-            
-            switch setSortBy {
-            case "name":
-                setSectionName = "nameSection"
-                setSecondSortBy = "name"
-            case "numberOrder":
-                setSectionName = "numberOrder"
-                setSecondSortBy = "name"
-            case "typeSection":
-                setSectionName = "typeSection"
-                setSecondSortBy = "name"
-            case "rarity_.name":
-                setSectionName = "rarity_.name"
-                setSecondSortBy = "name"
-            case "artist_.name":
-                setSectionName = "artist_.name"
-                setSecondSortBy = "name"
-            default:
-                ()
-            }
-        }
-        
-        if let value = userInfo["setOrderBy"] as? Bool {
-            setOrderBy = value
-        }
-        
-        if let value = userInfo["setDisplayBy"] as? String {
-            setDisplayBy = value
-        }
-        
-        UserDefaults.standard.set(setSectionName, forKey: "setSectionName")
-        UserDefaults.standard.set(setSortBy, forKey: "setSortBy")
-        UserDefaults.standard.set(setSecondSortBy, forKey: "setSecondSortBy")
-        UserDefaults.standard.set(setOrderBy, forKey: "setOrderBy")
-        UserDefaults.standard.set(setDisplayBy, forKey: "setDisplayBy")
-        UserDefaults.standard.synchronize()
-        
+        let searchGenerator = SearchRequestGenerator()
+        searchGenerator.syncValues(notification)
+
         updateDataDisplay()
-    }
-    
-    func defaultsValue() -> [String: Any] {
-        var values = [String: Any]()
-        
-        if let value = UserDefaults.standard.value(forKey: "setSectionName") as? String {
-            values["setSectionName"] = value
-        } else {
-            values["setSectionName"] = "nameSection"
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "setSortBy") as? String {
-            values["setSortBy"] = value
-        } else {
-            values["setSortBy"] = "name"
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "setSecondSortBy") as? String {
-            values["setSecondSortBy"] = value
-        } else {
-            values["setSecondSortBy"] = "name"
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "setOrderBy") as? Bool {
-            values["setOrderBy"] = value
-        } else {
-            values["setOrderBy"] = true
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "setDisplayBy") as? String {
-            values["setDisplayBy"] = value
-        } else {
-            values["setDisplayBy"] = "list"
-        }
-        
-        return values
     }
     
     func wikiURL(ofSet set: CMSet) -> URL? {
@@ -437,15 +380,14 @@ class SetViewController: BaseViewController {
     }
     
     func doSearch() {
-        let defaults = defaultsValue()
+        let searchGenerator = SearchRequestGenerator()
         
-        guard let setMID = setMID,
-            let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet,
+        guard let set = set,
             let code = set.code,
-            let setSectionName = defaults["setSectionName"] as? String,
-            let setSecondSortBy = defaults["setSecondSortBy"] as? String,
-            let setOrderBy = defaults["setOrderBy"] as? Bool,
-            let searchDisplayBy = defaults["setDisplayBy"] as? String else {
+            let sectionName = searchGenerator.searchValue(for: .sectionName) as? String,
+            let secondSortBy = searchGenerator.searchValue(for: .secondSortBy) as? String,
+            let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool,
+            let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
             return
         }
         
@@ -455,8 +397,8 @@ class SetViewController: BaseViewController {
             if text.count > 0 {
                 newRequest = CMCard.fetchRequest()
                 
-                newRequest!.sortDescriptors = [NSSortDescriptor(key: setSectionName, ascending: setOrderBy),
-                                               NSSortDescriptor(key: setSecondSortBy, ascending: setOrderBy)]
+                newRequest!.sortDescriptors = [NSSortDescriptor(key: sectionName, ascending: orderBy),
+                                               NSSortDescriptor(key: secondSortBy, ascending: orderBy)]
                 
                 if text.count == 1 {
                     newRequest!.predicate = NSPredicate(format: "set.code = %@ AND name BEGINSWITH[cd] %@", code, text)
@@ -471,7 +413,7 @@ class SetViewController: BaseViewController {
         }
     
         updateSections()
-        switch searchDisplayBy {
+        switch displayBy {
         case "list":
             tableView.reloadData()
         case "grid":
@@ -491,13 +433,13 @@ extension SetViewController : UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let defaults = defaultsValue()
-        let setDisplayBy = defaults["setDisplayBy"] as! String
+        let searchGenerator = SearchRequestGenerator()
+        let displayBy = searchGenerator.searchValue(for: .displayBy) as? String
         var cell: UITableViewCell?
         
         switch contentSegmentedControl.selectedSegmentIndex {
         case SetViewControllerSegmentedIndex.cards.rawValue:
-            switch setDisplayBy {
+            switch displayBy {
             case "grid":
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") else {
                     return UITableViewCell(frame: CGRect.zero)
@@ -527,13 +469,13 @@ extension SetViewController : UITableViewDataSource {
                 ()
             }
         case SetViewControllerSegmentedIndex.wiki.rawValue:
-            guard let setMID = setMID,
-                let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet,
-                let c = tableView.dequeueReusableCell(withIdentifier: "SetInfoCell") as? BrowserTableViewCell else {
+            guard let set = set,
+                let c = tableView.dequeueReusableCell(withIdentifier: "SetInfoCell") as? BrowserTableViewCell,
+                let url = wikiURL(ofSet: set) else {
                 return UITableViewCell(frame: CGRect.zero)
             }
             
-            let request = URLRequest(url: wikiURL(ofSet: set)!, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 10.0)
+            let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 10.0)
             c.webView.delegate = self
             c.webView.loadRequest(request)
             cell = c
@@ -553,12 +495,12 @@ extension SetViewController : UITableViewDelegate {
 
         switch contentSegmentedControl.selectedSegmentIndex {
         case SetViewControllerSegmentedIndex.cards.rawValue:
-            let defaults = defaultsValue()
-            guard let setDisplayBy = defaults["setDisplayBy"] as? String else {
+            let searchGenerator = SearchRequestGenerator()
+            guard let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
                 return height
             }
             
-            switch setDisplayBy {
+            switch displayBy {
             case "list":
                 height = kCardTableViewCellHeight
             case "grid":
@@ -593,12 +535,12 @@ extension SetViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         switch contentSegmentedControl.selectedSegmentIndex {
         case SetViewControllerSegmentedIndex.cards.rawValue:
-            let defaults = defaultsValue()
-            guard let setDisplayBy = defaults["setDisplayBy"] as? String else {
+            let searchGenerator = SearchRequestGenerator()
+            guard let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
                 return
             }
             
-            switch setDisplayBy {
+            switch displayBy {
             case "grid":
                 dataSource = getDataSource(nil)
                 updateSections()
@@ -620,13 +562,16 @@ extension SetViewController : DATASourceDelegate {
     
     // tell table which section corresponds to section title/index (e.g. "B",1))
     func dataSource(_ dataSource: DATASource, tableView: UITableView, sectionForSectionIndexTitle title: String, atIndex index: Int) -> Int {
-        let defaults = defaultsValue()
-        let setOrderBy = defaults["setOrderBy"] as! Bool
+        let searchGenerator = SearchRequestGenerator()
         var sectionIndex = 0
+        
+        guard let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool else {
+            return sectionIndex
+        }
         
         for i in 0...sectionTitles.count - 1 {
             if sectionTitles[i].hasPrefix(title) {
-                if setOrderBy {
+                if orderBy {
                     sectionIndex = i
                 } else {
                     sectionIndex = (sectionTitles.count - 1) - i
@@ -651,19 +596,22 @@ extension SetViewController : DATASourceDelegate {
                 v!.addSubview(label)
             }
             
-            if let lab = v!.viewWithTag(100) as? UILabel {
-                let defaults = defaultsValue()
-                let setOrderBy = defaults["setOrderBy"] as! Bool
-                var sectionTitle: String?
-                
-                if setOrderBy {
-                    sectionTitle = sectionTitles[indexPath.section]
-                } else {
-                    sectionTitle = sectionTitles[sectionTitles.count - 1 - indexPath.section]
-                }
-                
-                lab.text = sectionTitle
+            let searchGenerator = SearchRequestGenerator()
+            
+            guard let lab = v!.viewWithTag(100) as? UILabel,
+                let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool else {
+                return v
             }
+                
+            var sectionTitle: String?
+            
+            if orderBy {
+                sectionTitle = sectionTitles[indexPath.section]
+            } else {
+                sectionTitle = sectionTitles[sectionTitles.count - 1 - indexPath.section]
+            }
+            
+            lab.text = sectionTitle
         }
         
         return v
@@ -675,8 +623,7 @@ extension SetViewController : DATASourceDelegate {
                 return
         }
         
-        cardCell.cardMID = card.objectID
-        cardCell.updateDataDisplay()
+        cardCell.card = card
     }
     
     func dataSource(_ dataSource: DATASource, configureCollectionViewCell cell: UICollectionViewCell, withItem item: NSManagedObject, atIndexPath indexPath: IndexPath) {

@@ -10,63 +10,90 @@ import UIKit
 import CoreData
 import ManaKit
 
+enum SearchKey : Int {
+    case sectionName
+    case sortBy
+    case secondSortBy
+    case orderBy
+    case displayBy
+    case keywordName
+    case keywordText
+    case flavorText
+    
+    var description : String {
+        switch self {
+        case .sectionName: return "searchSectionName"
+        case .sortBy: return "searchSortBy"
+        case .secondSortBy: return "searchSecondSortBy"
+        case .orderBy: return "searchOrderBy"
+        case .displayBy: return "searchDisplayBy"
+        case .keywordName: return "searchKeywordName"
+        case .keywordText: return "searchKeywordText"
+        case .flavorText: return "searchFlavorText"
+        }
+    }
+}
+
 class SearchRequestGenerator: NSObject {
-    func defaultsValue() -> [String: Any] {
-        var values = [String: Any]()
-        
-        // displayers
-        if let value = UserDefaults.standard.value(forKey: "searchSectionName") as? String {
-            values["searchSectionName"] = value
-        } else {
-            values["searchSectionName"] = "nameSection"
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchSortBy") as? String {
-            values["searchSortBy"] = value
-        } else {
-            values["searchSortBy"] = "name"
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchSecondSortBy") as? String {
-            values["searchSecondSortBy"] = value
-        } else {
-            values["searchSecondSortBy"] = "name"
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchOrderBy") as? Bool {
-            values["searchOrderBy"] = value
-        } else {
-            values["searchOrderBy"] = true
-        }
-        
-        if let value = UserDefaults.standard.value(forKey: "searchDisplayBy") as? String {
-            values["searchDisplayBy"] = value
-        } else {
-            values["searchDisplayBy"] = "list"
-        }
-        //
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordName") as? Bool {
-            values["searchKeywordName"] = value
-        } else {
-            values["searchKeywordName"] = true
-        }
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordText") as? Bool {
-            values["searchKeywordText"] = value
-        } else {
-            values["searchKeywordText"] = false
-        }
-        if let value = UserDefaults.standard.value(forKey: "searchKeywordFlavor") as? Bool {
-            values["searchKeywordFlavor"] = value
-        } else {
-            values["searchKeywordFlavor"] = false
-        }
-        
-        return values
+    override init() {
+        super.init()
     }
     
-    func defaultValue(for key: String) -> Any? {
-        let defaults = defaultsValue()
-        return defaults[key]
+    func searchValue(for key: SearchKey) -> Any? {
+        var searchValue: Any?
+        
+        switch key {
+        case .sectionName:
+            if let value = UserDefaults.standard.value(forKey: key.description) as? String {
+                searchValue = value
+            } else {
+                searchValue = "nameSection"
+            }
+        case .sortBy:
+            if let value = UserDefaults.standard.value(forKey: key.description) as? String {
+                searchValue = value
+            } else {
+                searchValue = "name"
+            }
+        case .secondSortBy:
+            if let value = UserDefaults.standard.value(forKey: key.description) as? String {
+                searchValue = value
+            } else {
+                searchValue = "name"
+            }
+        case .orderBy:
+            if let value = UserDefaults.standard.value(forKey: key.description) as? Bool {
+                searchValue = value
+            } else {
+                searchValue = true
+            }
+        case .displayBy:
+            if let value = UserDefaults.standard.value(forKey: key.description) as? String {
+                searchValue = value
+            } else {
+                searchValue = "list"
+            }
+        case .keywordName:
+            if let value = UserDefaults.standard.value(forKey: key.description) as? Bool {
+                searchValue = value
+            } else {
+                searchValue = true
+            }
+        case .keywordText:
+            if let value = UserDefaults.standard.value(forKey: key.description) as? Bool {
+                searchValue = value
+            } else {
+                searchValue = false
+            }
+        case .flavorText:
+            if let value = UserDefaults.standard.value(forKey: key.description) as? Bool {
+                searchValue = value
+            } else {
+                searchValue = false
+            }
+        }
+        
+        return searchValue
     }
     
     func syncValues(_ notification: Notification) {
@@ -74,53 +101,38 @@ class SearchRequestGenerator: NSObject {
             return
         }
         
-        var searchSectionName = defaultValue(for: "searchSectionName") as? String
-        var searchSortBy = defaultValue(for: "searchSortBy") as? String
-        var searchSecondSortBy = defaultValue(for: "searchSecondSortBy") as? String
-        var searchOrderBy = defaultValue(for: "searchOrderBy") as? Bool
-        var searchDisplayBy = defaultValue(for: "searchDisplayBy") as? String
-        
-        if let value = userInfo["searchSortBy"] as? String {
-            searchSortBy = value
-            
-            switch searchSortBy {
-            case "name":
-                searchSectionName = "nameSection"
-                searchSecondSortBy = "name"
-            case "typeSection":
-                searchSectionName = "typeSection"
-                searchSecondSortBy = "name"
-            default:
-                ()
+        for (k,v) in userInfo {
+            if k == SearchKey.sortBy.description {
+                guard let string = v as? String else {
+                    continue
+                }
+                
+                switch string {
+                case "name",
+                     "numberOrder":
+                    UserDefaults.standard.set("nameSection", forKey: SearchKey.sectionName.description)
+                default:
+                    UserDefaults.standard.set(string, forKey: SearchKey.sectionName.description)
+                }
+                
+                UserDefaults.standard.set("name", forKey: SearchKey.secondSortBy.description)
+                UserDefaults.standard.set(v, forKey: k)
+            } else {
+                UserDefaults.standard.set(v, forKey: k)
             }
         }
-        
-        if let value = userInfo["searchOrderBy"] as? Bool {
-            searchOrderBy = value
-        }
-        
-        if let value = userInfo["searchDisplayBy"] as? String {
-            searchDisplayBy = value
-        }
-        
-        UserDefaults.standard.set(searchSectionName, forKey: "searchSectionName")
-        UserDefaults.standard.set(searchSortBy, forKey: "searchSortBy")
-        UserDefaults.standard.set(searchSecondSortBy, forKey: "searchSecondSortBy")
-        UserDefaults.standard.set(searchOrderBy, forKey: "searchOrderBy")
-        UserDefaults.standard.set(searchDisplayBy, forKey: "searchDisplayBy")
         UserDefaults.standard.synchronize()
     }
     
     func createSearchRequest(query: String?, oldRequest: NSFetchRequest<NSFetchRequestResult>?) -> NSFetchRequest<NSFetchRequestResult>? {
+        guard let searchOrderBy = searchValue(for: .orderBy) as? Bool,
+            let searchSectionName = searchValue(for: .sectionName) as? String,
+            let searchSecondSortBy = searchValue(for: .secondSortBy) as? String else {
+            return nil
+        }
+        
         let newRequest = CMCard.fetchRequest()
         var predicate: NSPredicate?
-        
-        let defaults = defaultsValue()
-        
-        // displayers
-        let searchSectionName = defaults["searchSectionName"] as! String
-        let searchSecondSortBy = defaults["searchSecondSortBy"] as! String
-        let searchOrderBy = defaults["searchOrderBy"] as! Bool
         
         if let kp = createKeywordPredicate(query: query) {
             predicate = kp
@@ -157,14 +169,14 @@ class SearchRequestGenerator: NSObject {
     }
     
     func createKeywordPredicate(query: String?) -> NSPredicate? {
-        let defaults = defaultsValue()
+        guard let searchKeywordName = searchValue(for: .keywordName) as? Bool,
+            let searchKeywordText = searchValue(for: .keywordText) as? Bool,
+            let searchKeywordFlavor = searchValue(for: .flavorText) as? Bool else {
+            return nil
+        }
+        
         var predicate: NSPredicate?
         var subpredicates = [NSPredicate]()
-        
-        // keyword filters
-        let searchKeywordName = defaults["searchKeywordName"] as! Bool
-        let searchKeywordText = defaults["searchKeywordText"] as! Bool
-        let searchKeywordFlavor = defaults["searchKeywordFlavor"] as! Bool
         
         // process keyword filter
         if searchKeywordName {
@@ -204,6 +216,7 @@ class SearchRequestGenerator: NSObject {
         return predicate
     }
     
+    // TODO: use searchValue()
     func createManaCostPredicate() -> NSPredicate? {
         // TODO: double check X, Y, and Z manaCosts
         var predicate: NSPredicate?

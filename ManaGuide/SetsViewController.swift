@@ -76,12 +76,11 @@ class SetsViewController: BaseViewController {
         if segue.identifier == "showSet" {
             guard let dest = segue.destination as? SetViewController,
                 let dict = sender as? [String: Any],
-                let setMID = dict["setMID"] as? NSManagedObjectID,
-                let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet else {
+                let set = dict["set"] as? CMSet else {
                 return
             }
             
-            dest.setMID = setMID
+            dest.set = set
             dest.title = set.name
         }
     }
@@ -282,7 +281,7 @@ extension SetsViewController : UITableViewDelegate {
             let set = dataSource.object(indexPath) else {
             return
         }
-        performSegue(withIdentifier: "showSet", sender: ["setMID": set.objectID])
+        performSegue(withIdentifier: "showSet", sender: ["set": set])
     }
 }
 

@@ -20,11 +20,11 @@ class SearchViewController: BaseViewController {
     let searchController = UISearchController(searchResultsController: nil)
 
     // MARK: Variables
+    var request: NSFetchRequest<NSFetchRequestResult>?
     var dataSource: DATASource?
     var sectionIndexTitles = [String]()
     var sectionTitles = [String]()
     var collectionView: UICollectionView?
-    var request: NSFetchRequest<NSFetchRequestResult>?
     var customSectionName: String?
     var firstLoad = true
     
@@ -170,13 +170,14 @@ class SearchViewController: BaseViewController {
     func updateDataDisplay() {
         let searchGenerator = SearchRequestGenerator()
         
-        guard let searchDisplayBy = searchGenerator.defaultValue(for: "searchDisplayBy") as? String else {
+        guard let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
             return
         }
         
-        switch searchDisplayBy {
+        switch displayBy {
         case "list":
-            dataSource = getDataSource(request != nil ? request : searchGenerator.createSearchRequest(query: searchController.searchBar.text, oldRequest: nil))
+            let r = request != nil ? request : searchGenerator.createSearchRequest(query: searchController.searchBar.text, oldRequest: nil)
+            dataSource = getDataSource(r)
             updateSections()
             statusLabel.text = "  \(dataSource!.all().count) items"
             statusLabel.isHidden = false
@@ -194,31 +195,45 @@ class SearchViewController: BaseViewController {
     
     func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
         let searchGenerator = SearchRequestGenerator()
-        var request:NSFetchRequest<NSFetchRequestResult>?
         
-        let searchSectionName = customSectionName != nil ? customSectionName : searchGenerator.defaultValue(for: "searchSectionName") as? String
-        let searchSecondSortBy = searchGenerator.defaultValue(for: "searchSecondSortBy") as? String
-        let searchOrderBy = searchGenerator.defaultValue(for: "searchOrderBy") as! Bool
-        let searchDisplayBy = searchGenerator.defaultValue(for: "searchDisplayBy") as! String
+        guard let sortBy = searchGenerator.searchValue(for: .sortBy) as? String,
+            let secondSortBy = searchGenerator.searchValue(for: .secondSortBy) as? String,
+            let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool,
+            let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
+            return nil
+        }
+        
+        var sectionName = customSectionName != nil ? customSectionName : searchGenerator.searchValue(for: .sectionName) as? String
+        var sortDescriptors: [NSSortDescriptor]?
+        var request:NSFetchRequest<NSFetchRequestResult>?
         var ds: DATASource?
+        
+        if sortBy == "numberOrder" {
+            sectionName = nil
+            sortDescriptors = [NSSortDescriptor(key: sortBy, ascending: orderBy)]
+        } else {
+            sortDescriptors = [NSSortDescriptor(key: sectionName, ascending: orderBy),
+                               NSSortDescriptor(key: secondSortBy, ascending: orderBy)]
+        }
 
         if let fetchRequest = fetchRequest {
             request = fetchRequest
+            if request!.sortDescriptors == nil {
+                request!.sortDescriptors = sortDescriptors
+            }
         } else {
             request = CMCard.fetchRequest()
             request!.predicate = NSPredicate(format: "name = nil")
-            request!.sortDescriptors = [NSSortDescriptor(key: searchSectionName, ascending: searchOrderBy),
-                                        NSSortDescriptor(key: searchSecondSortBy, ascending: searchOrderBy),
-                                        NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+            request!.sortDescriptors = sortDescriptors
         }
 
-        switch searchDisplayBy {
+        switch displayBy {
         case "list":
             ds = DATASource(tableView: tableView,
                             cellIdentifier: "CardCell",
                             fetchRequest: request!,
                             mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: searchSectionName)
+                            sectionName: sectionName)
 
         case "grid":
             guard let collectionView = collectionView else {
@@ -229,7 +244,7 @@ class SearchViewController: BaseViewController {
                             cellIdentifier: "CardImageCell",
                             fetchRequest: request!,
                             mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: searchSectionName)
+                            sectionName: sectionName)
 
         default:
             ()
@@ -243,54 +258,94 @@ class SearchViewController: BaseViewController {
     }
     
     func updateSections() {
-        if let dataSource = dataSource {
-            let cards = dataSource.all() as [CMCard]
-            sectionIndexTitles = [String]()
-            sectionTitles = [String]()
-            
-            let searchGenerator = SearchRequestGenerator()
-            let searchSectionName = customSectionName != nil ? customSectionName : searchGenerator.defaultValue(for: "searchSectionName") as? String
-            
-            switch searchSectionName {
-            case "nameSection"?:
-                for card in cards {
-                    if let nameSection = card.nameSection {
-                        if !sectionIndexTitles.contains(nameSection) {
-                            sectionIndexTitles.append(nameSection)
-                        }
+        guard let dataSource = dataSource else {
+            return
+        }
+        let cards = dataSource.all() as [CMCard]
+        let searchGenerator = SearchRequestGenerator()
+        let sectionName = searchGenerator.searchValue(for: .sectionName) as? String
+        let sortBy = searchGenerator.searchValue(for: .sortBy) as? String
+        let displayBy = searchGenerator.searchValue(for: .displayBy) as? String
+        
+        sectionIndexTitles = [String]()
+        sectionTitles = [String]()
+        
+        if sortBy == "numberOrder" {
+            return
+        }
+        
+        switch sectionName {
+        case "nameSection":
+            for card in cards {
+                if let nameSection = card.nameSection {
+                    if !sectionIndexTitles.contains(nameSection) {
+                        sectionIndexTitles.append(nameSection)
                     }
                 }
-            case "typeSection"?:
-                for card in cards {
-                    if let typeSection = card.typeSection {
-                        let prefix = String(typeSection.prefix(1))
-                        
-                        if !sectionIndexTitles.contains(prefix) {
-                            sectionIndexTitles.append(prefix)
-                        }
+            }
+        case "typeSection":
+            for card in cards {
+                if let typeSection = card.typeSection {
+                    let prefix = String(typeSection.prefix(1))
+                    
+                    if !sectionIndexTitles.contains(prefix) {
+                        sectionIndexTitles.append(prefix)
                     }
                 }
-            case "legality.name"?:
-                let cardLegalities = dataSource.all() as [CMCardLegality]
-                for cardLegality in cardLegalities {
-                    if let legality = cardLegality.legality {
-                        let prefix = String(legality.name!.prefix(1))
-                        
-                        if !sectionIndexTitles.contains(prefix) {
-                            sectionIndexTitles.append(prefix)
-                        }
-                    }
-                }
-            default:
-                ()
             }
             
-            let sections = dataSource.numberOfSections(in: tableView)
-            if sections > 0 {
-                for i in 0...sections - 1 {
-                    if let sectionTitle = dataSource.titleForHeader(i) {
-                        sectionTitles.append(sectionTitle)
+        case "rarity_.name":
+            for card in cards {
+                if let rarity = card.rarity_ {
+                    let prefix = String(rarity.name!.prefix(1))
+                    
+                    if !sectionIndexTitles.contains(prefix) {
+                        sectionIndexTitles.append(prefix)
                     }
+                }
+            }
+        case "artist_.name":
+            for card in cards {
+                if let artist = card.artist_ {
+                    let prefix = String(artist.name!.prefix(1))
+                    
+                    if !sectionIndexTitles.contains(prefix) {
+                        sectionIndexTitles.append(prefix)
+                    }
+                }
+            }
+        case "legality.name"?:
+            let cardLegalities = dataSource.all() as [CMCardLegality]
+            for cardLegality in cardLegalities {
+                if let legality = cardLegality.legality {
+                    let prefix = String(legality.name!.prefix(1))
+                    
+                    if !sectionIndexTitles.contains(prefix) {
+                        sectionIndexTitles.append(prefix)
+                    }
+                }
+            }
+        default:
+            ()
+        }
+        
+        var sections = 0
+        switch displayBy {
+        case "list":
+            sections = dataSource.numberOfSections(in: tableView)
+        case "grid":
+            if let collectionView = collectionView {
+                sections = dataSource.numberOfSections(in: collectionView)
+            }
+        default:
+            ()
+        }
+        
+        
+        if sections > 0 {
+            for i in 0...sections - 1 {
+                if let sectionTitle = dataSource.titleForHeader(i) {
+                    sectionTitles.append(sectionTitle)
                 }
             }
         }
@@ -302,7 +357,7 @@ class SearchViewController: BaseViewController {
     func updateData(_ notification: Notification) {
         let searchGenerator = SearchRequestGenerator()
         searchGenerator.syncValues(notification)
-        
+
         updateDataDisplay()
     }
 
@@ -333,12 +388,12 @@ class SearchViewController: BaseViewController {
     func doSearch() {
         let searchGenerator = SearchRequestGenerator()
         let text = searchController.searchBar.text
-        dataSource = getDataSource(searchGenerator.createSearchRequest(query: text, oldRequest: request))
+        let predicate = searchGenerator.createSearchRequest(query: text, oldRequest: request)
+        dataSource = getDataSource(predicate)
         updateSections()
     
-        
-        if let searchDisplayBy = searchGenerator.defaultValue(for: "searchDisplayBy") as? String {
-            switch searchDisplayBy {
+        if let displayBy = searchGenerator.searchValue(for: .displayBy) as? String {
+            switch displayBy {
             case "list":
                 tableView.reloadData()
             case "grid":
@@ -362,10 +417,14 @@ extension SearchViewController : UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let searchGenerator = SearchRequestGenerator()
-        let searchDisplayBy = searchGenerator.defaultValue(for: "searchDisplayBy") as! String
+        
+        guard let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
+            return UITableViewCell(frame: CGRect.zero)
+        }
+        
         var cell: UITableViewCell?
         
-        switch searchDisplayBy {
+        switch displayBy {
         case "grid":
             guard let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") else {
                 return UITableViewCell(frame: CGRect.zero)
@@ -374,10 +433,9 @@ extension SearchViewController : UITableViewDataSource {
                 return UITableViewCell(frame: CGRect.zero)
             }
             
-            
-            self.collectionView = collectionView
             collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "Header")
             collectionView.delegate = self
+            collectionView.keyboardDismissMode = .onDrag
             
             if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                 let width = tableView.frame.size.width
@@ -392,6 +450,7 @@ extension SearchViewController : UITableViewDataSource {
                 flowLayout.headerReferenceSize = CGSize(width: width, height: 22)
                 flowLayout.sectionHeadersPinToVisibleBounds = true
             }
+            self.collectionView = collectionView
             
             cell = c
             
@@ -407,10 +466,13 @@ extension SearchViewController : UITableViewDataSource {
 extension SearchViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let searchGenerator = SearchRequestGenerator()
-        let searchDisplayBy = searchGenerator.defaultValue(for: "searchDisplayBy") as! String
         var height = CGFloat(0)
         
-        switch searchDisplayBy {
+        guard let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
+            return height
+        }
+        
+        switch displayBy {
         case "list":
             height = kCardTableViewCellHeight
         case "grid":
@@ -452,11 +514,14 @@ extension SearchViewController : UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let searchGenerator = SearchRequestGenerator()
-        let searchDisplayBy = searchGenerator.defaultValue(for: "searchDisplayBy") as! String
-        
-        switch searchDisplayBy {
+        guard let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
+            return
+        }
+
+        switch displayBy {
         case "grid":
-            dataSource = getDataSource(request != nil ? request : searchGenerator.createSearchRequest(query: searchController.searchBar.text, oldRequest: request))
+            let r = request != nil ? request : searchGenerator.createSearchRequest(query: searchController.searchBar.text, oldRequest: request)
+            dataSource = getDataSource(r)
             updateSections()
         default:
             ()
@@ -474,8 +539,11 @@ extension SearchViewController : DATASourceDelegate {
     // tell table which section corresponds to section title/index (e.g. "B",1))
     func dataSource(_ dataSource: DATASource, tableView: UITableView, sectionForSectionIndexTitle title: String, atIndex index: Int) -> Int {
         let searchGenerator = SearchRequestGenerator()
-        let searchOrderBy = searchGenerator.defaultValue(for: "searchOrderBy") as! Bool
         var sectionIndex = 0
+        
+        guard let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool else {
+            return sectionIndex
+        }
         
         for i in 0...sectionTitles.count - 1 {
             if sectionTitles[i].hasPrefix(title) {
@@ -483,7 +551,7 @@ extension SearchViewController : DATASourceDelegate {
                 if customSectionName != nil {
                     sectionIndex = i
                 } else {
-                    if searchOrderBy {
+                    if orderBy {
                         sectionIndex = i
                     } else {
                         sectionIndex = (sectionTitles.count - 1) - i
@@ -509,9 +577,22 @@ extension SearchViewController : DATASourceDelegate {
                 v!.addSubview(label)
             }
             
-            if let lab = v!.viewWithTag(100) as? UILabel {
-                lab.text = sectionTitles[indexPath.section]
+            let searchGenerator = SearchRequestGenerator()
+            
+            guard let lab = v!.viewWithTag(100) as? UILabel,
+                let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool else {
+                    return v
             }
+            
+            var sectionTitle: String?
+            
+            if orderBy {
+                sectionTitle = sectionTitles[indexPath.section]
+            } else {
+                sectionTitle = sectionTitles[sectionTitles.count - 1 - indexPath.section]
+            }
+            
+            lab.text = sectionTitle
         }
         
         return v
@@ -523,11 +604,9 @@ extension SearchViewController : DATASourceDelegate {
         }
         
         if let card = item as? CMCard {
-            cardCell.cardMID = card.objectID
-            cardCell.updateDataDisplay()
+            cardCell.card = card
         } else if let cardLegality = item as? CMCardLegality {
-            cardCell.cardMID = cardLegality.card?.objectID
-            cardCell.updateDataDisplay()
+            cardCell.card = cardLegality.card
         }
     }
     

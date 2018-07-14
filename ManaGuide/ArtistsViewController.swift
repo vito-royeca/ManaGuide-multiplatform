@@ -159,12 +159,7 @@ extension ArtistsViewController : UITableViewDelegate {
         }
 
         let request = CMCard.fetchRequest()
-        let predicate = NSPredicate(format: "artist_.name = %@", artist.name!)
-        
-        request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                   NSSortDescriptor(key: "name", ascending: true),
-                                   NSSortDescriptor(key: "set.releaseDate", ascending: true)]
-        request.predicate = predicate
+        request.predicate = NSPredicate(format: "artist_.name = %@", artist.name!)
         
         performSegue(withIdentifier: "showSearch", sender: ["request": request,
                                                             "title": artist.name!])

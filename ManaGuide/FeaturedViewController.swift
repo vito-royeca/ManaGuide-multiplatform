@@ -135,13 +135,12 @@ class FeaturedViewController: BaseViewController {
         } else if segue.identifier == "showSet" {
             guard let dest = segue.destination as? SetViewController,
                 let dict = sender as? [String: Any],
-                let setMID = dict["setMID"] as? NSManagedObjectID,
-                let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet else {
+                let set = dict["set"] as? CMSet else {
                 return
             }
             
             dest.title = set.name
-            dest.setMID = setMID
+            dest.set = set
 
         } else if segue.identifier == "showSets" {
             guard let dest = segue.destination as? SetsViewController else {
@@ -153,51 +152,6 @@ class FeaturedViewController: BaseViewController {
     }
 
     // MARK: Custom methods
-//    func updateData(_ notification: Notification) {
-//        guard let userInfo = notification.userInfo as? [String: Any] else {
-//            return
-//        }
-//
-//        let defaults = defaultsValue()
-//        var searchSectionName = defaults["searchSectionName"] as! String
-//        var searchSortBy = defaults["searchSortBy"] as! String
-//        var searchSecondSortBy = defaults["searchSecondSortBy"] as! String
-//        var searchOrderBy = defaults["searchOrderBy"] as! Bool
-//        var searchDisplayBy = defaults["searchDisplayBy"] as! String
-//
-//        if let value = userInfo["searchSortBy"] as? String {
-//            searchSortBy = value
-//
-//            switch searchSortBy {
-//            case "name":
-//                searchSectionName = "nameSection"
-//                searchSecondSortBy = "name"
-//            case "typeSection":
-//                searchSectionName = "typeSection"
-//                searchSecondSortBy = "name"
-//            default:
-//                ()
-//            }
-//        }
-//
-//        if let value = userInfo["searchOrderBy"] as? Bool {
-//            searchOrderBy = value
-//        }
-//
-//        if let value = userInfo["searchDisplayBy"] as? String {
-//            searchDisplayBy = value
-//        }
-//
-//        UserDefaults.standard.set(searchSectionName, forKey: "searchSectionName")
-//        UserDefaults.standard.set(searchSortBy, forKey: "searchSortBy")
-//        UserDefaults.standard.set(searchSecondSortBy, forKey: "searchSecondSortBy")
-//        UserDefaults.standard.set(searchOrderBy, forKey: "searchOrderBy")
-//        UserDefaults.standard.set(searchDisplayBy, forKey: "searchDisplayBy")
-//        UserDefaults.standard.synchronize()
-//
-//        updateDataDisplay()
-//    }
-    
     func startSlideShow() {
         randomCardsTimer = Timer.scheduledTimer(timeInterval: 60 * 5,
                                                 target: self,
@@ -641,8 +595,9 @@ extension FeaturedViewController : UICollectionViewDelegate {
                       "cardMIDs": topViewed!]
         case FeaturedViewControllerSection.latestSets.rawValue:
             let setMID = latestSetMIDs![indexPath.row]
+            let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as! CMSet
             identifier = "showSet"
-            sender = ["setMID": setMID]
+            sender = ["set": set]
             
         default:
             ()

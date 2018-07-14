@@ -26,12 +26,18 @@
 			<key>Values</key>
 			<array>
 				<string>name</string>
+				<string>numberOrder</string>
 				<string>typeSection</string>
+				<string>rarity_.name</string>
+				<string>artist_.name</string>
 			</array>
 			<key>Titles</key>
 			<array>
 				<string>Name</string>
+				<string>Number</string>
 				<string>Type</string>
+				<string>Rarity</string>
+				<string>Artist</string>
 			</array>
 		</dict>
 		<dict>

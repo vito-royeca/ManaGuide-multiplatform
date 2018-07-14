@@ -163,7 +163,7 @@ class CardViewController: BaseViewController {
             
             MBProgressHUD.showAdded(to: tableView, animated: true)
             firstly {
-                ManaKit.sharedInstance.fetchTCGPlayerStorePricing(cardMID: card.objectID)
+                ManaKit.sharedInstance.fetchTCGPlayerStorePricing(card: card)
             }.done {
                 MBProgressHUD.hide(for: self.tableView, animated: true)
             }.catch { error in
@@ -359,13 +359,12 @@ class CardViewController: BaseViewController {
         } else if segue.identifier == "showSet" {
             guard let dest = segue.destination as? SetViewController,
                 let dict = sender as? [String: Any],
-                let setMID = dict["setMID"] as? NSManagedObjectID,
-                let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet else {
+                let set = dict["set"] as? CMSet else {
                 return
             }
             
             dest.title = set.name
-            dest.setMID = setMID
+            dest.set = set
             
         } else if segue.identifier == "showLogin" {
             guard let dest = segue.destination as? UINavigationController,
@@ -712,7 +711,7 @@ extension CardViewController : UITableViewDataSource {
                 }
                 
                 firstly {
-                    ManaKit.sharedInstance.fetchTCGPlayerCardPricing(cardMID: card.objectID)
+                    ManaKit.sharedInstance.fetchTCGPlayerCardPricing(card: card)
                 }.done {
                     self.updatePricing(inCell: c)
                 }.catch { error in
@@ -1367,7 +1366,7 @@ extension CardViewController : UITableViewDelegate {
                     return
                 }
                 
-                performSegue(withIdentifier: "showSet", sender: ["setMID": set.objectID])
+                performSegue(withIdentifier: "showSet", sender: ["set": set])
                 
             case CardViewControllerDetailsSection.otherNames.rawValue:
                 var otherCard: CMCard?

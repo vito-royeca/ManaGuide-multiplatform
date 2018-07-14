@@ -12,7 +12,7 @@
 			<key>Title</key>
 			<string>Sort By</string>
 			<key>Key</key>
-			<string>setSortBy</string>
+			<string>searchSortBy</string>
 			<key>DefaultValue</key>
 			<string>name</string>
 			<key>Values</key>
