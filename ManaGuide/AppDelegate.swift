@@ -31,7 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Fabric.with([Crashlytics.self])
         
         // Twitter
-        TWTRTwitter.sharedInstance().start(withConsumerKey: kTwitterOAuthConsumerKey, consumerSecret: kTwitterOAuthConsumerSecret)
+        TWTRTwitter.sharedInstance().start(withConsumerKey: TwitterSettings.ConsumerKey,
+                                           consumerSecret: TwitterSettings.ConsumerSecret)
         
         // Firebase
         FirebaseApp.configure()
@@ -41,16 +42,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // ManaKit
         ManaKit.sharedInstance.setupResources()
-        ManaKit.sharedInstance.configureTCGPlayer(partnerKey: kTCGPlayerPartnerKey, publicKey: kTCGPlayerPublicKey, privateKey: kTCGPlayerPrivateKey)
+        ManaKit.sharedInstance.configureTCGPlayer(partnerKey: TCGPlayerSettings.PartnerKey,
+                                                  publicKey: TCGPlayerSettings.PublicKey,
+                                                  privateKey: TCGPlayerSettings.PrivateKey)
         FirebaseManager.sharedInstance.monitorUser()
         
         // Set the global tint color
-        window?.tintColor = kGlobalTintColor
+        window?.tintColor = LookAndFeel.GlobalTintColor
 
         // change the account icon
         if let rootVC = window?.rootViewController as? MMDrawerController {
             if let tabBarVC = rootVC.centerViewController as? UITabBarController {
-                tabBarVC.tabBar.items![2].image = UIImage(bgIcon: .FAUserCircle, orientation: UIImageOrientation.up, bgTextColor: UIColor.blue, bgBackgroundColor: UIColor.clear, topIcon: .FAUserCircle, topTextColor: UIColor.clear, bgLarge: false, size: CGSize(width: 30, height: 30))
+                tabBarVC.tabBar.items![2].image = UIImage(bgIcon: .FAUserCircle,
+                                                          orientation: UIImageOrientation.up,
+                                                          bgTextColor: UIColor.blue,
+                                                          bgBackgroundColor: UIColor.clear,
+                                                          topIcon: .FAUserCircle,
+                                                          topTextColor: UIColor.clear,
+                                                          bgLarge: false,
+                                                          size: CGSize(width: 30, height: 30))
             }
         }
         

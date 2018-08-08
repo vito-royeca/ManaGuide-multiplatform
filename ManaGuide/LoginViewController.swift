@@ -416,10 +416,10 @@ class LoginViewController: BaseViewController {
     func githubLogin() -> Promise<AuthCredential> {
         return Promise { seal in
             let oauthswift = OAuth2Swift(
-                consumerKey:    kGitHubOAuthConsumerKey,
-                consumerSecret: kGitHubOAuthConsumerSecret,
-                authorizeUrl:   kGitHubOAuthAuthorizeUrl,
-                accessTokenUrl: kGitHubOAuthAccessTokenUrl,
+                consumerKey:    GitHubSettings.ConsumerKey,
+                consumerSecret: GitHubSettings.ConsumerSecret,
+                authorizeUrl:   GitHubSettings.AuthorizeUrl,
+                accessTokenUrl: GitHubSettings.AccessTokenUrl,
                 responseType:   "code"
             )
             let safari = SafariURLHandler(viewController: self, oauthSwift: oauthswift)//OAuthSwiftOpenURLExternally.sharedInstance
@@ -429,7 +429,7 @@ class LoginViewController: BaseViewController {
             oauthswift.authorizeURLHandler = safari
             
             let _ = oauthswift.authorize(
-                withCallbackURL: URL(string: kGitHubOAuthCallbackURL)!, scope: "user,repo", state: state,
+                withCallbackURL: URL(string: GitHubSettings.CallbackURL)!, scope: "user,repo", state: state,
                 success: { credential, response, parameters in
                     let c = GitHubAuthProvider.credential(withToken: credential.oauthToken)
                     seal.fulfill(c)

@@ -17,7 +17,7 @@ import MBProgressHUD
 import PromiseKit
 
 enum FeaturedViewControllerSection: Int {
-    case randomCards
+    case latestCards
     case latestSets
     case topRated
     case topViewed
@@ -25,7 +25,7 @@ enum FeaturedViewControllerSection: Int {
     var description : String {
         switch self {
         // Use Internationalization, as appropriate.
-        case .randomCards: return "Random Cards"
+        case .latestCards: return "Latest Cards"
         case .latestSets: return "Latest Sets"
         case .topRated: return "Top Rated"
         case .topViewed: return "Top Viewed"
@@ -40,13 +40,13 @@ enum FeaturedViewControllerSection: Int {
 class FeaturedViewController: BaseViewController {
 
     // MARK: Variables
-    var randomCardMIDs: [NSManagedObjectID]?
+    var latestCardMIDs: [NSManagedObjectID]?
     var topRated: [NSManagedObjectID]?
     var topViewed: [NSManagedObjectID]?
-    var latestSetMIDs: [NSManagedObjectID]?
+    var latestSets: [CMSet]?
     var randomCardView: RandomCardView?
     var slideshowTimer: Timer?
-    var randomCardsTimer: Timer?
+    var latestCardsTimer: Timer?
     var flowLayoutHeight = CGFloat(0)
     
     // MARK: Outlets
@@ -71,8 +71,8 @@ class FeaturedViewController: BaseViewController {
 //                                             backgroundColor: .clear)
 //        rightMenuButton.title = nil
         
-        fetchRandomCards()
         fetchLatestSets()
+        fetchLatestCards()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -92,7 +92,7 @@ class FeaturedViewController: BaseViewController {
         flowLayoutHeight = (view.frame.size.height / 3) - 50
         tableView.reloadData()
         
-        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.randomCards.rawValue, section: 0)) else {
+        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.latestCards.rawValue, section: 0)) else {
             return
         }
         guard let carouselView = cell.viewWithTag(100) as? iCarousel else {
@@ -153,9 +153,9 @@ class FeaturedViewController: BaseViewController {
 
     // MARK: Custom methods
     func startSlideShow() {
-        randomCardsTimer = Timer.scheduledTimer(timeInterval: 60 * 5,
+        latestCardsTimer = Timer.scheduledTimer(timeInterval: 60 * 5,
                                                 target: self,
-                                                selector: #selector(fetchRandomCards),
+                                                selector: #selector(fetchLatestCards),
                                                 userInfo: nil, repeats: true)
 
         slideshowTimer = Timer.scheduledTimer(timeInterval: 5,
@@ -166,10 +166,10 @@ class FeaturedViewController: BaseViewController {
     }
     
     func stopSlideShow() {
-        if randomCardsTimer != nil {
-            randomCardsTimer!.invalidate()
+        if latestCardsTimer != nil {
+            latestCardsTimer!.invalidate()
         }
-        randomCardsTimer = nil
+        latestCardsTimer = nil
         
         if slideshowTimer != nil {
             slideshowTimer!.invalidate()
@@ -178,7 +178,7 @@ class FeaturedViewController: BaseViewController {
     }
     
     func showSlide() {
-        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.randomCards.rawValue, section: 0)) else {
+        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.latestCards.rawValue, section: 0)) else {
             return
         }
         guard let carouselView = cell.viewWithTag(100) as? iCarousel else {
@@ -191,11 +191,15 @@ class FeaturedViewController: BaseViewController {
         carouselView.scrollToItem(at: index, animated: true)
     }
     
-    func fetchRandomCards() {
-        let request = CMCard.fetchRequest()
-        request.predicate = NSPredicate(format: "multiverseid != 0")
+    func fetchLatestCards() {
+        guard let latestSets = latestSets else {
+            return
+        }
         
-        randomCardMIDs = [NSManagedObjectID]()
+        let request = CMCard.fetchRequest()
+        request.predicate = NSPredicate(format: "multiverseid != 0 AND set.code IN %@", latestSets.map( { $0.code} ))
+        
+        latestCardMIDs = [NSManagedObjectID]()
         guard let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] else {
             return
         }
@@ -203,10 +207,10 @@ class FeaturedViewController: BaseViewController {
         repeat {
             let card = result[Int(arc4random_uniform(UInt32(result.count)))]
             let cardMID = card.objectID
-            if !randomCardMIDs!.contains(cardMID) {
-                randomCardMIDs!.append(cardMID)
+            if !latestCardMIDs!.contains(cardMID) {
+                latestCardMIDs!.append(cardMID)
             }
-        } while randomCardMIDs!.count <= 5
+        } while latestCardMIDs!.count <= 5
     }
     
     func fetchLatestSets() {
@@ -218,7 +222,7 @@ class FeaturedViewController: BaseViewController {
             return
         }
         
-        latestSetMIDs = result.map({ $0.objectID })
+        latestSets = result
     }
     
     func fetchTopRated() {
@@ -287,7 +291,7 @@ extension FeaturedViewController : UITableViewDataSource {
         }
 
         switch indexPath.row {
-        case FeaturedViewControllerSection.randomCards.rawValue:
+        case FeaturedViewControllerSection.latestCards.rawValue:
             guard let c = tableView.dequeueReusableCell(withIdentifier: "RandomCell"),
                 let carouselView = c.viewWithTag(100) as? iCarousel else {
                 return UITableViewCell(frame: CGRect.zero)
@@ -417,7 +421,7 @@ extension FeaturedViewController : UITableViewDelegate {
         var height = CGFloat(0)
         
         switch indexPath.row {
-        case FeaturedViewControllerSection.randomCards.rawValue,
+        case FeaturedViewControllerSection.latestCards.rawValue,
              FeaturedViewControllerSection.latestSets.rawValue,
              FeaturedViewControllerSection.topRated.rawValue,
              FeaturedViewControllerSection.topViewed.rawValue:
@@ -445,8 +449,8 @@ extension FeaturedViewController : UICollectionViewDataSource {
                 count = topViewed.count
             }
         case FeaturedViewControllerSection.latestSets.rawValue:
-            if let latestSetMIDs = latestSetMIDs {
-                count = latestSetMIDs.count
+            if let latestSets = latestSets {
+                count = latestSets.count
             }
         default:
             ()
@@ -461,10 +465,9 @@ extension FeaturedViewController : UICollectionViewDataSource {
         switch collectionView.tag {
         case FeaturedViewControllerSection.latestSets.rawValue:
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SetItemCell", for: indexPath)
-            let setMID = latestSetMIDs![indexPath.row]
+            let set = latestSets![indexPath.row]
             
-            guard let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as? CMSet,
-                let label100 = cell?.viewWithTag(100) as? UILabel,
+            guard let label100 = cell?.viewWithTag(100) as? UILabel,
                 let label200 = cell?.viewWithTag(200) as? UILabel else {
                 return cell!
             }
@@ -517,9 +520,9 @@ extension FeaturedViewController : UICollectionViewDataSource {
             label300.text = card.name
             
             ratingView.rating = card.rating
-            ratingView.settings.emptyBorderColor = kGlobalTintColor
-            ratingView.settings.filledBorderColor = kGlobalTintColor
-            ratingView.settings.filledColor = kGlobalTintColor
+            ratingView.settings.emptyBorderColor = LookAndFeel.GlobalTintColor
+            ratingView.settings.filledBorderColor = LookAndFeel.GlobalTintColor
+            ratingView.settings.filledColor = LookAndFeel.GlobalTintColor
             ratingView.settings.fillMode = .precise
             
         case FeaturedViewControllerSection.topViewed.rawValue:
@@ -594,8 +597,7 @@ extension FeaturedViewController : UICollectionViewDelegate {
             sender = ["cardIndex": indexPath.row,
                       "cardMIDs": topViewed!]
         case FeaturedViewControllerSection.latestSets.rawValue:
-            let setMID = latestSetMIDs![indexPath.row]
-            let set = ManaKit.sharedInstance.dataStack?.mainContext.object(with: setMID) as! CMSet
+            let set = latestSets![indexPath.row]
             identifier = "showSet"
             sender = ["set": set]
             
@@ -612,8 +614,8 @@ extension FeaturedViewController : iCarouselDataSource {
     func numberOfItems(in carousel: iCarousel) -> Int {
         var items = 0
         
-        if let randomCardMIDs = randomCardMIDs {
-            items = randomCardMIDs.count
+        if let latestCardMIDs = latestCardMIDs {
+            items = latestCardMIDs.count
         }
         return items
     }
@@ -639,8 +641,8 @@ extension FeaturedViewController : iCarouselDataSource {
         }
         
         guard let rcvNew = rcv,
-            let randomCardMIDs = randomCardMIDs,
-            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: randomCardMIDs[index]) as? CMCard else {
+            let latestCardMIDs = latestCardMIDs,
+            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: latestCardMIDs[index]) as? CMCard else {
             return rcv!
         }
         
@@ -670,8 +672,8 @@ extension FeaturedViewController : iCarouselDelegate {
     }
     
     func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
-        guard let randomCardMIDs = randomCardMIDs,
-            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: randomCardMIDs[index]) as? CMCard else {
+        guard let latestCardMIDs = latestCardMIDs,
+            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: latestCardMIDs[index]) as? CMCard else {
             return
         }
         

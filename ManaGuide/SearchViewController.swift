@@ -87,27 +87,27 @@ class SearchViewController: BaseViewController {
     
         if title == "Favorites" {
             NotificationCenter.default.removeObserver(self,
-                                                      name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                                      name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                                       object:nil)
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(self.updateFavorites(_:)),
-                                                   name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                                   name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                                    object: nil)
         } else if title == "Rated Cards" {
             NotificationCenter.default.removeObserver(self,
-                                                      name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                                      name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                       object:nil)
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(self.updateRatedCards(_:)),
-                                                   name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                                   name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                    object: nil)
         }
         
         if firstLoad {
             if title == "Favorites" {
-                updateFavorites(Notification(name: NSNotification.Name(rawValue: kFavoriteToggleNotification)))
+                updateFavorites(Notification(name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled)))
             } else if title == "Rated Cards" {
-                updateRatedCards(Notification(name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification)))
+                updateRatedCards(Notification(name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated)))
             }
             updateDataDisplay()
             
@@ -119,11 +119,11 @@ class SearchViewController: BaseViewController {
         super.viewWillDisappear(animated)
         
         NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                                  name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                                   object:nil)
         
         NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                                  name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                   object:nil)
     }
     

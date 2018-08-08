@@ -249,27 +249,27 @@ class CardViewController: BaseViewController {
         super.viewWillAppear(animated)
 
         NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                                  name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                   object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reloadViewController(_:)),
-                                               name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                               name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                object: nil)
         
         NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name(rawValue: kCardViewsUpdatedNotification),
+                                                  name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
                                                   object:nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reloadViewController(_:)),
-                                               name: NSNotification.Name(rawValue: kCardViewsUpdatedNotification),
+                                               name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
                                                object: nil)
         
         NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                                  name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                                   object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reloadViewController(_:)),
-                                               name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                               name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                                object: nil)
         
         NotificationCenter.default.removeObserver(self,
@@ -291,15 +291,15 @@ class CardViewController: BaseViewController {
         super.viewWillAppear(animated)
         
         NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                                                  name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                   object: nil)
         
         NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name(rawValue: kCardViewsUpdatedNotification),
+                                                  name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
                                                   object:nil)
         
         NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                                                  name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                                   object: nil)
         
         NotificationCenter.default.removeObserver(self,
@@ -467,9 +467,9 @@ class CardViewController: BaseViewController {
         
         let ratingView = CosmosView(frame: CGRect.zero)
         ratingView.rating = rating
-        ratingView.settings.emptyBorderColor = kGlobalTintColor
-        ratingView.settings.filledBorderColor = kGlobalTintColor
-        ratingView.settings.filledColor = kGlobalTintColor
+        ratingView.settings.emptyBorderColor = LookAndFeel.GlobalTintColor
+        ratingView.settings.filledBorderColor = LookAndFeel.GlobalTintColor
+        ratingView.settings.filledColor = LookAndFeel.GlobalTintColor
         ratingView.settings.fillMode = .full
         
         let nyAlertController = NYAlertViewController(nibName: nil, bundle: nil)
@@ -485,7 +485,7 @@ class CardViewController: BaseViewController {
 
         nyAlertController.title = "Rating"
         nyAlertController.message = rating > 0 ? "Update your rating for this card." : "Submit your rating for this card."
-        nyAlertController.buttonColor = kGlobalTintColor
+        nyAlertController.buttonColor = LookAndFeel.GlobalTintColor
         nyAlertController.addAction(cancelAction)
         nyAlertController.addAction(confirmAction)
         nyAlertController.alertViewContentView = ratingView
@@ -756,9 +756,9 @@ extension CardViewController : UITableViewDataSource {
                     self.ratingAction()
                 }
                 ratingView.rating = card.rating //Double(arc4random_uniform(5) + 1)
-                ratingView.settings.emptyBorderColor = kGlobalTintColor
-                ratingView.settings.filledBorderColor = kGlobalTintColor
-                ratingView.settings.filledColor = kGlobalTintColor
+                ratingView.settings.emptyBorderColor = LookAndFeel.GlobalTintColor
+                ratingView.settings.filledBorderColor = LookAndFeel.GlobalTintColor
+                ratingView.settings.filledColor = LookAndFeel.GlobalTintColor
                 ratingView.settings.fillMode = .precise
                 
                 label101.text = "\(card.ratings) Rating\(card.ratings > 1 ? "s" : "")"
@@ -777,7 +777,7 @@ extension CardViewController : UITableViewDataSource {
                 }
                 label200.setFAText(prefixText: "", icon: isFavorite ? .FAHeart : .FAHeartO, postfixText: "", size: CGFloat(30))
                 label200.addGestureRecognizer(favoriteTapGestureRecognizer)
-                label200.textColor = kGlobalTintColor
+                label200.textColor = LookAndFeel.GlobalTintColor
                 
                 label300.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
                 

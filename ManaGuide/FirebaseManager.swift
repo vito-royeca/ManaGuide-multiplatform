@@ -123,7 +123,7 @@ class FirebaseManager: NSObject {
                 
                 ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
                     try! backgroundContext.save()
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: kCardRatingUpdatedNotification),
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                     object: nil,
                                                     userInfo: ["card": card])
                     
@@ -175,7 +175,7 @@ class FirebaseManager: NSObject {
                 
                 ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
                     try! backgroundContext.save()
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: kCardViewsUpdatedNotification),
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardViewsUpdated),
                                                     object: nil,
                                                     userInfo: ["card": card])
                 }
@@ -338,14 +338,14 @@ class FirebaseManager: NSObject {
                 if let value = snapshot.value as? [String : Any] {
                     if let dict = value["favorites"] as? [String : Any] {
                         self.favoriteMIDs = self.cardMIDs(withIds: Array(dict.keys))
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                                         object: nil,
                                                         userInfo: nil)
                     }
                     
                     if let dict = value["ratedCards"] as? [String : Any] {
                         self.ratedCardMIDs = self.cardMIDs(withIds: Array(dict.keys))
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                         object: nil,
                                                         userInfo: nil)
                     }
@@ -377,10 +377,10 @@ class FirebaseManager: NSObject {
         userRef = nil
         favoriteMIDs = [NSManagedObjectID]()
         ratedCardMIDs = [NSManagedObjectID]()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: kFavoriteToggleNotification),
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                         object: nil,
                                         userInfo: nil)
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: kCardRatingUpdatedNotification),
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                         object: nil,
                                         userInfo: nil)
     }
