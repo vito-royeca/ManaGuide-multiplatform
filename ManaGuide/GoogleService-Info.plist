@@ -7,34 +7,34 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>976672670197-h4fs0sbbfboi92hsbvjr4gamepnas08m.apps.googleusercontent.com</string>
+	<string>698482034947-4jds33fjgqfn5sata7hl590ihnlls3me.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.976672670197-h4fs0sbbfboi92hsbvjr4gamepnas08m</string>
+	<string>com.googleusercontent.apps.698482034947-4jds33fjgqfn5sata7hl590ihnlls3me</string>
 	<key>API_KEY</key>
-	<string>AIzaSyD6Hy0O_xlU2yDK8kOJG6BUX0ykAXMuQbw</string>
+	<string>AIzaSyCiqHe9B4ROUpsTj0apB69_rrU3cPzUNto</string>
 	<key>GCM_SENDER_ID</key>
-	<string>976672670197</string>
+	<string>698482034947</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.jovitoroyeca.ManaGuide</string>
 	<key>PROJECT_ID</key>
-	<string>mana-guide-dev</string>
+	<string>mana-guide</string>
 	<key>STORAGE_BUCKET</key>
-	<string>mana-guide-dev.appspot.com</string>
+	<string>mana-guide.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_GCM_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:976672670197:ios:4d0a02a6fd237367</string>
+	<string>1:698482034947:ios:4d0a02a6fd237367</string>
 	<key>DATABASE_URL</key>
-	<string>https://mana-guide-dev.firebaseio.com</string>
+	<string>https://mana-guide.firebaseio.com</string>
 </dict>
 </plist>

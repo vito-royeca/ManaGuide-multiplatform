@@ -11,12 +11,6 @@
 
   "data": [
     {
-      "filter": "Features",
-      "keyword": {
-        "color": "#ffffff"
-      }
-    },
-    {
       "filter": "Sets",
       "keyword": {
         "color": "#ffffff"
@@ -29,7 +23,7 @@
       }
     },
     {
-      "filter": "Card",
+      "filter": "Account",
       "keyword": {
         "color": "#ffffff"
       }

@@ -38,7 +38,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         Database.database().isPersistenceEnabled = true
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
-        FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
+        FBSDKApplicationDelegate.sharedInstance().application(application,
+                                                              didFinishLaunchingWithOptions: launchOptions)
         
         // ManaKit
         ManaKit.sharedInstance.setupResources()
@@ -94,11 +95,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         var handled = false
         
         if url.absoluteString.hasPrefix("fb") {
-            handled = FBSDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
+            handled = FBSDKApplicationDelegate.sharedInstance().application(app,
+                                                                            open: url,
+                                                                            options: options)
         } else if url.absoluteString.hasPrefix("twitterkit") {
-            handled = TWTRTwitter.sharedInstance().application(app, open: url, options: options)
+            handled = TWTRTwitter.sharedInstance().application(app,
+                                                               open: url,
+                                                               options: options)
         } else if url.absoluteString.hasPrefix("com.googleusercontent.apps") {
-            handled = GIDSignIn.sharedInstance().handle(url, sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String, annotation: options[UIApplicationOpenURLOptionsKey.annotation])
+            handled = GIDSignIn.sharedInstance().handle(url,
+                                                        sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String,
+                                                        annotation: options[UIApplicationOpenURLOptionsKey.annotation])
         } else if (url.host == "oauth-callback") {
             OAuthSwift.handle(url: url)
             handled = true
