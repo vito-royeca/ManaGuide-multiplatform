@@ -18,7 +18,7 @@ platform :ios do
   lane :screenshots do
   	capture_screenshots(workspace: "ManaGuide.xcworkspace", scheme: "ManaGuideUITests")
   	frameit(white: true)
-  	deliver
+  	#deliver
   end
 
   lane :beta do
