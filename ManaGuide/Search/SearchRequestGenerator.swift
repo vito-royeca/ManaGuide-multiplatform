@@ -124,14 +124,14 @@ class SearchRequestGenerator: NSObject {
         UserDefaults.standard.synchronize()
     }
     
-    func createSearchRequest(query: String?, oldRequest: NSFetchRequest<NSFetchRequestResult>?) -> NSFetchRequest<NSFetchRequestResult>? {
+    func createSearchRequest(query: String?, oldRequest: NSFetchRequest<CMCard>?) -> NSFetchRequest<CMCard>? {
         guard let searchOrderBy = searchValue(for: .orderBy) as? Bool,
             let searchSectionName = searchValue(for: .sectionName) as? String,
             let searchSecondSortBy = searchValue(for: .secondSortBy) as? String else {
             return nil
         }
         
-        let newRequest = CMCard.fetchRequest()
+        let newRequest: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         var predicate: NSPredicate?
         
         if let kp = createKeywordPredicate(query: query) {

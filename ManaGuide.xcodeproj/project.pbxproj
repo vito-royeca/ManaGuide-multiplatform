@@ -17,7 +17,6 @@
 		110BB52D1F20892B00086841 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB52C1F20892B00086841 /* SearchViewController.swift */; };
 		110BB52E1F20892B00086841 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB52C1F20892B00086841 /* SearchViewController.swift */; };
 		111D5A6C20AF57590046285B /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D5A6B20AF57590046285B /* ArtistsViewController.swift */; };
-		111D5A6D20AF57590046285B /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D5A6B20AF57590046285B /* ArtistsViewController.swift */; };
 		111D5A6E20AF57590046285B /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D5A6B20AF57590046285B /* ArtistsViewController.swift */; };
 		113661591F2F912500DCBB41 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 113661581F2F912500DCBB41 /* data */; };
 		1138A3C920F76D590023423C /* Throttler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3C820F76D590023423C /* Throttler.swift */; };
@@ -27,7 +26,6 @@
 		1138A3CE20F76E870023423C /* ThrottlingSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3CC20F76E870023423C /* ThrottlingSearchController.swift */; };
 		1138A3CF20F76E870023423C /* ThrottlingSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3CC20F76E870023423C /* ThrottlingSearchController.swift */; };
 		1138A3D120F786E00023423C /* SearchRequestGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3D020F786E00023423C /* SearchRequestGenerator.swift */; };
-		1138A3D220F786E00023423C /* SearchRequestGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3D020F786E00023423C /* SearchRequestGenerator.swift */; };
 		1138A3D320F786E00023423C /* SearchRequestGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3D020F786E00023423C /* SearchRequestGenerator.swift */; };
 		1140F0C71F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
 		1140F0C81F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
@@ -43,7 +41,6 @@
 		11447EB320D1764000DFF5C7 /* RandomCardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11447EB120D1764000DFF5C7 /* RandomCardView.xib */; };
 		11447EB420D1764000DFF5C7 /* RandomCardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11447EB120D1764000DFF5C7 /* RandomCardView.xib */; };
 		11447EB620D177F700DFF5C7 /* RandomCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11447EB520D177F700DFF5C7 /* RandomCardView.swift */; };
-		11447EB720D177F700DFF5C7 /* RandomCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11447EB520D177F700DFF5C7 /* RandomCardView.swift */; };
 		11447EB820D177F700DFF5C7 /* RandomCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11447EB520D177F700DFF5C7 /* RandomCardView.swift */; };
 		11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */; };
 		11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */; };
@@ -85,7 +82,6 @@
 		11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
 		11B2AA341F29DE490067E833 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
 		11C7B45520D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */; };
-		11C7B45620D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */; };
 		11C7B45720D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */; };
 		11C7B45820D6A7E2009D63F4 /* StoreTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11C7B45420D6A7E2009D63F4 /* StoreTableViewCell.xib */; };
 		11C7B45920D6A7E2009D63F4 /* StoreTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11C7B45420D6A7E2009D63F4 /* StoreTableViewCell.xib */; };
@@ -95,6 +91,7 @@
 		11CEE05B20D0012300D72186 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11CEE05A20D0012300D72186 /* Launch Screen.storyboard */; };
 		11CEE05C20D0012300D72186 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11CEE05A20D0012300D72186 /* Launch Screen.storyboard */; };
 		11CEE05D20D0012300D72186 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11CEE05A20D0012300D72186 /* Launch Screen.storyboard */; };
+		11D55BCC2132545A002F8F49 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7651F224874004EF296 /* SettingsViewController.swift */; };
 		11E2E3EA20D11AF500F9DB47 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11E2E3E920D11AF500F9DB47 /* StoreKit.framework */; };
 		11E2E3EF20D11C2C00F9DB47 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11E2E3EE20D11C2C00F9DB47 /* GameKit.framework */; };
 		11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */; };
@@ -265,14 +262,20 @@
 		110BB4F81F207C6400086841 /* ManaGuide */ = {
 			isa = PBXGroup;
 			children = (
+				11D55BC3213250E1002F8F49 /* Featured */,
+				11D55BC421325107002F8F49 /* Sets */,
+				11D55BC5213253A4002F8F49 /* Search */,
+				11D55BC6213253BD002F8F49 /* Account */,
+				11D55BC9213253E8002F8F49 /* More */,
+				11D55BCA21325414002F8F49 /* Card */,
+				11D55BCB2132543F002F8F49 /* Utilities */,
+				1147B7591F22379F004EF296 /* BaseViewController.swift */,
 				1195B2F320D4F1720026EA99 /* ManaGuide-Bridging-Header.h */,
 				1195B2F420D4F1720026EA99 /* ManaGuideTests-Bridging-Header.h */,
 				1195B2F520D4F1720026EA99 /* ManaGuideUITests-Bridging-Header.h */,
 				11E2E3EB20D11AFD00F9DB47 /* ManaGuide.entitlements */,
-				1140F0CF1F42CBD80023E107 /* Utilities */,
 				110BB4F91F207C6400086841 /* AppDelegate.swift */,
 				110BB5001F207C6400086841 /* Assets.xcassets */,
-				110BB5281F2084E100086841 /* Controller */,
 				113661581F2F912500DCBB41 /* data */,
 				1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */,
 				110BB5051F207C6400086841 /* Info.plist */,
@@ -309,36 +312,8 @@
 				11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */,
 				11CEE05A20D0012300D72186 /* Launch Screen.storyboard */,
 				110BB4FD1F207C6400086841 /* Main.storyboard */,
-				11447EB520D177F700DFF5C7 /* RandomCardView.swift */,
-				11447EB120D1764000DFF5C7 /* RandomCardView.xib */,
-				11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */,
-				11C7B45420D6A7E2009D63F4 /* StoreTableViewCell.xib */,
 			);
 			name = View;
-			sourceTree = "<group>";
-		};
-		110BB5281F2084E100086841 /* Controller */ = {
-			isa = PBXGroup;
-			children = (
-				118281B020B67FA500865172 /* AccountViewController.swift */,
-				111D5A6B20AF57590046285B /* ArtistsViewController.swift */,
-				1165CD751F377F58006CC433 /* BannedListViewController.swift */,
-				1147B7591F22379F004EF296 /* BaseViewController.swift */,
-				11B2AA321F29DE490067E833 /* CardViewController.swift */,
-				1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */,
-				110BB5291F20891D00086841 /* FeaturedViewController.swift */,
-				1150BCED20B92E4700A36FCD /* LoginViewController.swift */,
-				1165CD721F377395006CC433 /* MoreViewController.swift */,
-				11F336B120BBB47B0007552F /* PDFViewerViewController.swift */,
-				1138A3D020F786E00023423C /* SearchRequestGenerator.swift */,
-				110BB52C1F20892B00086841 /* SearchViewController.swift */,
-				1147B7561F223607004EF296 /* SetsViewController.swift */,
-				1147B7651F224874004EF296 /* SettingsViewController.swift */,
-				1147B7621F224198004EF296 /* SetViewController.swift */,
-				1138A3C820F76D590023423C /* Throttler.swift */,
-				1138A3CC20F76E870023423C /* ThrottlingSearchController.swift */,
-			);
-			name = Controller;
 			sourceTree = "<group>";
 		};
 		1140F0CA1F42CA150023E107 /* Model */ = {
@@ -349,7 +324,65 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
-		1140F0CF1F42CBD80023E107 /* Utilities */ = {
+		11D55BC3213250E1002F8F49 /* Featured */ = {
+			isa = PBXGroup;
+			children = (
+				110BB5291F20891D00086841 /* FeaturedViewController.swift */,
+				11447EB520D177F700DFF5C7 /* RandomCardView.swift */,
+				11447EB120D1764000DFF5C7 /* RandomCardView.xib */,
+			);
+			path = Featured;
+			sourceTree = "<group>";
+		};
+		11D55BC421325107002F8F49 /* Sets */ = {
+			isa = PBXGroup;
+			children = (
+				1147B7561F223607004EF296 /* SetsViewController.swift */,
+				1147B7621F224198004EF296 /* SetViewController.swift */,
+			);
+			path = Sets;
+			sourceTree = "<group>";
+		};
+		11D55BC5213253A4002F8F49 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				1138A3D020F786E00023423C /* SearchRequestGenerator.swift */,
+				110BB52C1F20892B00086841 /* SearchViewController.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
+		11D55BC6213253BD002F8F49 /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				118281B020B67FA500865172 /* AccountViewController.swift */,
+				1150BCED20B92E4700A36FCD /* LoginViewController.swift */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
+		11D55BC9213253E8002F8F49 /* More */ = {
+			isa = PBXGroup;
+			children = (
+				111D5A6B20AF57590046285B /* ArtistsViewController.swift */,
+				1165CD751F377F58006CC433 /* BannedListViewController.swift */,
+				1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */,
+				1165CD721F377395006CC433 /* MoreViewController.swift */,
+			);
+			path = More;
+			sourceTree = "<group>";
+		};
+		11D55BCA21325414002F8F49 /* Card */ = {
+			isa = PBXGroup;
+			children = (
+				11B2AA321F29DE490067E833 /* CardViewController.swift */,
+				11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */,
+				11C7B45420D6A7E2009D63F4 /* StoreTableViewCell.xib */,
+			);
+			path = Card;
+			sourceTree = "<group>";
+		};
+		11D55BCB2132543F002F8F49 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
 				118FDC6E20D50499002FA5E8 /* CardActivityItemProvider.swift */,
@@ -358,10 +391,14 @@
 				1140F0D01F42CC020023E107 /* FirebaseManager.swift */,
 				11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */,
 				11F3BA3020D4141900511388 /* MGUtilities.swift */,
+				11F336B120BBB47B0007552F /* PDFViewerViewController.swift */,
+				1147B7651F224874004EF296 /* SettingsViewController.swift */,
 				118FDC7620D515E5002FA5E8 /* ShareActivity.xcassets */,
+				1138A3C820F76D590023423C /* Throttler.swift */,
+				1138A3CC20F76E870023423C /* ThrottlingSearchController.swift */,
 				11FC811120D52D0D001407C6 /* TwitterShareActivity.swift */,
 			);
-			name = Utilities;
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		CCCF4703A6CA69F4288EC386 /* Pods */ = {
@@ -994,19 +1031,16 @@
 				1150BCEF20B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				1138A3CA20F76D590023423C /* Throttler.swift in Sources */,
 				11F3BA3220D4141900511388 /* MGUtilities.swift in Sources */,
-				11C7B45620D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */,
 				1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				118281B220B67FA500865172 /* AccountViewController.swift in Sources */,
 				11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
-				1138A3D220F786E00023423C /* SearchRequestGenerator.swift in Sources */,
 				1138A3CE20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
 				118FDC7020D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
 				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
+				11D55BCC2132545A002F8F49 /* SettingsViewController.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
 				11FC811320D52D0D001407C6 /* TwitterShareActivity.swift in Sources */,
-				11447EB720D177F700DFF5C7 /* RandomCardView.swift in Sources */,
-				111D5A6D20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				11448A6320CD3849008EFC40 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

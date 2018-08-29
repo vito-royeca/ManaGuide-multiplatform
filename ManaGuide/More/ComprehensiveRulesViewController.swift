@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DATASource
+import CoreData
 import Font_Awesome_Swift
 import ManaKit
 
@@ -16,8 +16,8 @@ class ComprehensiveRulesViewController: BaseViewController {
     let searchController = UISearchController(searchResultsController: nil)
 
     // MARK: Variables
-    var dataSource: DATASource?
-    var request: NSFetchRequest<NSFetchRequestResult>?
+    var fetchedResultsController: NSFetchedResultsController<CMRule>?
+    var request: NSFetchRequest<CMRule>?
     var rule: CMRule?
     var sectionName: String?
     var sectionIndexTitles = [String]()
@@ -50,7 +50,7 @@ class ComprehensiveRulesViewController: BaseViewController {
             request!.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
             request!.predicate = NSPredicate(format: "parent = nil")
         }
-        dataSource = getDataSource(request, sectionName: sectionName)
+        fetchedResultsController = getFetchedResultsController(with: request)
         updateSections()
         tableView.reloadData()
     }
@@ -65,18 +65,18 @@ class ComprehensiveRulesViewController: BaseViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showRule" {
-            guard let dest = segue.destination as? ComprehensiveRulesViewController,
+            guard let fetchedResultsController = fetchedResultsController,
+                let dest = segue.destination as? ComprehensiveRulesViewController,
                 let cell = sender as? UITableViewCell else {
                 return
             }
             guard let indexPath = tableView.indexPath(for: cell) else {
                 return
             }
-            guard let r = dataSource!.object(indexPath) as? CMRule else {
-                return
-            }
+            let r = fetchedResultsController.object(at: indexPath)
             
-            let newRequest = CMRule.fetchRequest()
+            
+            let newRequest: NSFetchRequest<CMRule> = CMRule.fetchRequest()
             newRequest.sortDescriptors = [NSSortDescriptor(key: "term", ascending: true)]
             newRequest.predicate = NSPredicate(format: "parent = %@", r)
             
@@ -101,19 +101,52 @@ class ComprehensiveRulesViewController: BaseViewController {
     }
     
     // MARK: Custom methods
-    func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?, sectionName: String?) -> DATASource? {
-        let ds = DATASource(tableView: tableView,
-                            cellIdentifier: "DynamicHeightCell",
-                            fetchRequest: fetchRequest!,
-                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: sectionName)
-        ds.delegate = self
-
-        return ds
+//    func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?, sectionName: String?) -> DATASource? {
+//        let ds = DATASource(tableView: tableView,
+//                            cellIdentifier: "DynamicHeightCell",
+//                            fetchRequest: fetchRequest!,
+//                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
+//                            sectionName: sectionName)
+//        ds.delegate = self
+//
+//        return ds
+//    }
+    func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMRule>?) -> NSFetchedResultsController<CMRule> {
+        let context = ManaKit.sharedInstance.dataStack!.viewContext
+        var newRequest: NSFetchRequest<CMRule>?
+        
+        if let fetchRequest = fetchRequest {
+            newRequest = fetchRequest
+        } else {
+            // Create a default fetchRequest
+            newRequest = CMRule.fetchRequest()
+            newRequest!.sortDescriptors = [NSSortDescriptor(key: "term", ascending: true)]
+        }
+        
+        // Create Fetched Results Controller
+        let frc = NSFetchedResultsController(fetchRequest: newRequest!,
+                                             managedObjectContext: context,
+                                             sectionNameKeyPath: nil,
+                                             cacheName: nil)
+        
+        // Configure Fetched Results Controller
+        frc.delegate = self
+        
+        // perform fetch
+        do {
+            try frc.performFetch()
+        } catch {
+            let fetchError = error as NSError
+            print("Unable to Perform Fetch Request")
+            print("\(fetchError), \(fetchError.localizedDescription)")
+        }
+        
+        return frc
     }
-    
+
     func updateSections() {
-        guard let dataSource = dataSource,
+        guard let fetchedResultsController = fetchedResultsController,
+            let sections = fetchedResultsController.sections,
             let rule = rule else {
             return
         }
@@ -132,10 +165,10 @@ class ComprehensiveRulesViewController: BaseViewController {
                         }
                     }
                     
-                    let sections = dataSource.numberOfSections(in: tableView)
-                    if sections > 0 {
-                        for i in 0...sections - 1 {
-                            if let sectionTitle = dataSource.titleForHeader(i) {
+                    let count = sections.count
+                    if count > 0 {
+                        for i in 0...count - 1 {
+                            if let sectionTitle = sections[i].indexTitle { //dataSource.titleForHeader(i) {
                                 sectionTitles.append(sectionTitle)
                             }
                         }
@@ -260,7 +293,7 @@ class ComprehensiveRulesViewController: BaseViewController {
             return
         }
         
-        var newRequest:NSFetchRequest<NSFetchRequestResult>?
+        var newRequest: NSFetchRequest<CMRule>?
 
         if text.count > 0 {
             newRequest = CMRule.fetchRequest()
@@ -275,11 +308,11 @@ class ComprehensiveRulesViewController: BaseViewController {
                                   NSPredicate(format: "definition CONTAINS[cd] %@", text)]
                 newRequest!.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
             }
-            dataSource = getDataSource(newRequest, sectionName: nil)
+            fetchedResultsController = getFetchedResultsController(with: newRequest)
             sectionIndexTitles = [String]()
             sectionTitles = [String]()
         } else {
-            dataSource = getDataSource(request, sectionName: nil)
+            fetchedResultsController = getFetchedResultsController(with: nil)
             if let rule = rule {
                 if rule.term == "Glossary" {
                     updateSections()
@@ -292,53 +325,30 @@ class ComprehensiveRulesViewController: BaseViewController {
     }
 }
 
-// MARK: UITableViewDelegate
-extension ComprehensiveRulesViewController : UITableViewDelegate {
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        guard let r = dataSource!.object(indexPath) as? CMRule else {
-            return nil
+// MARK: UITableViewDataSource
+extension ComprehensiveRulesViewController : UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let fetchedResultsController = fetchedResultsController,
+            let rules = fetchedResultsController.fetchedObjects else {
+            return 0
         }
         
-        guard let children = r.children else {
-            return nil
-        }
-        
-        guard children.allObjects.count > 0 else {
-            return nil
-        }
-        
-        return indexPath
-    }
-}
-
-// MARK: DATASourceDelegate
-extension ComprehensiveRulesViewController : DATASourceDelegate {
-    
-    // return list of section titles to display in section index view (e.g. "ABCD...Z#")
-    func sectionIndexTitlesForDataSource(_ dataSource: DATASource, tableView: UITableView) -> [String] {
-        return sectionIndexTitles
+        return rules.count
     }
     
-    // tell table which section corresponds to section title/index (e.g. "B",1))
-    func dataSource(_ dataSource: DATASource, tableView: UITableView, sectionForSectionIndexTitle title: String, atIndex index: Int) -> Int {
-        var sectionIndex = 0
-
-        for i in 0...sectionTitles.count - 1 {
-            if sectionTitles[i].hasPrefix(title) {
-                sectionIndex = i
-                break
-            }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let fetchedResultsController = fetchedResultsController else {
+            fatalError("Unexpected indexPath: \(indexPath)")
         }
-
-        return sectionIndex
-    }
-    
-    func dataSource(_ dataSource: DATASource, configureTableViewCell cell: UITableViewCell, withItem item: NSManagedObject, atIndexPath indexPath: IndexPath) {
-        guard let r = item as? CMRule,
-            let label = cell.viewWithTag(100) as? UILabel else {
-                return
+        let cell = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell",
+                                                 for: indexPath)
+        guard let label = cell.viewWithTag(100) as? UILabel else {
+            fatalError("No view with tag 100")
         }
         
+        let r = fetchedResultsController.object(at: indexPath)
+        
+        // Configure Cell
         if let children = r.children {
             if children.allObjects.count > 0 {
                 cell.accessoryType = .disclosureIndicator
@@ -355,8 +365,45 @@ extension ComprehensiveRulesViewController : DATASourceDelegate {
                 }
             }
         }
-        
         label.attributedText = self.attributedTextFor(r)
+        
+        return cell
+    }
+    
+    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        return sectionIndexTitles
+    }
+    
+    func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
+        var sectionIndex = 0
+        
+        for i in 0...sectionTitles.count - 1 {
+            if sectionTitles[i].hasPrefix(title) {
+                sectionIndex = i
+                break
+            }
+        }
+        
+        return sectionIndex
+    }
+}
+
+extension ComprehensiveRulesViewController : UITableViewDelegate {
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        guard let fetchedResultsController = fetchedResultsController else {
+            fatalError("Unexpected indexPath: \(indexPath)")
+        }
+        let r = fetchedResultsController.object(at: indexPath)
+        
+        guard let children = r.children else {
+            return nil
+        }
+        
+        guard children.allObjects.count > 0 else {
+            return nil
+        }
+        
+        return indexPath
     }
 }
 
@@ -367,4 +414,10 @@ extension ComprehensiveRulesViewController : UISearchResultsUpdating {
         perform(#selector(doSearch), with: nil, afterDelay: 0.5)
     }
 }
+
+// MARK: NSFetchedResultsControllerDelegate
+extension ComprehensiveRulesViewController : NSFetchedResultsControllerDelegate {
+    
+}
+
 

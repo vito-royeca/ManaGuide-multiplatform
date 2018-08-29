@@ -196,13 +196,11 @@ class FeaturedViewController: BaseViewController {
             return
         }
         
-        let request = CMCard.fetchRequest()
+        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         request.predicate = NSPredicate(format: "multiverseid != 0 AND set.code IN %@", latestSets.map( { $0.code} ))
         
         latestCardMIDs = [NSManagedObjectID]()
-        guard let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] else {
-            return
-        }
+        let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
         
         repeat {
             let card = result[Int(arc4random_uniform(UInt32(result.count)))]
@@ -214,15 +212,11 @@ class FeaturedViewController: BaseViewController {
     }
     
     func fetchLatestSets() {
-        let request = CMSet.fetchRequest()
+        let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
         request.fetchLimit = 10
         
-        guard let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMSet] else {
-            return
-        }
-        
-        latestSets = result
+        latestSets = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
     }
     
     func fetchTopRated() {

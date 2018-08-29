@@ -172,7 +172,7 @@ class MoreViewController: BaseViewController {
                 return
             }
             
-            dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
+            dest.request = dict["request"] as? NSFetchRequest<CMCard>
             dest.title = dict["title"] as? String
             dest.customSectionName = "nameSection"
         }
@@ -311,7 +311,7 @@ extension MoreViewController : UITableViewDelegate {
                 sender = nil
                 
             case MoreViewControllerListRow.reserved.rawValue:
-                let request = CMCard.fetchRequest()
+                let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
                 request.predicate = NSPredicate(format: "reserved = true")
                 identifier = "showSearch"
                 sender = ["title": "Reserved List",
@@ -331,3 +331,4 @@ extension MoreViewController : UITableViewDelegate {
         performSegue(withIdentifier: identifier, sender: sender)
     }
 }
+

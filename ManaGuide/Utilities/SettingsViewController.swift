@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 import InAppSettingsKit
 import ManaKit
 
@@ -34,11 +35,11 @@ extension SettingsViewController: IASKSettingsDelegate {
         var array = [String]()
         
         if specifier.key() == "slideshowSet" {
-            let request = CMSet.fetchRequest()
+            let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
             request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false),
                                        NSSortDescriptor(key: "name", ascending: true)]
             
-            guard let sets = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMSet] else {
+            guard let sets = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) else {
                 return array
             }
             
@@ -54,11 +55,11 @@ extension SettingsViewController: IASKSettingsDelegate {
         var array = [String]()
         
         if specifier.key() == "slideshowSet" {
-            let request = CMSet.fetchRequest()
+            let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
             request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false),
                                        NSSortDescriptor(key: "name", ascending: true)]
             
-            guard let sets = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMSet] else {
+            guard let sets = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) else {
                 return array
             }
             

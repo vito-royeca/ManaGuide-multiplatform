@@ -8,7 +8,7 @@
 
 import UIKit
 import Cosmos
-import DATASource
+import CoreData
 import FBSDKCoreKit
 import FBSDKShareKit
 import FBSDKMessengerShareKit
@@ -128,7 +128,7 @@ class CardViewController: BaseViewController {
             if let printings_ = card.printings_ {
                 let sets = printings_.allObjects as! [CMSet]
                 var filteredSets = [CMSet]()
-                let request = CMCard.fetchRequest()
+                let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
                 
                 if let set = card.set {
                     filteredSets = sets.filter({ $0.code != set.code})
@@ -139,7 +139,7 @@ class CardViewController: BaseViewController {
                                            NSSortDescriptor(key: "mciNumber", ascending: true)]
                 request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, filteredSets.map({$0.code}))
                 
-                if let otherPrintings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) as? [CMCard] {
+                if let otherPrintings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) {
                     otherPrintingMIDs = [NSManagedObjectID]()
                     for c in otherPrintings {
                         otherPrintingMIDs!.append(c.objectID)
@@ -353,7 +353,7 @@ class CardViewController: BaseViewController {
                 return
             }
             
-            dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
+            dest.request = dict["request"] as? NSFetchRequest<CMCard>
             dest.title = dict["title"] as? String
             
         } else if segue.identifier == "showSet" {
@@ -599,7 +599,7 @@ class CardViewController: BaseViewController {
     
     func updatePricing(inCell cell: UITableViewCell) {
         guard let card = loadCard(atIndex: cardIndex),
-            let pricing = ManaKit.sharedInstance.findObject("CMCardPricing", objectFinder: ["card.id": card.id as AnyObject], createIfNotFound: true) as? CMCardPricing,
+            let pricing = card.pricing,
             let label100 = cell.viewWithTag(100) as? UILabel,
             let label200 = cell.viewWithTag(200) as? UILabel,
             let label300 = cell.viewWithTag(300) as? UILabel,
@@ -1350,7 +1350,7 @@ extension CardViewController : UITableViewDelegate {
                     return
                 }
                 
-                let request = CMCard.fetchRequest()
+                let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
                 let predicate = NSPredicate(format: "artist_.name = %@", artist.name!)
                 
                 request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),

@@ -91,6 +91,7 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
+                                    <outlet property="dataSource" destination="t1B-qF-FHV" id="gcv-gi-NQ6"/>
                                     <outlet property="delegate" destination="t1B-qF-FHV" id="X1v-r9-zwA"/>
                                 </connections>
                             </tableView>
@@ -238,6 +239,7 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
+                                    <outlet property="dataSource" destination="eLp-Dt-MRm" id="FSY-cW-CQv"/>
                                     <outlet property="delegate" destination="eLp-Dt-MRm" id="4Vb-uO-Qam"/>
                                 </connections>
                             </tableView>
@@ -297,6 +299,7 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
+                                    <outlet property="dataSource" destination="mlE-sb-2no" id="5HV-cg-g1d"/>
                                     <outlet property="delegate" destination="mlE-sb-2no" id="ufT-yt-5De"/>
                                 </connections>
                             </tableView>
@@ -505,6 +508,7 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
+                                    <outlet property="dataSource" destination="l7I-xe-vzR" id="B0q-3T-7hg"/>
                                     <outlet property="delegate" destination="l7I-xe-vzR" id="5JO-IA-n3w"/>
                                 </connections>
                             </tableView>
@@ -924,6 +928,7 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
+                                    <outlet property="dataSource" destination="8F9-G6-Erf" id="Yc1-ez-9t5"/>
                                     <outlet property="delegate" destination="8F9-G6-Erf" id="DoA-Pb-IrB"/>
                                 </connections>
                             </tableView>
@@ -970,7 +975,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="uA5-1d-p4e">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="527"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardCell" rowHeight="88" id="xxb-st-kEj">
@@ -1038,6 +1043,7 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
+                                    <outlet property="dataSource" destination="aOj-40-y9v" id="Y64-HH-hvf"/>
                                     <outlet property="delegate" destination="aOj-40-y9v" id="Eoq-e3-otd"/>
                                 </connections>
                             </tableView>
@@ -1097,7 +1103,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="XTg-F2-G7x">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="527"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BasicCell" textLabel="bGb-Ks-SVK" style="IBUITableViewCellStyleDefault" id="gLf-9z-exN">
@@ -1802,10 +1808,10 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="raG-Jp-fAl"/>
-        <segue reference="jVZ-a8-OYH"/>
-        <segue reference="lLZ-BR-fAo"/>
-        <segue reference="Mbq-CH-LY8"/>
-        <segue reference="ad4-Pa-Oso"/>
+        <segue reference="Vbm-cg-ye0"/>
+        <segue reference="X4a-uC-2tC"/>
+        <segue reference="J88-7q-TTb"/>
+        <segue reference="ISp-PC-gA3"/>
+        <segue reference="oHh-uQ-TZu"/>
     </inferredMetricsTieBreakers>
 </document>

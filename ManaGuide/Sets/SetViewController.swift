@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DATASource
+import CoreData
 import Font_Awesome_Swift
 import InAppSettingsKit
 import ManaKit
@@ -38,7 +38,7 @@ class SetViewController: BaseViewController {
 
     // MARK: Variables
     var set: CMSet?
-    var dataSource: DATASource?
+    var fetchedResultsController: NSFetchedResultsController<CMCard>?
     var sectionIndexTitles = [String]()
     var sectionTitles = [String]()
     var collectionView: UICollectionView?
@@ -89,7 +89,7 @@ class SetViewController: BaseViewController {
         rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
         
-        tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
+        tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: CardTableViewCell.reuseIdentifier)
         tableView.register(UINib(nibName: "BrowserTableViewCell", bundle: nil), forCellReuseIdentifier: "SetInfoCell")
         tableView.keyboardDismissMode = .onDrag
     }
@@ -135,7 +135,7 @@ class SetViewController: BaseViewController {
             
         } else if segue.identifier == "showSearch" {
             guard let dest = segue.destination as? SearchViewController,
-                let request = sender as? NSFetchRequest<NSFetchRequestResult> else {
+                let request = sender as? NSFetchRequest<CMCard> else {
                 return
             }
             
@@ -168,7 +168,7 @@ class SetViewController: BaseViewController {
             
             switch displayBy {
             case "list":
-                dataSource = getDataSource(nil)
+                fetchedResultsController = getFetchedResultsController(with: nil)
                 updateSections()
             case "grid":
                 tableView.dataSource = self
@@ -191,76 +191,119 @@ class SetViewController: BaseViewController {
         tableView.delegate = self
         tableView.reloadData()
     }
-    
-    func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
-        let searchGenerator = SearchRequestGenerator()
-        
-        guard let set = set,
-            let code = set.code,
-            let sortBy = searchGenerator.searchValue(for: .sortBy) as? String,
-            let secondSortBy = searchGenerator.searchValue(for: .secondSortBy) as? String,
-            let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool,
-            let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
-                return nil
-        }
-        
-        var sectionName = searchGenerator.searchValue(for: .sectionName) as? String
-        var sortDescriptors: [NSSortDescriptor]?
-        var request:NSFetchRequest<NSFetchRequestResult>?
-        var ds: DATASource?
 
-        if sortBy == "numberOrder" {
-            sectionName = nil
-            sortDescriptors = [NSSortDescriptor(key: sortBy, ascending: orderBy)]
-        } else {
-            sortDescriptors = [NSSortDescriptor(key: sectionName, ascending: orderBy),
-                               NSSortDescriptor(key: secondSortBy, ascending: orderBy)]
+    func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMCard>?) -> NSFetchedResultsController<CMCard> {
+        guard let set = set,
+            let code = set.code else {
+            fatalError("Set is nil")
         }
+        
+        let context = ManaKit.sharedInstance.dataStack!.viewContext
+        var request: NSFetchRequest<CMCard>?
         
         if let fetchRequest = fetchRequest {
             request = fetchRequest
-            request!.sortDescriptors = sortDescriptors
         } else {
+            // create a default fetchRequest
             request = CMCard.fetchRequest()
-            request!.sortDescriptors = sortDescriptors
             request!.predicate = NSPredicate(format: "set.code = %@", code)
+            request!.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
+                                        NSSortDescriptor(key: "number", ascending: true),
+                                        NSSortDescriptor(key: "mciNumber", ascending: true)]
         }
         
-        switch displayBy {
-        case "list":
-            ds = DATASource(tableView: tableView,
-                            cellIdentifier: "CardCell",
-                            fetchRequest: request!,
-                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: sectionName)
-            
-        case "grid":
-            guard let collectionView = collectionView else {
-                return nil
-            }
-            
-            ds = DATASource(collectionView: collectionView,
-                            cellIdentifier: "CardImageCell",
-                            fetchRequest: request!,
-                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: sectionName)
-            
-        default:
-            ()
+        // Create Fetched Results Controller
+        let frc = NSFetchedResultsController(fetchRequest: request!,
+                                             managedObjectContext: context,
+                                             sectionNameKeyPath: nil,
+                                             cacheName: nil)
+        
+        // Configure Fetched Results Controller
+        frc.delegate = self
+        
+        // perform fetch
+        do {
+            try frc.performFetch()
+        } catch {
+            let fetchError = error as NSError
+            print("Unable to Perform Fetch Request")
+            print("\(fetchError), \(fetchError.localizedDescription)")
         }
-    
-        guard let d = ds else {
-            return nil
-        }
-        d.delegate = self
-        return d
+        
+        return frc
     }
+
+//    func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
+//        let searchGenerator = SearchRequestGenerator()
+//
+//        guard let set = set,
+//            let code = set.code,
+//            let sortBy = searchGenerator.searchValue(for: .sortBy) as? String,
+//            let secondSortBy = searchGenerator.searchValue(for: .secondSortBy) as? String,
+//            let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool,
+//            let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
+//                return nil
+//        }
+//
+//        var sectionName = searchGenerator.searchValue(for: .sectionName) as? String
+//        var sortDescriptors: [NSSortDescriptor]?
+//        var request:NSFetchRequest<NSFetchRequestResult>?
+//        var ds: DATASource?
+//
+//        if sortBy == "numberOrder" {
+//            sectionName = nil
+//            sortDescriptors = [NSSortDescriptor(key: sortBy, ascending: orderBy)]
+//        } else {
+//            sortDescriptors = [NSSortDescriptor(key: sectionName, ascending: orderBy),
+//                               NSSortDescriptor(key: secondSortBy, ascending: orderBy)]
+//        }
+//
+//        if let fetchRequest = fetchRequest {
+//            request = fetchRequest
+//            request!.sortDescriptors = sortDescriptors
+//        } else {
+//            request = CMCard.fetchRequest()
+//            request!.sortDescriptors = sortDescriptors
+//            request!.predicate = NSPredicate(format: "set.code = %@", code)
+//        }
+//
+//        switch displayBy {
+//        case "list":
+//            ds = DATASource(tableView: tableView,
+//                            cellIdentifier: "CardCell",
+//                            fetchRequest: request!,
+//                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
+//                            sectionName: sectionName)
+//
+//        case "grid":
+//            guard let collectionView = collectionView else {
+//                return nil
+//            }
+//
+//            ds = DATASource(collectionView: collectionView,
+//                            cellIdentifier: "CardImageCell",
+//                            fetchRequest: request!,
+//                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
+//                            sectionName: sectionName)
+//
+//        default:
+//            ()
+//        }
+//
+//        guard let d = ds else {
+//            return nil
+//        }
+//        d.delegate = self
+//        return d
+//    }
     
     func updateSections() {
-        guard let dataSource = dataSource else {
+        guard let fetchedResultsController = fetchedResultsController,
+            let cards = fetchedResultsController.fetchedObjects,
+            let sections = fetchedResultsController.sections else {
             return
         }
-        let cards = dataSource.all() as [CMCard]
+        
         let searchGenerator = SearchRequestGenerator()
         let sectionName = searchGenerator.searchValue(for: .sectionName) as? String
         let sortBy = searchGenerator.searchValue(for: .sortBy) as? String
@@ -313,37 +356,36 @@ class SetViewController: BaseViewController {
                     }
                 }
             }
-        case "legality.name"?:
-            let cardLegalities = dataSource.all() as [CMCardLegality]
-            for cardLegality in cardLegalities {
-                if let legality = cardLegality.legality {
-                    let prefix = String(legality.name!.prefix(1))
-                    
-                    if !sectionIndexTitles.contains(prefix) {
-                        sectionIndexTitles.append(prefix)
-                    }
-                }
-            }
+//        case "legality.name"?:
+//            let cardLegalities = dataSource.all() as [CMCardLegality]
+//            for cardLegality in cardLegalities {
+//                if let legality = cardLegality.legality {
+//                    let prefix = String(legality.name!.prefix(1))
+//
+//                    if !sectionIndexTitles.contains(prefix) {
+//                        sectionIndexTitles.append(prefix)
+//                    }
+//                }
+//            }
         default:
             ()
         }
         
-        var sections = 0
-        switch displayBy {
-        case "list":
-            sections = dataSource.numberOfSections(in: tableView)
-        case "grid":
-            if let collectionView = collectionView {
-                sections = dataSource.numberOfSections(in: collectionView)
-            }
-        default:
-            ()
-        }
+        let count = 0
+//        switch displayBy {
+//        case "list":
+//            sections = dataSource.numberOfSections(in: tableView)
+//        case "grid":
+//            if let collectionView = collectionView {
+//                sections = dataSource.numberOfSections(in: collectionView)
+//            }
+//        default:
+//            ()
+//        }
         
-        
-        if sections > 0 {
-            for i in 0...sections - 1 {
-                if let sectionTitle = dataSource.titleForHeader(i) {
+        if count > 0 {
+            for i in 0...count - 1 {
+                if let sectionTitle = sections[i].indexTitle {
                     sectionTitles.append(sectionTitle)
                 }
             }
@@ -391,7 +433,7 @@ class SetViewController: BaseViewController {
             return
         }
         
-        var newRequest:NSFetchRequest<NSFetchRequestResult>?
+        var newRequest: NSFetchRequest<CMCard>?
         
         if let text = searchController.searchBar.text {
             if text.count > 0 {
@@ -405,10 +447,10 @@ class SetViewController: BaseViewController {
                 } else if text.count > 1 {
                     newRequest!.predicate = NSPredicate(format: "set.code = %@ AND (name CONTAINS[cd] %@ OR name CONTAINS[cd] %@)", code, text, text)
                 }
-                dataSource = getDataSource(newRequest)
+                fetchedResultsController = getFetchedResultsController(with: newRequest)
                 
             } else {
-                dataSource = getDataSource(nil)
+                fetchedResultsController = getFetchedResultsController(with: nil)
             }
         }
     
@@ -427,11 +469,14 @@ class SetViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension SetViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let rows = 1
+        guard let fetchedResultsController = fetchedResultsController,
+            let cards = fetchedResultsController.fetchedObjects else {
+                return 0
+        }
         
-        return rows
+        return cards.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let searchGenerator = SearchRequestGenerator()
         let displayBy = searchGenerator.searchValue(for: .displayBy) as? String
@@ -440,6 +485,16 @@ extension SetViewController : UITableViewDataSource {
         switch contentSegmentedControl.selectedSegmentIndex {
         case SetViewControllerSegmentedIndex.cards.rawValue:
             switch displayBy {
+            case "list":
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell,
+                    let fetchedResultsController = fetchedResultsController else {
+                    fatalError("Unexpected indexPath: \(indexPath)")
+                }
+                let card = fetchedResultsController.object(at: indexPath)
+                c.card = card
+                
+                cell = c
+
             case "grid":
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") else {
                     return UITableViewCell(frame: CGRect.zero)
@@ -450,6 +505,7 @@ extension SetViewController : UITableViewDataSource {
                 
                 self.collectionView = collectionView
                 collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "Header")
+                collectionView.dataSource = self
                 collectionView.delegate = self
                 
                 if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
@@ -486,6 +542,32 @@ extension SetViewController : UITableViewDataSource {
         
         return cell!
     }
+    
+    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        return sectionIndexTitles
+    }
+    
+    func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
+        let searchGenerator = SearchRequestGenerator()
+        var sectionIndex = 0
+        
+        guard let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool else {
+            return sectionIndex
+        }
+        
+        for i in 0...sectionTitles.count - 1 {
+            if sectionTitles[i].hasPrefix(title) {
+                if orderBy {
+                    sectionIndex = i
+                } else {
+                    sectionIndex = (sectionTitles.count - 1) - i
+                }
+                break
+            }
+        }
+        
+        return sectionIndex
+    }
 }
 
 // MARK: UITableViewDelegate
@@ -520,9 +602,13 @@ extension SetViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch contentSegmentedControl.selectedSegmentIndex {
         case SetViewControllerSegmentedIndex.cards.rawValue:
-            let card = dataSource!.object(indexPath)
-            let cards = dataSource!.all()
-            let cardIndex = cards.index(of: card!)
+            guard let fetchedResultsController = fetchedResultsController,
+                let cards = fetchedResultsController.fetchedObjects else {
+                return
+            }
+            
+            let card = fetchedResultsController.object(at: indexPath)
+            let cardIndex = cards.index(of: card)
             let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
             let sender = ["cardIndex": cardIndex as Any,
                           "cardMIDs": cards.map({ $0.objectID })]
@@ -542,7 +628,7 @@ extension SetViewController : UITableViewDelegate {
             
             switch displayBy {
             case "grid":
-                dataSource = getDataSource(nil)
+                fetchedResultsController = getFetchedResultsController(with: nil)
                 updateSections()
             default:
                 ()
@@ -553,56 +639,73 @@ extension SetViewController : UITableViewDelegate {
     }
 }
 
-// MARK: DATASourceDelegate
-extension SetViewController : DATASourceDelegate {
-    // return list of section titles to display in section index view (e.g. "ABCD...Z#")
-    func sectionIndexTitlesForDataSource(_ dataSource: DATASource, tableView: UITableView) -> [String] {
-        return sectionIndexTitles
-    }
-    
-    // tell table which section corresponds to section title/index (e.g. "B",1))
-    func dataSource(_ dataSource: DATASource, tableView: UITableView, sectionForSectionIndexTitle title: String, atIndex index: Int) -> Int {
-        let searchGenerator = SearchRequestGenerator()
-        var sectionIndex = 0
-        
-        guard let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool else {
-            return sectionIndex
+// UICollectionViewDelegate
+extension SetViewController : UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        guard let fetchedResultsController = fetchedResultsController,
+            let cards = fetchedResultsController.fetchedObjects else {
+                return 0
         }
         
-        for i in 0...sectionTitles.count - 1 {
-            if sectionTitles[i].hasPrefix(title) {
-                if orderBy {
-                    sectionIndex = i
-                } else {
-                    sectionIndex = (sectionTitles.count - 1) - i
+        return cards.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardImageCell", for: indexPath)
+        
+        guard let imageView = cell.viewWithTag(100) as? UIImageView,
+            let fetchedResultsController = fetchedResultsController else {
+            fatalError("Unexpected indexPath: \(indexPath)")
+        }
+        let card = fetchedResultsController.object(at: indexPath)
+        
+        if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
+            imageView.image = image
+        } else {
+            imageView.image = ManaKit.sharedInstance.cardBack(card)
+            
+            firstly {
+                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+            }.done {
+                guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) else {
+                    return
                 }
-                break
+                    
+                let animations = {
+                    imageView.image = image
+                }
+                UIView.transition(with: imageView,
+                                  duration: 1.0,
+                                  options: .transitionFlipFromRight,
+                                  animations: animations,
+                                  completion: nil)
+            }.catch { error in
+                print("\(error)")
             }
         }
         
-        return sectionIndex
+        return cell
     }
     
-    func dataSource(_ dataSource: DATASource, collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: IndexPath, withTitle title: Any?) -> UICollectionReusableView? {
-        var v: UICollectionReusableView?
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let v = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier:"Header", for: indexPath)
         
         if kind == UICollectionElementKindSectionHeader {
-            v = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier:"Header", for: indexPath)
-            v!.backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1)
+            v.backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1)
             
-            if v!.subviews.count == 0 {
+            if v.subviews.count == 0 {
                 let label = UILabel(frame: CGRect(x: 20, y: 0, width: collectionView.frame.size.width - 20, height: 22))
                 label.tag = 100
-                v!.addSubview(label)
+                v.addSubview(label)
             }
             
             let searchGenerator = SearchRequestGenerator()
             
-            guard let lab = v!.viewWithTag(100) as? UILabel,
+            guard let lab = v.viewWithTag(100) as? UILabel,
                 let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool else {
                 return v
             }
-                
+            
             var sectionTitle: String?
             
             if orderBy {
@@ -616,59 +719,21 @@ extension SetViewController : DATASourceDelegate {
         
         return v
     }
-    
-    func dataSource(_ dataSource: DATASource, configureTableViewCell cell: UITableViewCell, withItem item: NSManagedObject, atIndexPath indexPath: IndexPath) {
-        guard let card = item as? CMCard,
-            let cardCell = cell as? CardTableViewCell else {
-                return
-        }
-        
-        cardCell.card = card
-    }
-    
-    func dataSource(_ dataSource: DATASource, configureCollectionViewCell cell: UICollectionViewCell, withItem item: NSManagedObject, atIndexPath indexPath: IndexPath) {
-        guard let card = item as? CMCard,
-            let imageView = cell.viewWithTag(100) as? UIImageView else {
-                return
-        }
-        
-        if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
-            imageView.image = image
-        } else {
-            imageView.image = ManaKit.sharedInstance.cardBack(card)
-            
-            firstly {
-                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-            }.done {
-                guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) else {
-                    return
-                }
-                
-                let animations = {
-                    imageView.image = image
-                }
-                UIView.transition(with: imageView,
-                                  duration: 1.0,
-                                  options: .transitionFlipFromRight,
-                                  animations: animations,
-                                  completion: nil)
-            }.catch { error in
-                print("\(error)")
-            }
-        }
-    }
 }
 
 // UICollectionViewDelegate
 extension SetViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let card = dataSource!.object(indexPath)
-        let cards = dataSource!.all()
-        let cardIndex = cards.index(of: card!)
+        guard let fetchedResultsController = fetchedResultsController,
+            let cards = fetchedResultsController.fetchedObjects else {
+                return
+        }
+        
+        let card = fetchedResultsController.object(at: indexPath)
+        let cardIndex = cards.index(of: card)
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": cardIndex as Any,
                       "cardMIDs": cards.map({ $0.objectID })]
-        
         performSegue(withIdentifier: identifier, sender: sender)
     }
 }
@@ -698,14 +763,14 @@ extension SetViewController : UIWebViewDelegate {
                 let cardName = value.substring(from: r).replacingOccurrences(of: "+", with: " ")
                                .replacingOccurrences(of: "\"", with: "")
                 
-                let request = CMCard.fetchRequest()
+                let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
                 request.predicate = NSPredicate(format: "name = %@", cardName)
                 request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
                                             NSSortDescriptor(key: "name", ascending: true)]
                 
                 let results = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
                 if results.count == 1 {
-                    if let card = results.first as? CMCard {
+                    if let card = results.first {
                         if UIDevice.current.userInterfaceIdiom == .phone {
                             performSegue(withIdentifier: "showCard", sender: ["cardIndex": 0 as Any,
                                                                               "cardMIDs": [card.objectID]])
@@ -768,5 +833,10 @@ extension SetViewController : UISearchResultsUpdating {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
         perform(#selector(doSearch), with: nil, afterDelay: 0.5)
     }
+}
+
+// MARK: NSFetchedResultsControllerDelegate
+extension SetViewController : NSFetchedResultsControllerDelegate {
+    
 }
 

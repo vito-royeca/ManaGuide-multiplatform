@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DATASource
+import CoreData
 import Firebase
 import ManaKit
 import SDWebImage
@@ -117,7 +117,7 @@ class AccountViewController: BaseViewController {
                 return
             }
             
-            dest.request = dict["request"] as? NSFetchRequest<NSFetchRequestResult>
+            dest.request = dict["request"] as? NSFetchRequest<CMCard>
             dest.title = dict["title"] as? String
             dest.customSectionName = "nameSection"
         }
@@ -284,7 +284,7 @@ extension AccountViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case AccountViewControllerSection.favorites.rawValue:
-            let request = CMCard.fetchRequest()
+            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
             let mids = FirebaseManager.sharedInstance.favoriteMIDs
             let cards = FirebaseManager.sharedInstance.cards(withMIDs: mids)
             
@@ -295,7 +295,7 @@ extension AccountViewController : UITableViewDelegate {
             performSegue(withIdentifier: "showSearch", sender: ["title": "Favorites",
                                                                 "request": request])
         case AccountViewControllerSection.ratedCards.rawValue:
-            let request = CMCard.fetchRequest()
+            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
             let mids = FirebaseManager.sharedInstance.ratedCardMIDs
             let cards = FirebaseManager.sharedInstance.cards(withMIDs: mids)
             

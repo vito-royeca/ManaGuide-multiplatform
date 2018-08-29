@@ -387,14 +387,12 @@ class FirebaseManager: NSObject {
     
     // MARK: Custom methods
     func cardMIDs(withIds ids: [String]) -> [NSManagedObjectID] {
-        let request = CMCard.fetchRequest()
+        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         request.predicate = NSPredicate(format: "id IN %@", ids)
         var array = [NSManagedObjectID]()
         
-        if let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) as? [CMCard] {
-            for card in result {
-                array.append(card.objectID)
-            }
+        for card in try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) {
+            array.append(card.objectID)
         }
         
         return array

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DATASource
+import CoreData
 import Font_Awesome_Swift
 import InAppSettingsKit
 import ManaKit
@@ -18,7 +18,7 @@ class SetsViewController: BaseViewController {
     let searchController = UISearchController(searchResultsController: nil)
 
     // MARK: Variables
-    var dataSource: DATASource?
+    var fetchedResultsController: NSFetchedResultsController<CMSet>?
     var sectionIndexTitles = [String]()
     var sectionTitles = [String]()
     
@@ -75,8 +75,7 @@ class SetsViewController: BaseViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showSet" {
             guard let dest = segue.destination as? SetViewController,
-                let dict = sender as? [String: Any],
-                let set = dict["set"] as? CMSet else {
+                let set = sender as? CMSet else {
                 return
             }
             
@@ -87,83 +86,92 @@ class SetsViewController: BaseViewController {
 
     // MARK: Custom methods
     func updateDataDisplay() {
-        dataSource = getDataSource(nil)
+        fetchedResultsController = getFetchedResultsController(with: nil)
         updateSections()
         tableView.reloadData()
     }
     
-    func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
-        let defaults = defaultsValue()
-        
-        guard let setsSectionName = defaults["setsSectionName"] as? String,
-            let setsSecondSortBy = defaults["setsSecondSortBy"] as? String,
-            let setsOrderBy = defaults["setsOrderBy"] as? Bool else {
-            return nil
-        }
-        
-        var request:NSFetchRequest<NSFetchRequestResult>?
+    func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMSet>?) -> NSFetchedResultsController<CMSet> {
+        let context = ManaKit.sharedInstance.dataStack!.viewContext
+        var request: NSFetchRequest<CMSet>?
         
         if let fetchRequest = fetchRequest {
             request = fetchRequest
         } else {
+            // Create a default fetchRequest
             request = CMSet.fetchRequest()
-            request!.sortDescriptors = [NSSortDescriptor(key: setsSectionName, ascending: setsOrderBy),
-                                        NSSortDescriptor(key: setsSecondSortBy, ascending: setsOrderBy)]
+            request!.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
         }
         
-        let ds = DATASource(tableView: tableView,
-                            cellIdentifier: "SetCell",
-                            fetchRequest: request!,
-                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-                            sectionName: setsSectionName)
+        // Create Fetched Results Controller
+        let frc = NSFetchedResultsController(fetchRequest: request!,
+                                             managedObjectContext: context,
+                                             sectionNameKeyPath: nil,
+                                             cacheName: nil)
         
-        ds.delegate = self
-        return ds
+        // Configure Fetched Results Controller
+        frc.delegate = self
+        
+        // perform fetch
+        do {
+            try frc.performFetch()
+        } catch {
+            let fetchError = error as NSError
+            print("Unable to Perform Fetch Request")
+            print("\(fetchError), \(fetchError.localizedDescription)")
+        }
+        
+        return frc
     }
-
+    
     func updateSections() {
-        if let dataSource = dataSource {
-            let sets = dataSource.all() as [CMSet]
-            sectionIndexTitles = [String]()
-            sectionTitles = [String]()
-            
-            let defaults = defaultsValue()
-            let setsSectionName = defaults["setsSectionName"] as! String
-            
-            switch setsSectionName {
-            case "nameSection":
-                for set in sets {
-                    if let nameSection = set.nameSection {
-                        if !sectionIndexTitles.contains(nameSection) {
-                            sectionIndexTitles.append(nameSection)
-                        }
+        guard let fetchedResultsController = fetchedResultsController,
+            let sets = fetchedResultsController.fetchedObjects,
+            let sections = fetchedResultsController.sections else {
+                return
+        }
+        
+        
+        sectionIndexTitles = [String]()
+        sectionTitles = [String]()
+        
+        let defaults = defaultsValue()
+        let setsSectionName = defaults["setsSectionName"] as! String
+        
+        switch setsSectionName {
+        case "nameSection":
+            for set in sets {
+                if let nameSection = set.nameSection {
+                    if !sectionIndexTitles.contains(nameSection) {
+                        sectionIndexTitles.append(nameSection)
                     }
                 }
-                
-            case "typeSection":
-                for set in sets {
-                    if let type_ = set.type_ {
-                        let prefix = String(type_.name!.prefix(1)).uppercased()
-                    
-                        if !sectionIndexTitles.contains(prefix) {
-                            sectionIndexTitles.append(prefix)
-                        }
-                    }
-                }
-            default:
-                ()
             }
             
-            let sections = dataSource.numberOfSections(in: tableView)
-            if sections > 0 {
-                for i in 0...sections - 1 {
-                    if let sectionTitle = dataSource.titleForHeader(i) {
-                        sectionTitles.append(sectionTitle)
+        case "typeSection":
+            for set in sets {
+                if let type_ = set.type_ {
+                    let prefix = String(type_.name!.prefix(1)).uppercased()
+                
+                    if !sectionIndexTitles.contains(prefix) {
+                        sectionIndexTitles.append(prefix)
                     }
+                }
+            }
+        default:
+            ()
+        }
+        
+        let count = sections.count
+        if count > 0 {
+            for i in 0...count - 1 {
+                if let sectionTitle = sections[i].indexTitle {
+                    sectionTitles.append(sectionTitle)
                 }
             }
         }
         
+    
         sectionIndexTitles.sort()
         sectionTitles.sort()
     }
@@ -245,7 +253,7 @@ class SetsViewController: BaseViewController {
             return
         }
         
-        var newRequest:NSFetchRequest<NSFetchRequestResult>?
+        var newRequest: NSFetchRequest<CMSet>?
         let defaults = defaultsValue()
         let setsSectionName = defaults["setsSectionName"] as! String
         let setsSecondSortBy = defaults["setsSecondSortBy"] as! String
@@ -262,38 +270,65 @@ class SetsViewController: BaseViewController {
             } else if text.count > 1 {
                 newRequest!.predicate = NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@", text, text)
             }
-            dataSource = getDataSource(newRequest)
+            fetchedResultsController = getFetchedResultsController(with: newRequest)
             updateSections()
             tableView.reloadData()
             
         } else {
-            dataSource = getDataSource(nil)
+            fetchedResultsController = getFetchedResultsController(with: nil)
             updateSections()
             tableView.reloadData()
         }
     }
 }
 
-// MARK: UITableViewDelegate
-extension SetsViewController : UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let dataSource = dataSource,
-            let set = dataSource.object(indexPath) else {
-            return
+// MARK: UITableViewDataSource
+extension SetsViewController : UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let fetchedResultsController = fetchedResultsController,
+            let sets = fetchedResultsController.fetchedObjects else {
+                return 0
         }
-        performSegue(withIdentifier: "showSet", sender: ["set": set])
+        
+        return sets.count
     }
-}
-
-// MARK: DATASourceDelegate
-extension SetsViewController : DATASourceDelegate {
-    // return list of section titles to display in section index view (e.g. "ABCD...Z#")
-    func sectionIndexTitlesForDataSource(_ dataSource: DATASource, tableView: UITableView) -> [String] {
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let fetchedResultsController = fetchedResultsController else {
+            fatalError("Unexpected indexPath: \(indexPath)")
+        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: "SetCell",
+                                                 for: indexPath)
+        let set = fetchedResultsController.object(at: indexPath)
+        
+        // Configure Cell
+        guard let label100 = cell.contentView.viewWithTag(100) as? UILabel,
+            let label200 = cell.contentView.viewWithTag(200) as? UILabel,
+            let label300 = cell.contentView.viewWithTag(300) as? UILabel,
+            let label400 = cell.contentView.viewWithTag(400) as? UILabel,
+            let label500 = cell.contentView.viewWithTag(500) as? UILabel else {
+            fatalError("UILabel not found")
+        }
+        
+        label100.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+        label100.textColor = UIColor.black
+        label200.text = set.name
+        label200.adjustsFontSizeToFitWidth = true
+        label300.text = set.code
+        label300.adjustsFontSizeToFitWidth = true
+        label400.text = set.releaseDate
+        label400.adjustsFontSizeToFitWidth = true
+        label500.text = "\(set.cards!.allObjects.count) cards"
+        label500.adjustsFontSizeToFitWidth = true
+        
+        return cell
+    }
+    
+    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
         return sectionIndexTitles
     }
     
-    // tell table which section corresponds to section title/index (e.g. "B",1))
-    func dataSource(_ dataSource: DATASource, tableView: UITableView, sectionForSectionIndexTitle title: String, atIndex index: Int) -> Int {
+    func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
         let defaults = defaultsValue()
         let setsOrderBy = defaults["setsOrderBy"] as! Bool
         var sectionIndex = 0
@@ -308,31 +343,21 @@ extension SetsViewController : DATASourceDelegate {
                 break
             }
         }
-
+        
         return sectionIndex
+
     }
-    
-    func dataSource(_ dataSource: DATASource, configureTableViewCell cell: UITableViewCell, withItem item: NSManagedObject, atIndexPath indexPath: IndexPath) {
-        guard let set = item as? CMSet,
-            let label100 = cell.contentView.viewWithTag(100) as? UILabel,
-            let label200 = cell.contentView.viewWithTag(200) as? UILabel,
-            let label300 = cell.contentView.viewWithTag(300) as? UILabel,
-            let label400 = cell.contentView.viewWithTag(400) as? UILabel,
-            let label500 = cell.contentView.viewWithTag(500) as? UILabel else {
-                
+}
+
+// MARK: UITableViewDelegate
+extension SetsViewController : UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let fetchedResultsController = fetchedResultsController else {
             return
         }
         
-        label100.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-        label100.textColor = UIColor.black
-        label200.text = set.name
-        label200.adjustsFontSizeToFitWidth = true
-        label300.text = set.code
-        label300.adjustsFontSizeToFitWidth = true
-        label400.text = set.releaseDate
-        label400.adjustsFontSizeToFitWidth = true
-        label500.text = "\(set.cards!.allObjects.count) cards"
-        label500.adjustsFontSizeToFitWidth = true
+        let set = fetchedResultsController.object(at: indexPath)
+        performSegue(withIdentifier: "showSet", sender: set)
     }
 }
 
@@ -344,4 +369,8 @@ extension SetsViewController : UISearchResultsUpdating {
     }
 }
 
+// MARK: NSFetchedResultsControllerDelegate
+extension SetsViewController : NSFetchedResultsControllerDelegate {
+    
+}
 
