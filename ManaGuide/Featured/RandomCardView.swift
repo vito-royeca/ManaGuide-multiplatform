@@ -47,7 +47,7 @@ class RandomCardView: UIView {
             updateNameLabelColorFrom(image: image)
         } else {
             cropImageView.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
-            self.updateNameLabelColorFrom(image: cropImageView.image!)
+            updateNameLabelColorFrom(image: cropImageView.image!)
             
             firstly {
                 ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)

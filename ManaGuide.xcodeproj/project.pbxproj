@@ -79,6 +79,9 @@
 		118FDC7720D515E5002FA5E8 /* ShareActivity.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 118FDC7620D515E5002FA5E8 /* ShareActivity.xcassets */; };
 		118FDC7820D515E5002FA5E8 /* ShareActivity.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 118FDC7620D515E5002FA5E8 /* ShareActivity.xcassets */; };
 		118FDC7920D515E5002FA5E8 /* ShareActivity.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 118FDC7620D515E5002FA5E8 /* ShareActivity.xcassets */; };
+		11A63E0F2142CC34005AE024 /* ComprehensiveRulesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A63E0E2142CC34005AE024 /* ComprehensiveRulesViewModel.swift */; };
+		11A63E102142CC34005AE024 /* ComprehensiveRulesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A63E0E2142CC34005AE024 /* ComprehensiveRulesViewModel.swift */; };
+		11A63E112142CC34005AE024 /* ComprehensiveRulesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A63E0E2142CC34005AE024 /* ComprehensiveRulesViewModel.swift */; };
 		11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
 		11B2AA341F29DE490067E833 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
 		11C7B45520D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */; };
@@ -172,6 +175,7 @@
 		1195B2F320D4F1720026EA99 /* ManaGuide-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ManaGuide-Bridging-Header.h"; sourceTree = "<group>"; };
 		1195B2F420D4F1720026EA99 /* ManaGuideTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ManaGuideTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		1195B2F520D4F1720026EA99 /* ManaGuideUITests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ManaGuideUITests-Bridging-Header.h"; sourceTree = "<group>"; };
+		11A63E0E2142CC34005AE024 /* ComprehensiveRulesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComprehensiveRulesViewModel.swift; sourceTree = "<group>"; };
 		11B2AA321F29DE490067E833 /* CardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
 		11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreTableViewCell.swift; sourceTree = "<group>"; };
 		11C7B45420D6A7E2009D63F4 /* StoreTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StoreTableViewCell.xib; sourceTree = "<group>"; };
@@ -324,6 +328,15 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
+		11A63E0D2142CBF3005AE024 /* Comprehensive Rules */ = {
+			isa = PBXGroup;
+			children = (
+				1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */,
+				11A63E0E2142CC34005AE024 /* ComprehensiveRulesViewModel.swift */,
+			);
+			path = "Comprehensive Rules";
+			sourceTree = "<group>";
+		};
 		11D55BC3213250E1002F8F49 /* Featured */ = {
 			isa = PBXGroup;
 			children = (
@@ -364,9 +377,9 @@
 		11D55BC9213253E8002F8F49 /* More */ = {
 			isa = PBXGroup;
 			children = (
+				11A63E0D2142CBF3005AE024 /* Comprehensive Rules */,
 				111D5A6B20AF57590046285B /* ArtistsViewController.swift */,
 				1165CD751F377F58006CC433 /* BannedListViewController.swift */,
-				1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */,
 				1165CD721F377395006CC433 /* MoreViewController.swift */,
 			);
 			path = More;
@@ -644,7 +657,6 @@
 				"${BUILT_PRODUCTS_DIR}/NYAlertViewController/NYAlertViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/OAuthSwift/OAuthSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
-				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
 				"${BUILT_PRODUCTS_DIR}/SimulatorStatusMagic/SimulatorStatusMagic.framework",
@@ -683,7 +695,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NYAlertViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OAuthSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SimulatorStatusMagic.framework",
@@ -800,7 +811,6 @@
 				"${BUILT_PRODUCTS_DIR}/NYAlertViewController/NYAlertViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/OAuthSwift/OAuthSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
-				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
 				"${BUILT_PRODUCTS_DIR}/SimulatorStatusMagic/SimulatorStatusMagic.framework",
@@ -839,7 +849,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NYAlertViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OAuthSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SimulatorStatusMagic.framework",
@@ -928,7 +937,6 @@
 				"${BUILT_PRODUCTS_DIR}/NYAlertViewController/NYAlertViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/OAuthSwift/OAuthSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
-				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
 				"${BUILT_PRODUCTS_DIR}/SimulatorStatusMagic/SimulatorStatusMagic.framework",
@@ -967,7 +975,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NYAlertViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OAuthSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SimulatorStatusMagic.framework",
@@ -1006,6 +1013,7 @@
 				11FC811220D52D0D001407C6 /* TwitterShareActivity.swift in Sources */,
 				118281B120B67FA500865172 /* AccountViewController.swift in Sources */,
 				11448A6220CD3849008EFC40 /* Constants.swift in Sources */,
+				11A63E0F2142CC34005AE024 /* ComprehensiveRulesViewModel.swift in Sources */,
 				1140F0D11F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
@@ -1028,6 +1036,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				118FDC7420D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
+				11A63E102142CC34005AE024 /* ComprehensiveRulesViewModel.swift in Sources */,
 				1150BCEF20B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				1138A3CA20F76D590023423C /* Throttler.swift in Sources */,
 				11F3BA3220D4141900511388 /* MGUtilities.swift in Sources */,
@@ -1052,6 +1061,7 @@
 				110BB52E1F20892B00086841 /* SearchViewController.swift in Sources */,
 				11F336B420BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				1138A3CB20F76D590023423C /* Throttler.swift in Sources */,
+				11A63E112142CC34005AE024 /* ComprehensiveRulesViewModel.swift in Sources */,
 				1147B7581F223607004EF296 /* SetsViewController.swift in Sources */,
 				11C7B45720D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */,
 				11FC811420D52D0D001407C6 /* TwitterShareActivity.swift in Sources */,

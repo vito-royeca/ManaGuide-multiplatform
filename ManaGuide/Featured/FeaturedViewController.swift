@@ -10,7 +10,6 @@ import UIKit
 import Cosmos
 import DATASource
 import Font_Awesome_Swift
-import InAppSettingsKit
 import iCarousel
 import ManaKit
 import MBProgressHUD
@@ -57,20 +56,6 @@ class FeaturedViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-//        NotificationCenter.default.removeObserver(self,
-//                                                  name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
-//                                                  object:nil)
-//        NotificationCenter.default.addObserver(self,
-//                                               selector: #selector(self.updateData(_:)),
-//                                               name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
-//                                               object: nil)
-        
-//        rightMenuButton.image = UIImage.init(icon: .FABars,
-//                                             size: CGSize(width: 30, height: 30),
-//                                             textColor: .white,
-//                                             backgroundColor: .clear)
-//        rightMenuButton.title = nil
-        
         fetchLatestSets()
         fetchLatestCards()
     }

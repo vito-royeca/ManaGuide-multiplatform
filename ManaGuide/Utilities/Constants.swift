@@ -11,7 +11,7 @@ import UIKit
 
 // Look and feel
 enum LookAndFeel {
-    static let GlobalTintColor = UIColor(red:0.23, green:0.35, blue:0.60, alpha:1.0) // #3b5998
+    static let GlobalTintColor = UIColor(red:0.98, green:0.18, blue:0.32, alpha:1.0)
 }
 
 // TCGPlayer

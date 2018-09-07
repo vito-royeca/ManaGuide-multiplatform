@@ -73,7 +73,7 @@ class SearchViewController: BaseViewController {
                                              backgroundColor: .clear)
         rightMenuButton.title = nil
         
-        tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
+        tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: CardTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
         statusLabel.text = " Loading..."
     }
@@ -469,9 +469,12 @@ class SearchViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension SearchViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let rows = 1
+        guard let fetchedResultsController = fetchedResultsController,
+            let cards = fetchedResultsController.fetchedObjects else {
+                return 0
+        }
         
-        return rows
+        return cards.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -484,9 +487,17 @@ extension SearchViewController : UITableViewDataSource {
         var cell: UITableViewCell?
         
         switch displayBy {
+        case "list":
+            guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell else {
+                fatalError("Unexpected indexPath: \(indexPath)")
+            }
+            let card = fetchedResultsController?.object(at: indexPath)
+            c.card = card
+            cell = c
+
         case "grid":
             guard let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") else {
-                return UITableViewCell(frame: CGRect.zero)
+                fatalError("Unexpected indexPath: \(indexPath)")
             }
             guard let collectionView = c.viewWithTag(100) as? UICollectionView else {
                 return UITableViewCell(frame: CGRect.zero)

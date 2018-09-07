@@ -4,8 +4,6 @@ use_frameworks!
 def default_pods
     pod 'ChameleonFramework/Swift', :git => 'https://github.com/ViccAlexander/Chameleon.git'
     pod 'Cosmos', '~> 11.0'
-    pod 'DATASource'
-    pod 'DATAStack'
     pod 'Fabric'
     pod 'Crashlytics'
     pod 'FBSDKCoreKit'
@@ -22,7 +20,6 @@ def default_pods
     pod 'InAppSettingsKit'
     pod 'iCarousel'
     pod 'Kanna', :git => 'https://github.com/tid-kijyun/Kanna', :branch => 'feature/v3.0.0'
-    #pod 'KeychainAccess'
     pod 'ManaKit'
     pod 'MBProgressHUD'
     pod 'MMDrawerController'
@@ -32,7 +29,7 @@ def default_pods
     pod 'PromiseKit', '~> 6.0'
     pod 'SimulatorStatusMagic', :configurations => ['Debug']
     pod 'SSZipArchive'
-    pod 'Sync'
+    #pod 'SwiftOCR'
     pod 'TwitterKit'
     pod 'TwitterCore'
 end

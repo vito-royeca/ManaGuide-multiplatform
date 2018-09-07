@@ -155,20 +155,25 @@ class MoreViewController: BaseViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let dict = sender as? [String: Any] else {
-            return
-        }
-        
         if segue.identifier == "showPDF" {
-            guard let dest = segue.destination as? PDFViewerViewController else {
+            guard let dest = segue.destination as? PDFViewerViewController,
+                let dict = sender as? [String: Any] else {
                 return
             }
             
             dest.url = dict["url"] as? URL
             dest.title = dict["title"] as? String
             
+        } else if segue.identifier == "showComprehensiveRules" {
+            guard let dest = segue.destination as? ComprehensiveRulesViewController else {
+                return
+            }
+            
+            dest.viewModel = ComprehensiveRulesViewModel(withRule: nil)
+            
         } else if segue.identifier == "showSearch" {
-            guard let dest = segue.destination as? SearchViewController else {
+            guard let dest = segue.destination as? SearchViewController,
+                let dict = sender as? [String: Any] else {
                 return
             }
             
