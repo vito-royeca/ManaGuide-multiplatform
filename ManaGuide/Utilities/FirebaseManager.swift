@@ -12,9 +12,6 @@ import Firebase
 import ManaKit
 import PromiseKit
 
-let kMaxFetchTopViewed = UInt(10)
-let kMaxFetchTopRated  = UInt(10)
-
 class FirebaseManager: NSObject {
     private var userRef: DatabaseReference?
     private var queries = [String: DatabaseQuery]()
@@ -269,67 +266,6 @@ class FirebaseManager: NSObject {
     }
     
     // MARK: Data monitors
-    func monitorTopRated(completion: @escaping ([NSManagedObjectID]) -> Void) {
-        let ref = Database.database().reference().child("cards")
-        let query = ref.queryOrdered(byChild: FCCard.Keys.Rating).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopRated)
-        
-        ref.keepSynced(true)
-        query.observe(.value, with: { snapshot in
-            var cards = [CMCard]()
-            
-            for child in snapshot.children {
-                if let c = child as? DataSnapshot {
-                    let fcard = FCCard(snapshot: c)
-                    
-                    if let cardMID = self.cardMIDs(withIds: [c.key]).first {
-                        if let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard {
-                            card.rating = fcard.rating == nil ? 0 : fcard.rating!
-                            card.ratings = fcard.ratings == nil ? Int32(0) : Int32(fcard.ratings!.count)
-                            cards.append(card)
-                        }
-                    }
-                }
-            }
-            
-            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                try! backgroundContext.save()
-                completion(cards.sorted(by: { $0.rating > $1.rating }).map({ $0.objectID }))
-            }
-        })
-        
-        queries["topRated"] = query
-    }
-
-    func monitorTopViewed(completion: @escaping ([NSManagedObjectID]) -> Void) {
-        let ref = Database.database().reference().child("cards")
-        let query = ref.queryOrdered(byChild: FCCard.Keys.Views).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopViewed)
-        
-        ref.keepSynced(true)
-        query.observe(.value, with: { snapshot in
-            var cards = [CMCard]()
-            
-            for child in snapshot.children {
-                if let c = child as? DataSnapshot {
-                    let fcard = FCCard(snapshot: c)
-                    
-                    if let cardMID = self.cardMIDs(withIds: [c.key]).first {
-                        if let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard {
-                            card.views = Int64(fcard.views == nil ? 0 : fcard.views!)
-                            cards.append(card)
-                        }
-                    }
-                }
-            }
-            
-            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                try! backgroundContext.save()
-                completion(cards.sorted(by: { $0.views > $1.views }).map({ $0.objectID }))
-            }
-        })
-        
-        queries["topViewed"] = query
-    }
-    
     func monitorUser() {
         if let user = Auth.auth().currentUser {
             userRef = Database.database().reference().child("users").child(user.uid)

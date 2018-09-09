@@ -39,7 +39,7 @@ enum TwitterSettings {
 // ---------------------------------------------------------------------- //
 enum NotificationKeys {
     static let FavoriteToggled    = "FavoriteToggled"
-    static let CardViewsUpdated   = "CardViewsUpdated"
     static let CardRatingUpdated  = "CardRatingUpdated"
+    static let CardViewsUpdated   = "CardViewsUpdated"
 }
 

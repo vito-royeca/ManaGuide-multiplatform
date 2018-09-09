@@ -23,74 +23,6 @@ import NYAlertViewController
 import TwitterKit
 import TwitterCore
 
-enum CardViewControllerSegmentedIndex: Int {
-    case image
-    case details
-    case store
-    
-    var description : String {
-        switch self {
-        // Use Internationalization, as appropriate.
-        case .image: return "Image"
-        case .details: return "Details"
-        case .store: return "Store"
-        }
-    }
-    
-    static var count: Int {
-        return 3
-    }
-}
-
-enum CardViewControllerImageSection : Int {
-    case pricing
-    case image
-    case actions
-    
-    static var count: Int {
-        return 3
-    }
-}
-
-enum CardViewControllerDetailsSection : Int {
-    case manaCost
-    case type
-    case oracleText
-    case originalText
-    case flavorText
-    case artist
-    case set
-    case otherNames
-    case otherPrintings
-    case variations
-    case rulings
-    case legalities
-    case otherDetails
-    
-    var description : String {
-        switch self {
-        // Use Internationalization, as appropriate.
-        case .manaCost: return "Mana Cost"
-        case .type: return "Type"
-        case .oracleText: return "Text"
-        case .originalText: return "Original Text"
-        case .flavorText: return "Flavor Text"
-        case .artist: return "Artist"
-        case .set: return "Set"
-        case .otherNames: return "Other Names"
-        case .otherPrintings: return "Other Printings"
-        case .variations: return "Variations"
-        case .rulings: return "Rulings"
-        case .legalities: return "Legalities"
-        case .otherDetails: return "Other Details"
-        }
-    }
-    
-    static var count: Int {
-        return 13
-    }
-}
-
 class CardViewController: BaseViewController {
     // MARK: Variables
     var cardIndex = 0
@@ -115,11 +47,11 @@ class CardViewController: BaseViewController {
         }
         
         switch contentSegmentedControl.selectedSegmentIndex {
-        case CardViewControllerSegmentedIndex.image.rawValue:
+        case CardSegmentedIndex.image.rawValue:
             tableView.reloadData()
             tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
             
-        case CardViewControllerSegmentedIndex.details.rawValue:
+        case CardSegmentedIndex.details.rawValue:
             if !cardViewIncremented {
                 cardViewIncremented = true
                 incrementCardViews()
@@ -158,7 +90,7 @@ class CardViewController: BaseViewController {
             tableView.reloadData()
             tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
             
-        case CardViewControllerSegmentedIndex.store.rawValue:
+        case CardSegmentedIndex.store.rawValue:
             tableView.reloadData()
             
             MBProgressHUD.showAdded(to: tableView, animated: true)
@@ -383,11 +315,11 @@ class CardViewController: BaseViewController {
             MBProgressHUD.hide(for: self.view, animated: true)
             
             switch self.contentSegmentedControl.selectedSegmentIndex {
-            case CardViewControllerSegmentedIndex.image.rawValue:
-                self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.pricing.rawValue),
-                                               IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)],
+            case CardSegmentedIndex.image.rawValue:
+                self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
+                                               IndexPath(row: 0, section: CardImageSection.actions.rawValue)],
                                           with: .automatic)
-            case CardViewControllerSegmentedIndex.store.rawValue:
+            case CardSegmentedIndex.store.rawValue:
                 self.tableView.reloadData()
             default:
                 ()
@@ -558,9 +490,9 @@ class CardViewController: BaseViewController {
         cardViewIncremented = false
         title = card.name
         
-        if contentSegmentedControl.selectedSegmentIndex == CardViewControllerSegmentedIndex.image.rawValue {
-            tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.pricing.rawValue),
-                                      IndexPath(row: 0, section: CardViewControllerImageSection.actions.rawValue)], with: .automatic)
+        if contentSegmentedControl.selectedSegmentIndex == CardSegmentedIndex.image.rawValue {
+            tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
+                                      IndexPath(row: 0, section: CardImageSection.actions.rawValue)], with: .automatic)
         }
     }
     
@@ -637,12 +569,12 @@ extension CardViewController : UITableViewDataSource {
         var rows = 0
         
         switch contentSegmentedControl.selectedSegmentIndex {
-        case CardViewControllerSegmentedIndex.image.rawValue:
+        case CardSegmentedIndex.image.rawValue:
             rows = 1
             
-        case CardViewControllerSegmentedIndex.details.rawValue:
+        case CardSegmentedIndex.details.rawValue:
             switch section {
-            case CardViewControllerDetailsSection.otherNames.rawValue:
+            case CardDetailsSection.otherNames.rawValue:
                 if let names_ = card.names_ {
                     if let array = names_.allObjects as? [CMCard] {
                         rows = array.filter({ $0.name != card.name}).count
@@ -651,11 +583,11 @@ extension CardViewController : UITableViewDataSource {
                 if rows == 0 {
                     rows = 1
                 }
-            case CardViewControllerDetailsSection.rulings.rawValue:
+            case CardDetailsSection.rulings.rawValue:
                 if let rulings_ = card.rulings_ {
                     rows = rulings_.allObjects.count >= 1 ? rulings_.allObjects.count : 1
                 }
-            case CardViewControllerDetailsSection.legalities.rawValue:
+            case CardDetailsSection.legalities.rawValue:
                 if let cardLegalities_ = card.cardLegalities_ {
                     rows = cardLegalities_.allObjects.count >= 1 ? cardLegalities_.allObjects.count : 1
                 }
@@ -663,7 +595,7 @@ extension CardViewController : UITableViewDataSource {
                 rows = 1
             }
             
-        case CardViewControllerSegmentedIndex.store.rawValue:
+        case CardSegmentedIndex.store.rawValue:
             guard let suppliers = card.suppliers else {
                 return rows
             }
@@ -680,11 +612,11 @@ extension CardViewController : UITableViewDataSource {
         var sections = 0
         
         switch contentSegmentedControl.selectedSegmentIndex {
-        case CardViewControllerSegmentedIndex.image.rawValue:
-            sections = CardViewControllerImageSection.count
-        case CardViewControllerSegmentedIndex.details.rawValue:
-            sections = CardViewControllerDetailsSection.count
-        case CardViewControllerSegmentedIndex.store.rawValue:
+        case CardSegmentedIndex.image.rawValue:
+            sections = CardImageSection.count
+        case CardSegmentedIndex.details.rawValue:
+            sections = CardDetailsSection.count
+        case CardSegmentedIndex.store.rawValue:
             sections = 1
         default:
             ()
@@ -701,11 +633,11 @@ extension CardViewController : UITableViewDataSource {
         var cell: UITableViewCell?
         
         switch contentSegmentedControl.selectedSegmentIndex {
-        case CardViewControllerSegmentedIndex.image.rawValue:
+        case CardSegmentedIndex.image.rawValue:
             tableView.separatorStyle = .none
             
             switch indexPath.section {
-            case CardViewControllerImageSection.pricing.rawValue:
+            case CardImageSection.pricing.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell") else {
                     return UITableViewCell(frame: CGRect.zero)
                 }
@@ -722,7 +654,7 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .none
                 cell = c
                 
-            case CardViewControllerImageSection.image.rawValue:
+            case CardImageSection.image.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "CarouselCell"),
                     let carouselView = c.viewWithTag(100) as? iCarousel else {
                     return UITableViewCell(frame: CGRect.zero)
@@ -742,7 +674,7 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .none
                 cell = c
                 
-            case CardViewControllerImageSection.actions.rawValue:
+            case CardImageSection.actions.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "ActionsCell"),
                     let ratingView = c.viewWithTag(100) as? CosmosView,
                     let label101 = c.viewWithTag(101) as? UILabel,
@@ -789,11 +721,11 @@ extension CardViewController : UITableViewDataSource {
                 ()
             }
             
-        case CardViewControllerSegmentedIndex.details.rawValue:
+        case CardSegmentedIndex.details.rawValue:
             tableView.separatorStyle = .singleLine
             
             switch indexPath.section {
-            case CardViewControllerDetailsSection.manaCost.rawValue:
+            case CardDetailsSection.manaCost.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
                     let label = c.textLabel else {
                     return UITableViewCell(frame: CGRect.zero)
@@ -809,7 +741,7 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .none
                 cell = c
                 
-            case CardViewControllerDetailsSection.type.rawValue:
+            case CardDetailsSection.type.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
                     let label = c.textLabel else {
                     return UITableViewCell(frame: CGRect.zero)
@@ -827,7 +759,7 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .none
                 cell = c
                 
-            case CardViewControllerDetailsSection.oracleText.rawValue:
+            case CardDetailsSection.oracleText.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
                     let label = c.viewWithTag(100) as? UILabel else {
                     return UITableViewCell(frame: CGRect.zero)
@@ -843,7 +775,7 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .none
                 cell = c
                 
-            case CardViewControllerDetailsSection.originalText.rawValue:
+            case CardDetailsSection.originalText.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
                     let label = c.viewWithTag(100) as? UILabel else {
                     return UITableViewCell(frame: CGRect.zero)
@@ -859,7 +791,7 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .none
                 cell = c
                 
-            case CardViewControllerDetailsSection.flavorText.rawValue:
+            case CardDetailsSection.flavorText.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
                     let label = c.viewWithTag(100) as? UILabel else {
                     return UITableViewCell(frame: CGRect.zero)
@@ -875,7 +807,7 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .none
                 cell = c
                 
-            case CardViewControllerDetailsSection.artist.rawValue:
+            case CardDetailsSection.artist.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
                     let label = c.textLabel,
                     let detailTextLabel = c.detailTextLabel else {
@@ -894,7 +826,7 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .disclosureIndicator
                 cell = c
                 
-            case CardViewControllerDetailsSection.set.rawValue:
+            case CardDetailsSection.set.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
                     let label = c.textLabel,
                     let detailTextLabel = c.detailTextLabel,
@@ -921,7 +853,7 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .disclosureIndicator
                 cell = c
 
-            case CardViewControllerDetailsSection.otherNames.rawValue:
+            case CardDetailsSection.otherNames.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
                     let label = c.textLabel else {
                         return UITableViewCell(frame: CGRect.zero)
@@ -950,7 +882,7 @@ extension CardViewController : UITableViewDataSource {
                 
                 cell = c
 
-            case CardViewControllerDetailsSection.otherPrintings.rawValue:
+            case CardDetailsSection.otherPrintings.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
                     return UITableViewCell(frame: CGRect.zero)
                 }
@@ -959,7 +891,7 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .none
                 cell = c
                 
-            case CardViewControllerDetailsSection.variations.rawValue:
+            case CardDetailsSection.variations.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
                     return UITableViewCell(frame: CGRect.zero)
                 }
@@ -968,7 +900,7 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .none
                 cell = c
                 
-            case CardViewControllerDetailsSection.rulings.rawValue:
+            case CardDetailsSection.rulings.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
                     let label = c.viewWithTag(100) as? UILabel,
                     let rulings_ = card.rulings_ else {
@@ -1010,7 +942,7 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .none
                 cell = c
                 
-            case CardViewControllerDetailsSection.legalities.rawValue:
+            case CardDetailsSection.legalities.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
                     let label = c.textLabel,
                     let detailTextLabel = c.detailTextLabel,
@@ -1033,7 +965,7 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .none
                 cell = c
                 
-            case CardViewControllerDetailsSection.otherDetails.rawValue:
+            case CardDetailsSection.otherDetails.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
                     let label = c.viewWithTag(100) as? UILabel else {
                     return UITableViewCell(frame: CGRect.zero)
@@ -1048,7 +980,7 @@ extension CardViewController : UITableViewDataSource {
                 ()
             }
             
-        case CardViewControllerSegmentedIndex.store.rawValue:
+        case CardSegmentedIndex.store.rawValue:
             guard let suppliers = card.suppliers else {
                 return UITableViewCell(frame: CGRect.zero)
             }
@@ -1122,24 +1054,24 @@ extension CardViewController : UITableViewDataSource {
         var headerTitle: String?
         
         switch contentSegmentedControl.selectedSegmentIndex {
-        case CardViewControllerSegmentedIndex.details.rawValue:
+        case CardSegmentedIndex.details.rawValue:
             switch section {
-            case CardViewControllerDetailsSection.manaCost.rawValue:
-                headerTitle = CardViewControllerDetailsSection.manaCost.description
-            case CardViewControllerDetailsSection.type.rawValue:
-                headerTitle = CardViewControllerDetailsSection.type.description
-            case CardViewControllerDetailsSection.oracleText.rawValue:
-                headerTitle = CardViewControllerDetailsSection.oracleText.description
-            case CardViewControllerDetailsSection.originalText.rawValue:
-                headerTitle = CardViewControllerDetailsSection.originalText.description
-            case CardViewControllerDetailsSection.flavorText.rawValue:
-                headerTitle = CardViewControllerDetailsSection.flavorText.description
-            case CardViewControllerDetailsSection.artist.rawValue:
-                headerTitle = CardViewControllerDetailsSection.artist.description
-            case CardViewControllerDetailsSection.set.rawValue:
-                headerTitle = CardViewControllerDetailsSection.set.description
-            case CardViewControllerDetailsSection.otherNames.rawValue:
-                headerTitle = CardViewControllerDetailsSection.otherNames.description
+            case CardDetailsSection.manaCost.rawValue:
+                headerTitle = CardDetailsSection.manaCost.description
+            case CardDetailsSection.type.rawValue:
+                headerTitle = CardDetailsSection.type.description
+            case CardDetailsSection.oracleText.rawValue:
+                headerTitle = CardDetailsSection.oracleText.description
+            case CardDetailsSection.originalText.rawValue:
+                headerTitle = CardDetailsSection.originalText.description
+            case CardDetailsSection.flavorText.rawValue:
+                headerTitle = CardDetailsSection.flavorText.description
+            case CardDetailsSection.artist.rawValue:
+                headerTitle = CardDetailsSection.artist.description
+            case CardDetailsSection.set.rawValue:
+                headerTitle = CardDetailsSection.set.description
+            case CardDetailsSection.otherNames.rawValue:
+                headerTitle = CardDetailsSection.otherNames.description
                 var count = 0
                 
                 if let names_ = card.names_ {
@@ -1149,40 +1081,40 @@ extension CardViewController : UITableViewDataSource {
                     }
                 }
                 headerTitle?.append(": \(count)")
-            case CardViewControllerDetailsSection.otherPrintings.rawValue:
-                headerTitle = CardViewControllerDetailsSection.otherPrintings.description
+            case CardDetailsSection.otherPrintings.rawValue:
+                headerTitle = CardDetailsSection.otherPrintings.description
                 var count = 0
                 
                 if let otherPrintingMIDs = otherPrintingMIDs {
                     count = otherPrintingMIDs.count
                 }
                 headerTitle?.append(": \(count)")
-            case CardViewControllerDetailsSection.variations.rawValue:
-                headerTitle = CardViewControllerDetailsSection.variations.description
+            case CardDetailsSection.variations.rawValue:
+                headerTitle = CardDetailsSection.variations.description
                 var count = 0
                 
                 if let variationMIDs = variationMIDs {
                     count = variationMIDs.count
                 }
                 headerTitle?.append(": \(count)")
-            case CardViewControllerDetailsSection.rulings.rawValue:
-                headerTitle = CardViewControllerDetailsSection.rulings.description
+            case CardDetailsSection.rulings.rawValue:
+                headerTitle = CardDetailsSection.rulings.description
                 var count = 0
                 
                 if let rulings_ = card.rulings_ {
                     count = rulings_.count
                 }
                 headerTitle?.append(": \(count)")
-            case CardViewControllerDetailsSection.legalities.rawValue:
-                headerTitle = CardViewControllerDetailsSection.legalities.description
+            case CardDetailsSection.legalities.rawValue:
+                headerTitle = CardDetailsSection.legalities.description
                 var count = 0
                 
                 if let cardLegalities_ = card.cardLegalities_ {
                     count = cardLegalities_.count
                 }
                 headerTitle?.append(": \(count)")
-            case CardViewControllerDetailsSection.otherDetails.rawValue:
-                headerTitle = CardViewControllerDetailsSection.otherDetails.description
+            case CardDetailsSection.otherDetails.rawValue:
+                headerTitle = CardDetailsSection.otherDetails.description
             default:
                 ()
             }
@@ -1198,9 +1130,9 @@ extension CardViewController : UITableViewDataSource {
 extension CardViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         switch contentSegmentedControl.selectedSegmentIndex {
-        case CardViewControllerSegmentedIndex.details.rawValue:
+        case CardSegmentedIndex.details.rawValue:
             switch indexPath.section {
-            case CardViewControllerDetailsSection.otherPrintings.rawValue:
+            case CardDetailsSection.otherPrintings.rawValue:
                 guard let collectionView = cell.viewWithTag(100) as? UICollectionView else {
                     return
                 }
@@ -1217,7 +1149,7 @@ extension CardViewController : UITableViewDelegate {
                 otherPrintingsCollectionView = collectionView
                 collectionView.reloadData()
                 
-            case CardViewControllerDetailsSection.variations.rawValue:
+            case CardDetailsSection.variations.rawValue:
                 guard let collectionView = cell.viewWithTag(100) as? UICollectionView else {
                     return
                 }
@@ -1250,28 +1182,28 @@ extension CardViewController : UITableViewDelegate {
         var height = CGFloat(0)
         
         switch contentSegmentedControl.selectedSegmentIndex {
-        case CardViewControllerSegmentedIndex.image.rawValue:
+        case CardSegmentedIndex.image.rawValue:
             switch indexPath.section {
-            case CardViewControllerImageSection.pricing.rawValue:
+            case CardImageSection.pricing.rawValue:
                 height = 44
-            case CardViewControllerImageSection.image.rawValue:
+            case CardImageSection.image.rawValue:
                 height = tableView.frame.size.height - 88
-            case CardViewControllerImageSection.actions.rawValue:
+            case CardImageSection.actions.rawValue:
                 height = 44
             default:
                 ()
             }
             
-        case CardViewControllerSegmentedIndex.details.rawValue:
+        case CardSegmentedIndex.details.rawValue:
             switch indexPath.section {
-            case CardViewControllerDetailsSection.otherPrintings.rawValue,
-                 CardViewControllerDetailsSection.variations.rawValue:
+            case CardDetailsSection.otherPrintings.rawValue,
+                 CardDetailsSection.variations.rawValue:
                 height = CGFloat(88)
             default:
                 height = UITableViewAutomaticDimension
             }
             
-        case CardViewControllerSegmentedIndex.store.rawValue:
+        case CardSegmentedIndex.store.rawValue:
             guard let suppliers = card.suppliers else {
                 return CGFloat(0)
             }
@@ -1306,12 +1238,12 @@ extension CardViewController : UITableViewDelegate {
         var path: IndexPath?
         
         switch contentSegmentedControl.selectedSegmentIndex {
-        case CardViewControllerSegmentedIndex.details.rawValue:
+        case CardSegmentedIndex.details.rawValue:
             switch indexPath.section {
-            case CardViewControllerDetailsSection.artist.rawValue,
-                 CardViewControllerDetailsSection.set.rawValue:
+            case CardDetailsSection.artist.rawValue,
+                 CardDetailsSection.set.rawValue:
                 path = indexPath
-            case CardViewControllerDetailsSection.otherNames.rawValue:
+            case CardDetailsSection.otherNames.rawValue:
                 var otherCard: CMCard?
                 
                 if let names_ = card.names_ {
@@ -1343,9 +1275,9 @@ extension CardViewController : UITableViewDelegate {
         }
         
         switch contentSegmentedControl.selectedSegmentIndex {
-        case CardViewControllerSegmentedIndex.details.rawValue:
+        case CardSegmentedIndex.details.rawValue:
             switch indexPath.section {
-            case CardViewControllerDetailsSection.artist.rawValue:
+            case CardDetailsSection.artist.rawValue:
                 guard let artist = card.artist_ else {
                     return
                 }
@@ -1361,14 +1293,14 @@ extension CardViewController : UITableViewDelegate {
                 performSegue(withIdentifier: "showSearch", sender: ["request": request,
                                                                     "title": artist.name!])
                 
-            case CardViewControllerDetailsSection.set.rawValue:
+            case CardDetailsSection.set.rawValue:
                 guard let set = card.set else {
                     return
                 }
                 
                 performSegue(withIdentifier: "showSet", sender: ["set": set])
                 
-            case CardViewControllerDetailsSection.otherNames.rawValue:
+            case CardDetailsSection.otherNames.rawValue:
                 var otherCard: CMCard?
                 
                 if let names_ = card.names_ {
@@ -1557,7 +1489,7 @@ extension CardViewController : IDMPhotoBrowserDelegate {
         
         if i != cardIndex {
             movePhotoTo(index: i)
-            tableView.reloadRows(at: [IndexPath(row: 0, section: CardViewControllerImageSection.image.rawValue)], with: .none)
+            tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.image.rawValue)], with: .none)
         }
     }
 }

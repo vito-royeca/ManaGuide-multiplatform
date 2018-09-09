@@ -1,5 +1,5 @@
 //
-//  RandomCardView.swift
+//  HeroCardView.swift
 //  ManaGuide
 //
 //  Created by Jovito Royeca on 14/06/2018.
@@ -13,7 +13,7 @@ import ChameleonFramework
 import ManaKit
 import PromiseKit
 
-class RandomCardView: UIView {
+class HeroCardView: UIView {
 
     // MARK: Constants
     let preEightEditionFont      = UIFont(name: "Magic:the Gathering", size: 20.0)
@@ -21,13 +21,12 @@ class RandomCardView: UIView {
     let magic2015Font            = UIFont(name: "Beleren", size: 20.0)
 
     // MARK: Variables
-    var cardMID: NSManagedObjectID?
-//    var contrastColor: UIColor?
+    var card: CMCard!
     
     // MARK: Outlets
+    @IBOutlet weak var cropImage: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var setIcon: UILabel!
-    @IBOutlet weak var cropImageView: UIImageView!
     
     // MARK: Overrides
     override func awakeFromNib() {
@@ -37,35 +36,29 @@ class RandomCardView: UIView {
     
     // MARK: Custom methods
     func showImage() {
-        guard let cardMID = cardMID,
-            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
-            return
-        }
-        
         if let image = ManaKit.sharedInstance.cardImage(card, imageType: .artCrop) {
-            cropImageView.image = image
+            cropImage.image = image
             updateNameLabelColorFrom(image: image)
         } else {
-            cropImageView.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
-            updateNameLabelColorFrom(image: cropImageView.image!)
+            cropImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
+            updateNameLabelColorFrom(image: cropImage.image!)
             
             firstly {
                 ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
             }.done {
-                guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .artCrop) else {
+                guard let image = ManaKit.sharedInstance.cardImage(self.card, imageType: .artCrop) else {
                     return
                 }
                 
                 let animations = {
-                    self.cropImageView.image = image
+                    self.cropImage.image = image
                 }
-                UIView.transition(with: self.cropImageView,
+                UIView.transition(with: self.cropImage,
                                   duration: 1.0,
                                   options: .transitionCrossDissolve,
                                   animations: animations,
                                   completion: nil)
                 self.updateNameLabelColorFrom(image: image)
-                
                 
             }.catch { error in
                 print("\(error)")
@@ -73,12 +66,7 @@ class RandomCardView: UIView {
         }
     }
     
-    func showNameandSet() {
-        guard let cardMID = cardMID,
-            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
-                return
-        }
-        
+    func showNameAndSet() {
         nameLabel.text = card.name
         
         if let releaseDate = card.set!.releaseDate {
@@ -106,7 +94,7 @@ class RandomCardView: UIView {
         }
     }
     
-    func hideNameandSet() {
+    func hideNameAndSet() {
         nameLabel.text = ""
         setIcon.text = ""
         setIcon.backgroundColor = UIColor.clear

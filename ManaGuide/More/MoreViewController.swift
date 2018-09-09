@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DATASource
+import CoreData
 import ManaKit
 
 enum MoreViewControllerSection: Int {

@@ -1,5 +1,5 @@
 //
-//  ComprehensiveRulesViewModel.swift
+//  ComprehensiveRulesModel.swift
 //  ManaGuide
 //
 //  Created by Jovito Royeca on 07.09.18.
@@ -13,11 +13,11 @@ class ComprehensiveRulesViewModel: NSObject {
     // MARK: Variables
     var queryString = ""
     
-    private var sectionName: String?
-    private var sectionIndexTitles = [String]()
-    private var sectionTitles = [String]()
-    private var fetchedResultsController: NSFetchedResultsController<CMRule>?
-    private var rule: CMRule?
+    private var _sectionName: String?
+    private var _sectionIndexTitles = [String]()
+    private var _sectionTitles = [String]()
+    private var _fetchedResultsController: NSFetchedResultsController<CMRule>?
+    private var _rule: CMRule?
     
     // MARK: Settings
     private let sortDescriptors = [NSSortDescriptor(key: "termSection", ascending: true),
@@ -27,18 +27,18 @@ class ComprehensiveRulesViewModel: NSObject {
     init(withRule rule: CMRule?) {
         super.init()
         
-        self.rule = rule
-        guard let rule = self.rule else {
+        _rule = rule
+        guard let rule = _rule else {
             return
         }
         if rule.term == "Glossary" {
-            sectionName = "termSection"
+            _sectionName = "termSection"
         }
     }
     
     // MARK: UITableView methods
-    func tableViewNumberOfRows(inSection section: Int) -> Int {
-        guard let fetchedResultsController = fetchedResultsController,
+    func numberOfRows(inSection section: Int) -> Int {
+        guard let fetchedResultsController = _fetchedResultsController,
             let sections = fetchedResultsController.sections else {
                 return 0
         }
@@ -46,8 +46,8 @@ class ComprehensiveRulesViewModel: NSObject {
         return sections[section].numberOfObjects
     }
     
-    func tableViewNumberOfSections() -> Int {
-        guard let fetchedResultsController = fetchedResultsController,
+    func numberOfSections() -> Int {
+        guard let fetchedResultsController = _fetchedResultsController,
             let sections = fetchedResultsController.sections else {
                 return 0
         }
@@ -55,15 +55,15 @@ class ComprehensiveRulesViewModel: NSObject {
         return sections.count
     }
     
-    func tableViewSectionIndexTitles() -> [String]? {
-        return sectionIndexTitles
+    func sectionIndexTitles() -> [String]? {
+        return _sectionIndexTitles
     }
     
-    func tableViewSectionForSectionIndexTitle(title: String, at index: Int) -> Int {
+    func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
         var sectionIndex = 0
         
-        for i in 0...sectionTitles.count - 1 {
-            if sectionTitles[i].hasPrefix(title) {
+        for i in 0..._sectionTitles.count - 1 {
+            if _sectionTitles[i].hasPrefix(title) {
                 sectionIndex = i
                 break
             }
@@ -72,8 +72,8 @@ class ComprehensiveRulesViewModel: NSObject {
         return sectionIndex
     }
     
-    func tableViewTitleForHeaderInSection(section: Int) -> String? {
-        guard let fetchedResultsController = fetchedResultsController,
+    func titleForHeaderInSection(section: Int) -> String? {
+        guard let fetchedResultsController = _fetchedResultsController,
             let sections = fetchedResultsController.sections else {
                 return nil
         }
@@ -83,13 +83,13 @@ class ComprehensiveRulesViewModel: NSObject {
     
     // MARK: Custom methods
     func object(forRowAt indexPath: IndexPath) -> CMRule {
-        guard let fetchedResultsController = fetchedResultsController else {
+        guard let fetchedResultsController = _fetchedResultsController else {
             fatalError("fetchedResultsController is nil")
         }
         return fetchedResultsController.object(at: indexPath)
     }
     
-    func performSearch() {
+    func fetchData() {
         let request: NSFetchRequest<CMRule>?
         let count = queryString.count
         
@@ -105,12 +105,12 @@ class ComprehensiveRulesViewModel: NSObject {
                                   NSPredicate(format: "definition CONTAINS[cd] %@", queryString)]
                 request!.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
             }
-            fetchedResultsController = getFetchedResultsController(with: request)
+            _fetchedResultsController = getFetchedResultsController(with: request)
         } else {
-            fetchedResultsController = getFetchedResultsController(with: nil)
+            _fetchedResultsController = getFetchedResultsController(with: nil)
         }
         
-        if let rule = rule {
+        if let rule = _rule {
             if rule.term == "Glossary" {
                 updateSections()
             }
@@ -127,7 +127,7 @@ class ComprehensiveRulesViewModel: NSObject {
             // Create a default fetchRequest
             request = CMRule.fetchRequest()
             request!.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
-            if let rule = rule {
+            if let rule = _rule {
                 request!.predicate = NSPredicate(format: "parent = %@", rule)
             } else {
                 request!.predicate = NSPredicate(format: "parent = nil")
@@ -138,7 +138,7 @@ class ComprehensiveRulesViewModel: NSObject {
         // Create Fetched Results Controller
         let frc = NSFetchedResultsController(fetchRequest: request!,
                                              managedObjectContext: context,
-                                             sectionNameKeyPath: sectionName,
+                                             sectionNameKeyPath: _sectionName,
                                              cacheName: nil)
         
         // Configure Fetched Results Controller
@@ -157,26 +157,26 @@ class ComprehensiveRulesViewModel: NSObject {
     }
     
     private func updateSections() {
-        guard let fetchedResultsController = fetchedResultsController,
+        guard let fetchedResultsController = _fetchedResultsController,
             let sections = fetchedResultsController.sections,
-            let rule = rule else {
+            let rule = _rule else {
             return
         }
         
-        sectionIndexTitles = [String]()
-        sectionTitles = [String]()
+        _sectionIndexTitles = [String]()
+        _sectionTitles = [String]()
         
         if rule.term == "Glossary" {
             if let children = rule.children {
                 if let glossaries = children.allObjects as? [CMRule] {
-                    sectionIndexTitles = [String]()
-                    sectionTitles = [String]()
+                    _sectionIndexTitles = [String]()
+                    _sectionTitles = [String]()
                     
                     for glossary in glossaries {
                         let prefix = String(glossary.term!.prefix(1))
                         
-                        if !sectionIndexTitles.contains(prefix) {
-                            sectionIndexTitles.append(prefix)
+                        if !_sectionIndexTitles.contains(prefix) {
+                            _sectionIndexTitles.append(prefix)
                         }
                     }
                     
@@ -184,13 +184,13 @@ class ComprehensiveRulesViewModel: NSObject {
                     if count > 0 {
                         for i in 0...count - 1 {
                             if let sectionTitle = sections[i].indexTitle {
-                                sectionTitles.append(sectionTitle)
+                                _sectionTitles.append(sectionTitle)
                             }
                         }
                     }
                     
-                    sectionIndexTitles.sort()
-                    sectionTitles.sort()
+                    _sectionIndexTitles.sort()
+                    _sectionTitles.sort()
                 }
             }
         }
@@ -198,7 +198,6 @@ class ComprehensiveRulesViewModel: NSObject {
     
     func attributedTextFor(_ rule: CMRule, withText text: String?) -> NSAttributedString {
         var attributedString = NSMutableAttributedString(string: "")
-//        let text = searchController.searchBar.text
         let bigFontAttributes = [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]
         let bigBoldFontAttributes = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 17)]
         let smallFontAttributes = [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]

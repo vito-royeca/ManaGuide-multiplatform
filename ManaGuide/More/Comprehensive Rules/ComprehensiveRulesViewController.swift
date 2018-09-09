@@ -36,7 +36,7 @@ class ComprehensiveRulesViewController: BaseViewController {
         }
         tableView.keyboardDismissMode = .onDrag
 
-        viewModel.performSearch()
+        viewModel.fetchData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -76,11 +76,11 @@ class ComprehensiveRulesViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension ComprehensiveRulesViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.tableViewNumberOfRows(inSection: section)
+        return viewModel.numberOfRows(inSection: section)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.tableViewNumberOfSections()
+        return viewModel.numberOfSections()
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -115,15 +115,15 @@ extension ComprehensiveRulesViewController : UITableViewDataSource {
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        return viewModel.tableViewSectionIndexTitles()
+        return viewModel.sectionIndexTitles()
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        return viewModel.tableViewSectionForSectionIndexTitle(title: title, at: index)
+        return viewModel.sectionForSectionIndexTitle(title: title, at: index)
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return viewModel.tableViewTitleForHeaderInSection(section: section)
+        return viewModel.titleForHeaderInSection(section: section)
     }
 }
 
@@ -151,7 +151,7 @@ extension ComprehensiveRulesViewController : UISearchResultsUpdating {
         }
         
         viewModel.queryString = text
-        viewModel.performSearch()
+        viewModel.fetchData()
         tableView.reloadData()
     }
 }

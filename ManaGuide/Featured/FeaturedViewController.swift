@@ -7,43 +7,21 @@
 //
 
 import UIKit
+import CoreData
 import Cosmos
-import DATASource
-import Font_Awesome_Swift
 import iCarousel
 import ManaKit
 import MBProgressHUD
 import PromiseKit
 
-enum FeaturedViewControllerSection: Int {
-    case latestCards
-    case latestSets
-    case topRated
-    case topViewed
-    
-    var description : String {
-        switch self {
-        // Use Internationalization, as appropriate.
-        case .latestCards: return "Latest Cards"
-        case .latestSets: return "Latest Sets"
-        case .topRated: return "Top Rated"
-        case .topViewed: return "Top Viewed"
-        }
-    }
-    
-    static var count: Int {
-        return 4
-    }
-}
-
 class FeaturedViewController: BaseViewController {
 
     // MARK: Variables
-    var latestCardMIDs: [NSManagedObjectID]?
-    var topRated: [NSManagedObjectID]?
-    var topViewed: [NSManagedObjectID]?
-    var latestSets: [CMSet]?
-    var randomCardView: RandomCardView?
+    let latestCardsViewModel = LatestCardsViewModel()
+    let latestSetsViewModel  = LatestSetsViewModel()
+    let topRatedViewModel    = TopRatedViewModel()
+    let topViewedViewModel   = TopViewedViewModel()
+    
     var slideshowTimer: Timer?
     var latestCardsTimer: Timer?
     var flowLayoutHeight = CGFloat(0)
@@ -56,28 +34,44 @@ class FeaturedViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        fetchLatestSets()
-        fetchLatestCards()
+        latestCardsViewModel.fetchData()
+        latestSetsViewModel.fetchData()
+        
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
+                                                  object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(reloadTopRated(_:)),
+                                               name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
+                                               object: nil)
+        
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
+                                                  object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(reloadTopViewed(_:)),
+                                               name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
+                                               object: nil)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         startSlideShow()
-        fetchTopRated()
-        fetchTopViewed()
+        topRatedViewModel.fetchData()
+        topViewedViewModel.fetchData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         stopSlideShow()
-        FirebaseManager.sharedInstance.demonitorTopCharts()
+        topRatedViewModel.stopMonitoring()
     }
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         flowLayoutHeight = (view.frame.size.height / 3) - 50
         tableView.reloadData()
         
-        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.latestCards.rawValue, section: 0)) else {
+        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) else {
             return
         }
         guard let carouselView = cell.viewWithTag(100) as? iCarousel else {
@@ -137,12 +131,47 @@ class FeaturedViewController: BaseViewController {
     }
 
     // MARK: Custom methods
+    func reloadTopRated(_ notification: Notification) {
+        DispatchQueue.main.async {
+            guard let cell = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topRated.rawValue, section: 0)) else {
+                return
+            }
+            
+            for v in cell.contentView.subviews {
+                if let collectionView = v as? UICollectionView {
+                    collectionView.reloadData()
+                    break
+                }
+            }
+        }
+    }
+    
+    func reloadTopViewed(_ notification: Notification) {
+        DispatchQueue.main.async {
+            guard let cell = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topViewed.rawValue, section: 0)) else {
+                return
+            }
+            
+            for v in cell.contentView.subviews {
+                if let collectionView = v as? UICollectionView {
+                    collectionView.reloadData()
+                    break
+                }
+            }
+        }
+    }
+
+    func showAllSets(_ sender: UIButton) {
+        performSegue(withIdentifier: "showSets", sender: nil)
+    }
+    
+    // MARK: Slideshow
     func startSlideShow() {
         latestCardsTimer = Timer.scheduledTimer(timeInterval: 60 * 5,
-                                                target: self,
-                                                selector: #selector(fetchLatestCards),
+                                                target: latestCardsViewModel,
+                                                selector: #selector(LatestSetsViewModel.fetchData),
                                                 userInfo: nil, repeats: true)
-
+        
         slideshowTimer = Timer.scheduledTimer(timeInterval: 5,
                                               target: self,
                                               selector: #selector(showSlide),
@@ -163,7 +192,7 @@ class FeaturedViewController: BaseViewController {
     }
     
     func showSlide() {
-        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.latestCards.rawValue, section: 0)) else {
+        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) else {
             return
         }
         guard let carouselView = cell.viewWithTag(100) as? iCarousel else {
@@ -175,90 +204,12 @@ class FeaturedViewController: BaseViewController {
         
         carouselView.scrollToItem(at: index, animated: true)
     }
-    
-    func fetchLatestCards() {
-        guard let latestSets = latestSets else {
-            return
-        }
-        
-        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        request.predicate = NSPredicate(format: "multiverseid != 0 AND set.code IN %@", latestSets.map( { $0.code} ))
-        
-        latestCardMIDs = [NSManagedObjectID]()
-        let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
-        
-        repeat {
-            let card = result[Int(arc4random_uniform(UInt32(result.count)))]
-            let cardMID = card.objectID
-            if !latestCardMIDs!.contains(cardMID) {
-                latestCardMIDs!.append(cardMID)
-            }
-        } while latestCardMIDs!.count <= 5
-    }
-    
-    func fetchLatestSets() {
-        let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
-        request.fetchLimit = 10
-        
-        latestSets = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
-    }
-    
-    func fetchTopRated() {
-        FirebaseManager.sharedInstance.monitorTopRated(completion: { cardMIDs in
-            DispatchQueue.main.async {
-                self.showTopRated(cardMIDs: cardMIDs)
-            }
-        })
-    }
-    
-    func fetchTopViewed() {
-        FirebaseManager.sharedInstance.monitorTopViewed(completion: { cardMIDs in
-            DispatchQueue.main.async {
-                self.showTopViewed(cardMIDs: cardMIDs)
-            }
-        })
-    }
-
-    func showTopRated(cardMIDs: [NSManagedObjectID]) {
-        topRated = cardMIDs
-        
-        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topRated.rawValue, section: 0)) else {
-            return
-        }
-        
-        for v in cell.contentView.subviews {
-            if let collectionView = v as? UICollectionView {
-                collectionView.reloadData()
-                break
-            }
-        }
-    }
-    
-    func showTopViewed(cardMIDs: [NSManagedObjectID]) {
-        topViewed = cardMIDs
-        
-        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedViewControllerSection.topViewed.rawValue, section: 0)) else {
-            return
-        }
-        
-        for v in cell.contentView.subviews {
-            if let collectionView = v as? UICollectionView {
-                collectionView.reloadData()
-                break
-            }
-        }
-    }
-
-    func showAllSets(_ sender: UIButton) {
-        performSegue(withIdentifier: "showSets", sender: nil)
-    }
 }
 
 // MARK: UITableViewDataSource
 extension FeaturedViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return FeaturedViewControllerSection.count
+        return FeaturedSection.count
     }
     
     
@@ -270,8 +221,8 @@ extension FeaturedViewController : UITableViewDataSource {
         }
 
         switch indexPath.row {
-        case FeaturedViewControllerSection.latestCards.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "RandomCell"),
+        case FeaturedSection.latestCards.rawValue:
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "HeroCell"),
                 let carouselView = c.viewWithTag(100) as? iCarousel else {
                 return UITableViewCell(frame: CGRect.zero)
             }
@@ -283,14 +234,14 @@ extension FeaturedViewController : UITableViewDataSource {
             carouselView.currentItemIndex = 3
             cell = c
             
-        case FeaturedViewControllerSection.latestSets.rawValue:
+        case FeaturedSection.latestSets.rawValue:
             guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell"),
                 let titleLabel = c.viewWithTag(100) as? UILabel,
                 let showAllButton = c.viewWithTag(200) as? UIButton else {
                 return UITableViewCell(frame: CGRect.zero)
             }
             
-            titleLabel.text = FeaturedViewControllerSection.latestSets.description
+            titleLabel.text = FeaturedSection.latestSets.description
             showAllButton.addTarget(self, action: #selector(self.showAllSets(_:)), for: .touchUpInside)
             
             var collectionView: UICollectionView?
@@ -313,23 +264,22 @@ extension FeaturedViewController : UITableViewDataSource {
                 
                 collectionView.dataSource = self
                 collectionView.delegate = self
-                collectionView.tag = FeaturedViewControllerSection.latestSets.rawValue
+                collectionView.tag = FeaturedSection.latestSets.rawValue
                 collectionView.reloadData()
             }
             
             cell = c
             
-        case FeaturedViewControllerSection.topRated.rawValue:
+        case FeaturedSection.topRated.rawValue:
             guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell"),
                 let titleLabel = c.viewWithTag(100) as? UILabel,
                 let showAllButton = c.viewWithTag(200) as? UIButton else {
                 return UITableViewCell(frame: CGRect.zero)
             }
             
-            titleLabel.text = FeaturedViewControllerSection.topRated.description
+            titleLabel.text = FeaturedSection.topRated.description
             showAllButton.isHidden = true
             
-                
             var collectionView: UICollectionView?
             for v in c.contentView.subviews {
                 if let cv = v as? UICollectionView {
@@ -349,18 +299,18 @@ extension FeaturedViewController : UITableViewDataSource {
                 
                 collectionView.dataSource = self
                 collectionView.delegate = self
-                collectionView.tag = FeaturedViewControllerSection.topRated.rawValue
+                collectionView.tag = FeaturedSection.topRated.rawValue
             }
             cell = c
             
-        case FeaturedViewControllerSection.topViewed.rawValue:
+        case FeaturedSection.topViewed.rawValue:
             guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell"),
                 let titleLabel = c.viewWithTag(100) as? UILabel,
                 let showAllButton = c.viewWithTag(200) as? UIButton else {
                 return UITableViewCell(frame: CGRect.zero)
             }
             
-            titleLabel.text = FeaturedViewControllerSection.topViewed.description
+            titleLabel.text = FeaturedSection.topViewed.description
             showAllButton.isHidden = true
             
             var collectionView: UICollectionView?
@@ -382,7 +332,7 @@ extension FeaturedViewController : UITableViewDataSource {
                 
                 collectionView.dataSource = self
                 collectionView.delegate = self
-                collectionView.tag = FeaturedViewControllerSection.topViewed.rawValue
+                collectionView.tag = FeaturedSection.topViewed.rawValue
             }
             cell = c
             
@@ -400,10 +350,10 @@ extension FeaturedViewController : UITableViewDelegate {
         var height = CGFloat(0)
         
         switch indexPath.row {
-        case FeaturedViewControllerSection.latestCards.rawValue,
-             FeaturedViewControllerSection.latestSets.rawValue,
-             FeaturedViewControllerSection.topRated.rawValue,
-             FeaturedViewControllerSection.topViewed.rawValue:
+        case FeaturedSection.latestCards.rawValue,
+             FeaturedSection.latestSets.rawValue,
+             FeaturedSection.topRated.rawValue,
+             FeaturedSection.topViewed.rawValue:
             height = view.frame.size.height / 3
         default:
             height = UITableViewAutomaticDimension
@@ -419,18 +369,12 @@ extension FeaturedViewController : UICollectionViewDataSource {
         var count = 0
         
         switch collectionView.tag {
-        case FeaturedViewControllerSection.topRated.rawValue:
-            if let topRated = topRated {
-                count = topRated.count
-            }
-        case FeaturedViewControllerSection.topViewed.rawValue:
-            if let topViewed = topViewed {
-                count = topViewed.count
-            }
-        case FeaturedViewControllerSection.latestSets.rawValue:
-            if let latestSets = latestSets {
-                count = latestSets.count
-            }
+        case FeaturedSection.topRated.rawValue:
+            count = topRatedViewModel.numberOfRows(inSection: section)
+        case FeaturedSection.topViewed.rawValue:
+            count = topViewedViewModel.numberOfRows(inSection: section)
+        case FeaturedSection.latestSets.rawValue:
+            count = latestSetsViewModel.numberOfItems()
         default:
             ()
         }
@@ -442,112 +386,29 @@ extension FeaturedViewController : UICollectionViewDataSource {
         var cell: UICollectionViewCell?
         
         switch collectionView.tag {
-        case FeaturedViewControllerSection.latestSets.rawValue:
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SetItemCell", for: indexPath)
-            let set = latestSets![indexPath.row]
-            
-            guard let label100 = cell?.viewWithTag(100) as? UILabel,
-                let label200 = cell?.viewWithTag(200) as? UILabel else {
-                return cell!
+        case FeaturedSection.latestSets.rawValue:
+            guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: LatestSetItemCell.reuseIdentifier,
+                                                            for: indexPath) as? LatestSetItemCell else {
+                fatalError("LatestSetItemCell not found")
             }
-            label100.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-            label200.text = set.name
+            c.set = latestSetsViewModel.objectAt(indexPath.item)
+            cell = c
             
-        case FeaturedViewControllerSection.topRated.rawValue:
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TopRatedItemCell", for: indexPath)
-            let cardMID = topRated![indexPath.row]
-            
-            guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard,
-                let set = card.set,
-                let thumbnailImage = cell?.viewWithTag(100) as? UIImageView,
-                let label200 = cell?.viewWithTag(200) as? UILabel,
-                let label300 = cell?.viewWithTag(300) as? UILabel,
-                let ratingView = cell?.viewWithTag(400) as? CosmosView else {
-                return cell!
+        case FeaturedSection.topRated.rawValue:
+            guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: TopRatedItemCell.reuseIdentifier,
+                                                                for: indexPath) as? TopRatedItemCell else {
+                fatalError("TopRatedItemCell not found")
             }
-        
-            thumbnailImage.layer.cornerRadius = 10
-            if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
-                thumbnailImage.image = croppedImage
-            } else {
-                thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
-
-                firstly {
-                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
-                }.done {
-                    guard let image = ManaKit.sharedInstance.croppedImage(card) else {
-                        return
-                    }
-                    
-                    let animations = {
-                        thumbnailImage.image = image
-                    }
-                    UIView.transition(with: thumbnailImage,
-                                      duration: 1.0,
-                                      options: .transitionCrossDissolve,
-                                      animations: animations,
-                                      completion: nil)
-                }.catch { error in
-                    
-                }
+            c.card = topRatedViewModel.object(forRowAt: indexPath)
+            cell = c
+            
+        case FeaturedSection.topViewed.rawValue:
+            guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: TopViewedItemCell.reuseIdentifier,
+                                                             for: indexPath) as? TopViewedItemCell else {
+                fatalError("TopViewedItemCell not found")
             }
-        
-            
-            label200.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-            label200.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
-            label200.layer.cornerRadius = label200.frame.height / 2
-            label300.text = card.name
-            
-            ratingView.rating = card.rating
-            ratingView.settings.emptyBorderColor = LookAndFeel.GlobalTintColor
-            ratingView.settings.filledBorderColor = LookAndFeel.GlobalTintColor
-            ratingView.settings.filledColor = LookAndFeel.GlobalTintColor
-            ratingView.settings.fillMode = .precise
-            
-        case FeaturedViewControllerSection.topViewed.rawValue:
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TopViewedItemCell", for: indexPath)
-            let cardMID = topViewed![indexPath.row]
-            
-            guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard,
-                let set = card.set,
-                let thumbnailImage = cell?.viewWithTag(100) as? UIImageView,
-                let label200 = cell?.viewWithTag(200) as? UILabel,
-                let label300 = cell?.viewWithTag(300) as? UILabel,
-                let label400 = cell?.viewWithTag(400) as? UILabel else {
-                return cell!
-            }
-            
-            thumbnailImage.layer.cornerRadius = 10
-            if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
-                thumbnailImage.image = croppedImage
-            } else {
-                thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
-                
-                firstly {
-                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
-                }.done {
-                    guard let image = ManaKit.sharedInstance.croppedImage(card) else {
-                        return
-                    }
-                    
-                    let animations = {
-                        thumbnailImage.image = image
-                    }
-                    UIView.transition(with: thumbnailImage,
-                                      duration: 1.0,
-                                      options: .transitionCrossDissolve,
-                                      animations: animations,
-                                      completion: nil)
-                }.catch { error in
-                    
-                }
-            }
-            
-            label200.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-            label200.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
-            label200.layer.cornerRadius = label200.frame.height / 2
-            label300.text = card.name
-            label400.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
+            c.card = topViewedViewModel.object(forRowAt: indexPath)
+            cell = c
             
         default:
             ()
@@ -567,16 +428,16 @@ extension FeaturedViewController : UICollectionViewDelegate {
         var sender: [String: Any]?
         
         switch collectionView.tag {
-        case FeaturedViewControllerSection.topRated.rawValue:
+        case FeaturedSection.topRated.rawValue:
             identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-            sender = ["cardIndex": indexPath.row,
-                      "cardMIDs": topRated!]
-        case FeaturedViewControllerSection.topViewed.rawValue:
+            sender = ["cardIndex": indexPath.row/*,
+                      "cardMIDs": topRated!*/]
+        case FeaturedSection.topViewed.rawValue:
             identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-            sender = ["cardIndex": indexPath.row,
-                      "cardMIDs": topViewed!]
-        case FeaturedViewControllerSection.latestSets.rawValue:
-            let set = latestSets![indexPath.row]
+            sender = ["cardIndex": indexPath.row/*,
+                      "cardMIDs": topViewed!*/]
+        case FeaturedSection.latestSets.rawValue:
+            let set = latestSetsViewModel.objectAt(indexPath.row)
             identifier = "showSet"
             sender = ["set": set]
             
@@ -591,22 +452,17 @@ extension FeaturedViewController : UICollectionViewDelegate {
 // MARK: iCarouselDataSource
 extension FeaturedViewController : iCarouselDataSource {
     func numberOfItems(in carousel: iCarousel) -> Int {
-        var items = 0
-        
-        if let latestCardMIDs = latestCardMIDs {
-            items = latestCardMIDs.count
-        }
-        return items
+        return latestCardsViewModel.numberOfItems()
     }
     
     func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
-        var rcv: RandomCardView?
+        var rcv: HeroCardView?
         
         //reuse view if available, otherwise create a new view
-        if let v = view as? RandomCardView {
+        if let v = view as? HeroCardView {
             rcv = v
         } else {
-            if let r = Bundle.main.loadNibNamed("RandomCardView", owner: self, options: nil)?.first as? RandomCardView {
+            if let r = Bundle.main.loadNibNamed("HeroCardView", owner: self, options: nil)?.first as? HeroCardView {
                 let height = tableView.frame.size.height / 3
                 var width = tableView.frame.size.width
                 
@@ -619,43 +475,33 @@ extension FeaturedViewController : iCarouselDataSource {
             }
         }
         
-        guard let rcvNew = rcv,
-            let latestCardMIDs = latestCardMIDs,
-            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: latestCardMIDs[index]) as? CMCard else {
-            return rcv!
-        }
-        
-        rcvNew.cardMID = card.objectID
-        rcvNew.hideNameandSet()
-        rcvNew.showImage()
-        return rcvNew
+        rcv!.card = latestCardsViewModel.objectAt(index)
+        rcv!.hideNameAndSet()
+        rcv!.showImage()
+        return rcv!
     }
 }
 
 // MARK: iCarouselDelegate
 extension FeaturedViewController : iCarouselDelegate {
     func carouselCurrentItemIndexDidChange(_ carousel: iCarousel) {
-        guard let rcv = carousel.itemView(at: carousel.currentItemIndex) as? RandomCardView else {
+        guard let rcv = carousel.itemView(at: carousel.currentItemIndex) as? HeroCardView else {
             return
         }
         
         for v in carousel.visibleItemViews {
-            if let a = v as? RandomCardView {
+            if let a = v as? HeroCardView {
                 if rcv == a {
-                    a.showNameandSet()
+                    a.showNameAndSet()
                 } else {
-                    a.hideNameandSet()
+                    a.hideNameAndSet()
                 }
             }
         }
     }
     
     func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
-        guard let latestCardMIDs = latestCardMIDs,
-            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: latestCardMIDs[index]) as? CMCard else {
-            return
-        }
-        
+        let card = latestCardsViewModel.objectAt(index)
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": 0,
                       "cardMIDs": [card.objectID]] as [String : Any]

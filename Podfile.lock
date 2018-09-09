@@ -62,7 +62,7 @@ PODS:
   - FirebaseStorage (3.0.1):
     - FirebaseCore (~> 5.0)
     - GTMSessionFetcher/Core (~> 1.1)
-  - FirebaseUI/Storage (5.2.0):
+  - FirebaseUI/Storage (5.2.1):
     - Firebase/Storage (~> 5.0)
     - SDWebImage (~> 4.0)
   - Font-Awesome-Swift (1.6.4)
@@ -287,7 +287,7 @@ SPEC CHECKSUMS:
   FirebaseDatabase: 27be5ac5bc75e0b17537b2bbfada8258addcc8cd
   FirebaseInstanceID: ea5af6920d0a4a29b40459d055bebe4a6c1333c4
   FirebaseStorage: 43f823b96b72a08539eba21a7de043348a69d4c6
-  FirebaseUI: 9dfa423b6f1b73737ae8ab62692c1c0a8886186d
+  FirebaseUI: 0f6035898947af3e6ee9e9ab78ab57f8441bae56
   Font-Awesome-Swift: 4820aea879741d76968a89653715b375ec0cf99e
   GoogleAppMeasurement: f7507b39b70ad0bd80b3d81518b2f43868974307
   GoogleSignIn: 591e46382014e591269f862ba6e7bc0fbd793532
