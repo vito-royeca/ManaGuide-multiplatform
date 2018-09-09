@@ -142,6 +142,15 @@ class CardViewModel: NSObject {
         return rows
     }
     
+    func numberOfCards() -> Int {
+        guard let fetchedResultsController = _fetchedResultsController,
+            let fetchedObjects = fetchedResultsController.fetchedObjects else {
+            return 0
+        }
+        
+        return fetchedObjects.count
+    }
+    
     func numberOfOtherPrintings() -> Int {
         guard let otherPrintingsFRC = _otherPrintingsFRC,
             let fetchedObjects = otherPrintingsFRC.fetchedObjects else {

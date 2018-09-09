@@ -447,7 +447,7 @@ class CardViewController: BaseViewController {
     }
     
     func movePhotoTo(index: Int) {
-        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
+        let card = viewModel.object(forRowAt: IndexPath(row: index, section: 0))
         
         viewModel.cardIndex = index
         cardViewIncremented = false
@@ -1208,7 +1208,7 @@ extension CardViewController : UICollectionViewDelegate {
 // MARK: iCarouselDataSource
 extension CardViewController : iCarouselDataSource {
     func numberOfItems(in carousel: iCarousel) -> Int {
-        return viewModel.numberOfRows(inSection: 0)
+        return viewModel.numberOfCards()
     }
     
     func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
@@ -1232,7 +1232,7 @@ extension CardViewController : iCarouselDataSource {
             imageView.clipsToBounds = false
         }
         
-        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
+        let card = viewModel.object(forRowAt: IndexPath(row: index, section: 0))
         showImage(ofCard: card, inImageView: imageView)
         
         return imageView
@@ -1248,7 +1248,7 @@ extension CardViewController : iCarouselDelegate {
     func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
         var photos = [ManaGuidePhoto]()
         
-        for i in 0...viewModel.numberOfRows(inSection: 0) - 1 {
+        for i in 0...viewModel.numberOfCards() - 1 {
             let card = viewModel.object(forRowAt: IndexPath(row: i, section: 0))
             photos.append(ManaGuidePhoto(withCard: card))
         }

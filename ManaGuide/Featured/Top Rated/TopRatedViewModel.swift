@@ -16,14 +16,13 @@ let kMaxFetchTopRated  = UInt(10)
 
 class TopRatedViewModel: NSObject {
     // MARK: Variables
-    private var _fetchedResultsController: NSFetchedResultsController<CMCard>?
-    private var firebaseQuery: DatabaseQuery?
+    let sortDescriptors = [NSSortDescriptor(key: "rating", ascending: false),
+                           NSSortDescriptor(key: "name", ascending: true),
+                           NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                           NSSortDescriptor(key: "number", ascending: true)]
     
-    // MARK: Settings
-    private let _sortDescriptors = [NSSortDescriptor(key: "rating", ascending: false),
-                                    NSSortDescriptor(key: "name", ascending: true),
-                                    NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                                    NSSortDescriptor(key: "number", ascending: true)]
+    private var _fetchedResultsController: NSFetchedResultsController<CMCard>?
+    private var _firebaseQuery: DatabaseQuery?
     
     // MARK: Overrides
     override init() {
@@ -71,12 +70,12 @@ class TopRatedViewModel: NSObject {
     
     func fetchData() {
         let ref = Database.database().reference().child("cards")
-        firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Rating).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopRated)
+        _firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Rating).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopRated)
         
         ref.keepSynced(true)
         
         // observe changes in Firebase
-        firebaseQuery!.observe(.value, with: { snapshot in
+        _firebaseQuery!.observe(.value, with: { snapshot in
             for child in snapshot.children {
                 if let c = child as? DataSnapshot {
                     let fcard = FCCard(snapshot: c)
@@ -99,7 +98,7 @@ class TopRatedViewModel: NSObject {
                 let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
                 request.predicate = NSPredicate(format: "rating > 0")
                 request.fetchLimit = 10
-                request.sortDescriptors = self._sortDescriptors
+                request.sortDescriptors = self.sortDescriptors
                 self._fetchedResultsController = self.getFetchedResultsController(with: request)
                 
                 // notify changes
@@ -114,9 +113,9 @@ class TopRatedViewModel: NSObject {
         let ref = Database.database().reference().child("cards")
         ref.keepSynced(false)
         
-        if firebaseQuery != nil {
-            firebaseQuery!.removeAllObservers()
-            firebaseQuery = nil
+        if _firebaseQuery != nil {
+            _firebaseQuery!.removeAllObservers()
+            _firebaseQuery = nil
         }
     }
     
@@ -129,7 +128,7 @@ class TopRatedViewModel: NSObject {
         } else {
             // Create a default fetchRequest
             request = CMCard.fetchRequest()
-            request!.sortDescriptors = _sortDescriptors
+            request!.sortDescriptors = sortDescriptors
         }
         
         // Create Fetched Results Controller

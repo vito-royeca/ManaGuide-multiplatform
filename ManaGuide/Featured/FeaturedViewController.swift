@@ -437,10 +437,8 @@ extension FeaturedViewController : UICollectionViewDelegate {
             identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
             sender = ["cardIndex": indexPath.row,
                       "cardIDs": cardIDs,
-                      "sortDescriptors": [NSSortDescriptor(key: "ratings", ascending: false),
-                                          NSSortDescriptor(key: "name", ascending: true),
-                                          NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                                          NSSortDescriptor(key: "number", ascending: true)]]
+                      "sortDescriptors": topRatedViewModel.sortDescriptors]
+            
         case FeaturedSection.topViewed.rawValue:
             for i in 0...topViewedViewModel.numberOfRows(inSection: 0) - 1 {
                 cardIDs.append(topViewedViewModel.object(forRowAt: IndexPath(row: i, section: 0)).id!)
@@ -449,10 +447,7 @@ extension FeaturedViewController : UICollectionViewDelegate {
             identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
             sender = ["cardIndex": indexPath.row,
                       "cardIDs": cardIDs,
-                      "sortDescriptors": [NSSortDescriptor(key: "views", ascending: false),
-                                          NSSortDescriptor(key: "name", ascending: true),
-                                          NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                                          NSSortDescriptor(key: "number", ascending: true)]]
+                      "sortDescriptors": topViewedViewModel.sortDescriptors]
         default:
             ()
         }
