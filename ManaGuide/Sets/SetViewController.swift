@@ -108,30 +108,26 @@ class SetViewController: BaseViewController {
             guard let dest = segue.destination as? CardViewController,
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
-                let cardMIDs = dict["cardMIDs"] as? [NSManagedObjectID] else {
+                let cardIDs = dict["cardIDs"] as? [String] else {
                 return
             }
             
-            dest.cardIndex = cardIndex
-            dest.cardMIDs = cardMIDs
+            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
+                                           withCardIDs: cardIDs,
+                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
             
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
                 let dest = nav.childViewControllers.first as? CardViewController,
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
-                let cardMIDs = dict["cardMIDs"] as? [NSManagedObjectID] else {
+                let cardIDs = dict["cardIDs"] as? [String] else {
                 return
             }
             
-            let cardMID = cardMIDs[cardIndex]
-            guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
-                return
-            }
-            
-            dest.cardIndex = cardIndex
-            dest.cardMIDs = cardMIDs
-            dest.title = card.name
+            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
+                                           withCardIDs: cardIDs,
+                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
             
         } else if segue.identifier == "showSearch" {
             guard let dest = segue.destination as? SearchViewController,
@@ -611,7 +607,7 @@ extension SetViewController : UITableViewDelegate {
             let cardIndex = cards.index(of: card)
             let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
             let sender = ["cardIndex": cardIndex as Any,
-                          "cardMIDs": cards.map({ $0.objectID })]
+                          "cardIDs": cards.map({ $0.id })]
             performSegue(withIdentifier: identifier, sender: sender)
         default:
             ()
@@ -733,7 +729,7 @@ extension SetViewController : UICollectionViewDelegate {
         let cardIndex = cards.index(of: card)
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": cardIndex as Any,
-                      "cardMIDs": cards.map({ $0.objectID })]
+                      "cardIDs": cards.map({ $0.id })]
         performSegue(withIdentifier: identifier, sender: sender)
     }
 }
@@ -773,10 +769,10 @@ extension SetViewController : UIWebViewDelegate {
                     if let card = results.first {
                         if UIDevice.current.userInterfaceIdiom == .phone {
                             performSegue(withIdentifier: "showCard", sender: ["cardIndex": 0 as Any,
-                                                                              "cardMIDs": [card.objectID]])
+                                                                              "cardIDs": [card.id!]])
                         } else if UIDevice.current.userInterfaceIdiom == .pad {
                             performSegue(withIdentifier: "showCardModal", sender: ["cardIndex": 0 as Any,
-                                                                                   "cardMIDs": [card.objectID]])
+                                                                                   "cardIDs": [card.id!]])
                         }
                     }
                 } else if results.count > 1 {

@@ -86,30 +86,26 @@ class FeaturedViewController: BaseViewController {
             guard let dest = segue.destination as? CardViewController,
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
-                let cardMIDs = dict["cardMIDs"] as? [NSManagedObjectID] else {
+                let cardIDs = dict["cardIDs"] as? [String] else {
                 return
             }
             
-            dest.cardIndex = cardIndex
-            dest.cardMIDs = cardMIDs
+            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
+                                           withCardIDs: cardIDs,
+                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
             
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
                 let dest = nav.childViewControllers.first as? CardViewController,
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
-                let cardMIDs = dict["cardMIDs"] as? [NSManagedObjectID] else {
+                let cardIDs = dict["cardIDs"] as? [String] else {
                 return
             }
             
-            let cardMID = cardMIDs[cardIndex]
-            guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
-                return
-            }
-            
-            dest.cardIndex = cardIndex
-            dest.cardMIDs = cardMIDs
-            dest.title = card.name
+            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
+                                           withCardIDs: cardIDs,
+                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
             
         } else if segue.identifier == "showSet" {
             guard let dest = segue.destination as? SetViewController,
@@ -374,7 +370,7 @@ extension FeaturedViewController : UICollectionViewDataSource {
         case FeaturedSection.topViewed.rawValue:
             count = topViewedViewModel.numberOfRows(inSection: section)
         case FeaturedSection.latestSets.rawValue:
-            count = latestSetsViewModel.numberOfItems()
+            count = latestSetsViewModel.numberOfRows(inSection: section)
         default:
             ()
         }
@@ -391,7 +387,7 @@ extension FeaturedViewController : UICollectionViewDataSource {
                                                             for: indexPath) as? LatestSetItemCell else {
                 fatalError("LatestSetItemCell not found")
             }
-            c.set = latestSetsViewModel.objectAt(indexPath.item)
+            c.set = latestSetsViewModel.object(forRowAt: indexPath)
             cell = c
             
         case FeaturedSection.topRated.rawValue:
@@ -426,21 +422,37 @@ extension FeaturedViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         var identifier = ""
         var sender: [String: Any]?
+        var cardIDs = [String]()
         
         switch collectionView.tag {
-        case FeaturedSection.topRated.rawValue:
-            identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-            sender = ["cardIndex": indexPath.row/*,
-                      "cardMIDs": topRated!*/]
-        case FeaturedSection.topViewed.rawValue:
-            identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-            sender = ["cardIndex": indexPath.row/*,
-                      "cardMIDs": topViewed!*/]
         case FeaturedSection.latestSets.rawValue:
-            let set = latestSetsViewModel.objectAt(indexPath.row)
+            let set = latestSetsViewModel.object(forRowAt: indexPath)
             identifier = "showSet"
             sender = ["set": set]
+        case FeaturedSection.topRated.rawValue:
+            for i in 0...topRatedViewModel.numberOfRows(inSection: 0) - 1 {
+                cardIDs.append(topRatedViewModel.object(forRowAt: IndexPath(row: i, section: 0)).id!)
+            }
             
+            identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
+            sender = ["cardIndex": indexPath.row,
+                      "cardIDs": cardIDs,
+                      "sortDescriptors": [NSSortDescriptor(key: "ratings", ascending: false),
+                                          NSSortDescriptor(key: "name", ascending: true),
+                                          NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                          NSSortDescriptor(key: "number", ascending: true)]]
+        case FeaturedSection.topViewed.rawValue:
+            for i in 0...topViewedViewModel.numberOfRows(inSection: 0) - 1 {
+                cardIDs.append(topViewedViewModel.object(forRowAt: IndexPath(row: i, section: 0)).id!)
+            }
+            
+            identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
+            sender = ["cardIndex": indexPath.row,
+                      "cardIDs": cardIDs,
+                      "sortDescriptors": [NSSortDescriptor(key: "views", ascending: false),
+                                          NSSortDescriptor(key: "name", ascending: true),
+                                          NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                          NSSortDescriptor(key: "number", ascending: true)]]
         default:
             ()
         }
@@ -504,7 +516,7 @@ extension FeaturedViewController : iCarouselDelegate {
         let card = latestCardsViewModel.objectAt(index)
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": 0,
-                      "cardMIDs": [card.objectID]] as [String : Any]
+                      "cardIDs": [card.id]] as [String : Any]
         performSegue(withIdentifier: identifier, sender: sender)
     }
     

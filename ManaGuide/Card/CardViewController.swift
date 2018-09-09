@@ -25,11 +25,9 @@ import TwitterCore
 
 class CardViewController: BaseViewController {
     // MARK: Variables
-    var cardIndex = 0
-    var cardMIDs: [NSManagedObjectID]?
-    var otherPrintingMIDs: [NSManagedObjectID]?
+    var viewModel: CardViewModel!
+
     var otherPrintingsCollectionView: UICollectionView?
-    var variationMIDs: [NSManagedObjectID]?
     var variationsCollectionView: UICollectionView?
     var cardViewIncremented = false
     var firstAppearance = true
@@ -42,55 +40,28 @@ class CardViewController: BaseViewController {
     
     // MARK: Actions
     @IBAction func contentAction(_ sender: UISegmentedControl) {
-        guard let card = loadCard(atIndex: cardIndex) else {
+        guard let content = CardContent(rawValue: contentSegmentedControl.selectedSegmentIndex) else {
             return
         }
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
+        viewModel.content = content
         
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case CardSegmentedIndex.image.rawValue:
+        switch viewModel.content {
+        case .image:
             tableView.reloadData()
             tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
             
-        case CardSegmentedIndex.details.rawValue:
+        case .details:
             if !cardViewIncremented {
                 cardViewIncremented = true
                 incrementCardViews()
             }
             
-            if let printings_ = card.printings_ {
-                let sets = printings_.allObjects as! [CMSet]
-                var filteredSets = [CMSet]()
-                let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-                
-                if let set = card.set {
-                    filteredSets = sets.filter({ $0.code != set.code})
-                }
-                
-                request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                                           NSSortDescriptor(key: "number", ascending: true),
-                                           NSSortDescriptor(key: "mciNumber", ascending: true)]
-                request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, filteredSets.map({$0.code}))
-                
-                if let otherPrintings = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) {
-                    otherPrintingMIDs = [NSManagedObjectID]()
-                    for c in otherPrintings {
-                        otherPrintingMIDs!.append(c.objectID)
-                    }
-                }
-            }
-            
-            variationMIDs = [NSManagedObjectID]()
-            if let variations_ = card.variations_ {
-                if let variations = variations_.allObjects as? [CMCard] {
-                    for variation in variations {
-                        variationMIDs!.append(variation.objectID)
-                    }
-                }
-            }
+            viewModel.fetchExtraData()
             tableView.reloadData()
             tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
             
-        case CardSegmentedIndex.store.rawValue:
+        case .store:
             tableView.reloadData()
             
             MBProgressHUD.showAdded(to: tableView, animated: true)
@@ -101,16 +72,11 @@ class CardViewController: BaseViewController {
             }.catch { error in
                 MBProgressHUD.hide(for: self.tableView, animated: true)
             }
-            
-        default:
-            ()
         }
     }
     
     @IBAction func activityAction(_ sender: UIBarButtonItem) {
-        guard let card = loadCard(atIndex: cardIndex) else {
-            return
-        }
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
         
         if let _ = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
             showActivityViewController(sender, card: card)
@@ -171,9 +137,7 @@ class CardViewController: BaseViewController {
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
         tableView.register(UINib(nibName: "StoreTableViewCell", bundle: nil), forCellReuseIdentifier: "StoreCell")
 
-        guard let card = loadCard(atIndex: cardIndex) else {
-            return
-        }
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
         title = card.name
     }
     
@@ -249,7 +213,7 @@ class CardViewController: BaseViewController {
                 return
             }
             
-            var destCardMIDs: [NSManagedObjectID]?
+            var cardIDs: [String]?
             
             if let cell = sender as? UICollectionViewCell {
                 var parentView = cell.superview
@@ -260,24 +224,25 @@ class CardViewController: BaseViewController {
                 if let parentView = parentView {
                     if parentView == otherPrintingsCollectionView {
                         if let otherPrintingsCollectionView = otherPrintingsCollectionView,
-                            let otherPrintingMIDs = otherPrintingMIDs {
-                            destCardMIDs = [otherPrintingMIDs[otherPrintingsCollectionView.indexPath(for: cell)!.item]]
+                            let indexPath = otherPrintingsCollectionView.indexPath(for: cell) {
+                            let card = viewModel.otherPrinting(forRowAt: indexPath)
+                            cardIDs = [card.id!]
                         }
                     } else if parentView == variationsCollectionView {
                         if let variationsCollectionView = variationsCollectionView,
-                            let variationMIDs = variationMIDs {
-                            destCardMIDs = [variationMIDs[variationsCollectionView.indexPath(for: cell)!.item]]
+                            let indexPath = variationsCollectionView.indexPath(for: cell) {
+                            let card = viewModel.variation(forRowAt: indexPath)
+                            cardIDs = [card.id!]
                         }
                     }
                 }
             } else if let dict = sender as? [String: Any]  {
-                if let cardMID = dict["cardMID"] as? NSManagedObjectID {
-                    destCardMIDs = [cardMID]
+                if let card = dict["card"] as? CMCard {
+                    cardIDs = [card.id!]
                 }
             }
             
-            dest.cardMIDs = destCardMIDs
-            dest.cardIndex = 0
+            dest.viewModel = CardViewModel(withCardIndex: 0, withCardIDs: cardIDs!, withSortDescriptors: nil)
             
         } else if segue.identifier == "showSearch" {
             guard let dest = segue.destination as? SearchViewController,
@@ -314,12 +279,12 @@ class CardViewController: BaseViewController {
         DispatchQueue.main.async {
             MBProgressHUD.hide(for: self.view, animated: true)
             
-            switch self.contentSegmentedControl.selectedSegmentIndex {
-            case CardSegmentedIndex.image.rawValue:
+            switch self.viewModel.content {
+            case .image:
                 self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
                                                IndexPath(row: 0, section: CardImageSection.actions.rawValue)],
                                           with: .automatic)
-            case CardSegmentedIndex.store.rawValue:
+            case .store:
                 self.tableView.reloadData()
             default:
                 ()
@@ -329,10 +294,7 @@ class CardViewController: BaseViewController {
     
     // MARK: Core Data notifications
     func changeNotification(_ notification: Notification) {
-        guard let card = loadCard(atIndex: cardIndex) else {
-            return
-        }
-        
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
         var willReload = false
         
         if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] {
@@ -382,8 +344,9 @@ class CardViewController: BaseViewController {
     }
 
     func showUpdateRatingDialog() {
-        guard let card = loadCard(atIndex: cardIndex),
-            let id = card.id else {
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
+        
+        guard let id = card.id else {
             return
         }
         
@@ -426,8 +389,9 @@ class CardViewController: BaseViewController {
     }
     
     func incrementCardViews() {
-        guard let card = loadCard(atIndex: cardIndex),
-            let id = card.id else {
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
+        
+        guard let id = card.id else {
             return
         }
         
@@ -435,8 +399,9 @@ class CardViewController: BaseViewController {
     }
     
     func toggleCardFavorite() {
-        guard let card = loadCard(atIndex: cardIndex),
-            let id = card.id else {
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
+        
+        guard let id = card.id else {
             return
         }
         
@@ -482,15 +447,13 @@ class CardViewController: BaseViewController {
     }
     
     func movePhotoTo(index: Int) {
-        guard let card = loadCard(atIndex: index) else {
-            return
-        }
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
         
-        cardIndex = index
+        viewModel.cardIndex = index
         cardViewIncremented = false
         title = card.name
         
-        if contentSegmentedControl.selectedSegmentIndex == CardSegmentedIndex.image.rawValue {
+        if viewModel.content == .image {
             tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
                                       IndexPath(row: 0, section: CardImageSection.actions.rawValue)], with: .automatic)
         }
@@ -530,8 +493,9 @@ class CardViewController: BaseViewController {
     }
     
     func updatePricing(inCell cell: UITableViewCell) {
-        guard let card = loadCard(atIndex: cardIndex),
-            let pricing = card.pricing,
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
+        
+        guard let pricing = card.pricing,
             let label100 = cell.viewWithTag(100) as? UILabel,
             let label200 = cell.viewWithTag(200) as? UILabel,
             let label300 = cell.viewWithTag(300) as? UILabel,
@@ -544,96 +508,24 @@ class CardViewController: BaseViewController {
         label300.text = pricing.high > 0 ? String(format: "$%.2f", pricing.high) : "NA"
         label400.text = pricing.foil > 0 ? String(format: "$%.2f", pricing.foil) : "NA"
     }
-    
-    func loadCard(atIndex index: Int) -> CMCard? {
-        guard let cardMIDs = cardMIDs else {
-            return nil
-        }
-        let cardMID = cardMIDs[index]
-        
-        guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
-            return nil
-        }
-        
-        return card
-    }
 }
 
 // MARK: UITableViewDataSource
 extension CardViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let card = loadCard(atIndex: cardIndex) else {
-            return 0
-        }
-        
-        var rows = 0
-        
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case CardSegmentedIndex.image.rawValue:
-            rows = 1
-            
-        case CardSegmentedIndex.details.rawValue:
-            switch section {
-            case CardDetailsSection.otherNames.rawValue:
-                if let names_ = card.names_ {
-                    if let array = names_.allObjects as? [CMCard] {
-                        rows = array.filter({ $0.name != card.name}).count
-                    }
-                }
-                if rows == 0 {
-                    rows = 1
-                }
-            case CardDetailsSection.rulings.rawValue:
-                if let rulings_ = card.rulings_ {
-                    rows = rulings_.allObjects.count >= 1 ? rulings_.allObjects.count : 1
-                }
-            case CardDetailsSection.legalities.rawValue:
-                if let cardLegalities_ = card.cardLegalities_ {
-                    rows = cardLegalities_.allObjects.count >= 1 ? cardLegalities_.allObjects.count : 1
-                }
-            default:
-                rows = 1
-            }
-            
-        case CardSegmentedIndex.store.rawValue:
-            guard let suppliers = card.suppliers else {
-                return rows
-            }
-            rows = suppliers.count + 1
-            
-        default:
-            ()
-        }
-        
-        return rows
+        return viewModel.numberOfRows(inSection: section)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        var sections = 0
-        
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case CardSegmentedIndex.image.rawValue:
-            sections = CardImageSection.count
-        case CardSegmentedIndex.details.rawValue:
-            sections = CardDetailsSection.count
-        case CardSegmentedIndex.store.rawValue:
-            sections = 1
-        default:
-            ()
-        }
-        
-        return sections
+        return viewModel.numberOfSections()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let card = loadCard(atIndex: cardIndex) else {
-            return UITableViewCell(frame: CGRect.zero)
-        }
-        
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
         var cell: UITableViewCell?
         
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case CardSegmentedIndex.image.rawValue:
+        switch viewModel.content {
+        case .image:
             tableView.separatorStyle = .none
             
             switch indexPath.section {
@@ -664,9 +556,9 @@ extension CardViewController : UITableViewDataSource {
                 carouselView.delegate = self
                 carouselView.type = .coverFlow2
                 carouselView.isPagingEnabled = true
-                carouselView.currentItemIndex = cardIndex
+                carouselView.currentItemIndex = viewModel.cardIndex
             
-                if let imageView = carouselView.itemView(at: cardIndex) as? UIImageView {
+                if let imageView = carouselView.itemView(at: viewModel.cardIndex) as? UIImageView {
                     showImage(ofCard: card, inImageView: imageView)
                 }
             
@@ -721,7 +613,7 @@ extension CardViewController : UITableViewDataSource {
                 ()
             }
             
-        case CardSegmentedIndex.details.rawValue:
+        case .details:
             tableView.separatorStyle = .singleLine
             
             switch indexPath.section {
@@ -980,7 +872,7 @@ extension CardViewController : UITableViewDataSource {
                 ()
             }
             
-        case CardSegmentedIndex.store.rawValue:
+        case .store:
             guard let suppliers = card.suppliers else {
                 return UITableViewCell(frame: CGRect.zero)
             }
@@ -1038,99 +930,21 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             }
-            
-        default:
-            ()
         }
         
         return cell!
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        guard let card = loadCard(atIndex: cardIndex) else {
-            return nil
-        }
-        
-        var headerTitle: String?
-        
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case CardSegmentedIndex.details.rawValue:
-            switch section {
-            case CardDetailsSection.manaCost.rawValue:
-                headerTitle = CardDetailsSection.manaCost.description
-            case CardDetailsSection.type.rawValue:
-                headerTitle = CardDetailsSection.type.description
-            case CardDetailsSection.oracleText.rawValue:
-                headerTitle = CardDetailsSection.oracleText.description
-            case CardDetailsSection.originalText.rawValue:
-                headerTitle = CardDetailsSection.originalText.description
-            case CardDetailsSection.flavorText.rawValue:
-                headerTitle = CardDetailsSection.flavorText.description
-            case CardDetailsSection.artist.rawValue:
-                headerTitle = CardDetailsSection.artist.description
-            case CardDetailsSection.set.rawValue:
-                headerTitle = CardDetailsSection.set.description
-            case CardDetailsSection.otherNames.rawValue:
-                headerTitle = CardDetailsSection.otherNames.description
-                var count = 0
-                
-                if let names_ = card.names_ {
-                    if let array = names_.allObjects as? [CMCard] {
-                        count = array.filter({ $0.name != card.name}).count
-                        
-                    }
-                }
-                headerTitle?.append(": \(count)")
-            case CardDetailsSection.otherPrintings.rawValue:
-                headerTitle = CardDetailsSection.otherPrintings.description
-                var count = 0
-                
-                if let otherPrintingMIDs = otherPrintingMIDs {
-                    count = otherPrintingMIDs.count
-                }
-                headerTitle?.append(": \(count)")
-            case CardDetailsSection.variations.rawValue:
-                headerTitle = CardDetailsSection.variations.description
-                var count = 0
-                
-                if let variationMIDs = variationMIDs {
-                    count = variationMIDs.count
-                }
-                headerTitle?.append(": \(count)")
-            case CardDetailsSection.rulings.rawValue:
-                headerTitle = CardDetailsSection.rulings.description
-                var count = 0
-                
-                if let rulings_ = card.rulings_ {
-                    count = rulings_.count
-                }
-                headerTitle?.append(": \(count)")
-            case CardDetailsSection.legalities.rawValue:
-                headerTitle = CardDetailsSection.legalities.description
-                var count = 0
-                
-                if let cardLegalities_ = card.cardLegalities_ {
-                    count = cardLegalities_.count
-                }
-                headerTitle?.append(": \(count)")
-            case CardDetailsSection.otherDetails.rawValue:
-                headerTitle = CardDetailsSection.otherDetails.description
-            default:
-                ()
-            }
-        default:
-            ()
-        }
-        
-        return headerTitle
+        return viewModel.titleForHeaderInSection(section: section)
     }
 }
 
 // MARK: UITableViewDelegate
 extension CardViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case CardSegmentedIndex.details.rawValue:
+        switch viewModel.content {
+        case .details:
             switch indexPath.section {
             case CardDetailsSection.otherPrintings.rawValue:
                 guard let collectionView = cell.viewWithTag(100) as? UICollectionView else {
@@ -1175,14 +989,11 @@ extension CardViewController : UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let card = loadCard(atIndex: cardIndex) else {
-            return CGFloat(0)
-        }
-        
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
         var height = CGFloat(0)
         
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case CardSegmentedIndex.image.rawValue:
+        switch viewModel.content {
+        case .image:
             switch indexPath.section {
             case CardImageSection.pricing.rawValue:
                 height = 44
@@ -1194,7 +1005,7 @@ extension CardViewController : UITableViewDelegate {
                 ()
             }
             
-        case CardSegmentedIndex.details.rawValue:
+        case .details:
             switch indexPath.section {
             case CardDetailsSection.otherPrintings.rawValue,
                  CardDetailsSection.variations.rawValue:
@@ -1203,7 +1014,7 @@ extension CardViewController : UITableViewDelegate {
                 height = UITableViewAutomaticDimension
             }
             
-        case CardSegmentedIndex.store.rawValue:
+        case .store:
             guard let suppliers = card.suppliers else {
                 return CGFloat(0)
             }
@@ -1218,9 +1029,6 @@ extension CardViewController : UITableViewDelegate {
                     height = UITableViewAutomaticDimension
                 }
             }
-            
-        default:
-            ()
         }
         
         return height
@@ -1231,14 +1039,11 @@ extension CardViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        guard let card = loadCard(atIndex: cardIndex) else {
-            return nil
-        }
-        
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
         var path: IndexPath?
         
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case CardSegmentedIndex.details.rawValue:
+        switch viewModel.content {
+        case .details:
             switch indexPath.section {
             case CardDetailsSection.artist.rawValue,
                  CardDetailsSection.set.rawValue:
@@ -1270,12 +1075,10 @@ extension CardViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let card = loadCard(atIndex: cardIndex) else {
-            return
-        }
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
         
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case CardSegmentedIndex.details.rawValue:
+        switch viewModel.content {
+        case .details:
             switch indexPath.section {
             case CardDetailsSection.artist.rawValue:
                 guard let artist = card.artist_ else {
@@ -1333,13 +1136,9 @@ extension CardViewController : UICollectionViewDataSource {
         var items = 0
         
         if collectionView == otherPrintingsCollectionView {
-            if let otherPrintingMIDs = otherPrintingMIDs {
-                items = otherPrintingMIDs.count
-            }
+            items = viewModel.numberOfOtherPrintings()
         } else if collectionView == variationsCollectionView {
-            if let variationMIDs = variationMIDs {
-                items = variationMIDs.count
-            }
+            items = viewModel.numberOfVariations()
         }
 
         return items
@@ -1350,13 +1149,9 @@ extension CardViewController : UICollectionViewDataSource {
         var card: CMCard?
         
         if collectionView == otherPrintingsCollectionView {
-            if let otherPrintingMIDs = otherPrintingMIDs {
-                card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: otherPrintingMIDs[indexPath.row]) as? CMCard
-            }
+            card = viewModel.otherPrinting(forRowAt: indexPath)
         } else if collectionView == variationsCollectionView {
-            if let variationMIDs = variationMIDs {
-                card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: variationMIDs[indexPath.row]) as? CMCard
-            }
+            card = viewModel.variation(forRowAt: indexPath)
         }
         
         guard let c = card,
@@ -1413,11 +1208,7 @@ extension CardViewController : UICollectionViewDelegate {
 // MARK: iCarouselDataSource
 extension CardViewController : iCarouselDataSource {
     func numberOfItems(in carousel: iCarousel) -> Int {
-        guard let cardMIDs = cardMIDs else {
-            return 0
-        }
-        
-        return cardMIDs.count
+        return viewModel.numberOfRows(inSection: 0)
     }
     
     func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
@@ -1441,11 +1232,9 @@ extension CardViewController : iCarouselDataSource {
             imageView.clipsToBounds = false
         }
         
-        guard let card = loadCard(atIndex: index) else {
-            return imageView
-        }
-        
+        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
         showImage(ofCard: card, inImageView: imageView)
+        
         return imageView
     }
 }
@@ -1457,21 +1246,15 @@ extension CardViewController : iCarouselDelegate {
     }
     
     func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
-        guard let cardMIDs = cardMIDs else {
-            return
-        }
-        
         var photos = [ManaGuidePhoto]()
         
-        for cardMID in cardMIDs {
-            if let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard {
-                photos.append(ManaGuidePhoto(cardMID: card.objectID))
-            }
+        for i in 0...viewModel.numberOfRows(inSection: 0) - 1 {
+            let card = viewModel.object(forRowAt: IndexPath(row: i, section: 0))
+            photos.append(ManaGuidePhoto(withCard: card))
         }
         
         if let browser = IDMPhotoBrowser(photos: photos) {
             browser.setInitialPageIndex(UInt(index))
-
             browser.displayActionButton = false
             browser.usePopAnimation = true
             browser.forceHideStatusBar = true
@@ -1487,7 +1270,7 @@ extension CardViewController : IDMPhotoBrowserDelegate {
     func photoBrowser(_ photoBrowser: IDMPhotoBrowser,  didShowPhotoAt index: UInt) {
         let i = Int(index)
         
-        if i != cardIndex {
+        if i != viewModel.cardIndex {
             movePhotoTo(index: i)
             tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.image.rawValue)], with: .none)
         }

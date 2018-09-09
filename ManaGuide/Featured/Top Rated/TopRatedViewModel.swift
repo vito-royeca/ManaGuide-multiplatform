@@ -20,7 +20,10 @@ class TopRatedViewModel: NSObject {
     private var firebaseQuery: DatabaseQuery?
     
     // MARK: Settings
-    private let _sortDescriptors = [NSSortDescriptor(key: "rating", ascending: false)]
+    private let _sortDescriptors = [NSSortDescriptor(key: "rating", ascending: false),
+                                    NSSortDescriptor(key: "name", ascending: true),
+                                    NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                    NSSortDescriptor(key: "number", ascending: true)]
     
     // MARK: Overrides
     override init() {

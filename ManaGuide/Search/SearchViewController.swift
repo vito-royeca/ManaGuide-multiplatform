@@ -135,28 +135,25 @@ class SearchViewController: BaseViewController {
         if segue.identifier == "showCard" {
             guard let dest = segue.destination as? CardViewController,
                 let cardIndex = dict["cardIndex"] as? Int,
-                let cardMIDs = dict["cardMIDs"] as? [NSManagedObjectID] else {
+                let cardIDs = dict["cardIDs"] as? [String] else {
                 return
             }
             
-            dest.cardIndex = cardIndex
-            dest.cardMIDs = cardMIDs
+            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
+                                           withCardIDs: cardIDs,
+                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
             
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
                 let dest = nav.childViewControllers.first as? CardViewController,
                 let cardIndex = dict["cardIndex"] as? Int,
-                let cardMIDs = dict["cardMIDs"] as? [NSManagedObjectID] else {
+                let cardIDs = dict["cardIDs"] as? [String] else {
                 return
             }
             
-            let cardMID = cardMIDs[cardIndex]
-            guard let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
-                return
-            }
-            dest.cardIndex = cardIndex
-            dest.cardMIDs = cardMIDs
-            dest.title = card.name
+            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
+                                           withCardIDs: cardIDs,
+                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
         }
     }
 
@@ -599,7 +596,7 @@ extension SearchViewController : UITableViewDelegate {
         
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": cardIndex as Any,
-                      "cardMIDs": cards.map({ $0.objectID })]
+                      "cardIDs": cards.map({ $0.id })]
         performSegue(withIdentifier: identifier, sender: sender)
     }
     
@@ -737,7 +734,7 @@ extension SearchViewController : UICollectionViewDelegate {
         
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": cardIndex as Any,
-                      "cardMIDs": cards.map({ $0.objectID })]
+                      "cardIDs": cards.map({ $0.id })]
         performSegue(withIdentifier: identifier, sender: sender)
     }
 }

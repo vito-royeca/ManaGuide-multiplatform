@@ -13,12 +13,12 @@ import ManaKit
 import PromiseKit
 
 class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
-    var cardMID: NSManagedObjectID?
+    var card: CMCard?
     var progressUpdateBlock: IDMProgressUpdateBlock?
     private var _underlyingImage: UIImage?
     
-    init(cardMID: NSManagedObjectID) {
-        self.cardMID = cardMID
+    init(withCard card: CMCard) {
+        self.card = card
     }
     
     func underlyingImage() -> UIImage? {
@@ -26,8 +26,7 @@ class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
     }
     
     func loadUnderlyingImageAndNotify() {
-        guard let cardMID = cardMID,
-            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
+        guard let card = card else {
             return
         }
         
@@ -47,8 +46,7 @@ class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
     }
     
     func placeholderImage() -> UIImage? {
-        guard let cardMID = cardMID,
-            let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
+        guard let card = card else {
             return nil
         }
         
