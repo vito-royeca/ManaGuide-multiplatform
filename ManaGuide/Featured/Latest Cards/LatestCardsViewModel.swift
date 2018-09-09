@@ -42,7 +42,7 @@ class LatestCardsViewModel: NSObject {
             if !_cardMIDs.contains(cardMID) {
                 _cardMIDs.append(cardMID)
             }
-        } while _cardMIDs.count <= kMaxLatestCards
+        } while _cardMIDs.count < kMaxLatestCards
     }
     
     private func fetchLatestSets() -> [CMSet] {

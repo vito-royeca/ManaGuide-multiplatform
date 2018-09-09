@@ -30,7 +30,6 @@ class CardViewController: BaseViewController {
     var otherPrintingsCollectionView: UICollectionView?
     var variationsCollectionView: UICollectionView?
     var cardViewIncremented = false
-    var firstAppearance = true
     
     // MARK: Outlets
     @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
@@ -175,12 +174,6 @@ class CardViewController: BaseViewController {
                                                selector: #selector(changeNotification(_:)),
                                                name: NSNotification.Name.NSManagedObjectContextObjectsDidChange,
                                                object: nil)
-        
-        if firstAppearance {
-            firstAppearance = false
-        } else {
-            reloadViewController(Notification(name: NSNotification.Name.NSManagedObjectContextObjectsDidChange))
-        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {

@@ -123,6 +123,9 @@
 		11CEE05C20D0012300D72186 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11CEE05A20D0012300D72186 /* Launch Screen.storyboard */; };
 		11CEE05D20D0012300D72186 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11CEE05A20D0012300D72186 /* Launch Screen.storyboard */; };
 		11D55BCC2132545A002F8F49 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7651F224874004EF296 /* SettingsViewController.swift */; };
+		11DFB8C72145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DFB8C62145B4D500C12FF8 /* LatestCardsTableViewCell.swift */; };
+		11DFB8C82145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DFB8C62145B4D500C12FF8 /* LatestCardsTableViewCell.swift */; };
+		11DFB8C92145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DFB8C62145B4D500C12FF8 /* LatestCardsTableViewCell.swift */; };
 		11E2E3EA20D11AF500F9DB47 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11E2E3E920D11AF500F9DB47 /* StoreKit.framework */; };
 		11E2E3EF20D11C2C00F9DB47 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11E2E3EE20D11C2C00F9DB47 /* GameKit.framework */; };
 		11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */; };
@@ -217,6 +220,7 @@
 		11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreTableViewCell.swift; sourceTree = "<group>"; };
 		11C7B45420D6A7E2009D63F4 /* StoreTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StoreTableViewCell.xib; sourceTree = "<group>"; };
 		11CEE05A20D0012300D72186 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		11DFB8C62145B4D500C12FF8 /* LatestCardsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatestCardsTableViewCell.swift; sourceTree = "<group>"; };
 		11E2E3E920D11AF500F9DB47 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		11E2E3EB20D11AFD00F9DB47 /* ManaGuide.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ManaGuide.entitlements; sourceTree = "<group>"; };
 		11E2E3EE20D11C2C00F9DB47 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
@@ -368,9 +372,10 @@
 		11A5444621445AC200B8C59F /* Latest Cards */ = {
 			isa = PBXGroup;
 			children = (
-				11A63E162142F7E8005AE024 /* LatestCardsViewModel.swift */,
 				11447EB520D177F700DFF5C7 /* HeroCardView.swift */,
 				11447EB120D1764000DFF5C7 /* HeroCardView.xib */,
+				11DFB8C62145B4D500C12FF8 /* LatestCardsTableViewCell.swift */,
+				11A63E162142F7E8005AE024 /* LatestCardsViewModel.swift */,
 			);
 			path = "Latest Cards";
 			sourceTree = "<group>";
@@ -1098,6 +1103,7 @@
 				11A63E2B21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
 				11A63E232142F847005AE024 /* TopViewedViewModel.swift in Sources */,
 				11A63E1F2142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
+				11DFB8C72145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
 				1140F0D11F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11A63E132142F536005AE024 /* FeaturedViewModel.swift in Sources */,
 				11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
@@ -1136,6 +1142,7 @@
 				11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				118281B220B67FA500865172 /* AccountViewController.swift in Sources */,
 				11A63E202142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
+				11DFB8C82145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
 				11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				11A63E2821430B94005AE024 /* LatestSetItemCell.swift in Sources */,
 				1138A3CE20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
@@ -1182,6 +1189,7 @@
 				11F3BA3320D4141900511388 /* MGUtilities.swift in Sources */,
 				11A63E2D21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
 				11E4374B1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
+				11DFB8C92145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
 				11448A6020CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */,
 				118FDC7520D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,

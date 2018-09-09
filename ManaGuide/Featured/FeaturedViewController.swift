@@ -8,8 +8,6 @@
 
 import UIKit
 import CoreData
-import Cosmos
-import iCarousel
 import ManaKit
 import MBProgressHUD
 import PromiseKit
@@ -17,13 +15,10 @@ import PromiseKit
 class FeaturedViewController: BaseViewController {
 
     // MARK: Variables
-    let latestCardsViewModel = LatestCardsViewModel()
     let latestSetsViewModel  = LatestSetsViewModel()
     let topRatedViewModel    = TopRatedViewModel()
     let topViewedViewModel   = TopViewedViewModel()
     
-    var slideshowTimer: Timer?
-    var latestCardsTimer: Timer?
     var flowLayoutHeight = CGFloat(0)
     
     // MARK: Outlets
@@ -34,7 +29,6 @@ class FeaturedViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        latestCardsViewModel.fetchData()
         latestSetsViewModel.fetchData()
         
         NotificationCenter.default.removeObserver(self,
@@ -56,14 +50,24 @@ class FeaturedViewController: BaseViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        startSlideShow()
+        
+        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) as? LatestCardsTableViewCell else {
+            return
+        }
+        
+        cell.startSlideShow()
         topRatedViewModel.fetchData()
         topViewedViewModel.fetchData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        stopSlideShow()
+        
+        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) as? LatestCardsTableViewCell else {
+            return
+        }
+        
+        cell.stopSlideShow()
         topRatedViewModel.stopMonitoring()
     }
     
@@ -71,14 +75,10 @@ class FeaturedViewController: BaseViewController {
         flowLayoutHeight = (view.frame.size.height / 3) - 50
         tableView.reloadData()
         
-        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) else {
+        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) as? LatestCardsTableViewCell else {
             return
         }
-        guard let carouselView = cell.viewWithTag(100) as? iCarousel else {
-            return
-        }
-        
-        carouselView.reloadData()
+        cell.carousel.reloadData()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -160,46 +160,6 @@ class FeaturedViewController: BaseViewController {
     func showAllSets(_ sender: UIButton) {
         performSegue(withIdentifier: "showSets", sender: nil)
     }
-    
-    // MARK: Slideshow
-    func startSlideShow() {
-        latestCardsTimer = Timer.scheduledTimer(timeInterval: 60 * 5,
-                                                target: latestCardsViewModel,
-                                                selector: #selector(LatestSetsViewModel.fetchData),
-                                                userInfo: nil, repeats: true)
-        
-        slideshowTimer = Timer.scheduledTimer(timeInterval: 5,
-                                              target: self,
-                                              selector: #selector(showSlide),
-                                              userInfo: nil,
-                                              repeats: true)
-    }
-    
-    func stopSlideShow() {
-        if latestCardsTimer != nil {
-            latestCardsTimer!.invalidate()
-        }
-        latestCardsTimer = nil
-        
-        if slideshowTimer != nil {
-            slideshowTimer!.invalidate()
-        }
-        slideshowTimer = nil
-    }
-    
-    func showSlide() {
-        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) else {
-            return
-        }
-        guard let carouselView = cell.viewWithTag(100) as? iCarousel else {
-            return
-        }
-        
-        var index = carouselView.currentItemIndex
-        index += 1
-        
-        carouselView.scrollToItem(at: index, animated: true)
-    }
 }
 
 // MARK: UITableViewDataSource
@@ -218,16 +178,10 @@ extension FeaturedViewController : UITableViewDataSource {
 
         switch indexPath.row {
         case FeaturedSection.latestCards.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "HeroCell"),
-                let carouselView = c.viewWithTag(100) as? iCarousel else {
-                return UITableViewCell(frame: CGRect.zero)
+            guard let c = tableView.dequeueReusableCell(withIdentifier: LatestCardsTableViewCell.reuseIdentifier, for: indexPath) as? LatestCardsTableViewCell else {
+                fatalError("LatestCardsTableViewCell not found")
             }
-            
-            carouselView.dataSource = self
-            carouselView.delegate = self
-            carouselView.type = .linear
-            carouselView.isPagingEnabled = true
-            carouselView.currentItemIndex = 3
+            c.delegate = self
             cell = c
             
         case FeaturedSection.latestSets.rawValue:
@@ -456,78 +410,13 @@ extension FeaturedViewController : UICollectionViewDelegate {
     }
 }
 
-// MARK: iCarouselDataSource
-extension FeaturedViewController : iCarouselDataSource {
-    func numberOfItems(in carousel: iCarousel) -> Int {
-        return latestCardsViewModel.numberOfItems()
-    }
-    
-    func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
-        var rcv: HeroCardView?
-        
-        //reuse view if available, otherwise create a new view
-        if let v = view as? HeroCardView {
-            rcv = v
-        } else {
-            if let r = Bundle.main.loadNibNamed("HeroCardView", owner: self, options: nil)?.first as? HeroCardView {
-                let height = tableView.frame.size.height / 3
-                var width = tableView.frame.size.width
-                
-                if UIDevice.current.userInterfaceIdiom == .pad {
-                    width = width / 3
-                }
-                
-                r.frame = CGRect(x: 0, y: 0, width: width, height: height)
-                rcv = r
-            }
-        }
-        
-        rcv!.card = latestCardsViewModel.objectAt(index)
-        rcv!.hideNameAndSet()
-        rcv!.showImage()
-        return rcv!
-    }
-}
-
-// MARK: iCarouselDelegate
-extension FeaturedViewController : iCarouselDelegate {
-    func carouselCurrentItemIndexDidChange(_ carousel: iCarousel) {
-        guard let rcv = carousel.itemView(at: carousel.currentItemIndex) as? HeroCardView else {
-            return
-        }
-        
-        for v in carousel.visibleItemViews {
-            if let a = v as? HeroCardView {
-                if rcv == a {
-                    a.showNameAndSet()
-                } else {
-                    a.hideNameAndSet()
-                }
-            }
-        }
-    }
-    
-    func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
-        let card = latestCardsViewModel.objectAt(index)
+// MARK: LatestCardsTableViewDelegate
+extension FeaturedViewController : LatestCardsTableViewDelegate {
+    func cardSelected(card: CMCard) {
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": 0,
                       "cardIDs": [card.id]] as [String : Any]
         performSegue(withIdentifier: identifier, sender: sender)
     }
-    
-    func carousel(_ carousel: iCarousel, valueFor option: iCarouselOption, withDefault value: CGFloat) -> CGFloat {
-        var returnValue = CGFloat(0)
-        
-        switch option {
-        case .wrap:
-            returnValue = CGFloat(true)
-        default:
-            returnValue = value
-        }
-        
-        return returnValue
-    }
 }
-
-
 
