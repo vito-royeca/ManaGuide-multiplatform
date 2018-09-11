@@ -73,7 +73,7 @@ class TopViewedViewModel: NSObject {
     
     func fetchData() {
         let ref = Database.database().reference().child("cards")
-        _firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Rating).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopRated)
+        _firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Views).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopViewed)
         
         ref.keepSynced(true)
         

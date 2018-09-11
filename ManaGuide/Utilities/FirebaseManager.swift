@@ -14,7 +14,6 @@ import PromiseKit
 
 class FirebaseManager: NSObject {
     private var userRef: DatabaseReference?
-    private var queries = [String: DatabaseQuery]()
     private var online = false
     
     // MARK: user data
@@ -134,99 +133,6 @@ class FirebaseManager: NSObject {
         }
     }
     
-    func incrementCardViews(_ key: String, firstAttempt: Bool) {
-        let ref = Database.database().reference().child("cards").child(key)
-        
-        ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-            if var post = currentData.value as? [String : Any] {
-                var views = post[FCCard.Keys.Views] as? Int ?? 0
-                views += 1
-                post[FCCard.Keys.Views] = views
-                
-                // Set value and report transaction success
-                currentData.value = post
-                return TransactionResult.success(withValue: currentData)
-                
-            } else {
-                if firstAttempt {
-                    return TransactionResult.abort()
-                } else {
-                    ref.setValue([FCCard.Keys.Views: 1])
-                    return TransactionResult.success(withValue: currentData)
-                }
-            }
-            
-        }) { (error, committed, snapshot) in
-            if committed {
-                guard let snapshot = snapshot else {
-                    return
-                }
-                let fcard = FCCard(snapshot: snapshot)
-                
-                guard let cardMID = self.cardMIDs(withIds: [snapshot.key]).first,
-                    let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: cardMID) as? CMCard else {
-                    return
-                }
-                
-                card.views = Int64(fcard.views == nil ? 1 : fcard.views!)
-                
-                ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                    try! backgroundContext.save()
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardViewsUpdated),
-                                                    object: nil,
-                                                    userInfo: ["card": card])
-                }
-
-            } else {
-                // retry again, if we were aborted from above
-                self.incrementCardViews(key, firstAttempt: false)
-            }
-        }
-    }
-    
-    func toggleCardFavorite(_ key: String, favorite: Bool, firstAttempt: Bool) {
-        if let _ = Auth.auth().currentUser,
-            let userRef = userRef {
-            userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-                if var post = currentData.value as? [String : Any] {
-                    var dict: [String: Any]?
-                    
-                    if let d = post["favorites"] as? [String : Any] {
-                        dict = d
-                    } else {
-                        dict = [String: Any]()
-                    }
-                    
-                    if favorite {
-                        dict![key] = true
-                    } else {
-                        dict![key] = nil
-                    }
-                    
-                    post["favorites"] = dict
-
-                    // Set value and report transaction success
-                    currentData.value = post
-                    return TransactionResult.success(withValue: currentData)
-
-                } else {
-                    if firstAttempt {
-                        return TransactionResult.abort()
-                    } else {
-                        userRef.setValue(["favorites": [key: favorite ? true : nil]])
-                        return TransactionResult.success(withValue: currentData)
-                    }
-                }
-
-            }) { (error, committed, snapshot) in
-                if !committed {
-                    // retry again, if we were aborted from above
-                    self.toggleCardFavorite(key, favorite: favorite, firstAttempt: false)
-                }
-            }
-        }
-    }
-    
     func updateUserRatings(_ key: String, rating: Double, firstAttempt: Bool) {
         if let _ = Auth.auth().currentUser,
             let userRef = userRef {
@@ -290,21 +196,6 @@ class FirebaseManager: NSObject {
         }
     }
     
-    func demonitorTopCharts() {
-        let ref = Database.database().reference().child("cards")
-        ref.keepSynced(false)
-        
-        if let query = queries["topViewed"] {
-            query.removeAllObservers()
-            queries["topViewed"] = nil
-        }
-        
-        if let query = queries["topRated"] {
-            query.removeAllObservers()
-            queries["topRated"] = nil
-        }
-    }
-    
     func demonitorUser() {
         if let userRef = userRef {
             userRef.removeAllObservers()
@@ -326,23 +217,23 @@ class FirebaseManager: NSObject {
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         request.predicate = NSPredicate(format: "id IN %@", ids)
         var array = [NSManagedObjectID]()
-        
+
         for card in try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) {
             array.append(card.objectID)
         }
-        
+
         return array
     }
-    
+
     func cards(withMIDs mids: [NSManagedObjectID]) -> [CMCard] {
         var cards = [CMCard]()
-        
+
         for mid in mids {
             if let card = ManaKit.sharedInstance.dataStack?.mainContext.object(with: mid) as? CMCard {
                 cards.append(card)
             }
         }
-        
+
         return cards
     }
     

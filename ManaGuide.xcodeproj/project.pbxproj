@@ -58,6 +58,9 @@
 		1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7651F224874004EF296 /* SettingsViewController.swift */; };
 		1147B7691F226143004EF296 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1147B7681F226143004EF296 /* Settings.bundle */; };
 		1147B76A1F226143004EF296 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1147B7681F226143004EF296 /* Settings.bundle */; };
+		114FE3A42146A313009E3201 /* CardPricingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114FE3A32146A313009E3201 /* CardPricingTableViewCell.swift */; };
+		114FE3A52146A313009E3201 /* CardPricingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114FE3A32146A313009E3201 /* CardPricingTableViewCell.swift */; };
+		114FE3A62146A313009E3201 /* CardPricingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114FE3A32146A313009E3201 /* CardPricingTableViewCell.swift */; };
 		1150BCEE20B92E4700A36FCD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1150BCED20B92E4700A36FCD /* LoginViewController.swift */; };
 		1150BCEF20B92E4700A36FCD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1150BCED20B92E4700A36FCD /* LoginViewController.swift */; };
 		1150BCF020B92E4700A36FCD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1150BCED20B92E4700A36FCD /* LoginViewController.swift */; };
@@ -195,6 +198,7 @@
 		1147B7621F224198004EF296 /* SetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetViewController.swift; sourceTree = "<group>"; };
 		1147B7651F224874004EF296 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		1147B7681F226143004EF296 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		114FE3A32146A313009E3201 /* CardPricingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPricingTableViewCell.swift; sourceTree = "<group>"; };
 		1150BCED20B92E4700A36FCD /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		1165CD721F377395006CC433 /* MoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreViewController.swift; sourceTree = "<group>"; };
 		1165CD751F377F58006CC433 /* BannedListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannedListViewController.swift; sourceTree = "<group>"; };
@@ -470,6 +474,7 @@
 		11D55BCA21325414002F8F49 /* Card */ = {
 			isa = PBXGroup;
 			children = (
+				114FE3A32146A313009E3201 /* CardPricingTableViewCell.swift */,
 				11B2AA321F29DE490067E833 /* CardViewController.swift */,
 				11A5444B214471EB00B8C59F /* CardViewModel.swift */,
 				11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */,
@@ -1097,6 +1102,7 @@
 				11FC811220D52D0D001407C6 /* TwitterShareActivity.swift in Sources */,
 				11A63E2721430B94005AE024 /* LatestSetItemCell.swift in Sources */,
 				11A63E1B2142F80E005AE024 /* LatestSetsViewModel.swift in Sources */,
+				114FE3A42146A313009E3201 /* CardPricingTableViewCell.swift in Sources */,
 				118281B120B67FA500865172 /* AccountViewController.swift in Sources */,
 				11448A6220CD3849008EFC40 /* Constants.swift in Sources */,
 				11A63E0F2142CC34005AE024 /* ComprehensiveRulesViewModel.swift in Sources */,
@@ -1134,6 +1140,7 @@
 				1150BCEF20B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				1138A3CA20F76D590023423C /* Throttler.swift in Sources */,
 				11A63E2C21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
+				114FE3A52146A313009E3201 /* CardPricingTableViewCell.swift in Sources */,
 				11F3BA3220D4141900511388 /* MGUtilities.swift in Sources */,
 				11A63E182142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
 				11A5444D214471EB00B8C59F /* CardViewModel.swift in Sources */,
@@ -1182,6 +1189,7 @@
 				11A63E152142F536005AE024 /* FeaturedViewModel.swift in Sources */,
 				1140F0D31F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				118281B320B67FA500865172 /* AccountViewController.swift in Sources */,
+				114FE3A62146A313009E3201 /* CardPricingTableViewCell.swift in Sources */,
 				1138A3CF20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
 				11A63E212142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
 				11A63E3121430E60005AE024 /* TopViewedItemCell.swift in Sources */,

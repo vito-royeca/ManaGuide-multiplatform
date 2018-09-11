@@ -32,6 +32,9 @@ class LatestCardsTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         
+        carousel.type = .linear
+        carousel.isPagingEnabled = true
+        carousel.currentItemIndex = 3
         latestCardsViewModel.fetchData()
     }
 
@@ -79,9 +82,6 @@ class LatestCardsTableViewCell: UITableViewCell {
     private func setupCarousel() {
         carousel.dataSource = self
         carousel.delegate = self
-        carousel.type = .linear
-        carousel.isPagingEnabled = true
-        carousel.currentItemIndex = 3
     }
 }
 

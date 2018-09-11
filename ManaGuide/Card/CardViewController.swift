@@ -382,33 +382,12 @@ class CardViewController: BaseViewController {
     }
     
     func incrementCardViews() {
-        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
-        
-        guard let id = card.id else {
-            return
-        }
-        
-        FirebaseManager.sharedInstance.incrementCardViews(id, firstAttempt: true)
+        viewModel.incrementCardViews(firstAttempt: true)
     }
     
     func toggleCardFavorite() {
-        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
-        
-        guard let id = card.id else {
-            return
-        }
-        
-        var isFavorite = false
-        
-        for mid in FirebaseManager.sharedInstance.favoriteMIDs {
-            if mid == card.objectID {
-                isFavorite = true
-                break
-            }
-        }
-        
         MBProgressHUD.showAdded(to: view, animated: true)
-        FirebaseManager.sharedInstance.toggleCardFavorite(id, favorite: !isFavorite, firstAttempt: true)
+        viewModel.toggleCardFavorite(firstAttempt: true)
     }
     
     func showImage(ofCard card: CMCard, inImageView imageView: UIImageView) {
@@ -484,23 +463,6 @@ class CardViewController: BaseViewController {
             open(url)
         }
     }
-    
-    func updatePricing(inCell cell: UITableViewCell) {
-        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
-        
-        guard let pricing = card.pricing,
-            let label100 = cell.viewWithTag(100) as? UILabel,
-            let label200 = cell.viewWithTag(200) as? UILabel,
-            let label300 = cell.viewWithTag(300) as? UILabel,
-            let label400 = cell.viewWithTag(400) as? UILabel else {
-            return
-        }
-        
-        label100.text = pricing.low > 0 ? String(format: "$%.2f", pricing.low) : "NA"
-        label200.text = pricing.average > 0 ? String(format: "$%.2f", pricing.average) : "NA"
-        label300.text = pricing.high > 0 ? String(format: "$%.2f", pricing.high) : "NA"
-        label400.text = pricing.foil > 0 ? String(format: "$%.2f", pricing.foil) : "NA"
-    }
 }
 
 // MARK: UITableViewDataSource
@@ -523,24 +485,17 @@ extension CardViewController : UITableViewDataSource {
             
             switch indexPath.section {
             case CardImageSection.pricing.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "PricingCell") else {
-                    return UITableViewCell(frame: CGRect.zero)
-                }
-                
-                firstly {
-                    ManaKit.sharedInstance.fetchTCGPlayerCardPricing(card: card)
-                }.done {
-                    self.updatePricing(inCell: c)
-                }.catch { error in
-                    self.updatePricing(inCell: c)
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardPricingTableViewCell.reuseIdentifier, for: indexPath ) as? CardPricingTableViewCell else {
+                    fatalError("CardPricingTableViewCell not found")
                 }
                 
                 c.selectionStyle = .none
                 c.accessoryType = .none
+                c.card = card
                 cell = c
                 
             case CardImageSection.image.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "CarouselCell"),
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "CardImageCell"),
                     let carouselView = c.viewWithTag(100) as? iCarousel else {
                     return UITableViewCell(frame: CGRect.zero)
                 }
