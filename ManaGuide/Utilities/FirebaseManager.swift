@@ -21,49 +21,6 @@ class FirebaseManager: NSObject {
     var ratedCardMIDs = [NSManagedObjectID]()
     
     // MARK: update methods
-    func updateUser(email: String?, photoURL: URL?, displayName: String?, completion: @escaping (_ error: Error?) -> Void) {
-        if let user = Auth.auth().currentUser {
-            let changeRequest = user.createProfileChangeRequest()
-            changeRequest.displayName = displayName
-            changeRequest.photoURL = photoURL
-            changeRequest.commitChanges { (error) in
-                if let error = error {
-                    completion(error)
-                } else {
-                    let ref = Database.database().reference().child("users").child(user.uid)
-                    
-                    ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-                        var providerData = [String]()
-                        for pd in user.providerData {
-                            providerData.append(pd.providerID)
-                        }
-                        
-                        if var post = currentData.value as? [String : Any] {
-                            post["displayName"] = displayName ?? ""
-                            
-                            // Set value and report transaction success
-                            currentData.value = post
-                            return TransactionResult.success(withValue: currentData)
-                            
-                        } else {
-                            ref.setValue(["displayName": displayName ?? ""])
-                            return TransactionResult.success(withValue: currentData)
-                        }
-                        
-                    }) { (error, committed, snapshot) in
-                        if committed {
-                            completion(error)
-                        } else {
-                            self.updateUser(email: email, photoURL: photoURL, displayName: displayName, completion: completion)
-                        }
-                    }
-                }
-            }
-        } else {
-            completion(nil)
-        }
-    }
-
     func updateCardRatings(_ key: String, rating: Double, firstAttempt: Bool) {
         guard let _ = Auth.auth().currentUser else {
             return
@@ -79,7 +36,7 @@ class FirebaseManager: NSObject {
                 var ratings = post[FCCard.Keys.Ratings] as? [String: Double] ?? [String: Double]()
                 var tmpRating = Double(0)
                 
-                ratings[userRef.key] = rating
+                ratings[userRef.key!] = rating
                 for (_,v) in ratings {
                     tmpRating += v
                 }
@@ -97,7 +54,7 @@ class FirebaseManager: NSObject {
                     return TransactionResult.abort()
                 } else {
                     ref.setValue([FCCard.Keys.Rating: rating,
-                                  FCCard.Keys.Ratings : [userRef.key: rating]])
+                                  FCCard.Keys.Ratings : [userRef.key!: rating]])
                     return TransactionResult.success(withValue: currentData)
                 }
             }
@@ -169,47 +126,6 @@ class FirebaseManager: NSObject {
                 }
             }
         }
-    }
-    
-    // MARK: Data monitors
-    func monitorUser() {
-        if let user = Auth.auth().currentUser {
-            userRef = Database.database().reference().child("users").child(user.uid)
-            
-            userRef!.observe(.value, with: { snapshot in
-                if let value = snapshot.value as? [String : Any] {
-                    if let dict = value["favorites"] as? [String : Any] {
-                        self.favoriteMIDs = self.cardMIDs(withIds: Array(dict.keys))
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
-                                                        object: nil,
-                                                        userInfo: nil)
-                    }
-                    
-                    if let dict = value["ratedCards"] as? [String : Any] {
-                        self.ratedCardMIDs = self.cardMIDs(withIds: Array(dict.keys))
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
-                                                        object: nil,
-                                                        userInfo: nil)
-                    }
-                }
-            })
-        }
-    }
-    
-    func demonitorUser() {
-        if let userRef = userRef {
-            userRef.removeAllObservers()
-        }
-        
-        userRef = nil
-        favoriteMIDs = [NSManagedObjectID]()
-        ratedCardMIDs = [NSManagedObjectID]()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
-                                        object: nil,
-                                        userInfo: nil)
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
-                                        object: nil,
-                                        userInfo: nil)
     }
     
     // MARK: Custom methods

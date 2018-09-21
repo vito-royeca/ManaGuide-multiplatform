@@ -64,6 +64,9 @@
 		1150BCEE20B92E4700A36FCD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1150BCED20B92E4700A36FCD /* LoginViewController.swift */; };
 		1150BCEF20B92E4700A36FCD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1150BCED20B92E4700A36FCD /* LoginViewController.swift */; };
 		1150BCF020B92E4700A36FCD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1150BCED20B92E4700A36FCD /* LoginViewController.swift */; };
+		115FFECF214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115FFECE214C2FE100FDB8B0 /* AccountViewModel.swift */; };
+		115FFED0214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115FFECE214C2FE100FDB8B0 /* AccountViewModel.swift */; };
+		115FFED1214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115FFECE214C2FE100FDB8B0 /* AccountViewModel.swift */; };
 		1165CD731F377395006CC433 /* MoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD721F377395006CC433 /* MoreViewController.swift */; };
 		1165CD741F377395006CC433 /* MoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD721F377395006CC433 /* MoreViewController.swift */; };
 		1165CD761F377F58006CC433 /* BannedListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD751F377F58006CC433 /* BannedListViewController.swift */; };
@@ -126,6 +129,7 @@
 		11CEE05C20D0012300D72186 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11CEE05A20D0012300D72186 /* Launch Screen.storyboard */; };
 		11CEE05D20D0012300D72186 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11CEE05A20D0012300D72186 /* Launch Screen.storyboard */; };
 		11D55BCC2132545A002F8F49 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7651F224874004EF296 /* SettingsViewController.swift */; };
+		11D874DA214833DC007F90AE /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D874D9214833DC007F90AE /* LoginViewModel.swift */; };
 		11DFB8C72145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DFB8C62145B4D500C12FF8 /* LatestCardsTableViewCell.swift */; };
 		11DFB8C82145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DFB8C62145B4D500C12FF8 /* LatestCardsTableViewCell.swift */; };
 		11DFB8C92145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DFB8C62145B4D500C12FF8 /* LatestCardsTableViewCell.swift */; };
@@ -200,6 +204,7 @@
 		1147B7681F226143004EF296 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		114FE3A32146A313009E3201 /* CardPricingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPricingTableViewCell.swift; sourceTree = "<group>"; };
 		1150BCED20B92E4700A36FCD /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		115FFECE214C2FE100FDB8B0 /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
 		1165CD721F377395006CC433 /* MoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreViewController.swift; sourceTree = "<group>"; };
 		1165CD751F377F58006CC433 /* BannedListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannedListViewController.swift; sourceTree = "<group>"; };
 		1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComprehensiveRulesViewController.swift; sourceTree = "<group>"; };
@@ -224,6 +229,7 @@
 		11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreTableViewCell.swift; sourceTree = "<group>"; };
 		11C7B45420D6A7E2009D63F4 /* StoreTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StoreTableViewCell.xib; sourceTree = "<group>"; };
 		11CEE05A20D0012300D72186 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		11D874D9214833DC007F90AE /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		11DFB8C62145B4D500C12FF8 /* LatestCardsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatestCardsTableViewCell.swift; sourceTree = "<group>"; };
 		11E2E3E920D11AF500F9DB47 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		11E2E3EB20D11AFD00F9DB47 /* ManaGuide.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ManaGuide.entitlements; sourceTree = "<group>"; };
@@ -454,8 +460,9 @@
 		11D55BC6213253BD002F8F49 /* Account */ = {
 			isa = PBXGroup;
 			children = (
+				11D874D8214828FD007F90AE /* Login */,
 				118281B020B67FA500865172 /* AccountViewController.swift */,
-				1150BCED20B92E4700A36FCD /* LoginViewController.swift */,
+				115FFECE214C2FE100FDB8B0 /* AccountViewModel.swift */,
 			);
 			path = Account;
 			sourceTree = "<group>";
@@ -500,6 +507,15 @@
 				11FC811120D52D0D001407C6 /* TwitterShareActivity.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		11D874D8214828FD007F90AE /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				1150BCED20B92E4700A36FCD /* LoginViewController.swift */,
+				11D874D9214833DC007F90AE /* LoginViewModel.swift */,
+			);
+			path = Login;
 			sourceTree = "<group>";
 		};
 		CCCF4703A6CA69F4288EC386 /* Pods */ = {
@@ -1093,6 +1109,7 @@
 				1138A3D120F786E00023423C /* SearchRequestGenerator.swift in Sources */,
 				1138A3CD20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
 				1147B7631F224198004EF296 /* SetViewController.swift in Sources */,
+				115FFECF214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */,
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
 				11A5444C214471EB00B8C59F /* CardViewModel.swift in Sources */,
 				1150BCEE20B92E4700A36FCD /* LoginViewController.swift in Sources */,
@@ -1106,6 +1123,7 @@
 				118281B120B67FA500865172 /* AccountViewController.swift in Sources */,
 				11448A6220CD3849008EFC40 /* Constants.swift in Sources */,
 				11A63E0F2142CC34005AE024 /* ComprehensiveRulesViewModel.swift in Sources */,
+				11D874DA214833DC007F90AE /* LoginViewModel.swift in Sources */,
 				11A63E2B21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
 				11A63E232142F847005AE024 /* TopViewedViewModel.swift in Sources */,
 				11A63E1F2142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
@@ -1156,6 +1174,7 @@
 				118FDC7020D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
 				11A63E142142F536005AE024 /* FeaturedViewModel.swift in Sources */,
 				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
+				115FFED0214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */,
 				11D55BCC2132545A002F8F49 /* SettingsViewController.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
 				11A63E242142F847005AE024 /* TopViewedViewModel.swift in Sources */,
@@ -1176,6 +1195,7 @@
 				11A5444E214471EB00B8C59F /* CardViewModel.swift in Sources */,
 				1147B7581F223607004EF296 /* SetsViewController.swift in Sources */,
 				11C7B45720D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */,
+				115FFED1214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */,
 				11FC811420D52D0D001407C6 /* TwitterShareActivity.swift in Sources */,
 				1141A84020D00F4A00554872 /* SnapshotHelper.swift in Sources */,
 				110BB51A1F207C6400086841 /* ManaGuideUITests.swift in Sources */,

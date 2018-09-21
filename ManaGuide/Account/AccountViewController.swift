@@ -58,6 +58,9 @@ enum AccountViewControllerSection: Int {
 
 class AccountViewController: BaseViewController {
 
+    // MARK: Variables
+    var viewModel = AccountViewModel()
+
     // MARK Outlets
     @IBOutlet weak var loginButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
@@ -67,18 +70,14 @@ class AccountViewController: BaseViewController {
         if let _ = Auth.auth().currentUser {
             do {
                 try Auth.auth().signOut()
-                FirebaseManager.sharedInstance.demonitorUser()
+                viewModel.demonitorUser()
                 updateDisplay()
             } catch let error {
                 print("\(error)")
             }
         } else {
-            let actionAfterLogin = {(success: Bool) in
-                if success {
-                    self.updateDisplay()
-                }
-            }
-            performSegue(withIdentifier: "showLogin", sender: ["actionAfterLogin": actionAfterLogin])
+            performSegue(withIdentifier: "showLogin",
+                         sender: nil)
         }
     }
     
@@ -87,13 +86,20 @@ class AccountViewController: BaseViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: NotificationKeys.UserLoggedIn),
+                                                  object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(userLoggedIn(_:)),
+                                               name: NSNotification.Name(rawValue: NotificationKeys.UserLoggedIn),
+                                               object: nil)
+        
+        if let _ = Auth.auth().currentUser {
+            viewModel.monitorUser()
+            updateDisplay()
+        }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        updateDisplay()
-    }
-
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let dict = sender as? [String: Any]  else {
             return
@@ -106,11 +112,8 @@ class AccountViewController: BaseViewController {
             guard let loginVC = dest.childViewControllers.first as? LoginViewController else {
                 return
             }
-            guard let actionAfterLogin = dict["actionAfterLogin"] as? ((Bool) -> Void) else {
-                return
-            }
             
-            loginVC.actionAfterLogin = actionAfterLogin
+            loginVC.delegate = self
             
         } else if segue.identifier == "showSearch" {
             guard let dest = segue.destination as? SearchViewController else {
@@ -124,6 +127,11 @@ class AccountViewController: BaseViewController {
     }
     
     // Custom methods
+    func userLoggedIn(_ notification: Notification) {
+        viewModel.monitorUser()
+        updateDisplay()
+    }
+    
     func updateDisplay() {
         if let _ = Auth.auth().currentUser {
             loginButton.title = "Logout"
@@ -307,6 +315,18 @@ extension AccountViewController : UITableViewDelegate {
                                                                 "request": request])
         default:
             ()
+        }
+    }
+}
+
+// MARK: LoginViewControllerDelegate
+extension AccountViewController : LoginViewControllerDelegate {
+    func actionAfterLogin(error: Error?) {
+        if let error = error {
+            
+        } else {
+            viewModel.monitorUser()
+            updateDisplay()
         }
     }
 }

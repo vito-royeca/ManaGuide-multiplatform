@@ -41,5 +41,6 @@ enum NotificationKeys {
     static let FavoriteToggled    = "FavoriteToggled"
     static let CardRatingUpdated  = "CardRatingUpdated"
     static let CardViewsUpdated   = "CardViewsUpdated"
+    static let UserLoggedIn       = "UserLoggedIn"
 }
 

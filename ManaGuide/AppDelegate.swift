@@ -46,8 +46,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ManaKit.sharedInstance.configureTCGPlayer(partnerKey: TCGPlayerSettings.PartnerKey,
                                                   publicKey: TCGPlayerSettings.PublicKey,
                                                   privateKey: TCGPlayerSettings.PrivateKey)
-        FirebaseManager.sharedInstance.monitorUser()
-        
         // Set the global tint color
         window?.tintColor = LookAndFeel.GlobalTintColor
 

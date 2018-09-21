@@ -97,12 +97,8 @@ class CardViewController: BaseViewController {
         if let _ = Auth.auth().currentUser {
             toggleCardFavorite()
         } else {
-            let actionAfterLogin = {(success: Bool) in
-                if success {
-                    self.toggleCardFavorite()
-                }
-            }
-            performSegue(withIdentifier: "showLogin", sender: ["actionAfterLogin": actionAfterLogin])
+            performSegue(withIdentifier: "showLogin",
+                         sender: nil)
         }
     }
     
@@ -110,12 +106,8 @@ class CardViewController: BaseViewController {
         if let _ = Auth.auth().currentUser {
             self.showUpdateRatingDialog()
         } else {
-            let actionAfterLogin = {(success: Bool) in
-                if success {
-                    self.showUpdateRatingDialog()
-                }
-            }
-            performSegue(withIdentifier: "showLogin", sender: ["actionAfterLogin": actionAfterLogin])
+            performSegue(withIdentifier: "showLogin",
+                         sender: nil)
         }
     }
     
@@ -258,13 +250,10 @@ class CardViewController: BaseViewController {
             
         } else if segue.identifier == "showLogin" {
             guard let dest = segue.destination as? UINavigationController,
-                let loginVC = dest.childViewControllers.first as? LoginViewController,
-                let dict = sender as? [String: Any],
-                let actionAfterLogin = dict["actionAfterLogin"] as? ((Bool) -> Void) else {
+                let loginVC = dest.childViewControllers.first as? LoginViewController else {
                 return
             }
-                    
-            loginVC.actionAfterLogin = actionAfterLogin
+            loginVC.delegate = self
         }
     }
     
@@ -1232,3 +1221,15 @@ extension CardViewController : StoreTableViewCellDelegate {
     }
 }
 
+// MARK: LoginViewControllerDelegate
+extension CardViewController : LoginViewControllerDelegate {
+    func actionAfterLogin(error: Error?) {
+        if let error = error {
+            
+        } else {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.UserLoggedIn),
+                                            object: nil,
+                                            userInfo: nil)
+        }
+    }
+}
