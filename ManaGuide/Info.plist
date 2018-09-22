@@ -25,7 +25,6 @@
 			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>twitterkit-saMFOtPPU7OPGofIYoVYEmzFx://</string>
 				<string>fb228147117948469</string>
 				<string>com.googleusercontent.apps.976672670197-h4fs0sbbfboi92hsbvjr4gamepnas08m</string>
 				<string>oauth-managuide</string>
@@ -53,10 +52,10 @@
 	<string>228147117948469</string>
 	<key>FacebookDisplayName</key>
 	<string>Mana Guide</string>
+	<key>FirebaseScreenReportingEnabled</key>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-		<string>twitter</string>
-		<string>twitterauth</string>
 		<string>fbauth2</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
@@ -110,15 +109,6 @@
 				<true/>
 				<key>NSTemporaryExceptionMinimumTLSVersion</key>
 				<string>TLSv1.1</string>
-			</dict>
-			<key>twimg.com</key>
-			<dict>
-				<key>NSExceptionRequiresForwardSecrecy</key>
-				<false/>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
 			</dict>
 		</dict>
 	</dict>

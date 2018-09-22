@@ -35,7 +35,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
         FBSDKApplicationDelegate.sharedInstance().application(application,
                                                               didFinishLaunchingWithOptions: launchOptions)
-        
         // ManaKit
         ManaKit.sharedInstance.setupResources()
         ManaKit.sharedInstance.configureTCGPlayer(partnerKey: TCGPlayerSettings.PartnerKey,

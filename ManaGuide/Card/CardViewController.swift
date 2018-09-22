@@ -33,7 +33,6 @@ class CardViewController: BaseViewController {
     @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
     @IBOutlet weak var activityButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var favoriteTapGestureRecognizer: UITapGestureRecognizer!
     
     // MARK: Actions
     @IBAction func contentAction(_ sender: UISegmentedControl) {
@@ -88,24 +87,6 @@ class CardViewController: BaseViewController {
             }.catch { error in
                 print("\(error)")
             }
-        }
-    }
-    
-    @IBAction func favoriteAction(_ sender: UITapGestureRecognizer) {
-        if let _ = Auth.auth().currentUser {
-            toggleCardFavorite()
-        } else {
-            performSegue(withIdentifier: "showLogin",
-                         sender: nil)
-        }
-    }
-    
-    func ratingAction() {
-        if let _ = Auth.auth().currentUser {
-            self.showUpdateRatingDialog()
-        } else {
-            performSegue(withIdentifier: "showLogin",
-                         sender: nil)
         }
     }
     
@@ -330,16 +311,7 @@ class CardViewController: BaseViewController {
             return
         }
         
-        var rating = Double(0)
-        
-        // get user's rating for this card, if there is
-//        for mid in FirebaseManager.sharedInstance.ratedCardMIDs {
-//            if mid == card.objectID {
-//                rating = card.rating
-//                break
-//            }
-//        }
-        
+        let rating = viewModel.userRatingForCurrentCard()
         let ratingView = CosmosView(frame: CGRect.zero)
         ratingView.rating = rating
         ratingView.settings.emptyBorderColor = LookAndFeel.GlobalTintColor
@@ -416,6 +388,7 @@ class CardViewController: BaseViewController {
             tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
                                       IndexPath(row: 0, section: CardImageSection.actions.rawValue)], with: .automatic)
         }
+        viewModel.loadCardData()
     }
     
     func handleLink(_ tapGesture: UITapGestureRecognizer) {
@@ -476,8 +449,6 @@ extension CardViewController : UITableViewDataSource {
                     fatalError("CardPricingTableViewCell not found")
                 }
                 
-                c.selectionStyle = .none
-                c.accessoryType = .none
                 c.card = card
                 cell = c
                 
@@ -502,42 +473,18 @@ extension CardViewController : UITableViewDataSource {
                 cell = c
                 
             case CardImageSection.actions.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "ActionsCell"),
-                    let ratingView = c.viewWithTag(100) as? CosmosView,
-                    let label101 = c.viewWithTag(101) as? UILabel,
-                    let label200 = c.viewWithTag(200) as? UILabel,
-                    let label300 = c.viewWithTag(300) as? UILabel else {
-                    return UITableViewCell(frame: CGRect.zero)
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardActionsTableViewCell.reuseIdentifier, for: indexPath) as? CardActionsTableViewCell else {
+                    fatalError("ActionsTableViewCell not found")
                 }
                 
-                
-                ratingView.didFinishTouchingCosmos = { _ in
-                    self.ratingAction()
-                }
-                ratingView.rating = card.rating //Double(arc4random_uniform(5) + 1)
-                ratingView.settings.emptyBorderColor = LookAndFeel.GlobalTintColor
-                ratingView.settings.filledBorderColor = LookAndFeel.GlobalTintColor
-                ratingView.settings.filledColor = LookAndFeel.GlobalTintColor
-                ratingView.settings.fillMode = .precise
-                
-                label101.text = "\(card.ratings) Rating\(card.ratings > 1 ? "s" : "")"
-                
-                if let taps = label200.gestureRecognizers {
-                    for tap in taps {
-                        label200.removeGestureRecognizer(tap)
-                    }
-                }
-                label200.setFAText(prefixText: "",
+                c.delegate = self
+                c.ratingView.rating = card.rating
+                c.ratingLabel.text = viewModel.ratingStringForCard()
+                c.favoriteLabel.setFAText(prefixText: "",
                                    icon: viewModel.isCurrentCardFavorite() ? .FAHeart : .FAHeartO,
                                    postfixText: "",
                                    size: CGFloat(30))
-                label200.addGestureRecognizer(favoriteTapGestureRecognizer)
-                label200.textColor = LookAndFeel.GlobalTintColor
-                
-                label300.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
-                
-                c.selectionStyle = .none
-                c.accessoryType = .none
+                c.viewsLabel.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
                 cell = c
                 
             default:
@@ -1224,6 +1171,27 @@ extension CardViewController : LoginViewControllerDelegate {
             NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.UserLoggedIn),
                                             object: nil,
                                             userInfo: nil)
+        }
+    }
+}
+
+// MARK: CardActionsTableViewCellDelegate
+extension CardViewController : CardActionsTableViewCellDelegate {
+    func favoriteAction() {
+        if let _ = Auth.auth().currentUser {
+            toggleCardFavorite()
+        } else {
+            performSegue(withIdentifier: "showLogin",
+                         sender: nil)
+        }
+    }
+    
+    func ratingAction() {
+        if let _ = Auth.auth().currentUser {
+            self.showUpdateRatingDialog()
+        } else {
+            performSegue(withIdentifier: "showLogin",
+                         sender: nil)
         }
     }
 }

@@ -311,119 +311,26 @@ class CardViewModel: NSObject {
         }
     }
     
-    func toggleCardFavorite(firstAttempt: Bool) {
+    func userRatingForCurrentCard() -> Double {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         
         guard let fbUser = Auth.auth().currentUser,
             let user = ManaKit.sharedInstance.findObject("CMUser",
                                                          objectFinder: ["id": fbUser.uid as AnyObject],
                                                          createIfNotFound: false) as? CMUser,
-            let id = card.id else {
-            return
+            let set = user.ratings,
+            let ratings = set.allObjects as? [CMCardRating] else {
+                return 0
         }
         
-        let userRef = Database.database().reference().child("users").child(fbUser.uid)
-        let favorite = !isCurrentCardFavorite()
-        
-        userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-            if var post = currentData.value as? [String : Any] {
-                var dict: [String: Any]?
-                
-                if let d = post["favorites"] as? [String : Any] {
-                    dict = d
-                } else {
-                    dict = [String: Any]()
-                }
-                
-                if favorite {
-                    dict![id] = true
-                } else {
-                    dict![id] = nil
-                }
-                
-                post["favorites"] = dict
-                
-                // Set value and report transaction success
-                currentData.value = post
-                return TransactionResult.success(withValue: currentData)
-                
-            } else {
-                if firstAttempt {
-                    return TransactionResult.abort()
-                } else {
-                    userRef.setValue(["favorites": [id: favorite ? true : nil]])
-                    return TransactionResult.success(withValue: currentData)
-                }
-            }
-            
-        }) { (error, committed, snapshot) in
-            if committed {
-                if favorite {
-                    user.addToFavorites(card)
-                } else {
-                    user.removeFromFavorites(card)
-                }
-                
-                ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                    try! backgroundContext.save()
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.FavoriteToggled),
-                                                    object: nil,
-                                                    userInfo: nil)
-                }
-            } else {
-                // retry again, if we were aborted from above
-                self.toggleCardFavorite(firstAttempt: false)
+        for c in ratings {
+            if c.card?.id == card.id {
+                return c.rating
             }
         }
-        
+        return 0
     }
     
-    func incrementCardViews(firstAttempt: Bool) {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
-        let ref = Database.database().reference().child("cards").child(card.id!)
-        
-        ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-            if var post = currentData.value as? [String : Any] {
-                var views = post[FCCard.Keys.Views] as? Int ?? 0
-                views += 1
-                post[FCCard.Keys.Views] = views
-                
-                // Set value and report transaction success
-                currentData.value = post
-                return TransactionResult.success(withValue: currentData)
-                
-            } else {
-                if firstAttempt {
-                    return TransactionResult.abort()
-                } else {
-                    ref.setValue([FCCard.Keys.Views: 1])
-                    return TransactionResult.success(withValue: currentData)
-                }
-            }
-            
-        }) { (error, committed, snapshot) in
-            if committed {
-                guard let snapshot = snapshot else {
-                    return
-                }
-                let fcard = FCCard(snapshot: snapshot)
-                
-                card.views = Int64(fcard.views == nil ? 1 : fcard.views!)
-                
-                ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                    try! backgroundContext.save()
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardViewsUpdated),
-                                                    object: nil,
-                                                    userInfo: ["card": card])
-                }
-                
-            } else {
-                // retry again, if we were aborted from above
-                self.incrementCardViews(firstAttempt: false)
-            }
-        }
-    }
-
     func isCurrentCardFavorite() -> Bool {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         
@@ -431,17 +338,266 @@ class CardViewModel: NSObject {
             let user = ManaKit.sharedInstance.findObject("CMUser",
                                                          objectFinder: ["id": fbUser.uid as AnyObject],
                                                          createIfNotFound: false) as? CMUser,
-            let favorites = user.favorites,
-            let array = favorites.allObjects as? [CMCard] else {
-            return false
+            let set = user.favorites,
+            let favorites = set.allObjects as? [CMCard] else {
+                return false
         }
         
-        for c in array {
+        for c in favorites {
             if c.id == card.id {
                 return true
             }
         }
         return false
+    }
+
+    func ratingStringForCard() -> String {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        
+        return "\(card.ratings) Rating\(card.ratings > 1 ? "s" : "")"
+    }
+    
+    // MARK: Firebase methods
+    func toggleCardFavorite(firstAttempt: Bool) {
+        let completion = { () -> Void in
+            let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0))
+            
+            guard let fbUser = Auth.auth().currentUser,
+                let user = ManaKit.sharedInstance.findObject("CMUser",
+                                                             objectFinder: ["id": fbUser.uid as AnyObject],
+                                                             createIfNotFound: false) as? CMUser,
+                let id = card.id else {
+                return
+            }
+            
+            let userRef = Database.database().reference().child("users").child(fbUser.uid)
+            let favorite = !self.isCurrentCardFavorite()
+            
+            userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+                if var post = currentData.value as? [String : Any] {
+                    var dict: [String: Any]?
+                    
+                    if let d = post["favorites"] as? [String : Any] {
+                        dict = d
+                    } else {
+                        dict = [String: Any]()
+                    }
+                    
+                    if favorite {
+                        dict![id] = true
+                    } else {
+                        dict![id] = nil
+                    }
+                    
+                    post["favorites"] = dict
+                    
+                    // Set value and report transaction success
+                    currentData.value = post
+                    return TransactionResult.success(withValue: currentData)
+                    
+                } else {
+                    if firstAttempt {
+                        return TransactionResult.abort()
+                    } else {
+                        userRef.setValue(["favorites": [id: favorite ? true : nil]])
+                        return TransactionResult.success(withValue: currentData)
+                    }
+                }
+                
+            }) { (error, committed, snapshot) in
+                if committed {
+                    if favorite {
+                        user.addToFavorites(card)
+                    } else {
+                        user.removeFromFavorites(card)
+                    }
+                    
+                    ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                        try! backgroundContext.save()
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.FavoriteToggled),
+                                                        object: nil,
+                                                        userInfo: nil)
+                    }
+                } else {
+                    // retry again, if we were aborted from above
+                    self.toggleCardFavorite(firstAttempt: false)
+                }
+            }
+        }
+        
+        saveCardData(firstAttempt: true, completion: completion)
+    }
+    
+    func incrementCardViews(firstAttempt: Bool) {
+        let completion = { () -> Void in
+            let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0))
+            let ref = Database.database().reference().child("cards").child(card.id!)
+            
+            ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+                if var post = currentData.value as? [String : Any] {
+                    var views = post[FCCard.Keys.Views] as? Int ?? 0
+                    views += 1
+                    post[FCCard.Keys.Views] = views
+                    
+                    // Set value and report transaction success
+                    currentData.value = post
+                    return TransactionResult.success(withValue: currentData)
+                    
+                } else {
+                    if firstAttempt {
+                        return TransactionResult.abort()
+                    } else {
+                        ref.setValue([FCCard.Keys.Views: 1])
+                        return TransactionResult.success(withValue: currentData)
+                    }
+                }
+                
+            }) { (error, committed, snapshot) in
+                if committed {
+                    guard let snapshot = snapshot else {
+                        return
+                    }
+                    let fcard = FCCard(snapshot: snapshot)
+                    
+                    card.views = Int64(fcard.views == nil ? 1 : fcard.views!)
+                    
+                    ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                        try! backgroundContext.save()
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardViewsUpdated),
+                                                        object: nil,
+                                                        userInfo: ["card": card])
+                    }
+                    
+                } else {
+                    // retry again, if we were aborted from above
+                    self.incrementCardViews(firstAttempt: false)
+                }
+            }
+        }
+        
+        saveCardData(firstAttempt: true, completion: completion)
+    }
+
+    private func saveCardData(firstAttempt: Bool, completion: @escaping () -> Void) {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        let ref = Database.database().reference().child("cards").child(card.id!)
+        
+        ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+            if var post = currentData.value as? [String : Any] {
+                for (k,v) in self.firebaseCardData() {
+                    post[k] = v
+                }
+                
+                // Set value and report transaction success
+                currentData.value = post
+                return TransactionResult.success(withValue: currentData)
+                
+            } else {
+                if firstAttempt {
+                    return TransactionResult.abort()
+                } else {
+                    ref.setValue(self.firebaseCardData())
+                    return TransactionResult.success(withValue: currentData)
+                }
+            }
+            
+        }) { (error, committed, snapshot) in
+            if committed {
+                completion()
+            } else {
+                // retry again, if we were aborted from above
+                self.saveCardData(firstAttempt: false, completion: completion)
+            }
+        }
+    }
+    
+    func loadCardData() {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        let ref = Database.database().reference().child("cards").child(card.id!)
+        
+        ref.observeSingleEvent(of: .value, with: { snapshot in
+            guard let value = snapshot.value as? [String : Any] else {
+                return
+            }
+            
+            
+            // update views
+            if let views = value["Views"] as? Int {
+                card.views = Int64(views)
+            }
+            if let rating = value["Rating"] as? Double {
+                card.rating = rating
+            }
+            try! ManaKit.sharedInstance.dataStack?.mainContext.save()
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
+                                            object: nil,
+                                            userInfo: nil)
+        })
+    }
+    
+    private func firebaseCardData() -> [String: Any] {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        var dict = [String: Any]()
+        
+        dict["Name"] = card.name
+        dict["CMC"] = card.cmc
+        dict["ManaCost"] = card.manaCost
+        if let url = ManaKit.sharedInstance.imageURL(ofCard: card, imageType: .normal) {
+            dict["ImageURL"] = url.absoluteString
+        } else {
+            dict["ImageURL"] = ""
+        }
+        
+        if let url = ManaKit.sharedInstance.imageURL(ofCard: card, imageType: .artCrop) {
+            dict["CropURL"] = url.absoluteString
+        } else {
+            dict["CropURL"] = ""
+        }
+        
+        var cardType: CMCardType?
+        if let types = card.types_ {
+            if types.count > 1 {
+                cardType = types.allObjects.first as? CMCardType
+                
+                for t in types.allObjects {
+                    if let t = t as? CMCardType {
+                        if t.name == "Creature" {
+                            cardType = t
+                        }
+                    }
+                }
+            } else {
+                if let type = types.allObjects.first as? CMCardType {
+                    cardType = type
+                }
+            }
+        }
+        
+        if let cardType = cardType {
+            dict["Type"] = cardType.name
+        } else {
+            dict["Type"] = ""
+        }
+        
+        if let rarity = card.rarity_ {
+            dict["Rarity"] = rarity.name
+        } else {
+            dict["Rarity"] = ""
+        }
+        
+        if let set = card.set {
+            dict["Set_Name"] = set.name
+            dict["Set_Code"] = set.code
+            dict["Set_KeyruneCode"] = set.keyruneCode
+        }
+        
+        if let keyruneColor = ManaKit.sharedInstance.keyruneColor(forCard: card) {
+            dict["KeyruneColor"] = keyruneColor.hexValue()
+        } else {
+            dict["KeyruneColor"] = ""
+        }
+        
+        return dict
     }
     
     private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMCard>?) -> NSFetchedResultsController<CMCard> {

@@ -1238,7 +1238,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ActionsCell" id="5vn-4Y-X1k">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardActionsCell" id="5vn-4Y-X1k" customClass="CardActionsTableViewCell" customModule="ManaGuide" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="276" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5vn-4Y-X1k" id="TI0-es-uPN">
@@ -1311,6 +1311,12 @@
                                                 <constraint firstItem="ulB-rF-Fxj" firstAttribute="leading" secondItem="TI0-es-uPN" secondAttribute="leading" id="gkl-gA-eeZ"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="favoriteLabel" destination="Zlv-oV-4Az" id="wnO-86-yMb"/>
+                                            <outlet property="ratingLabel" destination="tmf-UN-dCC" id="I04-KN-NiY"/>
+                                            <outlet property="ratingView" destination="vFr-mb-cVm" id="GN2-VO-zZx"/>
+                                            <outlet property="viewsLabel" destination="kkd-kM-zpB" id="PdZ-wE-EL2"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="WebViewCell" rowHeight="88" id="hoi-X1-88Z">
                                         <rect key="frame" x="0.0" y="320" width="414" height="88"/>
@@ -1466,9 +1472,6 @@
                             <constraint firstItem="XTg-F2-G7x" firstAttribute="leading" secondItem="fcE-qX-xlo" secondAttribute="leading" id="JYH-s9-nR0"/>
                             <constraint firstItem="XTg-F2-G7x" firstAttribute="top" secondItem="tRB-T4-B73" secondAttribute="bottom" id="kV4-FX-M7J"/>
                         </constraints>
-                        <connections>
-                            <outletCollection property="gestureRecognizers" destination="jKI-Tm-ir5" appends="YES" id="ZUT-7s-AJE"/>
-                        </connections>
                     </view>
                     <navigationItem key="navigationItem" id="iPw-Is-cTc">
                         <nil key="title"/>
@@ -1494,7 +1497,6 @@
                     <connections>
                         <outlet property="activityButton" destination="HKz-ot-gcd" id="k4r-YQ-fQh"/>
                         <outlet property="contentSegmentedControl" destination="2bC-Vj-fNr" id="ozL-jl-Es4"/>
-                        <outlet property="favoriteTapGestureRecognizer" destination="jKI-Tm-ir5" id="hsu-Nx-AVX"/>
                         <outlet property="tableView" destination="XTg-F2-G7x" id="zcJ-OQ-Zvg"/>
                         <segue destination="t1B-qF-FHV" kind="show" identifier="showSearch" id="whl-Hr-bZH"/>
                         <segue destination="aOj-40-y9v" kind="show" identifier="showSet" id="xMx-O9-Y4N"/>
@@ -1502,9 +1504,10 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XRd-K3-nNu" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="jxJ-M0-KdC" userLabel="Exit" sceneMemberID="exit"/>
                 <tapGestureRecognizer id="jKI-Tm-ir5">
                     <connections>
-                        <action selector="favoriteAction:" destination="v6L-wJ-qRt" id="GwJ-WT-5Bd"/>
+                        <action selector="favoriteAction:" destination="jxJ-M0-KdC" id="Tg8-qG-q4h"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
