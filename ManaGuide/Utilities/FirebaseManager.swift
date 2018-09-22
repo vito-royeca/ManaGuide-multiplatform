@@ -17,8 +17,8 @@ class FirebaseManager: NSObject {
     private var online = false
     
     // MARK: user data
-    var favoriteMIDs = [NSManagedObjectID]()
-    var ratedCardMIDs = [NSManagedObjectID]()
+//    var favoriteMIDs = [NSManagedObjectID]()
+//    var ratedCardMIDs = [NSManagedObjectID]()
     
     // MARK: update methods
     func updateCardRatings(_ key: String, rating: Double, firstAttempt: Bool) {

@@ -29,11 +29,6 @@ enum GitHubSettings {
     static let CallbackURL    = "oauth-managuide://oauth-callback/managuide"
 }
 
-enum TwitterSettings {
-    static let ConsumerKey    = "saMFOtPPU7OPGofIYoVYEmzFx"
-    static let ConsumerSecret = "6QtePMvphlWKjxToaoFmGNpYWhvIaCQ4zQGh6GD3xGfcLbY1GN"
-}
-
 // ---------------------------------------------------------------------- //
 // ---------------- DO NOT MODIFY ANYTHING BELOW ------------------------ //
 // ---------------------------------------------------------------------- //

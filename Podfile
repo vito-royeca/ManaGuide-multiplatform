@@ -30,8 +30,6 @@ def default_pods
     pod 'SimulatorStatusMagic', :configurations => ['Debug']
     pod 'SSZipArchive'
     #pod 'SwiftOCR'
-    pod 'TwitterKit'
-    pod 'TwitterCore'
 end
 
 target 'ManaGuide' do

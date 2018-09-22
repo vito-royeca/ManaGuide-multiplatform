@@ -20,8 +20,6 @@ import ManaKit
 import MBProgressHUD
 import PromiseKit
 import NYAlertViewController
-import TwitterKit
-import TwitterCore
 
 class CardViewController: BaseViewController {
     // MARK: Variables
@@ -301,7 +299,7 @@ class CardViewController: BaseViewController {
     func showActivityViewController(_ sender: UIBarButtonItem, card: CMCard) {
         let provider = CardActivityItemProvider(card)
         let activityVC = UIActivityViewController(activityItems: [provider],
-                                                  applicationActivities: [FacebookShareActivity(parent: self), TwitterShareActivity(parent: self)])
+                                                  applicationActivities: [FacebookShareActivity(parent: self)])
 
         var excludedActivityTypes: [UIActivityType] = [.addToReadingList, .openInIBooks, .postToFacebook, .postToTwitter]
         if #available(iOS 11.0, *) {
@@ -335,12 +333,12 @@ class CardViewController: BaseViewController {
         var rating = Double(0)
         
         // get user's rating for this card, if there is
-        for mid in FirebaseManager.sharedInstance.ratedCardMIDs {
-            if mid == card.objectID {
-                rating = card.rating
-                break
-            }
-        }
+//        for mid in FirebaseManager.sharedInstance.ratedCardMIDs {
+//            if mid == card.objectID {
+//                rating = card.rating
+//                break
+//            }
+//        }
         
         let ratingView = CosmosView(frame: CGRect.zero)
         ratingView.rating = rating
@@ -524,19 +522,15 @@ extension CardViewController : UITableViewDataSource {
                 
                 label101.text = "\(card.ratings) Rating\(card.ratings > 1 ? "s" : "")"
                 
-                var isFavorite = false
-                for mid in FirebaseManager.sharedInstance.favoriteMIDs {
-                    if mid == card.objectID {
-                        isFavorite = true
-                        break
-                    }
-                }
                 if let taps = label200.gestureRecognizers {
                     for tap in taps {
                         label200.removeGestureRecognizer(tap)
                     }
                 }
-                label200.setFAText(prefixText: "", icon: isFavorite ? .FAHeart : .FAHeartO, postfixText: "", size: CGFloat(30))
+                label200.setFAText(prefixText: "",
+                                   icon: viewModel.isCurrentCardFavorite() ? .FAHeart : .FAHeartO,
+                                   postfixText: "",
+                                   size: CGFloat(30))
                 label200.addGestureRecognizer(favoriteTapGestureRecognizer)
                 label200.textColor = LookAndFeel.GlobalTintColor
                 

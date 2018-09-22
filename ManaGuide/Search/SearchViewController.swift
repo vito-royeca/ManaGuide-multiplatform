@@ -418,26 +418,28 @@ class SearchViewController: BaseViewController {
     }
 
     func updateFavorites(_ notification: Notification) {
-        request = CMCard.fetchRequest()
-        let mids = FirebaseManager.sharedInstance.favoriteMIDs
-        let cards = FirebaseManager.sharedInstance.cards(withMIDs: mids)
-
-        request!.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
-        request!.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                   NSSortDescriptor(key: "name", ascending: true),
-                                   NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+//        request = CMCard.fetchRequest()
+//
+//
+//        let mids = FirebaseManager.sharedInstance.favoriteMIDs
+//        let cards = FirebaseManager.sharedInstance.cards(withMIDs: mids)
+//
+//        request!.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
+//        request!.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+//                                   NSSortDescriptor(key: "name", ascending: true),
+//                                   NSSortDescriptor(key: "set.releaseDate", ascending: true)]
         updateDataDisplay()
     }
     
     func updateRatedCards(_ notification: Notification) {
-        request = CMCard.fetchRequest()
-        let mids = FirebaseManager.sharedInstance.ratedCardMIDs
-        let cards = FirebaseManager.sharedInstance.cards(withMIDs: mids)
-        
-        request!.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
-        request!.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                    NSSortDescriptor(key: "name", ascending: true),
-                                    NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+//        request = CMCard.fetchRequest()
+//        let mids = FirebaseManager.sharedInstance.ratedCardMIDs
+//        let cards = FirebaseManager.sharedInstance.cards(withMIDs: mids)
+//        
+//        request!.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
+//        request!.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+//                                    NSSortDescriptor(key: "name", ascending: true),
+//                                    NSSortDescriptor(key: "set.releaseDate", ascending: true)]
         updateDataDisplay()
     }
     

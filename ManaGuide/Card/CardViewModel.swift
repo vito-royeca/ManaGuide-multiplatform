@@ -323,7 +323,7 @@ class CardViewModel: NSObject {
         }
         
         let userRef = Database.database().reference().child("users").child(fbUser.uid)
-        let favorite = isCurrentCardFavorite()
+        let favorite = !isCurrentCardFavorite()
         
         userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
             if var post = currentData.value as? [String : Any] {
@@ -424,7 +424,7 @@ class CardViewModel: NSObject {
         }
     }
 
-    func isCurrentCardFavorite() -> Bool{
+    func isCurrentCardFavorite() -> Bool {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         
         guard let fbUser = Auth.auth().currentUser,

@@ -71,7 +71,7 @@ enum MoreViewControllerRuleRow: Int {
              .jar:
             return UIImage(bgIcon: .FAFilePdfO,
                            orientation: UIImageOrientation.up,
-                           bgTextColor: UIColor.lightGray,
+                           bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
                            topIcon: .FAFilePdfO,
                            topTextColor: UIColor.clear,
@@ -80,7 +80,7 @@ enum MoreViewControllerRuleRow: Int {
         case .comprehensive:
             return UIImage(bgIcon: .FADatabase,
                            orientation: UIImageOrientation.up,
-                           bgTextColor: UIColor.lightGray,
+                           bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
                            topIcon: .FADatabase,
                            topTextColor: UIColor.clear,
@@ -112,7 +112,7 @@ enum MoreViewControllerListRow: Int {
         switch self {
         case .bannedAndRestricted: return UIImage(bgIcon: .FABan,
                                                   orientation: UIImageOrientation.up,
-                                                  bgTextColor: UIColor.lightGray,
+                                                  bgTextColor: LookAndFeel.GlobalTintColor,
                                                   bgBackgroundColor: UIColor.clear,
                                                   topIcon: .FABan,
                                                   topTextColor: UIColor.clear,
@@ -120,7 +120,7 @@ enum MoreViewControllerListRow: Int {
                                                   size: CGSize(width: 20, height: 20))
         case .reserved: return UIImage(bgIcon: .FAArchive,
                                        orientation: UIImageOrientation.up,
-                                       bgTextColor: UIColor.lightGray,
+                                       bgTextColor: LookAndFeel.GlobalTintColor,
                                        bgBackgroundColor: UIColor.clear,
                                        topIcon: .FAArchive,
                                        topTextColor: UIColor.clear,
@@ -128,7 +128,7 @@ enum MoreViewControllerListRow: Int {
                                        size: CGSize(width: 20, height: 20))
         case .artists: return UIImage(bgIcon: .FAPaintBrush,
                                       orientation: UIImageOrientation.up,
-                                      bgTextColor: UIColor.lightGray,
+                                      bgTextColor: LookAndFeel.GlobalTintColor,
                                       bgBackgroundColor: UIColor.clear,
                                       topIcon: .FAPaintBrush,
                                       topTextColor: UIColor.clear,

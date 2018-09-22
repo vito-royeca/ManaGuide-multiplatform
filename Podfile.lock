@@ -163,9 +163,6 @@ PODS:
   - SimulatorStatusMagic (2.2)
   - SSZipArchive (2.1.4)
   - Sync (5.0.1)
-  - TwitterCore (3.2.0)
-  - TwitterKit (3.4.0):
-    - TwitterCore (>= 3.1.0)
 
 DEPENDENCIES:
   - ChameleonFramework/Swift (from `https://github.com/ViccAlexander/Chameleon.git`)
@@ -195,8 +192,6 @@ DEPENDENCIES:
   - PromiseKit (~> 6.0)
   - SimulatorStatusMagic
   - SSZipArchive
-  - TwitterCore
-  - TwitterKit
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -243,8 +238,6 @@ SPEC REPOS:
     - SimulatorStatusMagic
     - SSZipArchive
     - Sync
-    - TwitterCore
-    - TwitterKit
 
 EXTERNAL SOURCES:
   ChameleonFramework:
@@ -314,9 +307,7 @@ SPEC CHECKSUMS:
   SimulatorStatusMagic: 0389a805fa8bd001e2977c4046730bdbd6642861
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Sync: 5281923838f0f60e1d34063ac9ab692b6e012038
-  TwitterCore: 8cbc9ad34d91c63a0035ea05bfbfc0d7ca72a28c
-  TwitterKit: bc7bd086b9b724a1d888745a054e1d0b1ecc4f3f
 
-PODFILE CHECKSUM: 981a7b4099d87899d63f9c9d38c7c67fdea3be77
+PODFILE CHECKSUM: 4082fb630eb9d8eeba3a57a556917aafa86f3916
 
 COCOAPODS: 1.5.3

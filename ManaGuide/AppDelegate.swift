@@ -15,7 +15,6 @@ import GoogleSignIn
 import ManaKit
 import MMDrawerController
 import OAuthSwift
-import TwitterKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -29,10 +28,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Fabric
         Fabric.with([Crashlytics.self])
-        
-        // Twitter
-        TWTRTwitter.sharedInstance().start(withConsumerKey: TwitterSettings.ConsumerKey,
-                                           consumerSecret: TwitterSettings.ConsumerSecret)
         
         // Firebase
         FirebaseApp.configure()
@@ -96,10 +91,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             handled = FBSDKApplicationDelegate.sharedInstance().application(app,
                                                                             open: url,
                                                                             options: options)
-        } else if url.absoluteString.hasPrefix("twitterkit") {
-            handled = TWTRTwitter.sharedInstance().application(app,
-                                                               open: url,
-                                                               options: options)
         } else if url.absoluteString.hasPrefix("com.googleusercontent.apps") {
             handled = GIDSignIn.sharedInstance().handle(url,
                                                         sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String,

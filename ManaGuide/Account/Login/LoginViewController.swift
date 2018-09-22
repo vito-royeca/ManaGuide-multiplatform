@@ -226,38 +226,6 @@ class LoginViewController: BaseViewController {
         }
     }
     
-    @IBAction func twitterAction(_ sender: UIButton) {
-        MBProgressHUD.showAdded(to: self.view, animated: true)
-        
-        firstly {
-            viewModel.twitterLogin()
-        }.then { (credential: AuthCredential) in
-            self.viewModel.authSignInAndRetrieveData(credential: credential)
-        }.map { (authResult: AuthDataResult?) -> Void in
-            self.viewModel.updateUser(email: authResult?.user.email,
-                            photoURL: authResult?.user.photoURL,
-                            displayName: authResult?.user.displayName,
-                            completion: { (_ error: Error?) in
-                                if let error = error {
-                                    self.showMessage(title: "Error",
-                                                     message: error.localizedDescription)
-                                }
-                            })
-        }.done {
-            self.dismiss(animated: true, completion: {
-                self.delegate?.actionAfterLogin(error: nil)
-            })
-        }.catch { error in
-            MBProgressHUD.hide(for: self.view,
-                               animated: true)
-            self.showMessage(title: "Error",
-                             message: error.localizedDescription)
-//            self.dismiss(animated: true, completion: {
-//                self.delegate?.actionAfterLogin(error: nil)
-//            })
-        }
-    }
-    
     @IBAction func googleAction(_ sender: UIButton) {
         GIDSignIn.sharedInstance().signIn()
     }

@@ -25,7 +25,7 @@
 			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>twitterkit-saMFOtPPU7OPGofIYoVYEmzFx</string>
+				<string>twitterkit-saMFOtPPU7OPGofIYoVYEmzFx://</string>
 				<string>fb228147117948469</string>
 				<string>com.googleusercontent.apps.976672670197-h4fs0sbbfboi92hsbvjr4gamepnas08m</string>
 				<string>oauth-managuide</string>

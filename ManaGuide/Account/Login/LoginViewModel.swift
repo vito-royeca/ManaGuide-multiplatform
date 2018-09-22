@@ -11,8 +11,6 @@ import FBSDKCoreKit
 import FBSDKLoginKit
 import Firebase
 import OAuthSwift
-import TwitterCore
-import TwitterKit
 
 class LoginViewModel: NSObject {
     func updateUser(email: String?,
@@ -201,31 +199,13 @@ class LoginViewModel: NSObject {
         }
     }
     
-    func twitterLogin() -> Promise<AuthCredential> {
-        return Promise { seal in
-            TWTRTwitter.sharedInstance().logIn { session, error in
-                if let error = error {
-                    seal.reject(error)
-                } else {
-                    if let session = session {
-                        let credential = TwitterAuthProvider.credential(withToken: session.authToken,
-                                                                        secret: session.authTokenSecret)
-                        seal.fulfill(credential)
-                    }
-                }
-            }
-        }
-    }
-    
     func githubLogin(withViewController vc: UIViewController) -> Promise<AuthCredential> {
         return Promise { seal in
-            let oauthswift = OAuth2Swift(
-                consumerKey:    GitHubSettings.ConsumerKey,
-                consumerSecret: GitHubSettings.ConsumerSecret,
-                authorizeUrl:   GitHubSettings.AuthorizeUrl,
-                accessTokenUrl: GitHubSettings.AccessTokenUrl,
-                responseType:   "code"
-            )
+            let oauthswift = OAuth2Swift(consumerKey: GitHubSettings.ConsumerKey,
+                                         consumerSecret: GitHubSettings.ConsumerSecret,
+                                         authorizeUrl: GitHubSettings.AuthorizeUrl,
+                                         accessTokenUrl: GitHubSettings.AccessTokenUrl,
+                                         responseType: "code")
             let safari = SafariURLHandler(viewController: vc,
                                           oauthSwift: oauthswift)//OAuthSwiftOpenURLExternally.sharedInstance
             let state = generateRandomString(length: 20)

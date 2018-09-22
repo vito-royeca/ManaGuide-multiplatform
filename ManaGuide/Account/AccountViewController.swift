@@ -33,7 +33,7 @@ enum AccountViewControllerSection: Int {
         case .favorites:
             return UIImage(bgIcon: .FAHeart,
                            orientation: UIImageOrientation.up,
-                           bgTextColor: UIColor.lightGray,
+                           bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
                            topIcon: .FAHeart,
                            topTextColor: UIColor.clear,
@@ -42,7 +42,7 @@ enum AccountViewControllerSection: Int {
         case .ratedCards:
             return UIImage(bgIcon: .FAStar,
                            orientation: UIImageOrientation.up,
-                           bgTextColor: UIColor.lightGray,
+                           bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
                            topIcon: .FAStar,
                            topTextColor: UIColor.clear,
@@ -70,7 +70,6 @@ class AccountViewController: BaseViewController {
         if let _ = Auth.auth().currentUser {
             do {
                 try Auth.auth().signOut()
-                viewModel.demonitorUser()
                 updateDisplay()
             } catch let error {
                 print("\(error)")
@@ -95,16 +94,12 @@ class AccountViewController: BaseViewController {
                                                object: nil)
         
         if let _ = Auth.auth().currentUser {
-            viewModel.monitorUser()
+            viewModel.saveUserMetadata()
             updateDisplay()
         }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let dict = sender as? [String: Any]  else {
-            return
-        }
-        
         if segue.identifier == "showLogin" {
             guard let dest = segue.destination as? UINavigationController else {
                 return
@@ -116,7 +111,8 @@ class AccountViewController: BaseViewController {
             loginVC.delegate = self
             
         } else if segue.identifier == "showSearch" {
-            guard let dest = segue.destination as? SearchViewController else {
+            guard let dest = segue.destination as? SearchViewController,
+                let dict = sender as? [String: Any] else {
                 return
             }
             
@@ -128,7 +124,7 @@ class AccountViewController: BaseViewController {
     
     // Custom methods
     func userLoggedIn(_ notification: Notification) {
-        viewModel.monitorUser()
+        viewModel.saveUserMetadata()
         updateDisplay()
     }
     
@@ -292,25 +288,42 @@ extension AccountViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case AccountViewControllerSection.favorites.rawValue:
+            guard let user = viewModel.getLoggedInUser() else {
+                fatalError("No logged in User")
+            }
             let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-            let mids = FirebaseManager.sharedInstance.favoriteMIDs
-            let cards = FirebaseManager.sharedInstance.cards(withMIDs: mids)
             
-            request.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
-            request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                       NSSortDescriptor(key: "name", ascending: true),
-                                       NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+            if let set = user.favorites,
+                let favorites = set.allObjects as? [CMCard] {
+                
+                request.predicate = NSPredicate(format: "id IN %@", favorites.map({ $0.id }))
+                request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                           NSSortDescriptor(key: "name", ascending: true),
+                                           NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+            } else {
+                // fetch non-existent cards
+                request.predicate = NSPredicate(format: "id = %@", "-1")
+            }
+            
             performSegue(withIdentifier: "showSearch", sender: ["title": "Favorites",
                                                                 "request": request])
         case AccountViewControllerSection.ratedCards.rawValue:
+            guard let user = viewModel.getLoggedInUser() else {
+                fatalError("No logged in User")
+            }
             let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-            let mids = FirebaseManager.sharedInstance.ratedCardMIDs
-            let cards = FirebaseManager.sharedInstance.cards(withMIDs: mids)
             
-            request.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
-            request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                       NSSortDescriptor(key: "name", ascending: true),
-                                       NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+            if let set = user.ratings,
+                let ratings = set.allObjects as? [CMCardRating] {
+                
+                request.predicate = NSPredicate(format: "id IN %@", ratings.map({ $0.card! }).map( { $0.id } ))
+                request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
+                                           NSSortDescriptor(key: "name", ascending: true),
+                                           NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+            } else {
+                // fetch non-existent cards
+                request.predicate = NSPredicate(format: "id = %@", "-1")
+            }
             performSegue(withIdentifier: "showSearch", sender: ["title": "Rated Cards",
                                                                 "request": request])
         default:
@@ -325,7 +338,7 @@ extension AccountViewController : LoginViewControllerDelegate {
         if let error = error {
             
         } else {
-            viewModel.monitorUser()
+            viewModel.saveUserMetadata()
             updateDisplay()
         }
     }
