@@ -33,9 +33,6 @@
 		1140F0CC1F42CA500023E107 /* FCCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0CB1F42CA500023E107 /* FCCard.swift */; };
 		1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0CB1F42CA500023E107 /* FCCard.swift */; };
 		1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0CB1F42CA500023E107 /* FCCard.swift */; };
-		1140F0D11F42CC020023E107 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0D01F42CC020023E107 /* FirebaseManager.swift */; };
-		1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0D01F42CC020023E107 /* FirebaseManager.swift */; };
-		1140F0D31F42CC020023E107 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140F0D01F42CC020023E107 /* FirebaseManager.swift */; };
 		1141A84020D00F4A00554872 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1141A83F20D00F4A00554872 /* SnapshotHelper.swift */; };
 		11447EB220D1764000DFF5C7 /* HeroCardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11447EB120D1764000DFF5C7 /* HeroCardView.xib */; };
 		11447EB320D1764000DFF5C7 /* HeroCardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11447EB120D1764000DFF5C7 /* HeroCardView.xib */; };
@@ -191,7 +188,6 @@
 		1138A3D020F786E00023423C /* SearchRequestGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRequestGenerator.swift; sourceTree = "<group>"; };
 		1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1140F0CB1F42CA500023E107 /* FCCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FCCard.swift; sourceTree = "<group>"; };
-		1140F0D01F42CC020023E107 /* FirebaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		1141A83F20D00F4A00554872 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
 		11447EB120D1764000DFF5C7 /* HeroCardView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HeroCardView.xib; sourceTree = "<group>"; };
 		11447EB520D177F700DFF5C7 /* HeroCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroCardView.swift; sourceTree = "<group>"; };
@@ -497,7 +493,6 @@
 				118FDC6E20D50499002FA5E8 /* CardActivityItemProvider.swift */,
 				11448A6120CD3849008EFC40 /* Constants.swift */,
 				118FDC7220D51044002FA5E8 /* FacebookShareActivity.swift */,
-				1140F0D01F42CC020023E107 /* FirebaseManager.swift */,
 				11448A5D20CCF48A008EFC40 /* ManaGuidePhoto.swift */,
 				11F3BA3020D4141900511388 /* MGUtilities.swift */,
 				11F336B120BBB47B0007552F /* PDFViewerViewController.swift */,
@@ -1110,7 +1105,6 @@
 				11A63E232142F847005AE024 /* TopViewedViewModel.swift in Sources */,
 				11A63E1F2142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
 				11DFB8C72145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
-				1140F0D11F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11A63E132142F536005AE024 /* FeaturedViewModel.swift in Sources */,
 				11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */,
@@ -1146,7 +1140,6 @@
 				1168F7532155AC6E0059C9E0 /* CardActionsTableViewCell.swift in Sources */,
 				11A5444D214471EB00B8C59F /* CardViewModel.swift in Sources */,
 				11A5444721445ADF00B8C59F /* HeroCardView.swift in Sources */,
-				1140F0D21F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				118281B220B67FA500865172 /* AccountViewController.swift in Sources */,
 				11A63E202142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
@@ -1189,7 +1182,6 @@
 				11A63E252142F847005AE024 /* TopViewedViewModel.swift in Sources */,
 				11A63E192142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
 				11A63E152142F536005AE024 /* FeaturedViewModel.swift in Sources */,
-				1140F0D31F42CC020023E107 /* FirebaseManager.swift in Sources */,
 				118281B320B67FA500865172 /* AccountViewController.swift in Sources */,
 				114FE3A62146A313009E3201 /* CardPricingTableViewCell.swift in Sources */,
 				1138A3CF20F76E870023423C /* ThrottlingSearchController.swift in Sources */,

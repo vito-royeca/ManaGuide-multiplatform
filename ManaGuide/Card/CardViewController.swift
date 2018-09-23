@@ -305,12 +305,6 @@ class CardViewController: BaseViewController {
     }
 
     func showUpdateRatingDialog() {
-        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
-        
-        guard let id = card.id else {
-            return
-        }
-        
         let rating = viewModel.userRatingForCurrentCard()
         let ratingView = CosmosView(frame: CGRect.zero)
         ratingView.rating = rating
@@ -320,13 +314,16 @@ class CardViewController: BaseViewController {
         ratingView.settings.fillMode = .full
         
         let nyAlertController = NYAlertViewController(nibName: nil, bundle: nil)
-        let confirmAction = NYAlertAction(title: "Ok", style: .default, handler: {(action: NYAlertAction?) -> Void in
-            self.dismiss(animated: false, completion: nil)
+        let confirmAction = NYAlertAction(title: "Ok",
+                                          style: .default,
+                                          handler: {  (action: NYAlertAction?) -> Void in
+                                                    self.dismiss(animated: false, completion: nil)
             
-            MBProgressHUD.showAdded(to: self.view, animated: true)
-            FirebaseManager.sharedInstance.updateCardRatings(id, rating: ratingView.rating, firstAttempt: true)
+                                                MBProgressHUD.showAdded(to: self.view, animated: true)
+                                                self.viewModel.updateCardRatings(rating: ratingView.rating, firstAttempt: true)
         })
-        let cancelAction = NYAlertAction(title: "Cancel", style: .default, handler:  {(action: NYAlertAction?) -> Void in
+        let cancelAction = NYAlertAction(title: "Cancel",
+                                         style: .default, handler:  {(action: NYAlertAction?) -> Void in
             self.dismiss(animated: false, completion: nil)
         })
 
@@ -1168,6 +1165,8 @@ extension CardViewController : LoginViewControllerDelegate {
         if let error = error {
             
         } else {
+            self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.actions.rawValue)],
+                                      with: .automatic)
             NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.UserLoggedIn),
                                             object: nil,
                                             userInfo: nil)

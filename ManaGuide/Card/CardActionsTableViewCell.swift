@@ -27,8 +27,6 @@ class CardActionsTableViewCell: UITableViewCell {
     @IBOutlet weak var viewsLabel: UILabel!
 
     // MARK: Actions
-    
-    
     @IBAction func favoriteAction(_ sender: UITapGestureRecognizer) {
         delegate?.favoriteAction()
     }
@@ -46,6 +44,8 @@ class CardActionsTableViewCell: UITableViewCell {
             self.delegate?.ratingAction()
         }
         
+        let tap = UITapGestureRecognizer(target: self, action: #selector(favoriteAction(_:)))
+        favoriteLabel.addGestureRecognizer(tap)
         favoriteLabel.textColor = LookAndFeel.GlobalTintColor
         
         selectionStyle = .none

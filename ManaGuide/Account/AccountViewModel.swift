@@ -63,7 +63,7 @@ class AccountViewModel: NSObject {
                 for (k,v) in dict {
                     if  let rating = v as? Double,
                         let card = ManaKit.sharedInstance.findObject("CMCard",
-                                                                    objectFinder: ["card.id": k as AnyObject],
+                                                                    objectFinder: ["id": k as AnyObject],
                                                                     createIfNotFound: false) as? CMCard,
                         let cardRating = ManaKit.sharedInstance.findObject("CMCardRating",
                                                                            objectFinder: ["user.id": userId as AnyObject,

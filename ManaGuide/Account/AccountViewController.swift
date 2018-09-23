@@ -93,10 +93,8 @@ class AccountViewController: BaseViewController {
                                                name: NSNotification.Name(rawValue: NotificationKeys.UserLoggedIn),
                                                object: nil)
         
-        if let _ = Auth.auth().currentUser {
-            viewModel.saveUserMetadata()
-            updateDisplay()
-        }
+        viewModel.saveUserMetadata()
+        updateDisplay()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

@@ -478,6 +478,152 @@ class CardViewModel: NSObject {
         saveCardData(firstAttempt: true, completion: completion)
     }
 
+    func updateCardRatings(rating: Double, firstAttempt: Bool) {
+        let completion = { () -> Void in
+            let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0))
+            
+            guard let fbUser = Auth.auth().currentUser,
+                let user = ManaKit.sharedInstance.findObject("CMUser",
+                                                             objectFinder: ["id": fbUser.uid as AnyObject],
+                                                             createIfNotFound: false) as? CMUser,
+                let id = card.id else {
+                    return
+            }
+            
+            let ref = Database.database().reference().child("cards").child(id)
+            
+            ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+                if var post = currentData.value as? [String : Any] {
+                    var ratings = post[FCCard.Keys.Ratings] as? [String: Double] ?? [String: Double]()
+                    var tmpRating = Double(0)
+                    
+                    ratings[user.id!] = rating
+                    for (_,v) in ratings {
+                        tmpRating += v
+                    }
+                    tmpRating = tmpRating / Double(ratings.keys.count)
+                    
+                    post[FCCard.Keys.Rating] = tmpRating
+                    post[FCCard.Keys.Ratings] = ratings
+                    
+                    // Set value and report transaction success
+                    currentData.value = post
+                    return TransactionResult.success(withValue: currentData)
+                    
+                } else {
+                    if firstAttempt {
+                        return TransactionResult.abort()
+                    } else {
+                        ref.setValue([FCCard.Keys.Rating: rating,
+                                      FCCard.Keys.Ratings : [id: rating]])
+                        return TransactionResult.success(withValue: currentData)
+                    }
+                }
+                
+            }) { (error, committed, snapshot) in
+                if committed {
+                    guard let snapshot = snapshot else {
+                        return
+                    }
+                    let fcard = FCCard(snapshot: snapshot)
+                    
+                    card.rating = fcard.rating == nil ? rating : fcard.rating!
+                    card.ratings = fcard.ratings == nil ? Int32(1) : Int32(fcard.ratings!.count)
+                    
+                    ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                        try! backgroundContext.save()
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
+                                                        object: nil,
+                                                        userInfo: nil)
+                        
+                        self.updateUserRatings(rating: rating, firstAttempt: true)
+                    }
+                    
+                } else {
+                    // retry again, if we were aborted from above
+                    self.updateCardRatings(rating: rating, firstAttempt: false)
+                }
+            }
+        }
+        
+        saveCardData(firstAttempt: true, completion: completion)
+    }
+    
+    func updateUserRatings(rating: Double, firstAttempt: Bool) {
+        
+        let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0))
+        
+        guard let fbUser = Auth.auth().currentUser,
+            let user = ManaKit.sharedInstance.findObject("CMUser",
+                                                         objectFinder: ["id": fbUser.uid as AnyObject],
+                                                         createIfNotFound: false) as? CMUser,
+            let id = card.id else {
+                return
+        }
+        let userRef = Database.database().reference().child("users").child(fbUser.uid)
+        
+        userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+            if var post = currentData.value as? [String : Any] {
+                var dict: [String: Any]?
+                
+                if let d = post["ratedCards"] as? [String : Double] {
+                    dict = d
+                    dict![id] = rating
+                } else {
+                    dict = [id: rating]
+                }
+                
+                post["ratedCards"] = dict
+                
+                // Set value and report transaction success
+                currentData.value = post
+                return TransactionResult.success(withValue: currentData)
+                
+            } else {
+                if firstAttempt {
+                    return TransactionResult.abort()
+                } else {
+                    userRef.setValue(["ratedCards": [id: rating]])
+                    return TransactionResult.success(withValue: currentData)
+                }
+            }
+            
+        }) { (error, committed, snapshot) in
+            if committed {
+                if let snapshot = snapshot,
+                    let dict = snapshot.value as? [String: Any],
+                    let ratedCards = dict["ratedCards"] as? [String: Double] {
+                    
+                    for (k2,v2) in ratedCards {
+                        if let c = ManaKit.sharedInstance.findObject("CMCard",
+                                                                  objectFinder: ["id": k2 as AnyObject],
+                                                                  createIfNotFound: false) as? CMCard,
+                            let cardRating = ManaKit.sharedInstance.findObject("CMCardRating",
+                                                                           objectFinder: ["user.id": user.id! as AnyObject,
+                                                                                          "card.id": k2 as AnyObject],
+                                                                           createIfNotFound: true) as? CMCardRating {
+                            cardRating.card = c
+                            cardRating.user = user
+                            cardRating.rating = v2
+                            user.addToRatings(cardRating)
+                        }
+                    }
+                    
+                    ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                        try! backgroundContext.save()
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
+                                                        object: nil,
+                                                        userInfo: nil)
+                    }
+                }
+            } else {
+                // retry again, if we were aborted from above
+                self.updateUserRatings(rating: rating, firstAttempt: false)
+            }
+        }
+        
+    }
+
     private func saveCardData(firstAttempt: Bool, completion: @escaping () -> Void) {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         let ref = Database.database().reference().child("cards").child(card.id!)

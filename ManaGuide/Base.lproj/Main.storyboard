@@ -1311,6 +1311,7 @@
                                                 <constraint firstItem="ulB-rF-Fxj" firstAttribute="leading" secondItem="TI0-es-uPN" secondAttribute="leading" id="gkl-gA-eeZ"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <gestureRecognizers/>
                                         <connections>
                                             <outlet property="favoriteLabel" destination="Zlv-oV-4Az" id="wnO-86-yMb"/>
                                             <outlet property="ratingLabel" destination="tmf-UN-dCC" id="I04-KN-NiY"/>
@@ -1504,12 +1505,6 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XRd-K3-nNu" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="jxJ-M0-KdC" userLabel="Exit" sceneMemberID="exit"/>
-                <tapGestureRecognizer id="jKI-Tm-ir5">
-                    <connections>
-                        <action selector="favoriteAction:" destination="jxJ-M0-KdC" id="Tg8-qG-q4h"/>
-                    </connections>
-                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="5571.0144927536239" y="369.29347826086962"/>
         </scene>
