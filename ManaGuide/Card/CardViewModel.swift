@@ -370,26 +370,16 @@ class CardViewModel: NSObject {
                 return
             }
             
-            let userRef = Database.database().reference().child("users").child(fbUser.uid)
+            let userRef = Database.database().reference().child("users").child(fbUser.uid).child("favorites")
             let favorite = !self.isCurrentCardFavorite()
             
             userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-                if var post = currentData.value as? [String : Any] {
-                    var dict: [String: Any]?
-                    
-                    if let d = post["favorites"] as? [String : Any] {
-                        dict = d
-                    } else {
-                        dict = [String: Any]()
-                    }
-                    
+                if var post = currentData.value as? [String : Bool] {
                     if favorite {
-                        dict![id] = true
+                        post[id] = true
                     } else {
-                        dict![id] = nil
+                        post[id] = nil
                     }
-                    
-                    post["favorites"] = dict
                     
                     // Set value and report transaction success
                     currentData.value = post
@@ -560,20 +550,11 @@ class CardViewModel: NSObject {
             let id = card.id else {
                 return
         }
-        let userRef = Database.database().reference().child("users").child(fbUser.uid)
+        let userRef = Database.database().reference().child("users").child(fbUser.uid).child("ratedCards")
         
         userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-            if var post = currentData.value as? [String : Any] {
-                var dict: [String: Any]?
-                
-                if let d = post["ratedCards"] as? [String : Double] {
-                    dict = d
-                    dict![id] = rating
-                } else {
-                    dict = [id: rating]
-                }
-                
-                post["ratedCards"] = dict
+            if var post = currentData.value as? [String : Double] {
+                post[id] = rating
                 
                 // Set value and report transaction success
                 currentData.value = post
@@ -591,8 +572,7 @@ class CardViewModel: NSObject {
         }) { (error, committed, snapshot) in
             if committed {
                 if let snapshot = snapshot,
-                    let dict = snapshot.value as? [String: Any],
-                    let ratedCards = dict["ratedCards"] as? [String: Double] {
+                    let ratedCards = snapshot.value as? [String: Double] {
                     
                     for (k2,v2) in ratedCards {
                         if let c = ManaKit.sharedInstance.findObject("CMCard",
