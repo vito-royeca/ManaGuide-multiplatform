@@ -71,7 +71,7 @@ enum MoreViewControllerRuleRow: Int {
              .jar:
             return UIImage(bgIcon: .FAFilePdfO,
                            orientation: UIImageOrientation.up,
-                           bgTextColor: UIColor.black,
+                           bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
                            topIcon: .FAFilePdfO,
                            topTextColor: UIColor.clear,
@@ -80,7 +80,7 @@ enum MoreViewControllerRuleRow: Int {
         case .comprehensive:
             return UIImage(bgIcon: .FADatabase,
                            orientation: UIImageOrientation.up,
-                           bgTextColor: UIColor.black,
+                           bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
                            topIcon: .FADatabase,
                            topTextColor: UIColor.clear,
@@ -112,7 +112,7 @@ enum MoreViewControllerListRow: Int {
         switch self {
         case .bannedAndRestricted: return UIImage(bgIcon: .FABan,
                                                   orientation: UIImageOrientation.up,
-                                                  bgTextColor: UIColor.black,
+                                                  bgTextColor: LookAndFeel.GlobalTintColor,
                                                   bgBackgroundColor: UIColor.clear,
                                                   topIcon: .FABan,
                                                   topTextColor: UIColor.clear,
@@ -120,7 +120,7 @@ enum MoreViewControllerListRow: Int {
                                                   size: CGSize(width: 20, height: 20))
         case .reserved: return UIImage(bgIcon: .FAArchive,
                                        orientation: UIImageOrientation.up,
-                                       bgTextColor: UIColor.black,
+                                       bgTextColor: LookAndFeel.GlobalTintColor,
                                        bgBackgroundColor: UIColor.clear,
                                        topIcon: .FAArchive,
                                        topTextColor: UIColor.clear,
@@ -128,7 +128,7 @@ enum MoreViewControllerListRow: Int {
                                        size: CGSize(width: 20, height: 20))
         case .artists: return UIImage(bgIcon: .FAPaintBrush,
                                       orientation: UIImageOrientation.up,
-                                      bgTextColor: UIColor.black,
+                                      bgTextColor: LookAndFeel.GlobalTintColor,
                                       bgBackgroundColor: UIColor.clear,
                                       topIcon: .FAPaintBrush,
                                       topTextColor: UIColor.clear,
@@ -173,13 +173,12 @@ class MoreViewController: BaseViewController {
             
         } else if segue.identifier == "showSearch" {
             guard let dest = segue.destination as? SearchViewController,
-                let dict = sender as? [String: Any] else {
+                let dict = sender as? [String: Any],
+                let request = dict["request"] as? NSFetchRequest<CMCard> else {
                 return
             }
             
-            dest.request = dict["request"] as? NSFetchRequest<CMCard>
-            dest.title = dict["title"] as? String
-            dest.customSectionName = "nameSection"
+            dest.viewModel = SearchViewModel(withRequest: request, andTitle: dict["title"] as? String)
         }
     }
 

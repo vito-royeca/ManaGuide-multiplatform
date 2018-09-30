@@ -36,7 +36,7 @@ class SetViewController: BaseViewController {
     }
     
     @IBAction func showRightMenuAction(_ sender: UIBarButtonItem) {
-        showSettingsMenu(file: "Set")
+        showSettingsMenu(file: "Search")
     }
     
     // MARK: Overrides
@@ -54,9 +54,9 @@ class SetViewController: BaseViewController {
                                                name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                object: nil)
         
-        searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Filter"
+        searchController.searchBar.placeholder = "Keyword"
+        searchController.searchResultsUpdater = self
         definesPresentationContext = true
         
         if #available(iOS 11.0, *) {
@@ -66,16 +66,28 @@ class SetViewController: BaseViewController {
             tableView.tableHeaderView = searchController.searchBar
         }
 
-        rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
+        rightMenuButton.image = UIImage.init(icon: .FABars,
+                                             size: CGSize(width: 30, height: 30),
+                                             textColor: .white,
+                                             backgroundColor: .clear)
         rightMenuButton.title = nil
         
-        tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: CardTableViewCell.reuseIdentifier)
+        tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"),
+                           forCellReuseIdentifier: CardTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
         
-        title = viewModel.setTitle()
+        title = viewModel.getSearchTitle()
         viewModel.fetchData()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if #available(iOS 11.0, *) {
+            navigationItem.hidesSearchBarWhenScrolling = true
+        }
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let searchGenerator = SearchRequestGenerator()
         let sortDescriptors = searchGenerator.createSortDescriptors()
@@ -111,9 +123,7 @@ class SetViewController: BaseViewController {
                 return
             }
             
-            dest.request = request
-            dest.title = "Search Results"
-            dest.customSectionName = "nameSection"
+            dest.viewModel = SearchViewModel(withRequest: request, andTitle: "Search Results")
         }
     }
     
@@ -299,25 +309,6 @@ extension SetViewController : UITableViewDelegate {
             let sender = ["cardIndex": cardIndex as Any,
                           "cardIDs": cards.map({ $0.id })]
             performSegue(withIdentifier: identifier, sender: sender)
-        default:
-            ()
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        switch viewModel.setContent {
-        case .cards:
-            let searchGenerator = SearchRequestGenerator()
-            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
-                return
-            }
-
-            switch displayBy {
-            case "grid":
-                viewModel.fetchData()
-            default:
-                ()
-            }
         default:
             ()
         }
@@ -523,7 +514,6 @@ extension SetViewController : UISearchResultsUpdating {
         default:
             ()
         }
-
     }
 }
 

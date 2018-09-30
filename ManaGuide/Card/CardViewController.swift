@@ -210,12 +210,12 @@ class CardViewController: BaseViewController {
             
         } else if segue.identifier == "showSearch" {
             guard let dest = segue.destination as? SearchViewController,
-                let dict = sender as? [String: Any] else {
+                let dict = sender as? [String: Any],
+                let request = dict["request"] as? NSFetchRequest<CMCard> else {
                 return
             }
             
-            dest.request = dict["request"] as? NSFetchRequest<CMCard>
-            dest.title = dict["title"] as? String
+            dest.viewModel = SearchViewModel(withRequest: request, andTitle: dict["title"] as? String)
             
         } else if segue.identifier == "showSet" {
             guard let dest = segue.destination as? SetViewController,

@@ -54,6 +54,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                           topTextColor: UIColor.clear,
                                                           bgLarge: false,
                                                           size: CGSize(width: 30, height: 30))
+                
+                // setup the ViewModels
+                if let viewControllers = tabBarVC.viewControllers {
+                    for vc in viewControllers {
+                        if let nvc = vc as? UINavigationController {
+                            for child in nvc.viewControllers {
+                                if let searchVC = child as? SearchViewController {
+                                    searchVC.viewModel = SearchViewModel(withRequest: nil, andTitle: "Search")
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         

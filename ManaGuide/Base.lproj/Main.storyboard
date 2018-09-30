@@ -30,7 +30,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="88" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="c6Y-yF-szq">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="527"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardCell" rowHeight="88" id="NHU-Qb-dj3">
@@ -94,29 +94,13 @@
                                     <outlet property="delegate" destination="t1B-qF-FHV" id="X1v-r9-zwA"/>
                                 </connections>
                             </tableView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="le4-0f-D97">
-                                <rect key="frame" x="0.0" y="497" width="414" height="30"/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="r9S-nb-s5A"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="le4-0f-D97" secondAttribute="trailing" id="DUX-wC-hzW"/>
-                            <constraint firstAttribute="trailing" secondItem="c6Y-yF-szq" secondAttribute="trailing" id="JnC-aL-MCm"/>
-                            <constraint firstItem="bam-Dw-5q0" firstAttribute="top" secondItem="le4-0f-D97" secondAttribute="bottom" id="ODA-Nz-zSI"/>
-                            <constraint firstItem="c6Y-yF-szq" firstAttribute="trailing" secondItem="le4-0f-D97" secondAttribute="trailing" id="R1a-wk-Hex"/>
-                            <constraint firstItem="c6Y-yF-szq" firstAttribute="bottom" secondItem="bam-Dw-5q0" secondAttribute="top" id="UP3-k1-ZOa"/>
-                            <constraint firstItem="c6Y-yF-szq" firstAttribute="leading" secondItem="le4-0f-D97" secondAttribute="leading" id="YpA-RB-hnA"/>
-                            <constraint firstItem="le4-0f-D97" firstAttribute="leading" secondItem="65g-4A-NuH" secondAttribute="leading" id="Zdl-HK-x0e"/>
-                            <constraint firstItem="c6Y-yF-szq" firstAttribute="bottom" secondItem="le4-0f-D97" secondAttribute="bottom" id="lfw-p1-WzV"/>
-                            <constraint firstItem="c6Y-yF-szq" firstAttribute="leading" secondItem="65g-4A-NuH" secondAttribute="leading" id="mjT-LE-74U"/>
-                            <constraint firstItem="c6Y-yF-szq" firstAttribute="top" secondItem="nRa-6n-mnz" secondAttribute="bottom" id="pzF-zF-OAt"/>
+                            <constraint firstAttribute="trailing" secondItem="c6Y-yF-szq" secondAttribute="trailing" id="2df-Hy-b4h"/>
+                            <constraint firstItem="c6Y-yF-szq" firstAttribute="top" secondItem="nRa-6n-mnz" secondAttribute="bottom" id="Dr9-4Y-um4"/>
+                            <constraint firstItem="c6Y-yF-szq" firstAttribute="leading" secondItem="65g-4A-NuH" secondAttribute="leading" id="Gjy-hG-A09"/>
+                            <constraint firstAttribute="bottom" secondItem="c6Y-yF-szq" secondAttribute="bottom" id="csW-0L-ImP"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Search" id="9yE-fJ-3l8">
@@ -129,7 +113,6 @@
                     </navigationItem>
                     <connections>
                         <outlet property="rightMenuButton" destination="pW4-Bt-JMi" id="wDL-rT-NXN"/>
-                        <outlet property="statusLabel" destination="le4-0f-D97" id="0Ot-Me-iWW"/>
                         <outlet property="tableView" destination="c6Y-yF-szq" id="vRR-sF-ktr"/>
                         <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="sDJ-KE-8ls"/>
                         <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="Ubl-6g-hH9"/>

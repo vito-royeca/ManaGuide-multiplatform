@@ -7,14 +7,6 @@
 	<key>PreferenceSpecifiers</key>
 	<array>
 		<dict>
-			<key>File</key>
-			<string>AdvancedSearch</string>
-			<key>Title</key>
-			<string>Search Filters</string>
-			<key>Type</key>
-			<string>PSChildPaneSpecifier</string>
-		</dict>
-		<dict>
 			<key>Type</key>
 			<string>PSRadioGroupSpecifier</string>
 			<key>Title</key>
@@ -26,10 +18,10 @@
 			<key>Values</key>
 			<array>
 				<string>name</string>
-				<string>numberOrder</string>
-				<string>typeSection</string>
-				<string>rarity_.name</string>
-				<string>artist_.name</string>
+				<string>number</string>
+				<string>type</string>
+				<string>rarity</string>
+				<string>artist</string>
 			</array>
 			<key>Titles</key>
 			<array>
