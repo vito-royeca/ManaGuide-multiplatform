@@ -18,10 +18,10 @@
 			<key>Values</key>
 			<array>
 				<string>name</string>
-				<string>numberOrder</string>
-				<string>typeSection</string>
-				<string>rarity_.name</string>
-				<string>artist_.name</string>
+				<string>number</string>
+				<string>type</string>
+				<string>rarity</string>
+				<string>artist</string>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -38,7 +38,7 @@
 			<key>Title</key>
 			<string>Order By</string>
 			<key>Key</key>
-			<string>setOrderBy</string>
+			<string>searchOrderBy</string>
 			<key>DefaultValue</key>
 			<true/>
 			<key>Values</key>
@@ -58,7 +58,7 @@
 			<key>Title</key>
 			<string>Display By</string>
 			<key>Key</key>
-			<string>setDisplayBy</string>
+			<string>searchDisplayBy</string>
 			<key>DefaultValue</key>
 			<string>list</string>
 			<key>Values</key>

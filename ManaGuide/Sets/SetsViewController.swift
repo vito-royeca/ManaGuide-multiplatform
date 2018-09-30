@@ -72,8 +72,8 @@ class SetsViewController: BaseViewController {
                 return
             }
             
-            dest.set = set
-            dest.title = set.name
+            dest.viewModel = SetViewModel(withSet: set)
+//            dest.title = set.name
         }
     }
 

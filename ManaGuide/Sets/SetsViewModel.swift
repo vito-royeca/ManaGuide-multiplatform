@@ -45,19 +45,25 @@ class SetsViewModel: NSObject {
     }
     
     func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
+        let defaults = defaultsValue()
         var sectionIndex = 0
         
-        guard let sectionTitles = _sectionTitles else {
+        guard let sectionTitles = _sectionTitles,
+            let setsOrderBy = defaults["setsOrderBy"] as? Bool else {
             return sectionIndex
         }
-        
+
         for i in 0...sectionTitles.count - 1 {
             if sectionTitles[i].hasPrefix(title) {
-                sectionIndex = i
+                if setsOrderBy {
+                    sectionIndex = i
+                } else {
+                    sectionIndex = (sectionTitles.count - 1) - i
+                }
                 break
             }
         }
-        
+
         return sectionIndex
     }
     
@@ -131,6 +137,7 @@ class SetsViewModel: NSObject {
         _sortDescriptors = [NSSortDescriptor(key: setsSortBy, ascending: setsOrderBy)]
     }
 
+    // MARK: Private methods
     private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMSet>?) -> NSFetchedResultsController<CMSet> {
         let context = ManaKit.sharedInstance.dataStack!.viewContext
         var request: NSFetchRequest<CMSet>?
@@ -184,20 +191,20 @@ class SetsViewModel: NSObject {
         }
         
         for set in sets {
-            var index: String?
+            var prefix: String?
             
             switch sectionName {
             case "nameSection":
-                index = set.nameSection
+                prefix = set.nameSection
             case "typeSection":
-                index = String(set.typeSection!.prefix(1))
+                prefix = String(set.typeSection!.prefix(1))
             default:
                 ()
             }
             
-            if let index = index {
-                if !_sectionIndexTitles!.contains(index) {
-                    _sectionIndexTitles!.append(index)
+            if let prefix = prefix {
+                if !_sectionIndexTitles!.contains(prefix) {
+                    _sectionIndexTitles!.append(prefix)
                 }
             }
         }

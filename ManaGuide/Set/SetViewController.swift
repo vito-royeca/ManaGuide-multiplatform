@@ -14,35 +14,14 @@ import ManaKit
 import MBProgressHUD
 import PromiseKit
 
-enum SetViewControllerSegmentedIndex: Int {
-    case cards
-    case wiki
-    
-    var description : String {
-        switch self {
-        // Use Internationalization, as appropriate.
-        case .cards: return "Cards"
-        case .wiki: return "Wiki"
-        }
-    }
-    
-    static var count: Int {
-        return 2
-    }
-}
-
 class SetViewController: BaseViewController {
 
     // MARK: Constants
     let searchController = UISearchController(searchResultsController: nil)
 
     // MARK: Variables
-    var set: CMSet?
-    var fetchedResultsController: NSFetchedResultsController<CMCard>?
-    var sectionIndexTitles = [String]()
-    var sectionTitles = [String]()
+    var viewModel: SetViewModel!
     var collectionView: UICollectionView?
-    var firstLoad = true
     
     // MARK: Outlets
     @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
@@ -52,6 +31,7 @@ class SetViewController: BaseViewController {
     // MARK: Actions
     
     @IBAction func contentAction(_ sender: UISegmentedControl) {
+        viewModel.setContent = sender.selectedSegmentIndex == 0 ? .cards : .wiki
         updateDataDisplay()
     }
     
@@ -90,20 +70,16 @@ class SetViewController: BaseViewController {
         rightMenuButton.title = nil
         
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: CardTableViewCell.reuseIdentifier)
-        tableView.register(UINib(nibName: "BrowserTableViewCell", bundle: nil), forCellReuseIdentifier: "SetInfoCell")
         tableView.keyboardDismissMode = .onDrag
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         
-        if firstLoad {
-            firstLoad = false
-            updateDataDisplay()
-        }
+        title = viewModel.setTitle()
+        viewModel.fetchData()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let searchGenerator = SearchRequestGenerator()
+        let sortDescriptors = searchGenerator.createSortDescriptors()
+        
         if segue.identifier == "showCard" {
             guard let dest = segue.destination as? CardViewController,
                 let dict = sender as? [String: Any],
@@ -114,7 +90,7 @@ class SetViewController: BaseViewController {
             
             dest.viewModel = CardViewModel(withCardIndex: cardIndex,
                                            withCardIDs: cardIDs,
-                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
+                                           withSortDescriptors: sortDescriptors)
             
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
@@ -127,7 +103,7 @@ class SetViewController: BaseViewController {
             
             dest.viewModel = CardViewModel(withCardIndex: cardIndex,
                                            withCardIDs: cardIDs,
-                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
+                                           withSortDescriptors: sortDescriptors)
             
         } else if segue.identifier == "showSearch" {
             guard let dest = segue.destination as? SearchViewController,
@@ -146,15 +122,16 @@ class SetViewController: BaseViewController {
     }
     
     // MARK: Custom methods
-    func updateDataDisplay() {
+    func updateData(_ notification: Notification) {
         let searchGenerator = SearchRequestGenerator()
+        searchGenerator.syncValues(notification)
         
-        guard let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
-            return
-        }
-        
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case SetViewControllerSegmentedIndex.cards.rawValue:
+        updateDataDisplay()
+    }
+
+    func updateDataDisplay() {
+        switch viewModel.setContent {
+        case .cards:
             if #available(iOS 11.0, *) {
                 navigationItem.searchController?.searchBar.isHidden = false
                 navigationItem.hidesSearchBarWhenScrolling = false
@@ -162,16 +139,7 @@ class SetViewController: BaseViewController {
                 tableView.tableHeaderView = searchController.searchBar
             }
             
-            switch displayBy {
-            case "list":
-                fetchedResultsController = getFetchedResultsController(with: nil)
-                updateSections()
-            case "grid":
-                tableView.dataSource = self
-            default:
-                ()
-            }
-        case SetViewControllerSegmentedIndex.wiki.rawValue:
+        case .wiki:
             if #available(iOS 11.0, *) {
                 navigationItem.searchController?.searchBar.isHidden = true
                 navigationItem.hidesSearchBarWhenScrolling = true
@@ -180,315 +148,40 @@ class SetViewController: BaseViewController {
             }
             
             tableView.dataSource = self
-        default:
-            ()
         }
         
-        tableView.delegate = self
+        viewModel.fetchData()
         tableView.reloadData()
-    }
-
-    func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMCard>?) -> NSFetchedResultsController<CMCard> {
-        guard let set = set,
-            let code = set.code else {
-            fatalError("Set is nil")
-        }
-        
-        let context = ManaKit.sharedInstance.dataStack!.viewContext
-        var request: NSFetchRequest<CMCard>?
-        
-        if let fetchRequest = fetchRequest {
-            request = fetchRequest
-        } else {
-            // create a default fetchRequest
-            request = CMCard.fetchRequest()
-            request!.predicate = NSPredicate(format: "set.code = %@", code)
-            request!.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
-                                        NSSortDescriptor(key: "number", ascending: true),
-                                        NSSortDescriptor(key: "mciNumber", ascending: true)]
-        }
-        
-        // Create Fetched Results Controller
-        let frc = NSFetchedResultsController(fetchRequest: request!,
-                                             managedObjectContext: context,
-                                             sectionNameKeyPath: nil,
-                                             cacheName: nil)
-        
-        // Configure Fetched Results Controller
-        frc.delegate = self
-        
-        // perform fetch
-        do {
-            try frc.performFetch()
-        } catch {
-            let fetchError = error as NSError
-            print("Unable to Perform Fetch Request")
-            print("\(fetchError), \(fetchError.localizedDescription)")
-        }
-        
-        return frc
-    }
-
-//    func getDataSource(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>?) -> DATASource? {
-//        let searchGenerator = SearchRequestGenerator()
-//
-//        guard let set = set,
-//            let code = set.code,
-//            let sortBy = searchGenerator.searchValue(for: .sortBy) as? String,
-//            let secondSortBy = searchGenerator.searchValue(for: .secondSortBy) as? String,
-//            let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool,
-//            let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
-//                return nil
-//        }
-//
-//        var sectionName = searchGenerator.searchValue(for: .sectionName) as? String
-//        var sortDescriptors: [NSSortDescriptor]?
-//        var request:NSFetchRequest<NSFetchRequestResult>?
-//        var ds: DATASource?
-//
-//        if sortBy == "numberOrder" {
-//            sectionName = nil
-//            sortDescriptors = [NSSortDescriptor(key: sortBy, ascending: orderBy)]
-//        } else {
-//            sortDescriptors = [NSSortDescriptor(key: sectionName, ascending: orderBy),
-//                               NSSortDescriptor(key: secondSortBy, ascending: orderBy)]
-//        }
-//
-//        if let fetchRequest = fetchRequest {
-//            request = fetchRequest
-//            request!.sortDescriptors = sortDescriptors
-//        } else {
-//            request = CMCard.fetchRequest()
-//            request!.sortDescriptors = sortDescriptors
-//            request!.predicate = NSPredicate(format: "set.code = %@", code)
-//        }
-//
-//        switch displayBy {
-//        case "list":
-//            ds = DATASource(tableView: tableView,
-//                            cellIdentifier: "CardCell",
-//                            fetchRequest: request!,
-//                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-//                            sectionName: sectionName)
-//
-//        case "grid":
-//            guard let collectionView = collectionView else {
-//                return nil
-//            }
-//
-//            ds = DATASource(collectionView: collectionView,
-//                            cellIdentifier: "CardImageCell",
-//                            fetchRequest: request!,
-//                            mainContext: ManaKit.sharedInstance.dataStack!.mainContext,
-//                            sectionName: sectionName)
-//
-//        default:
-//            ()
-//        }
-//
-//        guard let d = ds else {
-//            return nil
-//        }
-//        d.delegate = self
-//        return d
-//    }
-    
-    func updateSections() {
-        guard let fetchedResultsController = fetchedResultsController,
-            let cards = fetchedResultsController.fetchedObjects,
-            let sections = fetchedResultsController.sections else {
-            return
-        }
-        
-        let searchGenerator = SearchRequestGenerator()
-        let sectionName = searchGenerator.searchValue(for: .sectionName) as? String
-        let sortBy = searchGenerator.searchValue(for: .sortBy) as? String
-        let displayBy = searchGenerator.searchValue(for: .displayBy) as? String
-
-        sectionIndexTitles = [String]()
-        sectionTitles = [String]()
-        
-        if sortBy == "numberOrder" {
-            return
-        }
-        
-        switch sectionName {
-        case "nameSection":
-            for card in cards {
-                if let nameSection = card.nameSection {
-                    if !sectionIndexTitles.contains(nameSection) {
-                        sectionIndexTitles.append(nameSection)
-                    }
-                }
-            }
-        case "typeSection":
-            for card in cards {
-                if let typeSection = card.typeSection {
-                    let prefix = String(typeSection.prefix(1))
-                    
-                    if !sectionIndexTitles.contains(prefix) {
-                        sectionIndexTitles.append(prefix)
-                    }
-                }
-            }
-        
-        case "rarity_.name":
-            for card in cards {
-                if let rarity = card.rarity_ {
-                    let prefix = String(rarity.name!.prefix(1))
-                    
-                    if !sectionIndexTitles.contains(prefix) {
-                        sectionIndexTitles.append(prefix)
-                    }
-                }
-            }
-        case "artist_.name":
-            for card in cards {
-                if let artist = card.artist_ {
-                    let prefix = String(artist.name!.prefix(1))
-                    
-                    if !sectionIndexTitles.contains(prefix) {
-                        sectionIndexTitles.append(prefix)
-                    }
-                }
-            }
-//        case "legality.name"?:
-//            let cardLegalities = dataSource.all() as [CMCardLegality]
-//            for cardLegality in cardLegalities {
-//                if let legality = cardLegality.legality {
-//                    let prefix = String(legality.name!.prefix(1))
-//
-//                    if !sectionIndexTitles.contains(prefix) {
-//                        sectionIndexTitles.append(prefix)
-//                    }
-//                }
-//            }
-        default:
-            ()
-        }
-        
-        let count = 0
-//        switch displayBy {
-//        case "list":
-//            sections = dataSource.numberOfSections(in: tableView)
-//        case "grid":
-//            if let collectionView = collectionView {
-//                sections = dataSource.numberOfSections(in: collectionView)
-//            }
-//        default:
-//            ()
-//        }
-        
-        if count > 0 {
-            for i in 0...count - 1 {
-                if let sectionTitle = sections[i].indexTitle {
-                    sectionTitles.append(sectionTitle)
-                }
-            }
-        }
-        
-        sectionIndexTitles.sort()
-        sectionTitles.sort()
-    }
-    
-    func updateData(_ notification: Notification) {
-        let searchGenerator = SearchRequestGenerator()
-        searchGenerator.syncValues(notification)
-
-        updateDataDisplay()
-    }
-    
-    func wikiURL(ofSet set: CMSet) -> URL? {
-        var path = ""
-        
-        if let name = set.name,
-            let code = set.code {
-            
-            if code == "LEA" {
-                path = "Alpha"
-            } else if code == "LEB" {
-                path = "Beta"
-            } else {
-                path = name.replacingOccurrences(of: " and ", with: " & ")
-                       .replacingOccurrences(of: " ", with: "_")
-            }
-        }
-        
-        return URL(string: "https://mtg.gamepedia.com/\(path)")
-    }
-    
-    func doSearch() {
-        let searchGenerator = SearchRequestGenerator()
-        
-        guard let set = set,
-            let code = set.code,
-            let sectionName = searchGenerator.searchValue(for: .sectionName) as? String,
-            let secondSortBy = searchGenerator.searchValue(for: .secondSortBy) as? String,
-            let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool,
-            let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
-            return
-        }
-        
-        var newRequest: NSFetchRequest<CMCard>?
-        
-        if let text = searchController.searchBar.text {
-            if text.count > 0 {
-                newRequest = CMCard.fetchRequest()
-                
-                newRequest!.sortDescriptors = [NSSortDescriptor(key: sectionName, ascending: orderBy),
-                                               NSSortDescriptor(key: secondSortBy, ascending: orderBy)]
-                
-                if text.count == 1 {
-                    newRequest!.predicate = NSPredicate(format: "set.code = %@ AND name BEGINSWITH[cd] %@", code, text)
-                } else if text.count > 1 {
-                    newRequest!.predicate = NSPredicate(format: "set.code = %@ AND (name CONTAINS[cd] %@ OR name CONTAINS[cd] %@)", code, text, text)
-                }
-                fetchedResultsController = getFetchedResultsController(with: newRequest)
-                
-            } else {
-                fetchedResultsController = getFetchedResultsController(with: nil)
-            }
-        }
-    
-        updateSections()
-        switch displayBy {
-        case "list":
-            tableView.reloadData()
-        case "grid":
-            collectionView?.reloadData()
-        default:
-            ()
-        }
+        collectionView?.reloadData()
     }
 }
 
 // MARK: UITableViewDataSource
 extension SetViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let fetchedResultsController = fetchedResultsController,
-            let cards = fetchedResultsController.fetchedObjects else {
-                return 0
-        }
-        
-        return cards.count
+        return viewModel.numberOfRows(inSection: section)
+    }
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return viewModel.numberOfSections()
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let searchGenerator = SearchRequestGenerator()
-        let displayBy = searchGenerator.searchValue(for: .displayBy) as? String
+        let displayBy = searchGenerator.displayValue(for: .displayBy) as? String
         var cell: UITableViewCell?
         
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case SetViewControllerSegmentedIndex.cards.rawValue:
+        switch viewModel.setContent {
+        case .cards:
             switch displayBy {
             case "list":
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell,
-                    let fetchedResultsController = fetchedResultsController else {
-                    fatalError("Unexpected indexPath: \(indexPath)")
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell else {
+                    fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
                 }
-                let card = fetchedResultsController.object(at: indexPath)
+                let card = viewModel!.object(forRowAt: indexPath)
                 c.card = card
                 
+                collectionView = nil
                 cell = c
 
             case "grid":
@@ -499,13 +192,13 @@ extension SetViewController : UITableViewDataSource {
                     return UITableViewCell(frame: CGRect.zero)
                 }
                 
-                self.collectionView = collectionView
                 collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "Header")
                 collectionView.dataSource = self
                 collectionView.delegate = self
                 
                 if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                    let width = tableView.frame.size.width
+                    let sectionIndexWidth = viewModel.sectionIndexTitles() != nil ? CGFloat(44) : CGFloat(0)
+                    let width = tableView.frame.size.width - sectionIndexWidth
                     let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
                     
                     flowLayout.itemSize = cardSize(inFrame: CGSize(width: width, height: height))
@@ -515,54 +208,49 @@ extension SetViewController : UITableViewDataSource {
                     flowLayout.sectionHeadersPinToVisibleBounds = true
                 }
                 
+                self.collectionView = collectionView
                 cell = c
                 
             default:
                 ()
             }
-        case SetViewControllerSegmentedIndex.wiki.rawValue:
-            guard let set = set,
-                let c = tableView.dequeueReusableCell(withIdentifier: "SetInfoCell") as? BrowserTableViewCell,
-                let url = wikiURL(ofSet: set) else {
-                return UITableViewCell(frame: CGRect.zero)
+        case .wiki:
+            switch indexPath.row {
+            case 0:
+                guard let c = tableView.dequeueReusableCell(withIdentifier: BrowserNavigatorTableViewCell.reuseIdentifier) as? BrowserNavigatorTableViewCell else {
+                    fatalError("BrowserNavigatorTableViewCell is nil")
+                }
+                c.delegate = self
+                cell = c
+            default:
+                guard let c = tableView.dequeueReusableCell(withIdentifier: BrowserTableViewCell.reuseIdentifier) as? BrowserTableViewCell,
+                    let url = viewModel.wikiURL() else {
+                    fatalError("BrowserTableViewCell is nil")
+                }
+                
+                let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 10.0)
+                c.webView.delegate = self
+                c.webView.loadRequest(request)
+                
+                collectionView = nil
+                cell = c
             }
             
-            let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 10.0)
-            c.webView.delegate = self
-            c.webView.loadRequest(request)
-            cell = c
-            
-        default:
-            ()
         }
         
         return cell!
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        return sectionIndexTitles
+        return viewModel.sectionIndexTitles()
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        let searchGenerator = SearchRequestGenerator()
-        var sectionIndex = 0
-        
-        guard let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool else {
-            return sectionIndex
-        }
-        
-        for i in 0...sectionTitles.count - 1 {
-            if sectionTitles[i].hasPrefix(title) {
-                if orderBy {
-                    sectionIndex = i
-                } else {
-                    sectionIndex = (sectionTitles.count - 1) - i
-                }
-                break
-            }
-        }
-        
-        return sectionIndex
+        return viewModel.sectionForSectionIndexTitle(title: title, at: index)
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return viewModel.titleForHeaderInSection(section: section)
     }
 }
 
@@ -571,10 +259,10 @@ extension SetViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         var height = CGFloat(0)
 
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case SetViewControllerSegmentedIndex.cards.rawValue:
+        switch viewModel.setContent {
+        case .cards:
             let searchGenerator = SearchRequestGenerator()
-            guard let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
+            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
                 return height
             }
             
@@ -586,24 +274,26 @@ extension SetViewController : UITableViewDelegate {
             default:
                 ()
             }
-        case SetViewControllerSegmentedIndex.wiki.rawValue:
-            height = tableView.frame.size.height
-        default:
-            ()
+        case .wiki:
+            switch indexPath.row {
+            case 0:
+                height = 44
+            default:
+                height = tableView.frame.size.height - 44
+            }
         }
         
         return height
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case SetViewControllerSegmentedIndex.cards.rawValue:
-            guard let fetchedResultsController = fetchedResultsController,
-                let cards = fetchedResultsController.fetchedObjects else {
+        switch viewModel.setContent {
+        case .cards:
+            guard let cards = viewModel.allObjects() else {
                 return
             }
-            
-            let card = fetchedResultsController.object(at: indexPath)
+
+            let card = viewModel.object(forRowAt: indexPath)
             let cardIndex = cards.index(of: card)
             let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
             let sender = ["cardIndex": cardIndex as Any,
@@ -615,17 +305,16 @@ extension SetViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        switch contentSegmentedControl.selectedSegmentIndex {
-        case SetViewControllerSegmentedIndex.cards.rawValue:
+        switch viewModel.setContent {
+        case .cards:
             let searchGenerator = SearchRequestGenerator()
-            guard let displayBy = searchGenerator.searchValue(for: .displayBy) as? String else {
+            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
                 return
             }
-            
+
             switch displayBy {
             case "grid":
-                fetchedResultsController = getFetchedResultsController(with: nil)
-                updateSections()
+                viewModel.fetchData()
             default:
                 ()
             }
@@ -635,25 +324,23 @@ extension SetViewController : UITableViewDelegate {
     }
 }
 
-// UICollectionViewDelegate
+// UICollectionViewDataSource
 extension SetViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let fetchedResultsController = fetchedResultsController,
-            let cards = fetchedResultsController.fetchedObjects else {
-                return 0
-        }
-        
-        return cards.count
+        return viewModel.collectionNumberOfRows(inSection: section)
+    }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return viewModel.collectionNumberOfSections()
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardImageCell", for: indexPath)
         
-        guard let imageView = cell.viewWithTag(100) as? UIImageView,
-            let fetchedResultsController = fetchedResultsController else {
+        guard let imageView = cell.viewWithTag(100) as? UIImageView else {
             fatalError("Unexpected indexPath: \(indexPath)")
         }
-        let card = fetchedResultsController.object(at: indexPath)
+        let card = viewModel.object(forRowAt: indexPath)
         
         if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
             imageView.image = image
@@ -685,34 +372,23 @@ extension SetViewController : UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let v = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier:"Header", for: indexPath)
-        
+
         if kind == UICollectionElementKindSectionHeader {
             v.backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1)
-            
+
             if v.subviews.count == 0 {
                 let label = UILabel(frame: CGRect(x: 20, y: 0, width: collectionView.frame.size.width - 20, height: 22))
                 label.tag = 100
                 v.addSubview(label)
             }
-            
-            let searchGenerator = SearchRequestGenerator()
-            
-            guard let lab = v.viewWithTag(100) as? UILabel,
-                let orderBy = searchGenerator.searchValue(for: .orderBy) as? Bool else {
+
+            guard let lab = v.viewWithTag(100) as? UILabel else {
                 return v
             }
-            
-            var sectionTitle: String?
-            
-            if orderBy {
-                sectionTitle = sectionTitles[indexPath.section]
-            } else {
-                sectionTitle = sectionTitles[sectionTitles.count - 1 - indexPath.section]
-            }
-            
-            lab.text = sectionTitle
+
+            lab.text = viewModel.collectionTitleForHeaderInSection(section: indexPath.section)//SectionIndexTitles()?[indexPath.section]
         }
-        
+
         return v
     }
 }
@@ -720,12 +396,11 @@ extension SetViewController : UICollectionViewDataSource {
 // UICollectionViewDelegate
 extension SetViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let fetchedResultsController = fetchedResultsController,
-            let cards = fetchedResultsController.fetchedObjects else {
-                return
+        guard let cards = viewModel.allObjects() else {
+            return
         }
         
-        let card = fetchedResultsController.object(at: indexPath)
+        let card = viewModel.object(forRowAt: indexPath)
         let cardIndex = cards.index(of: card)
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": cardIndex as Any,
@@ -790,49 +465,97 @@ extension SetViewController : UIWebViewDelegate {
     }
     
     func webViewDidStartLoad(_ webView: UIWebView) {
-        MBProgressHUD.showAdded(to: webView, animated: true)
+        toggleBrowser(enabled: false)
     }
     
     func webViewDidFinishLoad(_ webView: UIWebView) {
-        MBProgressHUD.hide(for: webView, animated: true)
-        
-        guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? BrowserTableViewCell else {
-            return
-        }
-        
-        cell.backButton.isEnabled = webView.canGoBack
-        cell.forwardButton.isEnabled = webView.canGoForward
-        cell.refreshButton.isEnabled = true
+        toggleBrowser(enabled: true)
     }
     
     func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
-        MBProgressHUD.hide(for: webView, animated: true)
-        
-        guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? BrowserTableViewCell else {
-            return
-        }
-        
-        cell.backButton.isEnabled = webView.canGoBack
-        cell.forwardButton.isEnabled = webView.canGoForward
-        cell.refreshButton.isEnabled = true
+        toggleBrowser(enabled: true)
         
         var html = "<html><body><center>"
         html.append(error.localizedDescription)
         html.append("</center></body></html>")
         webView.loadHTMLString(html, baseURL: nil)
     }
+    
+    func toggleBrowser(enabled: Bool) {
+        guard let navCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? BrowserNavigatorTableViewCell,
+            let browserCell = tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? BrowserTableViewCell else {
+            return
+        }
+
+        if enabled {
+            MBProgressHUD.hide(for: browserCell.webView, animated: true)
+            navCell.backButton.isEnabled = browserCell.webView.canGoBack
+            navCell.forwardButton.isEnabled = browserCell.webView.canGoForward
+            navCell.refreshButton.isEnabled = true
+        } else {
+            MBProgressHUD.showAdded(to: browserCell.webView, animated: true)
+            navCell.backButton.isEnabled = false
+            navCell.forwardButton.isEnabled = false
+            navCell.refreshButton.isEnabled = false
+        }
+        navCell.setNeedsDisplay()
+    }
 }
 
 // MARK: UISearchResultsUpdating
 extension SetViewController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
-        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
+//        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
+//        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
+        viewModel.queryString = searchController.searchBar.text ?? ""
+        viewModel.fetchData()
+        
+        let searchGenerator = SearchRequestGenerator()
+        guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
+            return
+        }
+        
+        switch displayBy {
+        case "list":
+            tableView.reloadData()
+        case "grid":
+            collectionView?.reloadData()
+        default:
+            ()
+        }
+
     }
 }
 
-// MARK: NSFetchedResultsControllerDelegate
-extension SetViewController : NSFetchedResultsControllerDelegate {
+// MARK: BrowserNavigatorTableViewCellDelegate
+extension SetViewController : BrowserNavigatorTableViewCellDelegate {
+    func back() {
+        guard let cell = tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? BrowserTableViewCell else {
+            return
+        }
+        
+        if cell.webView.canGoBack {
+            cell.webView.goBack()
+        }
+    }
     
+    func forward() {
+        guard let cell = tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? BrowserTableViewCell else {
+            return
+        }
+        
+        if cell.webView.canGoForward {
+            cell.webView.goForward()
+        }
+    }
+    
+    func reload() {
+        guard let cell = tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? BrowserTableViewCell else {
+            return
+        }
+        
+        cell.webView.reload()
+    }
 }
+
 

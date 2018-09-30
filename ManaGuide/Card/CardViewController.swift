@@ -224,8 +224,7 @@ class CardViewController: BaseViewController {
                 return
             }
             
-            dest.title = set.name
-            dest.set = set
+            dest.viewModel = SetViewModel(withSet: set)
             
         } else if segue.identifier == "showLogin" {
             guard let dest = segue.destination as? UINavigationController,

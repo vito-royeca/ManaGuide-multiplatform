@@ -114,8 +114,7 @@ class FeaturedViewController: BaseViewController {
                 return
             }
             
-            dest.title = set.name
-            dest.set = set
+            dest.viewModel = SetViewModel(withSet: set)
 
         } else if segue.identifier == "showSets" {
             guard let dest = segue.destination as? SetsViewController else {

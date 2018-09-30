@@ -30,7 +30,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="88" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="c6Y-yF-szq">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="527"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardCell" rowHeight="88" id="NHU-Qb-dj3">
@@ -95,7 +95,7 @@
                                 </connections>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="le4-0f-D97">
-                                <rect key="frame" x="0.0" y="541" width="414" height="30"/>
+                                <rect key="frame" x="0.0" y="497" width="414" height="30"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="r9S-nb-s5A"/>
@@ -454,7 +454,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0ru-KY-Ddu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4516" y="1101"/>
+            <point key="canvasLocation" x="5571" y="1188"/>
         </scene>
         <!--Comprehensive Rules-->
         <scene sceneID="pbj-v5-jB8">
@@ -977,7 +977,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a3L-Q8-bbP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3356.521739130435" y="-826.63043478260875"/>
+            <point key="canvasLocation" x="3542" y="-823"/>
         </scene>
         <!--Set View Controller-->
         <scene sceneID="BJa-EA-u4c">
@@ -995,18 +995,89 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="527"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardCell" rowHeight="88" id="xxb-st-kEj">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="88"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BrowserNavigatorCell" id="ToY-iY-7LW" customClass="BrowserNavigatorTableViewCell" customModule="ManaGuide" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="xxb-st-kEj" id="Ngz-hC-aiW">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="87.666666666666671"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ToY-iY-7LW" id="aAo-oZ-Vmj">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s2i-tD-bqe">
+                                                    <rect key="frame" x="20" y="6" width="32" height="32"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="32" id="9xR-9n-pYZ"/>
+                                                        <constraint firstAttribute="height" constant="32" id="CcM-xu-oZh"/>
+                                                    </constraints>
+                                                    <state key="normal" image="backButton"/>
+                                                    <connections>
+                                                        <action selector="backAction:" destination="ToY-iY-7LW" eventType="touchUpInside" id="s9g-IA-wNp"/>
+                                                    </connections>
+                                                </button>
+                                                <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xcH-Py-ThV">
+                                                    <rect key="frame" x="60" y="6" width="32" height="32"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="32" id="V1Y-YI-XBV"/>
+                                                        <constraint firstAttribute="height" constant="32" id="ajk-Bx-tVb"/>
+                                                    </constraints>
+                                                    <state key="normal" image="forwardButton"/>
+                                                    <connections>
+                                                        <action selector="forwardAction:" destination="ToY-iY-7LW" eventType="touchUpInside" id="3PB-SX-ws3"/>
+                                                    </connections>
+                                                </button>
+                                                <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nkc-2I-0TM">
+                                                    <rect key="frame" x="362" y="6" width="32" height="32"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="32" id="JBY-oh-BuM"/>
+                                                        <constraint firstAttribute="width" constant="32" id="mXz-8O-veQ"/>
+                                                    </constraints>
+                                                    <state key="normal" image="forwardButton"/>
+                                                    <connections>
+                                                        <action selector="refreshAction:" destination="ToY-iY-7LW" eventType="touchUpInside" id="HzC-XV-kyh"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="xcH-Py-ThV" firstAttribute="centerY" secondItem="aAo-oZ-Vmj" secondAttribute="centerY" id="Iv2-B9-mmc"/>
+                                                <constraint firstItem="Nkc-2I-0TM" firstAttribute="centerY" secondItem="aAo-oZ-Vmj" secondAttribute="centerY" id="YMP-e6-F2J"/>
+                                                <constraint firstItem="s2i-tD-bqe" firstAttribute="leading" secondItem="aAo-oZ-Vmj" secondAttribute="leading" constant="20" id="aQc-T4-6Ux"/>
+                                                <constraint firstItem="xcH-Py-ThV" firstAttribute="leading" secondItem="s2i-tD-bqe" secondAttribute="trailing" constant="8" id="jag-Vz-hUf"/>
+                                                <constraint firstAttribute="trailing" secondItem="Nkc-2I-0TM" secondAttribute="trailing" constant="20" id="nxc-0s-BsD"/>
+                                                <constraint firstItem="s2i-tD-bqe" firstAttribute="centerY" secondItem="aAo-oZ-Vmj" secondAttribute="centerY" id="v7T-9b-Hxx"/>
+                                            </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="backButton" destination="s2i-tD-bqe" id="TdL-Oh-uPX"/>
+                                            <outlet property="forwardButton" destination="xcH-Py-ThV" id="f1H-zc-0eZ"/>
+                                            <outlet property="refreshButton" destination="Nkc-2I-0TM" id="T0i-df-Rh6"/>
+                                        </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SetInfoCell" rowHeight="88" id="XcF-kd-Vx8">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BrowserCell" id="w0b-Ec-klI" customClass="BrowserTableViewCell" customModule="ManaGuide" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="72" width="414" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="w0b-Ec-klI" id="TST-Yg-hlA">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pDq-4i-Xeq">
+                                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
+                                                    <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                </webView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="pDq-4i-Xeq" firstAttribute="leading" secondItem="TST-Yg-hlA" secondAttribute="leading" id="80V-18-nhd"/>
+                                                <constraint firstAttribute="trailing" secondItem="pDq-4i-Xeq" secondAttribute="trailing" id="GIb-me-bJy"/>
+                                                <constraint firstItem="pDq-4i-Xeq" firstAttribute="top" secondItem="TST-Yg-hlA" secondAttribute="top" id="GJB-46-EJp"/>
+                                                <constraint firstAttribute="bottom" secondItem="pDq-4i-Xeq" secondAttribute="bottom" id="tn6-aF-pdf"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="webView" destination="pDq-4i-Xeq" id="9k0-AP-4qm"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardCell" rowHeight="88" id="xxb-st-kEj">
                                         <rect key="frame" x="0.0" y="116" width="414" height="88"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="XcF-kd-Vx8" id="xbs-uE-isx">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="xxb-st-kEj" id="Ngz-hC-aiW">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="87.666666666666671"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
@@ -1105,7 +1176,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8Rr-dW-woe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3357" y="-30"/>
+            <point key="canvasLocation" x="3540.579710144928" y="-31.793478260869566"/>
         </scene>
         <!--Card View Controller-->
         <scene sceneID="dYq-zF-hTQ">
@@ -1120,7 +1191,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="XTg-F2-G7x">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="527"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BasicCell" textLabel="bGb-Ks-SVK" style="IBUITableViewCellStyleDefault" id="gLf-9z-exN">
@@ -1825,14 +1896,18 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lua-Ea-yHm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3543" y="1101"/>
+            <point key="canvasLocation" x="4662" y="1188"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="backButton" width="32" height="32"/>
+        <image name="forwardButton" width="32" height="32"/>
+    </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Vbm-cg-ye0"/>
-        <segue reference="jVZ-a8-OYH"/>
-        <segue reference="lLZ-BR-fAo"/>
+        <segue reference="Ubl-6g-hH9"/>
+        <segue reference="sDJ-KE-8ls"/>
         <segue reference="ISp-PC-gA3"/>
-        <segue reference="whl-Hr-bZH"/>
+        <segue reference="bra-At-7UT"/>
     </inferredMetricsTieBreakers>
 </document>

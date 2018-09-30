@@ -124,6 +124,12 @@
 		11A63E3121430E60005AE024 /* TopViewedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A63E2E21430E60005AE024 /* TopViewedItemCell.swift */; };
 		11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
 		11B2AA341F29DE490067E833 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
+		11BC2B76215AED3600045600 /* SetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BC2B75215AED3600045600 /* SetViewModel.swift */; };
+		11BC2B77215AED3600045600 /* SetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BC2B75215AED3600045600 /* SetViewModel.swift */; };
+		11BC2B78215AED3600045600 /* SetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BC2B75215AED3600045600 /* SetViewModel.swift */; };
+		11BC2B7A215DC2C600045600 /* BrowserNavigatorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BC2B79215DC2C600045600 /* BrowserNavigatorTableViewCell.swift */; };
+		11BC2B7B215DC2C600045600 /* BrowserNavigatorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BC2B79215DC2C600045600 /* BrowserNavigatorTableViewCell.swift */; };
+		11BC2B7C215DC2C600045600 /* BrowserNavigatorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BC2B79215DC2C600045600 /* BrowserNavigatorTableViewCell.swift */; };
 		11C7B45520D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */; };
 		11C7B45720D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */; };
 		11C7B45820D6A7E2009D63F4 /* StoreTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11C7B45420D6A7E2009D63F4 /* StoreTableViewCell.xib */; };
@@ -143,8 +149,6 @@
 		11E2E3EF20D11C2C00F9DB47 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11E2E3EE20D11C2C00F9DB47 /* GameKit.framework */; };
 		11E4374A1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */; };
 		11E4374B1F2869EB00459AD4 /* BrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */; };
-		11E4374C1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */; };
-		11E4374D1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */; };
 		11F336B220BBB47B0007552F /* PDFViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F336B120BBB47B0007552F /* PDFViewerViewController.swift */; };
 		11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F336B120BBB47B0007552F /* PDFViewerViewController.swift */; };
 		11F336B420BBB47B0007552F /* PDFViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F336B120BBB47B0007552F /* PDFViewerViewController.swift */; };
@@ -231,6 +235,8 @@
 		11A63E2A21430E48005AE024 /* TopRatedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopRatedItemCell.swift; sourceTree = "<group>"; };
 		11A63E2E21430E60005AE024 /* TopViewedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopViewedItemCell.swift; sourceTree = "<group>"; };
 		11B2AA321F29DE490067E833 /* CardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
+		11BC2B75215AED3600045600 /* SetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetViewModel.swift; sourceTree = "<group>"; };
+		11BC2B79215DC2C600045600 /* BrowserNavigatorTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigatorTableViewCell.swift; sourceTree = "<group>"; };
 		11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreTableViewCell.swift; sourceTree = "<group>"; };
 		11C7B45420D6A7E2009D63F4 /* StoreTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StoreTableViewCell.xib; sourceTree = "<group>"; };
 		11CEE05A20D0012300D72186 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -240,7 +246,6 @@
 		11E2E3EB20D11AFD00F9DB47 /* ManaGuide.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ManaGuide.entitlements; sourceTree = "<group>"; };
 		11E2E3EE20D11C2C00F9DB47 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserTableViewCell.swift; sourceTree = "<group>"; };
-		11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BrowserTableViewCell.xib; sourceTree = "<group>"; };
 		11F336B120BBB47B0007552F /* PDFViewerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFViewerViewController.swift; sourceTree = "<group>"; };
 		11F3BA3020D4141900511388 /* MGUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MGUtilities.swift; sourceTree = "<group>"; };
 		16CE1263B7BD598033CE1752 /* Pods-ManaGuideUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ManaGuideUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ManaGuideUITests/Pods-ManaGuideUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -368,8 +373,6 @@
 		110BB5271F2084D600086841 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */,
-				11E437491F2869EB00459AD4 /* BrowserTableViewCell.xib */,
 				11CEE05A20D0012300D72186 /* Launch Screen.storyboard */,
 				110BB4FD1F207C6400086841 /* Main.storyboard */,
 			);
@@ -387,7 +390,10 @@
 		11932B7D2158558700DC3D44 /* Set */ = {
 			isa = PBXGroup;
 			children = (
+				11BC2B79215DC2C600045600 /* BrowserNavigatorTableViewCell.swift */,
+				11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */,
 				1147B7621F224198004EF296 /* SetViewController.swift */,
+				11BC2B75215AED3600045600 /* SetViewModel.swift */,
 			);
 			path = Set;
 			sourceTree = "<group>";
@@ -684,7 +690,6 @@
 				110BB4FF1F207C6400086841 /* Main.storyboard in Resources */,
 				118FDC7720D515E5002FA5E8 /* ShareActivity.xcassets in Resources */,
 				11447EB220D1764000DFF5C7 /* HeroCardView.xib in Resources */,
-				11E4374C1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */,
 				1147B7691F226143004EF296 /* Settings.bundle in Resources */,
 				1140F0C71F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
 				113661591F2F912500DCBB41 /* data in Resources */,
@@ -710,7 +715,6 @@
 			files = (
 				11447EB420D1764000DFF5C7 /* HeroCardView.xib in Resources */,
 				11CEE05D20D0012300D72186 /* Launch Screen.storyboard in Resources */,
-				11E4374D1F2869EB00459AD4 /* BrowserTableViewCell.xib in Resources */,
 				1147B76A1F226143004EF296 /* Settings.bundle in Resources */,
 				118FDC7920D515E5002FA5E8 /* ShareActivity.xcassets in Resources */,
 				1140F0C91F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
@@ -1103,6 +1107,7 @@
 				1147B7661F224874004EF296 /* SettingsViewController.swift in Sources */,
 				1138A3D120F786E00023423C /* SearchRequestGenerator.swift in Sources */,
 				1138A3CD20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
+				11BC2B7A215DC2C600045600 /* BrowserNavigatorTableViewCell.swift in Sources */,
 				1147B7631F224198004EF296 /* SetViewController.swift in Sources */,
 				115FFECF214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */,
 				11932B7F215855AF00DC3D44 /* SetsViewModel.swift in Sources */,
@@ -1112,6 +1117,7 @@
 				1165CD761F377F58006CC433 /* BannedListViewController.swift in Sources */,
 				1165CD791F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
 				110BB52D1F20892B00086841 /* SearchViewController.swift in Sources */,
+				11BC2B76215AED3600045600 /* SetViewModel.swift in Sources */,
 				1168F7522155AC6E0059C9E0 /* CardActionsTableViewCell.swift in Sources */,
 				11663B142159C5AC00B095C2 /* SetsTableViewCell.swift in Sources */,
 				11A63E2721430B94005AE024 /* LatestSetItemCell.swift in Sources */,
@@ -1156,6 +1162,7 @@
 				11A63E2C21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
 				11663B152159C5AC00B095C2 /* SetsTableViewCell.swift in Sources */,
 				114FE3A52146A313009E3201 /* CardPricingTableViewCell.swift in Sources */,
+				11BC2B77215AED3600045600 /* SetViewModel.swift in Sources */,
 				11F3BA3220D4141900511388 /* MGUtilities.swift in Sources */,
 				11A63E182142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
 				1168F7532155AC6E0059C9E0 /* CardActionsTableViewCell.swift in Sources */,
@@ -1163,6 +1170,7 @@
 				11A5444721445ADF00B8C59F /* HeroCardView.swift in Sources */,
 				11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				118281B220B67FA500865172 /* AccountViewController.swift in Sources */,
+				11BC2B7B215DC2C600045600 /* BrowserNavigatorTableViewCell.swift in Sources */,
 				11A63E202142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
 				11DFB8C82145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
 				11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
@@ -1191,6 +1199,7 @@
 				11A63E112142CC34005AE024 /* ComprehensiveRulesViewModel.swift in Sources */,
 				11A5444E214471EB00B8C59F /* CardViewModel.swift in Sources */,
 				1147B7581F223607004EF296 /* SetsViewController.swift in Sources */,
+				11BC2B7C215DC2C600045600 /* BrowserNavigatorTableViewCell.swift in Sources */,
 				11C7B45720D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */,
 				115FFED1214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */,
 				11932B81215855AF00DC3D44 /* SetsViewModel.swift in Sources */,
@@ -1200,6 +1209,7 @@
 				1165CD771F377F58006CC433 /* BannedListViewController.swift in Sources */,
 				1150BCF020B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				1165CD7A1F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
+				11BC2B78215AED3600045600 /* SetViewModel.swift in Sources */,
 				1168F7542155AC6E0059C9E0 /* CardActionsTableViewCell.swift in Sources */,
 				11663B162159C5AC00B095C2 /* SetsTableViewCell.swift in Sources */,
 				1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */,
