@@ -147,7 +147,7 @@ class SearchViewModel: NSObject {
         case "list":
             guard let fetchedResultsController = _fetchedResultsController,
                 let sections = fetchedResultsController.sections else {
-                    return nil
+                return titleHeader
             }
             titleHeader = sections[section].name
         case "grid":

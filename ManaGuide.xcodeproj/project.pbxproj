@@ -58,6 +58,12 @@
 		114C1D442160849B00825DD2 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114C1D432160849B00825DD2 /* SearchViewModel.swift */; };
 		114C1D452160849B00825DD2 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114C1D432160849B00825DD2 /* SearchViewModel.swift */; };
 		114C1D462160849B00825DD2 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114C1D432160849B00825DD2 /* SearchViewModel.swift */; };
+		114C1D4A2160A50600825DD2 /* MoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114C1D492160A50600825DD2 /* MoreViewModel.swift */; };
+		114C1D4B2160A50600825DD2 /* MoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114C1D492160A50600825DD2 /* MoreViewModel.swift */; };
+		114C1D4C2160A50600825DD2 /* MoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114C1D492160A50600825DD2 /* MoreViewModel.swift */; };
+		114C1D4E21613AC300825DD2 /* ArtistsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114C1D4D21613AC300825DD2 /* ArtistsViewModel.swift */; };
+		114C1D4F21613AC300825DD2 /* ArtistsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114C1D4D21613AC300825DD2 /* ArtistsViewModel.swift */; };
+		114C1D5021613AC300825DD2 /* ArtistsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114C1D4D21613AC300825DD2 /* ArtistsViewModel.swift */; };
 		114FE3A42146A313009E3201 /* CardPricingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114FE3A32146A313009E3201 /* CardPricingTableViewCell.swift */; };
 		114FE3A52146A313009E3201 /* CardPricingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114FE3A32146A313009E3201 /* CardPricingTableViewCell.swift */; };
 		114FE3A62146A313009E3201 /* CardPricingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114FE3A32146A313009E3201 /* CardPricingTableViewCell.swift */; };
@@ -212,6 +218,8 @@
 		1147B7651F224874004EF296 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		1147B7681F226143004EF296 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		114C1D432160849B00825DD2 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		114C1D492160A50600825DD2 /* MoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreViewModel.swift; sourceTree = "<group>"; };
+		114C1D4D21613AC300825DD2 /* ArtistsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistsViewModel.swift; sourceTree = "<group>"; };
 		114FE3A32146A313009E3201 /* CardPricingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPricingTableViewCell.swift; sourceTree = "<group>"; };
 		1150BCED20B92E4700A36FCD /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		115FFECE214C2FE100FDB8B0 /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
@@ -391,6 +399,23 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
+		114C1D472160A3E600825DD2 /* Artists */ = {
+			isa = PBXGroup;
+			children = (
+				111D5A6B20AF57590046285B /* ArtistsViewController.swift */,
+				114C1D4D21613AC300825DD2 /* ArtistsViewModel.swift */,
+			);
+			path = Artists;
+			sourceTree = "<group>";
+		};
+		114C1D482160A42100825DD2 /* Banned and Restricted */ = {
+			isa = PBXGroup;
+			children = (
+				1165CD751F377F58006CC433 /* BannedListViewController.swift */,
+			);
+			path = "Banned and Restricted";
+			sourceTree = "<group>";
+		};
 		11932B7D2158558700DC3D44 /* Set */ = {
 			isa = PBXGroup;
 			children = (
@@ -495,10 +520,11 @@
 		11D55BC9213253E8002F8F49 /* More */ = {
 			isa = PBXGroup;
 			children = (
+				114C1D482160A42100825DD2 /* Banned and Restricted */,
+				114C1D472160A3E600825DD2 /* Artists */,
 				11A63E0D2142CBF3005AE024 /* Comprehensive Rules */,
-				111D5A6B20AF57590046285B /* ArtistsViewController.swift */,
-				1165CD751F377F58006CC433 /* BannedListViewController.swift */,
 				1165CD721F377395006CC433 /* MoreViewController.swift */,
+				114C1D492160A50600825DD2 /* MoreViewModel.swift */,
 			);
 			path = More;
 			sourceTree = "<group>";
@@ -1151,6 +1177,8 @@
 				11A63E172142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
 				1165CD731F377395006CC433 /* MoreViewController.swift in Sources */,
 				118FDC6F20D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
+				114C1D4A2160A50600825DD2 /* MoreViewModel.swift in Sources */,
+				114C1D4E21613AC300825DD2 /* ArtistsViewModel.swift in Sources */,
 				110BB52A1F20891D00086841 /* FeaturedViewController.swift in Sources */,
 				11F3BA3120D4141900511388 /* MGUtilities.swift in Sources */,
 			);
@@ -1185,6 +1213,7 @@
 				1138A3CE20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
 				11932B80215855AF00DC3D44 /* SetsViewModel.swift in Sources */,
 				118FDC7020D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
+				114C1D4F21613AC300825DD2 /* ArtistsViewModel.swift in Sources */,
 				11A63E142142F536005AE024 /* FeaturedViewModel.swift in Sources */,
 				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
 				115FFED0214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */,
@@ -1193,6 +1222,7 @@
 				11A63E242142F847005AE024 /* TopViewedViewModel.swift in Sources */,
 				11A63E1C2142F80E005AE024 /* LatestSetsViewModel.swift in Sources */,
 				11448A6320CD3849008EFC40 /* Constants.swift in Sources */,
+				114C1D4B2160A50600825DD2 /* MoreViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1245,6 +1275,8 @@
 				111D5A6E20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				1165CD741F377395006CC433 /* MoreViewController.swift in Sources */,
 				1138A3D320F786E00023423C /* SearchRequestGenerator.swift in Sources */,
+				114C1D4C2160A50600825DD2 /* MoreViewModel.swift in Sources */,
+				114C1D5021613AC300825DD2 /* ArtistsViewModel.swift in Sources */,
 				1147B75B1F22379F004EF296 /* BaseViewController.swift in Sources */,
 				110BB52B1F20891D00086841 /* FeaturedViewController.swift in Sources */,
 			);

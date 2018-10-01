@@ -39,8 +39,9 @@ class SetsViewController: BaseViewController {
                                                name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                object: nil)
         
-        searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Keyword"
+        searchController.searchResultsUpdater = self
         definesPresentationContext = true
         
         if #available(iOS 11.0, *) {
@@ -73,7 +74,6 @@ class SetsViewController: BaseViewController {
             }
             
             dest.viewModel = SetViewModel(withSet: set)
-//            dest.title = set.name
         }
     }
 
@@ -92,7 +92,6 @@ class SetsViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension SetsViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
         return viewModel.numberOfRows(inSection: section)
     }
     
@@ -103,7 +102,7 @@ extension SetsViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SetsTableViewCell.reuseIdentifier,
                                                        for: indexPath) as? SetsTableViewCell else {
-                                                        fatalError("Unexpected indexPath: \(indexPath)")
+            fatalError("Unexpected indexPath: \(indexPath)")
         }
         
         cell.set = viewModel.object(forRowAt: indexPath)
