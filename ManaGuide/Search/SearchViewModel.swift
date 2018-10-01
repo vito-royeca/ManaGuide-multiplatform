@@ -247,6 +247,7 @@ class SearchViewModel: NSObject {
         updateSections()
     }
     
+    // MARK: Private methods
     private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMCard>?) -> NSFetchedResultsController<CMCard> {
         let searchGenerator = SearchRequestGenerator()
         let context = ManaKit.sharedInstance.dataStack!.viewContext
@@ -283,7 +284,7 @@ class SearchViewModel: NSObject {
         return frc
     }
     
-    func updateSections() {
+    private func updateSections() {
         guard let fetchedResultsController = _fetchedResultsController,
             let cards = fetchedResultsController.fetchedObjects,
             let sections = fetchedResultsController.sections else {

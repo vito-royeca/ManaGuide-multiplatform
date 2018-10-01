@@ -40,7 +40,7 @@ class SetsViewController: BaseViewController {
                                                object: nil)
         
         searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Keyword"
+        searchController.searchBar.placeholder = "Filter"
         searchController.searchResultsUpdater = self
         definesPresentationContext = true
         

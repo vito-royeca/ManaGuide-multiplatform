@@ -15,11 +15,8 @@ import MBProgressHUD
 import PromiseKit
 
 class SetViewController: BaseViewController {
-
-    // MARK: Constants
-    let searchController = UISearchController(searchResultsController: nil)
-
     // MARK: Variables
+    let searchController = UISearchController(searchResultsController: nil)
     var viewModel: SetViewModel!
     var collectionView: UICollectionView?
     
@@ -55,7 +52,7 @@ class SetViewController: BaseViewController {
                                                object: nil)
         
         searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Keyword"
+        searchController.searchBar.placeholder = "Filter"
         searchController.searchResultsUpdater = self
         definesPresentationContext = true
         

@@ -34,7 +34,6 @@ class SetViewModel: NSObject {
     private var _set: CMSet?
     private var _searchViewModel: SearchViewModel?
     
-    
     // MARK: Init
     init(withSet set: CMSet) {
         super.init()

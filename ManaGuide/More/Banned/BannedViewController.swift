@@ -1,34 +1,35 @@
 //
-//  SearchViewController.swift
+//  BannedViewController.swift
 //  ManaGuide
 //
-//  Created by Jovito Royeca on 20/07/2017.
-//  Copyright © 2017 Jovito Royeca. All rights reserved.
+//  Created by Jovito Royeca on 30.09.18.
+//  Copyright © 2018 Jovito Royeca. All rights reserved.
 //
 
 import UIKit
-import CoreData
-import Font_Awesome_Swift
 import InAppSettingsKit
-import MBProgressHUD
 import ManaKit
 import PromiseKit
 
-class SearchViewController: BaseViewController {
-
-    // MARK: Constants
-    let searchController = UISearchController(searchResultsController: nil)
+class BannedViewController: BaseViewController {
 
     // MARK: Variables
-    var viewModel: SearchViewModel!
+    let searchController = UISearchController(searchResultsController: nil)
+    var viewModel: BannedViewModel!
     var collectionView: UICollectionView?
     
     // MARK: Outlets
+    @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
-    
+
     // MARK: Actions
-    @IBAction func rightMenuAction(_ sender: UIBarButtonItem) {
+    @IBAction func contentAction(_ sender: UISegmentedControl) {
+        viewModel.bannedContent = sender.selectedSegmentIndex == 0  ? .banned : .restricted
+        updateDataDisplay()
+    }
+    
+    @IBAction func showRightMenuAction(_ sender: UIBarButtonItem) {
         showSettingsMenu(file: "Search")
     }
     
@@ -37,6 +38,9 @@ class SearchViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        contentSegmentedControl.setTitle(BannedContent.banned.description, forSegmentAt: 0)
+        contentSegmentedControl.setTitle(BannedContent.restricted.description, forSegmentAt: 1)
+        
         NotificationCenter.default.removeObserver(self,
                                                   name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                   object:nil)
@@ -62,37 +66,33 @@ class SearchViewController: BaseViewController {
                                              textColor: .white,
                                              backgroundColor: .clear)
         rightMenuButton.title = nil
-        
+
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"),
                            forCellReuseIdentifier: CardTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
         
-        title = viewModel.getSearchTitle()
+        title = viewModel.getFormatTitle()
         viewModel.fetchData()
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         if #available(iOS 11.0, *) {
             navigationItem.hidesSearchBarWhenScrolling = true
         }
-        updateDataDisplay()
     }
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let dict = sender as? [String: Any] else {
-            return
-        }
-        
         let searchGenerator = SearchRequestGenerator()
         let sortDescriptors = searchGenerator.createSortDescriptors()
         
         if segue.identifier == "showCard" {
             guard let dest = segue.destination as? CardViewController,
+                let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
                 let cardIDs = dict["cardIDs"] as? [String] else {
-                return
+                    return
             }
             
             dest.viewModel = CardViewModel(withCardIndex: cardIndex,
@@ -102,23 +102,23 @@ class SearchViewController: BaseViewController {
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
                 let dest = nav.childViewControllers.first as? CardViewController,
+                let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
                 let cardIDs = dict["cardIDs"] as? [String] else {
-                return
+                    return
             }
             
             dest.viewModel = CardViewModel(withCardIndex: cardIndex,
                                            withCardIDs: cardIDs,
                                            withSortDescriptors: sortDescriptors)
+            
         }
     }
-
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-//        if tableView != nil { // check if we have already loaded
-            updateDataDisplay()
-//        }
+        updateDataDisplay()
     }
-
+    
     // MARK: Custom methods
     func updateData(_ notification: Notification) {
         let searchGenerator = SearchRequestGenerator()
@@ -128,13 +128,6 @@ class SearchViewController: BaseViewController {
     }
     
     func updateDataDisplay() {
-        if #available(iOS 11.0, *) {
-            navigationItem.searchController?.searchBar.isHidden = false
-            navigationItem.hidesSearchBarWhenScrolling = false
-        } else {
-            tableView.tableHeaderView = searchController.searchBar
-        }
-        
         viewModel.fetchData()
         tableView.reloadData()
         collectionView?.reloadData()
@@ -142,7 +135,7 @@ class SearchViewController: BaseViewController {
 }
 
 // MARK: UITableViewDataSource
-extension SearchViewController : UITableViewDataSource {
+extension BannedViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.numberOfRows(inSection: section)
     }
@@ -150,7 +143,7 @@ extension SearchViewController : UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return viewModel.numberOfSections()
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let searchGenerator = SearchRequestGenerator()
         let displayBy = searchGenerator.displayValue(for: .displayBy) as? String
@@ -216,11 +209,11 @@ extension SearchViewController : UITableViewDataSource {
 }
 
 // MARK: UITableViewDelegate
-extension SearchViewController : UITableViewDelegate {
+extension BannedViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let searchGenerator = SearchRequestGenerator()
         var height = CGFloat(0)
         
+        let searchGenerator = SearchRequestGenerator()
         guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
             return height
         }
@@ -252,7 +245,7 @@ extension SearchViewController : UITableViewDelegate {
 }
 
 // UICollectionViewDataSource
-extension SearchViewController : UICollectionViewDataSource {
+extension BannedViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return viewModel.collectionNumberOfRows(inSection: section)
     }
@@ -321,7 +314,7 @@ extension SearchViewController : UICollectionViewDataSource {
 }
 
 // UICollectionViewDelegate
-extension SearchViewController : UICollectionViewDelegate {
+extension BannedViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let cards = viewModel.allObjects() else {
             return
@@ -337,7 +330,7 @@ extension SearchViewController : UICollectionViewDelegate {
 }
 
 // MARK: UISearchResultsUpdating
-extension SearchViewController : UISearchResultsUpdating {
+extension BannedViewController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
 //        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
 //        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
@@ -357,13 +350,6 @@ extension SearchViewController : UISearchResultsUpdating {
         default:
             ()
         }
-
     }
 }
-
-// MARK: NSFetchedResultsControllerDelegate
-extension SearchViewController : NSFetchedResultsControllerDelegate {
-    
-}
-
 

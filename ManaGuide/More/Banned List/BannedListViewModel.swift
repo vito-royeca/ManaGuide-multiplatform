@@ -1,5 +1,5 @@
 //
-//  ArtistsViewModel.swift
+//  BannedListViewModel.swift
 //  ManaGuide
 //
 //  Created by Jovito Royeca on 30.09.18.
@@ -9,16 +9,14 @@
 import CoreData
 import ManaKit
 
-class ArtistsViewModel: NSObject {
+class BannedListViewModel: NSObject {
     // MARK: Variables
     var queryString = ""
     private var _sectionIndexTitles: [String]?
     private var _sectionTitles: [String]?
-    private var _fetchedResultsController: NSFetchedResultsController<CMArtist>?
+    private var _fetchedResultsController: NSFetchedResultsController<CMFormat>?
     
-    private let _sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                    NSSortDescriptor(key: "lastName", ascending: true),
-                                    NSSortDescriptor(key: "firstName", ascending: true)]
+    private let _sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
     private let _sectionName = "nameSection"
     
     // MARK: UITableView methods
@@ -27,7 +25,7 @@ class ArtistsViewModel: NSObject {
         
         guard let fetchedResultsController = _fetchedResultsController,
             let sections = fetchedResultsController.sections else {
-                return rows
+            return rows
         }
         rows = sections[section].numberOfObjects
         
@@ -73,7 +71,7 @@ class ArtistsViewModel: NSObject {
         
         guard let fetchedResultsController = _fetchedResultsController,
             let sections = fetchedResultsController.sections else {
-            return titleHeader
+                return titleHeader
         }
         titleHeader = sections[section].name
         
@@ -81,14 +79,14 @@ class ArtistsViewModel: NSObject {
     }
     
     // MARK: Custom methods
-    func object(forRowAt indexPath: IndexPath) -> CMArtist {
+    func object(forRowAt indexPath: IndexPath) -> CMFormat {
         guard let fetchedResultsController = _fetchedResultsController else {
             fatalError("fetchedResultsController is nil")
         }
         return fetchedResultsController.object(at: indexPath)
     }
     
-    func allObjects() -> [CMArtist]? {
+    func allObjects() -> [CMFormat]? {
         guard let fetchedResultsController = _fetchedResultsController else {
             return nil
         }
@@ -96,16 +94,18 @@ class ArtistsViewModel: NSObject {
     }
     
     func fetchData() {
-        let request: NSFetchRequest<CMArtist> = CMArtist.fetchRequest()
+        let request: NSFetchRequest<CMFormat> = CMFormat.fetchRequest()
         let count = queryString.count
+        var predicate = NSPredicate(format: "ANY cardLegalities.legality.name IN %@", ["Banned", "Restricted"])
         
         if count > 0 {
             if count == 1 {
-                request.predicate = NSPredicate(format: "lastName BEGINSWITH[cd] %@ OR firstName BEGINSWITH[cd] %@", queryString, queryString)
+                predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NSPredicate(format: "name BEGINSWITH[cd] %@", queryString)])
             } else {
-                request.predicate = NSPredicate(format: "lastName CONTAINS[cd] %@ OR firstName CONTAINS[cd] %@", queryString, queryString)
+                predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NSPredicate(format: "name CONTAINS[cd] %@", queryString)])
             }
         }
+        request.predicate = predicate
         request.sortDescriptors = _sortDescriptors
         
         _fetchedResultsController = getFetchedResultsController(with: request)
@@ -113,15 +113,16 @@ class ArtistsViewModel: NSObject {
     }
     
     // MARK: Private methods
-    private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMArtist>?) -> NSFetchedResultsController<CMArtist> {
+    private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMFormat>?) -> NSFetchedResultsController<CMFormat> {
         let context = ManaKit.sharedInstance.dataStack!.viewContext
-        var request: NSFetchRequest<CMArtist>?
+        var request: NSFetchRequest<CMFormat>?
         
         if let fetchRequest = fetchRequest {
             request = fetchRequest
         } else {
             // create a default fetchRequest
-            request = CMArtist.fetchRequest()
+            request = CMFormat.fetchRequest()
+            request!.predicate = NSPredicate(format: "ANY cardLegalities.legality.name IN %@", ["Banned", "Restricted"])
             request!.sortDescriptors = _sortDescriptors
         }
         
@@ -148,24 +149,16 @@ class ArtistsViewModel: NSObject {
     
     private func updateSections() {
         guard let fetchedResultsController = _fetchedResultsController,
-            let artists = fetchedResultsController.fetchedObjects,
+            let formats = fetchedResultsController.fetchedObjects,
             let sections = fetchedResultsController.sections else {
                 return
         }
-        let letters = CharacterSet.letters
-        
         _sectionIndexTitles = [String]()
         _sectionTitles = [String]()
         
-        for artist in artists {
-            let names = artist.name!.components(separatedBy: " ")
-            
-            if let lastName = names.last {
-                var prefix = String(lastName.prefix(1))
-                if prefix.rangeOfCharacter(from: letters) == nil {
-                    prefix = "#"
-                }
-                prefix = prefix.uppercased().folding(options: .diacriticInsensitive, locale: .current)
+        for format in formats {
+            if let name = format.name {
+                let prefix = String(name.prefix(1))
                 
                 if !_sectionIndexTitles!.contains(prefix) {
                     _sectionIndexTitles!.append(prefix)
@@ -188,6 +181,6 @@ class ArtistsViewModel: NSObject {
 }
 
 // MARK: NSFetchedResultsControllerDelegate
-extension ArtistsViewModel : NSFetchedResultsControllerDelegate {
+extension BannedListViewModel : NSFetchedResultsControllerDelegate {
     
 }

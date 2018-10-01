@@ -1,21 +1,21 @@
 //
-//  ArtistsViewController.swift
+//  BannedListViewController.swift
 //  ManaGuide
 //
-//  Created by Jovito Royeca on 19/05/2018.
-//  Copyright © 2018 Jovito Royeca. All rights reserved.
+//  Created by Jovito Royeca on 07/08/2017.
+//  Copyright © 2017 Jovito Royeca. All rights reserved.
 //
 
 import UIKit
 import CoreData
 import ManaKit
 
-class ArtistsViewController: BaseViewController {
+class BannedListViewController: BaseViewController {
 
     // MARK: Variables
     let searchController = UISearchController(searchResultsController: nil)
-    var viewModel = ArtistsViewModel()
-    
+    var viewModel = BannedListViewModel()
+
     // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
     
@@ -40,29 +40,21 @@ class ArtistsViewController: BaseViewController {
         viewModel.fetchData()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        if #available(iOS 11.0, *) {
-            navigationItem.hidesSearchBarWhenScrolling = true
-        }
-    }
-
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showSearch" {
-            guard let dest = segue.destination as? SearchViewController,
+        if segue.identifier == "showBanned" {
+            guard let dest = segue.destination as? BannedViewController,
                 let dict = sender as? [String: Any],
-                let request = dict["request"] as? NSFetchRequest<CMCard> else {
+                let format = dict["format"] as? CMFormat else {
                 return
             }
             
-            dest.viewModel = SearchViewModel(withRequest: request, andTitle: dict["title"] as? String)
+            dest.viewModel = BannedViewModel(withFormat: format)
         }
     }
 }
 
 // MARK: UITableViewDataSource
-extension ArtistsViewController : UITableViewDataSource {
+extension BannedListViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.numberOfRows(inSection: section)
     }
@@ -72,7 +64,7 @@ extension ArtistsViewController : UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ArtistCell",
+        let cell = tableView.dequeueReusableCell(withIdentifier: "BannedCell",
                                                  for: indexPath)
         // Configure Cell
         guard let label = cell.textLabel else {
@@ -97,19 +89,15 @@ extension ArtistsViewController : UITableViewDataSource {
 }
 
 // MARK: UITableViewDelegate
-extension ArtistsViewController : UITableViewDelegate {
+extension BannedListViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let artist = viewModel.object(forRowAt: indexPath)
-        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        request.predicate = NSPredicate(format: "artist_.name = %@", artist.name!)
-        
-        performSegue(withIdentifier: "showSearch", sender: ["request": request,
-                                                            "title": artist.name!])
+        let format = viewModel.object(forRowAt: indexPath)
+        performSegue(withIdentifier: "showBanned", sender: ["format": format])
     }
 }
 
 // MARK: UISearchResultsUpdating
-extension ArtistsViewController : UISearchResultsUpdating {
+extension BannedListViewController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let text = searchController.searchBar.text else {
             return
@@ -120,6 +108,4 @@ extension ArtistsViewController : UISearchResultsUpdating {
         tableView.reloadData()
     }
 }
-
-
 
