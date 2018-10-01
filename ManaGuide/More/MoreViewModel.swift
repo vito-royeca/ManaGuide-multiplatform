@@ -68,7 +68,7 @@ enum MoreRuleRow: Int {
              .ipr,
              .jar:
             return UIImage(bgIcon: .FAFilePdfO,
-                           orientation: UIImageOrientation.up,
+                           orientation: UIImage.Orientation.up,
                            bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
                            topIcon: .FAFilePdfO,
@@ -77,7 +77,7 @@ enum MoreRuleRow: Int {
                            size: CGSize(width: 20, height: 20))
         case .comprehensive:
             return UIImage(bgIcon: .FADatabase,
-                           orientation: UIImageOrientation.up,
+                           orientation: UIImage.Orientation.up,
                            bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
                            topIcon: .FADatabase,
@@ -109,7 +109,7 @@ enum MoreListRow: Int {
     var imageIcon : UIImage {
         switch self {
         case .bannedAndRestricted: return UIImage(bgIcon: .FABan,
-                                                  orientation: UIImageOrientation.up,
+                                                  orientation: UIImage.Orientation.up,
                                                   bgTextColor: LookAndFeel.GlobalTintColor,
                                                   bgBackgroundColor: UIColor.clear,
                                                   topIcon: .FABan,
@@ -117,7 +117,7 @@ enum MoreListRow: Int {
                                                   bgLarge: false,
                                                   size: CGSize(width: 20, height: 20))
         case .reserved: return UIImage(bgIcon: .FAArchive,
-                                       orientation: UIImageOrientation.up,
+                                       orientation: UIImage.Orientation.up,
                                        bgTextColor: LookAndFeel.GlobalTintColor,
                                        bgBackgroundColor: UIColor.clear,
                                        topIcon: .FAArchive,
@@ -125,7 +125,7 @@ enum MoreListRow: Int {
                                        bgLarge: false,
                                        size: CGSize(width: 20, height: 20))
         case .artists: return UIImage(bgIcon: .FAPaintBrush,
-                                      orientation: UIImageOrientation.up,
+                                      orientation: UIImage.Orientation.up,
                                       bgTextColor: LookAndFeel.GlobalTintColor,
                                       bgBackgroundColor: UIColor.clear,
                                       topIcon: .FAPaintBrush,

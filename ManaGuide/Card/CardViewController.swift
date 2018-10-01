@@ -228,14 +228,14 @@ class CardViewController: BaseViewController {
             
         } else if segue.identifier == "showLogin" {
             guard let dest = segue.destination as? UINavigationController,
-                let loginVC = dest.childViewControllers.first as? LoginViewController else {
+                let loginVC = dest.children.first as? LoginViewController else {
                 return
             }
             loginVC.delegate = self
         }
     }
     
-    func reloadViewController(_ notification: Notification) {
+    @objc func reloadViewController(_ notification: Notification) {
         DispatchQueue.main.async {
             MBProgressHUD.hide(for: self.view, animated: true)
             
@@ -253,7 +253,7 @@ class CardViewController: BaseViewController {
     }
     
     // MARK: Core Data notifications
-    func changeNotification(_ notification: Notification) {
+    @objc func changeNotification(_ notification: Notification) {
         let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
         var willReload = false
         
@@ -281,7 +281,7 @@ class CardViewController: BaseViewController {
         let activityVC = UIActivityViewController(activityItems: [provider],
                                                   applicationActivities: [FacebookShareActivity(parent: self)])
 
-        var excludedActivityTypes: [UIActivityType] = [.addToReadingList, .openInIBooks, .postToFacebook, .postToTwitter]
+        var excludedActivityTypes: [UIActivity.ActivityType] = [.addToReadingList, .openInIBooks, .postToFacebook, .postToTwitter]
         if #available(iOS 11.0, *) {
             excludedActivityTypes.append(.markupAsPDF)
         }
@@ -387,7 +387,7 @@ class CardViewController: BaseViewController {
         viewModel.loadCardData()
     }
     
-    func handleLink(_ tapGesture: UITapGestureRecognizer) {
+    @objc func handleLink(_ tapGesture: UITapGestureRecognizer) {
         guard let label = tapGesture.view as? UILabel else {
             return
         }
@@ -410,7 +410,7 @@ class CardViewController: BaseViewController {
         let characterIndex = layoutManager.characterIndex(for: location, in: textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
         
         if characterIndex < storage.length {
-            guard let link = attributedText.attribute(NSLinkAttributeName, at: characterIndex, effectiveRange: nil) else {
+            guard let link = attributedText.attribute(NSAttributedString.Key.link, at: characterIndex, effectiveRange: nil) else {
                 return
             }
             guard let url = URL(string: "\(link)") else {
@@ -603,13 +603,13 @@ extension CardViewController : UITableViewDataSource {
                     return UITableViewCell(frame: CGRect.zero)
                 }
                 
-                let attributes = [NSFontAttributeName: UIFont(name: "Keyrune", size: 17)!,
-                                  NSForegroundColorAttributeName: keyruneColor]
+                let attributes = [convertFromNSAttributedStringKey(NSAttributedString.Key.font): UIFont(name: "Keyrune", size: 17)!,
+                                  convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): keyruneColor]
                 let attributedString = NSMutableAttributedString(string: keyruneUnicode,
-                                                                 attributes: attributes)
+                                                                 attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes))
                 
                 attributedString.append(NSMutableAttributedString(string: " \(setName)",
-                    attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]))
+                    attributes: convertToOptionalNSAttributedStringKeyDictionary([convertFromNSAttributedStringKey(NSAttributedString.Key.font): UIFont.systemFont(ofSize: 17)])))
                 
                 label.attributedText = attributedString
                 label.adjustsFontSizeToFitWidth = true
@@ -885,7 +885,7 @@ extension CardViewController : UITableViewDelegate {
                  CardDetailsSection.variations.rawValue:
                 height = CGFloat(88)
             default:
-                height = UITableViewAutomaticDimension
+                height = UITableView.automaticDimension
             }
             
         case .store:
@@ -895,12 +895,12 @@ extension CardViewController : UITableViewDelegate {
             let count = suppliers.allObjects.count
             
             if count == 0 {
-                height = UITableViewAutomaticDimension
+                height = UITableView.automaticDimension
             } else {
                 if indexPath.row <= count - 1 {
                     height = kStoreTableViewCellHeight
                 } else {
-                    height = UITableViewAutomaticDimension
+                    height = UITableView.automaticDimension
                 }
             }
         }
@@ -1192,4 +1192,15 @@ extension CardViewController : CardActionsTableViewCellDelegate {
                          sender: nil)
         }
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
+	return input.rawValue
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
 }

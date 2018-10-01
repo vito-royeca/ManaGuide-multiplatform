@@ -17,7 +17,7 @@ class AccountHeroTableViewCell: UITableViewCell {
     var user: User? {
         didSet {
             let tmpImage = UIImage(bgIcon: .FAUserCircle,
-                                   orientation: UIImageOrientation.up,
+                                   orientation: UIImage.Orientation.up,
                                    bgTextColor: UIColor.lightGray,
                                    bgBackgroundColor: UIColor.clear,
                                    topIcon: .FAUserCircle,

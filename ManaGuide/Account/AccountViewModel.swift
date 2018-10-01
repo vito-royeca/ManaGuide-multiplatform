@@ -35,7 +35,7 @@ enum AccountSection: Int {
             return nil
         case .favorites:
             return UIImage(bgIcon: .FAHeart,
-                           orientation: UIImageOrientation.up,
+                           orientation: UIImage.Orientation.up,
                            bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
                            topIcon: .FAHeart,
@@ -44,7 +44,7 @@ enum AccountSection: Int {
                            size: CGSize(width: 20, height: 20))
         case .ratedCards:
             return UIImage(bgIcon: .FAStar,
-                           orientation: UIImageOrientation.up,
+                           orientation: UIImage.Orientation.up,
                            bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
                            topIcon: .FAStar,
@@ -53,7 +53,7 @@ enum AccountSection: Int {
                            size: CGSize(width: 20, height: 20))
         case .decks:
             return UIImage(bgIcon: .FAFile,
-                           orientation: UIImageOrientation.up,
+                           orientation: UIImage.Orientation.up,
                            bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
                            topIcon: .FAFile,
@@ -62,7 +62,7 @@ enum AccountSection: Int {
                            size: CGSize(width: 20, height: 20))
         case .lists:
             return UIImage(bgIcon: .FAList,
-                           orientation: UIImageOrientation.up,
+                           orientation: UIImage.Orientation.up,
                            bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
                            topIcon: .FAList,

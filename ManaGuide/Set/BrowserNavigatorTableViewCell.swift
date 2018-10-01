@@ -45,7 +45,7 @@ class BrowserNavigatorTableViewCell: UITableViewCell {
         // Initialization code
         
         backButton.setImage(UIImage(bgIcon: .FAArrowCircleLeft,
-                                    orientation: UIImageOrientation.up,
+                                    orientation: UIImage.Orientation.up,
                                     bgTextColor: LookAndFeel.GlobalTintColor,
                                     bgBackgroundColor: UIColor.clear,
                                     topIcon: .FAArrowCircleLeft,
@@ -55,7 +55,7 @@ class BrowserNavigatorTableViewCell: UITableViewCell {
                             for: .normal)
         
         forwardButton.setImage(UIImage(bgIcon: .FAArrowRight,
-                                       orientation: UIImageOrientation.up,
+                                       orientation: UIImage.Orientation.up,
                                        bgTextColor: LookAndFeel.GlobalTintColor,
                                        bgBackgroundColor: UIColor.clear,
                                        topIcon: .FAArrowRight,
@@ -65,7 +65,7 @@ class BrowserNavigatorTableViewCell: UITableViewCell {
                                for: .normal)
         
         refreshButton.setImage(UIImage(bgIcon: .FARefresh,
-                                       orientation: UIImageOrientation.up,
+                                       orientation: UIImage.Orientation.up,
                                        bgTextColor: LookAndFeel.GlobalTintColor,
                                        bgBackgroundColor: UIColor.clear,
                                        topIcon: .FARefresh,

@@ -96,7 +96,7 @@ class FeaturedViewController: BaseViewController {
             
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
-                let dest = nav.childViewControllers.first as? CardViewController,
+                let dest = nav.children.first as? CardViewController,
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
                 let cardIDs = dict["cardIDs"] as? [String] else {
@@ -126,7 +126,7 @@ class FeaturedViewController: BaseViewController {
     }
 
     // MARK: Custom methods
-    func reloadTopRated(_ notification: Notification) {
+    @objc func reloadTopRated(_ notification: Notification) {
         DispatchQueue.main.async {
             guard let cell = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topRated.rawValue, section: 0)) else {
                 return
@@ -141,7 +141,7 @@ class FeaturedViewController: BaseViewController {
         }
     }
     
-    func reloadTopViewed(_ notification: Notification) {
+    @objc func reloadTopViewed(_ notification: Notification) {
         DispatchQueue.main.async {
             guard let cell = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topViewed.rawValue, section: 0)) else {
                 return
@@ -156,7 +156,7 @@ class FeaturedViewController: BaseViewController {
         }
     }
 
-    func showAllSets(_ sender: UIButton) {
+    @objc func showAllSets(_ sender: UIButton) {
         performSegue(withIdentifier: "showSets", sender: nil)
     }
 }
@@ -208,7 +208,7 @@ extension FeaturedViewController : UITableViewDataSource {
                     flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
                     flowLayout.scrollDirection = .horizontal
                     flowLayout.minimumInteritemSpacing = CGFloat(5)
-                    flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
+                    flowLayout.sectionInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 0)
                 }
                 
                 collectionView.dataSource = self
@@ -243,7 +243,7 @@ extension FeaturedViewController : UITableViewDataSource {
                     flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
                     flowLayout.scrollDirection = .horizontal
                     flowLayout.minimumInteritemSpacing = CGFloat(5)
-                    flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
+                    flowLayout.sectionInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 0)
                 }
                 
                 collectionView.dataSource = self
@@ -276,7 +276,7 @@ extension FeaturedViewController : UITableViewDataSource {
                     flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
                     flowLayout.scrollDirection = .horizontal
                     flowLayout.minimumInteritemSpacing = CGFloat(5)
-                    flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
+                    flowLayout.sectionInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 0)
                 }
                 
                 collectionView.dataSource = self
@@ -305,7 +305,7 @@ extension FeaturedViewController : UITableViewDelegate {
              FeaturedSection.topViewed.rawValue:
             height = view.frame.size.height / 3
         default:
-            height = UITableViewAutomaticDimension
+            height = UITableView.automaticDimension
         }
         
         return height

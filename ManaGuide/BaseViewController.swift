@@ -53,7 +53,7 @@ class BaseViewController: UIViewController {
                 }
                 if settingsView == nil {
                     settingsView = SettingsViewController()
-                    navigationVC.addChildViewController(settingsView!)
+                    navigationVC.addChild(settingsView!)
                 }
                 
                 settingsView!.showCreditsFooter = false
@@ -64,7 +64,7 @@ class BaseViewController: UIViewController {
         }
     }
     
-    func backgroundTapped(_ sender: UITapGestureRecognizer) {
+    @objc func backgroundTapped(_ sender: UITapGestureRecognizer) {
         
         if sender.state == .ended {
             guard let presentedView = presentedViewController?.view else {

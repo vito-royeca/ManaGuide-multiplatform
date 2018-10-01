@@ -22,7 +22,7 @@ class FacebookShareActivity: UIActivity {
         return dialog
     }()
     
-    open static var category: UIActivityCategory?
+    open static var category: UIActivity.Category?
     
     init(parent: UIViewController?) {
         super.init()
@@ -30,15 +30,15 @@ class FacebookShareActivity: UIActivity {
         parentViewController = parent
     }
     
-    open override class var activityCategory : UIActivityCategory {
+    open override class var activityCategory : UIActivity.Category {
         return category ?? .share
     }
-    open class func setActivityCategory(_ category: UIActivityCategory) {
+    open class func setActivityCategory(_ category: UIActivity.Category) {
         self.category = category
     }
     
-    open override var activityType : UIActivityType? {
-        return UIActivityType(String(describing: FacebookShareActivity.self))
+    open override var activityType : UIActivity.ActivityType? {
+        return UIActivity.ActivityType(String(describing: FacebookShareActivity.self))
     }
     
     open override var activityTitle : String? {

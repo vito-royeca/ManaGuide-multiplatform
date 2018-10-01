@@ -134,7 +134,7 @@ class LoginViewModel: NSObject {
                 if let error = error {
                     seal.reject(error)
                 } else {
-                    seal.fulfill()
+                    seal.fulfill(())
                 }
             }
             
@@ -234,7 +234,7 @@ class LoginViewModel: NSObject {
                 if let error = error {
                     seal.reject(error)
                 } else {
-                    seal.fulfill()
+                    seal.fulfill(())
                 }
             }
 

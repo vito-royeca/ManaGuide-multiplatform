@@ -72,7 +72,7 @@ class LatestCardsTableViewCell: UITableViewCell {
         _slideshowTimer = nil
     }
     
-    func showSlide() {
+    @objc func showSlide() {
         var index = carousel.currentItemIndex
         index += 1
         

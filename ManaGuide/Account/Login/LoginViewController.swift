@@ -277,7 +277,7 @@ class LoginViewController: BaseViewController {
                                                 message: message,
                                                 preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "OK",
-                                                style: UIAlertActionStyle.default,
+                                                style: UIAlertAction.Style.default,
                                                 handler: nil))
         self.present(alertController, animated: true, completion: nil)
     }

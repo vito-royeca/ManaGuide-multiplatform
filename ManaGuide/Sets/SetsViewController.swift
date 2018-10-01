@@ -78,7 +78,7 @@ class SetsViewController: BaseViewController {
     }
 
     // MARK: Custom methods
-    func updateDataDisplay(_ notification: Notification) {
+    @objc func updateDataDisplay(_ notification: Notification) {
         guard let userInfo = notification.userInfo as? [String: Any] else {
             return
         }
