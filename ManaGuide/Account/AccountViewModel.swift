@@ -11,6 +11,72 @@ import Firebase
 import ManaKit
 import PromiseKit
 
+enum AccountSection: Int {
+    case accountHeader
+    case favorites
+    case ratedCards
+    case decks
+    case lists
+    
+    var description : String {
+        switch self {
+        // Use Internationalization, as appropriate.
+        case .accountHeader: return ""
+        case .favorites: return "Favorites"
+        case .ratedCards: return "Rated Cards"
+        case .decks: return "Decks"
+        case .lists: return "Lists"
+        }
+    }
+    
+    var imageIcon : UIImage? {
+        switch self {
+        case .accountHeader:
+            return nil
+        case .favorites:
+            return UIImage(bgIcon: .FAHeart,
+                           orientation: UIImageOrientation.up,
+                           bgTextColor: LookAndFeel.GlobalTintColor,
+                           bgBackgroundColor: UIColor.clear,
+                           topIcon: .FAHeart,
+                           topTextColor: UIColor.clear,
+                           bgLarge: false,
+                           size: CGSize(width: 20, height: 20))
+        case .ratedCards:
+            return UIImage(bgIcon: .FAStar,
+                           orientation: UIImageOrientation.up,
+                           bgTextColor: LookAndFeel.GlobalTintColor,
+                           bgBackgroundColor: UIColor.clear,
+                           topIcon: .FAStar,
+                           topTextColor: UIColor.clear,
+                           bgLarge: false,
+                           size: CGSize(width: 20, height: 20))
+        case .decks:
+            return UIImage(bgIcon: .FAFile,
+                           orientation: UIImageOrientation.up,
+                           bgTextColor: LookAndFeel.GlobalTintColor,
+                           bgBackgroundColor: UIColor.clear,
+                           topIcon: .FAFile,
+                           topTextColor: UIColor.clear,
+                           bgLarge: false,
+                           size: CGSize(width: 20, height: 20))
+        case .lists:
+            return UIImage(bgIcon: .FAList,
+                           orientation: UIImageOrientation.up,
+                           bgTextColor: LookAndFeel.GlobalTintColor,
+                           bgBackgroundColor: UIColor.clear,
+                           topIcon: .FAList,
+                           topTextColor: UIColor.clear,
+                           bgLarge: false,
+                           size: CGSize(width: 20, height: 20))
+        }
+    }
+    
+    static var count: Int {
+        return 5
+    }
+}
+
 class AccountViewModel: NSObject {
     // MARK: Data monitors
     func saveUserMetadata() {

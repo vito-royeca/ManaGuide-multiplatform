@@ -12,50 +12,6 @@ import Firebase
 import ManaKit
 import SDWebImage
 
-enum AccountViewControllerSection: Int {
-    case accountHeader
-    case favorites
-    case ratedCards
-    
-    var description : String {
-        switch self {
-        // Use Internationalization, as appropriate.
-        case .accountHeader: return ""
-        case .favorites: return "Favorites"
-        case .ratedCards: return "Rated Cards"
-        }
-    }
-    
-    var imageIcon : UIImage? {
-        switch self {
-        case .accountHeader:
-            return nil
-        case .favorites:
-            return UIImage(bgIcon: .FAHeart,
-                           orientation: UIImageOrientation.up,
-                           bgTextColor: LookAndFeel.GlobalTintColor,
-                           bgBackgroundColor: UIColor.clear,
-                           topIcon: .FAHeart,
-                           topTextColor: UIColor.clear,
-                           bgLarge: false,
-                           size: CGSize(width: 20, height: 20))
-        case .ratedCards:
-            return UIImage(bgIcon: .FAStar,
-                           orientation: UIImageOrientation.up,
-                           bgTextColor: LookAndFeel.GlobalTintColor,
-                           bgBackgroundColor: UIColor.clear,
-                           topIcon: .FAStar,
-                           topTextColor: UIColor.clear,
-                           bgLarge: false,
-                           size: CGSize(width: 20, height: 20))
-        }
-    }
-    
-    static var count: Int {
-        return 3
-    }
-}
-
 class AccountViewController: BaseViewController {
 
     // MARK: Variables
@@ -138,112 +94,78 @@ class AccountViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension AccountViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var rows = 0
-        
-        switch section {
-        case AccountViewControllerSection.accountHeader.rawValue:
-            rows = 1
-        case AccountViewControllerSection.favorites.rawValue:
-            rows = 1
-        case AccountViewControllerSection.ratedCards.rawValue:
-            rows = 1
-        default:
-            ()
-        }
-        
-        return rows
+        return Auth.auth().currentUser != nil ? AccountSection.count : 1
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: UITableViewCell?
         
-        switch indexPath.section {
-        case AccountViewControllerSection.accountHeader.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "AccountCell") else {
-                return UITableViewCell(frame: CGRect.zero)
-            }
-            guard let imageView = c.viewWithTag(100) as? UIImageView,
-                let label = c.viewWithTag(200) as? UILabel else {
-                    return UITableViewCell(frame: CGRect.zero)
+        switch indexPath.row {
+        case AccountSection.accountHeader.rawValue:
+            guard let c = tableView.dequeueReusableCell(withIdentifier: AccountHeroTableViewCell.reuseIdentifier) as? AccountHeroTableViewCell else {
+                fatalError("\(AccountHeroTableViewCell.reuseIdentifier) not found")
             }
             
-            imageView.layer.cornerRadius = imageView.frame.height / 2
-            
-            if let user = Auth.auth().currentUser {
-                imageView.sd_setImage(with: user.photoURL, completed: {(image: UIImage?, error: Error?, cacheType: SDImageCacheType, imageURL: URL?) in
-                    if image == nil {
-                        imageView.image = UIImage(bgIcon: .FAUserCircle,
-                                                  orientation: UIImageOrientation.up,
-                                                  bgTextColor: UIColor.lightGray,
-                                                  bgBackgroundColor: UIColor.clear,
-                                                  topIcon: .FAUserCircle,
-                                                  topTextColor: UIColor.clear,
-                                                  bgLarge: true,
-                                                  size: CGSize(width: 60, height: 60))
-                    }
-                })
-                label.text = user.displayName
-            } else {
-                imageView.image = UIImage(bgIcon: .FAUserCircle,
-                                          orientation: UIImageOrientation.up,
-                                          bgTextColor: UIColor.lightGray,
-                                          bgBackgroundColor: UIColor.clear,
-                                          topIcon: .FAUserCircle,
-                                          topTextColor: UIColor.clear,
-                                          bgLarge: true,
-                                          size: CGSize(width: 60, height: 60))
-                label.text = "Not logged in"
-            }
-            
-            c.accessoryType = .none
+            c.user = Auth.auth().currentUser
             cell = c
 
-        case AccountViewControllerSection.favorites.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") else {
-                return UITableViewCell(frame: CGRect.zero)
-            }
-            guard let label = c.textLabel,
+        case AccountSection.favorites.rawValue:
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                let label = c.textLabel,
                 let imageView = c.imageView else {
-                return UITableViewCell(frame: CGRect.zero)
+                fatalError("BasicCell not found")
             }
-            
-            imageView.image = AccountViewControllerSection.favorites.imageIcon
-            label.text = AccountViewControllerSection.favorites.description
+            imageView.image = AccountSection.favorites.imageIcon
+            label.text = AccountSection.favorites.description
             
             c.accessoryType = .disclosureIndicator
             cell = c
 
-        case AccountViewControllerSection.ratedCards.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") else {
-                return UITableViewCell(frame: CGRect.zero)
-            }
-            guard let label = c.textLabel,
+        case AccountSection.ratedCards.rawValue:
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                let label = c.textLabel,
                 let imageView = c.imageView else {
-                return UITableViewCell(frame: CGRect.zero)
+                    fatalError("BasicCell not found")
             }
-            
-            imageView.image = AccountViewControllerSection.ratedCards.imageIcon
-            label.text = AccountViewControllerSection.ratedCards.description
+            imageView.image = AccountSection.ratedCards.imageIcon
+            label.text = AccountSection.ratedCards.description
             
             c.accessoryType = .disclosureIndicator
             cell = c
 
+        case AccountSection.decks.rawValue:
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                let label = c.textLabel,
+                let imageView = c.imageView else {
+                    fatalError("BasicCell not found")
+            }
+            imageView.image = AccountSection.decks.imageIcon
+            label.text = AccountSection.decks.description
+            
+            c.accessoryType = .disclosureIndicator
+            cell = c
+        
+        case AccountSection.lists.rawValue:
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                let label = c.textLabel,
+                let imageView = c.imageView else {
+                    fatalError("BasicCell not found")
+            }
+            imageView.image = AccountSection.lists.imageIcon
+            label.text = AccountSection.lists.description
+            
+            c.accessoryType = .disclosureIndicator
+            cell = c
+            
         default:
             ()
         }
         
         return cell!
-    }
-    
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        var sections = 1
-        
-        if let _ = Auth.auth().currentUser {
-            sections = AccountViewControllerSection.count
-        }
-        
-        return sections
     }
 }
 
@@ -252,14 +174,11 @@ extension AccountViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         var height = CGFloat(0)
         
-        switch indexPath.section {
-        case AccountViewControllerSection.accountHeader.rawValue:
+        switch indexPath.row {
+        case AccountSection.accountHeader.rawValue:
             height = 88
-        case AccountViewControllerSection.favorites.rawValue,
-             AccountViewControllerSection.ratedCards.rawValue:
-            height = UITableViewAutomaticDimension
         default:
-            ()
+            height = UITableViewAutomaticDimension
         }
         
         return height
@@ -268,23 +187,19 @@ extension AccountViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         var path: IndexPath?
         
-        switch indexPath.section {
-        case AccountViewControllerSection.accountHeader.rawValue:
+        switch indexPath.row {
+        case AccountSection.accountHeader.rawValue:
             ()
-        case AccountViewControllerSection.favorites.rawValue:
-            path = indexPath
-        case AccountViewControllerSection.ratedCards.rawValue:
-            path = indexPath
         default:
-            ()
+            path = indexPath
         }
         
         return path
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.section {
-        case AccountViewControllerSection.favorites.rawValue:
+        switch indexPath.row {
+        case AccountSection.favorites.rawValue:
             guard let user = viewModel.getLoggedInUser() else {
                 fatalError("No logged in User")
             }
@@ -292,11 +207,7 @@ extension AccountViewController : UITableViewDelegate {
             
             if let set = user.favorites,
                 let favorites = set.allObjects as? [CMCard] {
-                
                 request.predicate = NSPredicate(format: "id IN %@", favorites.map({ $0.id }))
-                request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                           NSSortDescriptor(key: "name", ascending: true),
-                                           NSSortDescriptor(key: "set.releaseDate", ascending: true)]
             } else {
                 // fetch non-existent cards
                 request.predicate = NSPredicate(format: "id = %@", "-1")
@@ -304,7 +215,7 @@ extension AccountViewController : UITableViewDelegate {
             
             performSegue(withIdentifier: "showSearch", sender: ["title": "Favorites",
                                                                 "request": request])
-        case AccountViewControllerSection.ratedCards.rawValue:
+        case AccountSection.ratedCards.rawValue:
             guard let user = viewModel.getLoggedInUser() else {
                 fatalError("No logged in User")
             }
@@ -312,17 +223,25 @@ extension AccountViewController : UITableViewDelegate {
             
             if let set = user.ratings,
                 let ratings = set.allObjects as? [CMCardRating] {
-                
                 request.predicate = NSPredicate(format: "id IN %@", ratings.map({ $0.card! }).map( { $0.id } ))
-                request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                           NSSortDescriptor(key: "name", ascending: true),
-                                           NSSortDescriptor(key: "set.releaseDate", ascending: true)]
             } else {
                 // fetch non-existent cards
                 request.predicate = NSPredicate(format: "id = %@", "-1")
             }
             performSegue(withIdentifier: "showSearch", sender: ["title": "Rated Cards",
                                                                 "request": request])
+        case AccountSection.decks.rawValue:
+            guard let user = viewModel.getLoggedInUser() else {
+                fatalError("No logged in User")
+            }
+            
+            performSegue(withIdentifier: "showDecks", sender: nil)
+        case AccountSection.lists.rawValue:
+            guard let user = viewModel.getLoggedInUser() else {
+                fatalError("No logged in User")
+            }
+            
+            performSegue(withIdentifier: "showLists", sender: nil)
         default:
             ()
         }
