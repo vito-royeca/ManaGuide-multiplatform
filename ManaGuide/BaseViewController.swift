@@ -53,7 +53,7 @@ class BaseViewController: UIViewController {
                 }
                 if settingsView == nil {
                     settingsView = SettingsViewController()
-                    navigationVC.addChild(settingsView!)
+                    navigationVC.addChildViewController(settingsView!)
                 }
                 
                 settingsView!.showCreditsFooter = false

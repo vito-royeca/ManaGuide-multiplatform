@@ -27,7 +27,7 @@ class LatestCardsTableViewCell: UITableViewCell {
     private var _slideshowTimer: Timer?
     private var _latestCardsTimer: Timer?
     
-    // MARK: Overrides
+    @objc    // MARK: Overrides
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

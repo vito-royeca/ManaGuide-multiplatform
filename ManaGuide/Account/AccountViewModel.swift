@@ -52,11 +52,11 @@ enum AccountSection: Int {
                            bgLarge: false,
                            size: CGSize(width: 20, height: 20))
         case .decks:
-            return UIImage(bgIcon: .FAFile,
+            return UIImage(bgIcon: .FADropbox,
                            orientation: UIImage.Orientation.up,
                            bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
-                           topIcon: .FAFile,
+                           topIcon: .FADropbox,
                            topTextColor: UIColor.clear,
                            bgLarge: false,
                            size: CGSize(width: 20, height: 20))

@@ -58,7 +58,7 @@ class AccountViewController: BaseViewController {
             guard let dest = segue.destination as? UINavigationController else {
                 return
             }
-            guard let loginVC = dest.children.first as? LoginViewController else {
+            guard let loginVC = dest.childViewControllers.first as? LoginViewController else {
                 return
             }
             
@@ -178,7 +178,7 @@ extension AccountViewController : UITableViewDelegate {
         case AccountSection.accountHeader.rawValue:
             height = 88
         default:
-            height = UITableView.automaticDimension
+            height = UITableViewAutomaticDimension
         }
         
         return height

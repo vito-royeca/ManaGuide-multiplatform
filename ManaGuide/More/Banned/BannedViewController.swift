@@ -45,7 +45,7 @@ class BannedViewController: BaseViewController {
                                                   name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                   object:nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.updateData(_:)),
+                                               selector: #selector(updateData(_:)),
                                                name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                object: nil)
         
@@ -101,7 +101,7 @@ class BannedViewController: BaseViewController {
             
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
-                let dest = nav.children.first as? CardViewController,
+                let dest = nav.childViewControllers.first as? CardViewController,
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
                 let cardIDs = dict["cardIDs"] as? [String] else {
@@ -169,7 +169,7 @@ extension BannedViewController : UITableViewDataSource {
                 return UITableViewCell(frame: CGRect.zero)
             }
             
-            collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "Header")
+            collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "Header")
             collectionView.dataSource = self
             collectionView.delegate = self
             
@@ -291,9 +291,9 @@ extension BannedViewController : UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let v = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier:"Header", for: indexPath)
+        let v = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier:"Header", for: indexPath)
         
-        if kind == UICollectionView.elementKindSectionHeader {
+        if kind == UICollectionElementKindSectionHeader {
             v.backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1)
             
             if v.subviews.count == 0 {

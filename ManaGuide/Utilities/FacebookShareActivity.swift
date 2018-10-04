@@ -22,7 +22,7 @@ class FacebookShareActivity: UIActivity {
         return dialog
     }()
     
-    open static var category: UIActivity.Category?
+    public static var category: UIActivity.Category?
     
     init(parent: UIViewController?) {
         super.init()

@@ -198,9 +198,9 @@ class ComprehensiveRulesViewModel: NSObject {
     
     func attributedTextFor(_ rule: CMRule, withText text: String?) -> NSAttributedString {
         var attributedString = NSMutableAttributedString(string: "")
-        let bigFontAttributes = [convertFromNSAttributedStringKey(NSAttributedString.Key.font): UIFont.systemFont(ofSize: 17)]
-        let bigBoldFontAttributes = [convertFromNSAttributedStringKey(NSAttributedString.Key.font): UIFont.boldSystemFont(ofSize: 17)]
-        let smallFontAttributes = [convertFromNSAttributedStringKey(NSAttributedString.Key.font): UIFont.systemFont(ofSize: 17)]
+        let bigFontAttributes = [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]
+        let bigBoldFontAttributes = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 17)]
+        let smallFontAttributes = [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]
         
         guard let children = rule.children else {
             return attributedString
@@ -218,7 +218,7 @@ class ComprehensiveRulesViewModel: NSObject {
         } else {
             if let _ = rule.parent {
                 if let term = rule.term {
-                    let tmp = NSMutableAttributedString(string: term, attributes: convertToOptionalNSAttributedStringKeyDictionary(bigBoldFontAttributes))
+                    let tmp = NSMutableAttributedString(string: term, attributes: bigBoldFontAttributes)
                     
                     if let text = text {
                         if text.count > 0 {
@@ -258,14 +258,14 @@ class ComprehensiveRulesViewModel: NSObject {
         var dirty = false
         
         if let term = rule.term {
-            attributedString.append(NSAttributedString(string: term, attributes: convertToOptionalNSAttributedStringKeyDictionary(withAttributes)))
+            attributedString.append(NSAttributedString(string: term, attributes: withAttributes))
             dirty = true
         }
         if let definition = rule.definition {
             if dirty {
-                attributedString.append(NSAttributedString(string: ". ", attributes: convertToOptionalNSAttributedStringKeyDictionary(withAttributes)))
+                attributedString.append(NSAttributedString(string: ". ", attributes: withAttributes))
             }
-            attributedString.append(NSAttributedString(string: definition, attributes: convertToOptionalNSAttributedStringKeyDictionary(withAttributes)))
+            attributedString.append(NSAttributedString(string: definition, attributes: withAttributes))
         }
         
         return attributedString
@@ -276,7 +276,7 @@ class ComprehensiveRulesViewModel: NSObject {
         for (k,v) in withAttributes {
             newAttributes[k] = v
         }
-        newAttributes[convertFromNSAttributedStringKey(NSAttributedString.Key.backgroundColor)] = UIColor.yellow
+        newAttributes[NSBackgroundColorAttributeName] = UIColor.yellow
         
         let string = attributedString.mutableString
         
@@ -291,7 +291,7 @@ class ComprehensiveRulesViewModel: NSObject {
                 // found an occurrence of the substring! do stuff here
                 let origText = string.substring(with: foundRange)
                 let highlight = NSAttributedString(string: origText,
-                                                   attributes: convertToOptionalNSAttributedStringKeyDictionary(newAttributes))
+                                                   attributes: newAttributes)
                 
                 attributedString.replaceCharacters(in: foundRange, with: highlight)
                 searchRange.location = foundRange.location + 1 //foundRange.length
@@ -306,16 +306,4 @@ class ComprehensiveRulesViewModel: NSObject {
 // MARK: NSFetchedResultsControllerDelegate
 extension ComprehensiveRulesViewModel : NSFetchedResultsControllerDelegate {
     
-}
-
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
-	return input.rawValue
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
-	guard let input = input else { return nil }
-	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
 }

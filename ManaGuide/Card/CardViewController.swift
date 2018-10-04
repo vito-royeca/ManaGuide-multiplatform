@@ -228,7 +228,7 @@ class CardViewController: BaseViewController {
             
         } else if segue.identifier == "showLogin" {
             guard let dest = segue.destination as? UINavigationController,
-                let loginVC = dest.children.first as? LoginViewController else {
+                let loginVC = dest.childViewControllers.first as? LoginViewController else {
                 return
             }
             loginVC.delegate = self
@@ -281,7 +281,8 @@ class CardViewController: BaseViewController {
         let activityVC = UIActivityViewController(activityItems: [provider],
                                                   applicationActivities: [FacebookShareActivity(parent: self)])
 
-        var excludedActivityTypes: [UIActivity.ActivityType] = [.addToReadingList, .openInIBooks, .postToFacebook, .postToTwitter]
+        var excludedActivityTypes: [UIActivityType] = [.addToReadingList, .openInIBooks, .postToFacebook, .postToTwitter]
+
         if #available(iOS 11.0, *) {
             excludedActivityTypes.append(.markupAsPDF)
         }
@@ -410,7 +411,7 @@ class CardViewController: BaseViewController {
         let characterIndex = layoutManager.characterIndex(for: location, in: textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
         
         if characterIndex < storage.length {
-            guard let link = attributedText.attribute(NSAttributedString.Key.link, at: characterIndex, effectiveRange: nil) else {
+            guard let link = attributedText.attribute(NSLinkAttributeName, at: characterIndex, effectiveRange: nil) else {
                 return
             }
             guard let url = URL(string: "\(link)") else {
@@ -603,13 +604,13 @@ extension CardViewController : UITableViewDataSource {
                     return UITableViewCell(frame: CGRect.zero)
                 }
                 
-                let attributes = [convertFromNSAttributedStringKey(NSAttributedString.Key.font): UIFont(name: "Keyrune", size: 17)!,
-                                  convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): keyruneColor]
+                let attributes = [NSFontAttributeName: UIFont(name: "Keyrune", size: 17)!,
+                                  NSForegroundColorAttributeName: keyruneColor]
                 let attributedString = NSMutableAttributedString(string: keyruneUnicode,
-                                                                 attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes))
+                                                                 attributes: attributes)
                 
                 attributedString.append(NSMutableAttributedString(string: " \(setName)",
-                    attributes: convertToOptionalNSAttributedStringKeyDictionary([convertFromNSAttributedStringKey(NSAttributedString.Key.font): UIFont.systemFont(ofSize: 17)])))
+                    attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 17)]))
                 
                 label.attributedText = attributedString
                 label.adjustsFontSizeToFitWidth = true
@@ -885,7 +886,7 @@ extension CardViewController : UITableViewDelegate {
                  CardDetailsSection.variations.rawValue:
                 height = CGFloat(88)
             default:
-                height = UITableView.automaticDimension
+                height = UITableViewAutomaticDimension
             }
             
         case .store:
@@ -895,12 +896,12 @@ extension CardViewController : UITableViewDelegate {
             let count = suppliers.allObjects.count
             
             if count == 0 {
-                height = UITableView.automaticDimension
+                height = UITableViewAutomaticDimension
             } else {
                 if indexPath.row <= count - 1 {
                     height = kStoreTableViewCellHeight
                 } else {
-                    height = UITableView.automaticDimension
+                    height = UITableViewAutomaticDimension
                 }
             }
         }
@@ -1194,13 +1195,3 @@ extension CardViewController : CardActionsTableViewCellDelegate {
     }
 }
 
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
-	return input.rawValue
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
-	guard let input = input else { return nil }
-	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
-}
