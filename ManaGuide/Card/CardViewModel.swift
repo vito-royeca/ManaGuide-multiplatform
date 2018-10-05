@@ -668,17 +668,14 @@ class CardViewModel: NSObject {
         dict["Name"] = card.name
         dict["CMC"] = card.cmc
         dict["ManaCost"] = card.manaCost
-        if let url = ManaKit.sharedInstance.imageURL(ofCard: card, imageType: .normal) {
-            dict["ImageURL"] = url.absoluteString
-        } else {
-            dict["ImageURL"] = ""
-        }
         
-        if let url = ManaKit.sharedInstance.imageURL(ofCard: card, imageType: .artCrop) {
-            dict["CropURL"] = url.absoluteString
-        } else {
-            dict["CropURL"] = ""
+        if let imageURIs = card.imageURIs {
+            if let d = NSKeyedUnarchiver.unarchiveObject(with: imageURIs) as? [String: String] {
+                dict["image_uris"] = d
+            }
         }
+        dict["ImageURL"] = nil
+        dict["CropURL"] = nil
         
         var cardType: CMCardType?
         if let types = card.types_ {
