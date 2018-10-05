@@ -71,7 +71,9 @@ class AccountViewController: BaseViewController {
                 return
             }
             
-            dest.viewModel = SearchViewModel(withRequest: request, andTitle: dict["title"] as? String)
+            dest.viewModel = SearchViewModel(withRequest: request,
+                                             andTitle: dict["title"] as? String)
+            dest.delegate = self
         }
     }
     
@@ -88,6 +90,76 @@ class AccountViewController: BaseViewController {
             loginButton.title = "Login"
         }
         tableView.reloadData()
+    }
+    
+    func favoritesRequest() -> NSFetchRequest<CMCard> {
+        guard let user = viewModel.getLoggedInUser() else {
+            fatalError("No logged in User")
+        }
+        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+        
+        if let favorites = user.favorites,
+            let cards = favorites.allObjects as? [CMCard] {
+            request.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
+        } else {
+            // fetch non-existent cards
+            request.predicate = NSPredicate(format: "id = %@", "-1")
+        }
+        
+        return request
+    }
+    
+    func ratedCardsRequest() -> NSFetchRequest<CMCard> {
+        guard let user = viewModel.getLoggedInUser() else {
+            fatalError("No logged in User")
+        }
+        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+        
+        if let ratings = user.ratings,
+            let cardRatings = ratings.allObjects as? [CMCardRating] {
+            request.predicate = NSPredicate(format: "id IN %@", cardRatings.map({ $0.card! }).map( { $0.id } ))
+        } else {
+            // fetch non-existent cards
+            request.predicate = NSPredicate(format: "id = %@", "-1")
+        }
+        
+        return request
+    }
+    
+    // TODO: fix this
+    func deckRequest() -> NSFetchRequest<CMCard> {
+        guard let user = viewModel.getLoggedInUser() else {
+            fatalError("No logged in User")
+        }
+        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+        
+        if let favorites = user.favorites,
+            let cards = favorites.allObjects as? [CMCard] {
+            request.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
+        } else {
+            // fetch non-existent cards
+            request.predicate = NSPredicate(format: "id = %@", "-1")
+        }
+        
+        return request
+    }
+    
+    // TODO: fix this
+    func listRequest() -> NSFetchRequest<CMCard> {
+        guard let user = viewModel.getLoggedInUser() else {
+            fatalError("No logged in User")
+        }
+        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+        
+        if let favorites = user.favorites,
+            let cards = favorites.allObjects as? [CMCard] {
+            request.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
+        } else {
+            // fetch non-existent cards
+            request.predicate = NSPredicate(format: "id = %@", "-1")
+        }
+        
+        return request
     }
 }
 
@@ -200,48 +272,23 @@ extension AccountViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
         case AccountSection.favorites.rawValue:
-            guard let user = viewModel.getLoggedInUser() else {
-                fatalError("No logged in User")
-            }
-            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-            
-            if let set = user.favorites,
-                let favorites = set.allObjects as? [CMCard] {
-                request.predicate = NSPredicate(format: "id IN %@", favorites.map({ $0.id }))
-            } else {
-                // fetch non-existent cards
-                request.predicate = NSPredicate(format: "id = %@", "-1")
-            }
-            
-            performSegue(withIdentifier: "showSearch", sender: ["title": "Favorites",
-                                                                "request": request])
+            viewModel.accountSection = .favorites
+            performSegue(withIdentifier: "showSearch",
+                         sender: ["title": "Favorites",
+                                  "request": favoritesRequest()])
         case AccountSection.ratedCards.rawValue:
-            guard let user = viewModel.getLoggedInUser() else {
-                fatalError("No logged in User")
-            }
-            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-            
-            if let set = user.ratings,
-                let ratings = set.allObjects as? [CMCardRating] {
-                request.predicate = NSPredicate(format: "id IN %@", ratings.map({ $0.card! }).map( { $0.id } ))
-            } else {
-                // fetch non-existent cards
-                request.predicate = NSPredicate(format: "id = %@", "-1")
-            }
-            performSegue(withIdentifier: "showSearch", sender: ["title": "Rated Cards",
-                                                                "request": request])
+            viewModel.accountSection = .ratedCards
+            performSegue(withIdentifier: "showSearch",
+                         sender: ["title": "Rated Cards",
+                                  "request": ratedCardsRequest()])
         case AccountSection.decks.rawValue:
-            guard let user = viewModel.getLoggedInUser() else {
-                fatalError("No logged in User")
-            }
-            
-            performSegue(withIdentifier: "showDecks", sender: nil)
+            viewModel.accountSection = .decks
+            performSegue(withIdentifier: "showDecks",
+                         sender: ["title": "Decks"])
         case AccountSection.lists.rawValue:
-            guard let user = viewModel.getLoggedInUser() else {
-                fatalError("No logged in User")
-            }
-            
-            performSegue(withIdentifier: "showLists", sender: nil)
+            viewModel.accountSection = .lists
+            performSegue(withIdentifier: "showLists",
+                         sender: ["title": "Lists"])
         default:
             ()
         }
@@ -259,3 +306,22 @@ extension AccountViewController : LoginViewControllerDelegate {
         }
     }
 }
+
+// MARK: SearchViewControllerDelegate
+extension AccountViewController: SearchViewControllerDelegate {
+    func reloadViewModel() -> SearchViewModel {
+        switch viewModel.accountSection {
+        case .favorites:
+            return SearchViewModel(withRequest: favoritesRequest(),
+                                   andTitle: "Favorites")
+        case .ratedCards:
+            return SearchViewModel(withRequest: ratedCardsRequest(),
+                                   andTitle: "Rated Cards")
+        default:
+            return SearchViewModel(withRequest: favoritesRequest(),
+                                   andTitle: "Favorites")
+        }
+    }
+}
+
+

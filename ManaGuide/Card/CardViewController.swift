@@ -104,8 +104,12 @@ class CardViewController: BaseViewController {
         contentSegmentedControl.setFAIcon(icon: .FAImage, forSegmentAtIndex: 0)
         contentSegmentedControl.setFAIcon(icon: .FAEye, forSegmentAtIndex: 1)
         contentSegmentedControl.setFAIcon(icon: .FAShoppingCart, forSegmentAtIndex: 2)
-        tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"), forCellReuseIdentifier: "CardCell")
-        tableView.register(UINib(nibName: "StoreTableViewCell", bundle: nil), forCellReuseIdentifier: "StoreCell")
+        
+        tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"),
+                           forCellReuseIdentifier: "CardCell")
+        tableView.register(UINib(nibName: "StoreTableViewCell",
+                                 bundle: nil),
+                           forCellReuseIdentifier: StoreTableViewCell.reuseIdentifier)
 
         let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
         title = card.name

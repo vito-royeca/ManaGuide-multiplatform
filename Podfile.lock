@@ -163,7 +163,7 @@ PODS:
   - SDWebImage (4.4.2):
     - SDWebImage/Core (= 4.4.2)
   - SDWebImage/Core (4.4.2)
-  - SimulatorStatusMagic (2.2)
+  - SimulatorStatusMagic (2.3)
   - SSZipArchive (2.1.4)
   - Sync (5.0.1)
 
@@ -307,10 +307,10 @@ SPEC CHECKSUMS:
   pop: 82ca6b068ce9278fd350fd9dd09482a0ce9492e6
   PromiseKit: 54ed7e56768b7e8d29072afe9384101c64a2b7ff
   SDWebImage: 624d6e296c69b244bcede364c72ae0430ac14681
-  SimulatorStatusMagic: 0389a805fa8bd001e2977c4046730bdbd6642861
+  SimulatorStatusMagic: 631fe6e4195a8a8d587ad8744af9015126526cc2
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Sync: 5281923838f0f60e1d34063ac9ab692b6e012038
 
-PODFILE CHECKSUM: 73f8e69899af6191cf581f95f2eb5e1fe569b5f9
+PODFILE CHECKSUM: 266c0c7348d1999426524475e1411121384ab5e6
 
 COCOAPODS: 1.5.3

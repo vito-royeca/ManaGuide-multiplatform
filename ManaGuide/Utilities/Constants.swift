@@ -11,7 +11,11 @@ import UIKit
 
 // Look and feel
 enum LookAndFeel {
+    // #F92D51
     static let GlobalTintColor = UIColor(red:0.98, green:0.18, blue:0.32, alpha:1.0)
+
+    static let EmptySearchCardName = "Frantic Search"
+    static let EmptySearchSetCode  = "VMA"
 }
 
 // TCGPlayer
@@ -36,6 +40,8 @@ enum NotificationKeys {
     static let FavoriteToggled    = "FavoriteToggled"
     static let CardRatingUpdated  = "CardRatingUpdated"
     static let CardViewsUpdated   = "CardViewsUpdated"
+    static let DeckUpdated        = "DeckUpdated"
+    static let ListUpdated        = "ListUpdated"
     static let UserLoggedIn       = "UserLoggedIn"
 }
 

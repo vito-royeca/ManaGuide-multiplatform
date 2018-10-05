@@ -124,6 +124,47 @@
 		118281B120B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
 		118281B220B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
 		118281B320B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
+		11853EB621669AD50055077B /* EmptyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EB421669AD50055077B /* EmptyTableViewCell.swift */; };
+		11853EB721669AD50055077B /* EmptyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EB421669AD50055077B /* EmptyTableViewCell.swift */; };
+		11853EB821669AD50055077B /* EmptyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EB421669AD50055077B /* EmptyTableViewCell.swift */; };
+		11853EB921669AD50055077B /* EmptyTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EB521669AD50055077B /* EmptyTableViewCell.xib */; };
+		11853EBA21669AD50055077B /* EmptyTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EB521669AD50055077B /* EmptyTableViewCell.xib */; };
+		11853EBB21669AD50055077B /* EmptyTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EB521669AD50055077B /* EmptyTableViewCell.xib */; };
+		11853EBE2166A85F0055077B /* EmptyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EBC2166A85F0055077B /* EmptyCollectionViewCell.swift */; };
+		11853EBF2166A85F0055077B /* EmptyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EBC2166A85F0055077B /* EmptyCollectionViewCell.swift */; };
+		11853EC02166A85F0055077B /* EmptyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EBC2166A85F0055077B /* EmptyCollectionViewCell.swift */; };
+		11853EC12166A85F0055077B /* EmptyCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EBD2166A85F0055077B /* EmptyCollectionViewCell.xib */; };
+		11853EC22166A85F0055077B /* EmptyCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EBD2166A85F0055077B /* EmptyCollectionViewCell.xib */; };
+		11853EC32166A85F0055077B /* EmptyCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EBD2166A85F0055077B /* EmptyCollectionViewCell.xib */; };
+		11853EC82166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EC62166ABF70055077B /* CardImageCollectionViewCell.swift */; };
+		11853EC92166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EC62166ABF70055077B /* CardImageCollectionViewCell.swift */; };
+		11853ECA2166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EC62166ABF70055077B /* CardImageCollectionViewCell.swift */; };
+		11853ECB2166ABF70055077B /* CardImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EC72166ABF70055077B /* CardImageCollectionViewCell.xib */; };
+		11853ECC2166ABF70055077B /* CardImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EC72166ABF70055077B /* CardImageCollectionViewCell.xib */; };
+		11853ECD2166ABF80055077B /* CardImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EC72166ABF70055077B /* CardImageCollectionViewCell.xib */; };
+		11853EE02166B0D40055077B /* CardGridTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EDE2166B0D40055077B /* CardGridTableViewCell.swift */; };
+		11853EE12166B0D40055077B /* CardGridTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EDE2166B0D40055077B /* CardGridTableViewCell.swift */; };
+		11853EE22166B0D40055077B /* CardGridTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EDE2166B0D40055077B /* CardGridTableViewCell.swift */; };
+		11853EE32166B0D40055077B /* CardGridTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EDF2166B0D40055077B /* CardGridTableViewCell.xib */; };
+		11853EE42166B0D40055077B /* CardGridTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EDF2166B0D40055077B /* CardGridTableViewCell.xib */; };
+		11853EE52166B0D40055077B /* CardGridTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EDF2166B0D40055077B /* CardGridTableViewCell.xib */; };
+		11853EE62166D4990055077B /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D874D9214833DC007F90AE /* LoginViewModel.swift */; };
+		11853EE72166D49A0055077B /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D874D9214833DC007F90AE /* LoginViewModel.swift */; };
+		11853EE82166D5A20055077B /* FeaturedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB5291F20891D00086841 /* FeaturedViewController.swift */; };
+		11853EE92166D5AA0055077B /* SetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7561F223607004EF296 /* SetsViewController.swift */; };
+		11853EEA2166D5B40055077B /* BrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E437481F2869EB00459AD4 /* BrowserTableViewCell.swift */; };
+		11853EEB2166D5B80055077B /* SetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7621F224198004EF296 /* SetViewController.swift */; };
+		11853EEC2166D5DF0055077B /* SearchRequestGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3D020F786E00023423C /* SearchRequestGenerator.swift */; };
+		11853EED2166D5E30055077B /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB52C1F20892B00086841 /* SearchViewController.swift */; };
+		11853EEE2166D6040055077B /* ArtistsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D5A6B20AF57590046285B /* ArtistsViewController.swift */; };
+		11853EEF2166D60F0055077B /* BannedListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD751F377F58006CC433 /* BannedListViewController.swift */; };
+		11853EF02166D6160055077B /* ComprehensiveRulesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */; };
+		11853EF12166D61C0055077B /* MoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165CD721F377395006CC433 /* MoreViewController.swift */; };
+		11853EF22166D6260055077B /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B2AA321F29DE490067E833 /* CardViewController.swift */; };
+		11853EF32166D62C0055077B /* StoreTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C7B45320D6A7E2009D63F4 /* StoreTableViewCell.swift */; };
+		11853EF42166D63F0055077B /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1147B7591F22379F004EF296 /* BaseViewController.swift */; };
+		11853EF52166D6540055077B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 110BB4FD1F207C6400086841 /* Main.storyboard */; };
+		11853EF62166D6550055077B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 110BB4FD1F207C6400086841 /* Main.storyboard */; };
 		118FDC6F20D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118FDC6E20D50499002FA5E8 /* CardActivityItemProvider.swift */; };
 		118FDC7020D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118FDC6E20D50499002FA5E8 /* CardActivityItemProvider.swift */; };
 		118FDC7120D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118FDC6E20D50499002FA5E8 /* CardActivityItemProvider.swift */; };
@@ -277,6 +318,14 @@
 		11663B132159C5AC00B095C2 /* SetsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetsTableViewCell.swift; sourceTree = "<group>"; };
 		1168F7512155AC6E0059C9E0 /* CardActionsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardActionsTableViewCell.swift; sourceTree = "<group>"; };
 		118281B020B67FA500865172 /* AccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewController.swift; sourceTree = "<group>"; };
+		11853EB421669AD50055077B /* EmptyTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyTableViewCell.swift; sourceTree = "<group>"; };
+		11853EB521669AD50055077B /* EmptyTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyTableViewCell.xib; sourceTree = "<group>"; };
+		11853EBC2166A85F0055077B /* EmptyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCollectionViewCell.swift; sourceTree = "<group>"; };
+		11853EBD2166A85F0055077B /* EmptyCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyCollectionViewCell.xib; sourceTree = "<group>"; };
+		11853EC62166ABF70055077B /* CardImageCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardImageCollectionViewCell.swift; sourceTree = "<group>"; };
+		11853EC72166ABF70055077B /* CardImageCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardImageCollectionViewCell.xib; sourceTree = "<group>"; };
+		11853EDE2166B0D40055077B /* CardGridTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardGridTableViewCell.swift; sourceTree = "<group>"; };
+		11853EDF2166B0D40055077B /* CardGridTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardGridTableViewCell.xib; sourceTree = "<group>"; };
 		118FDC6E20D50499002FA5E8 /* CardActivityItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardActivityItemProvider.swift; sourceTree = "<group>"; };
 		118FDC7220D51044002FA5E8 /* FacebookShareActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacebookShareActivity.swift; sourceTree = "<group>"; };
 		118FDC7620D515E5002FA5E8 /* ShareActivity.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ShareActivity.xcassets; sourceTree = "<group>"; };
@@ -404,9 +453,9 @@
 				113661581F2F912500DCBB41 /* data */,
 				1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */,
 				110BB5051F207C6400086841 /* Info.plist */,
-				1140F0CA1F42CA150023E107 /* Model */,
 				1147B7681F226143004EF296 /* Settings.bundle */,
-				110BB5271F2084D600086841 /* View */,
+				11853EC52166A8B10055077B /* Models */,
+				11853EC42166A8890055077B /* Views */,
 			);
 			path = ManaGuide;
 			sourceTree = "<group>";
@@ -428,23 +477,6 @@
 				110BB51B1F207C6400086841 /* Info.plist */,
 			);
 			path = ManaGuideUITests;
-			sourceTree = "<group>";
-		};
-		110BB5271F2084D600086841 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				11CEE05A20D0012300D72186 /* Launch Screen.storyboard */,
-				110BB4FD1F207C6400086841 /* Main.storyboard */,
-			);
-			name = View;
-			sourceTree = "<group>";
-		};
-		1140F0CA1F42CA150023E107 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				1140F0CB1F42CA500023E107 /* FCCard.swift */,
-			);
-			name = Model;
 			sourceTree = "<group>";
 		};
 		114C1D472160A3E600825DD2 /* Artists */ = {
@@ -508,6 +540,27 @@
 				114C1D7E2161D8E600825DD2 /* ListViewModel.swift */,
 			);
 			path = List;
+			sourceTree = "<group>";
+		};
+		11853EC42166A8890055077B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				11853EBC2166A85F0055077B /* EmptyCollectionViewCell.swift */,
+				11853EBD2166A85F0055077B /* EmptyCollectionViewCell.xib */,
+				11853EB421669AD50055077B /* EmptyTableViewCell.swift */,
+				11853EB521669AD50055077B /* EmptyTableViewCell.xib */,
+				11CEE05A20D0012300D72186 /* Launch Screen.storyboard */,
+				110BB4FD1F207C6400086841 /* Main.storyboard */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		11853EC52166A8B10055077B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1140F0CB1F42CA500023E107 /* FCCard.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		11932B7D2158558700DC3D44 /* Set */ = {
@@ -594,6 +647,10 @@
 		11D55BC5213253A4002F8F49 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				11853EDE2166B0D40055077B /* CardGridTableViewCell.swift */,
+				11853EDF2166B0D40055077B /* CardGridTableViewCell.xib */,
+				11853EC62166ABF70055077B /* CardImageCollectionViewCell.swift */,
+				11853EC72166ABF70055077B /* CardImageCollectionViewCell.xib */,
 				1138A3D020F786E00023423C /* SearchRequestGenerator.swift */,
 				110BB52C1F20892B00086841 /* SearchViewController.swift */,
 				114C1D432160849B00825DD2 /* SearchViewModel.swift */,
@@ -815,12 +872,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11853ECB2166ABF70055077B /* CardImageCollectionViewCell.xib in Resources */,
 				110BB5011F207C6400086841 /* Assets.xcassets in Resources */,
+				11853EB921669AD50055077B /* EmptyTableViewCell.xib in Resources */,
+				11853EC12166A85F0055077B /* EmptyCollectionViewCell.xib in Resources */,
 				11CEE05B20D0012300D72186 /* Launch Screen.storyboard in Resources */,
 				11C7B45820D6A7E2009D63F4 /* StoreTableViewCell.xib in Resources */,
 				110BB4FF1F207C6400086841 /* Main.storyboard in Resources */,
 				118FDC7720D515E5002FA5E8 /* ShareActivity.xcassets in Resources */,
 				11447EB220D1764000DFF5C7 /* HeroCardView.xib in Resources */,
+				11853EE32166B0D40055077B /* CardGridTableViewCell.xib in Resources */,
 				1147B7691F226143004EF296 /* Settings.bundle in Resources */,
 				1140F0C71F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
 				113661591F2F912500DCBB41 /* data in Resources */,
@@ -831,12 +892,17 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11853ECC2166ABF70055077B /* CardImageCollectionViewCell.xib in Resources */,
+				11853EBA21669AD50055077B /* EmptyTableViewCell.xib in Resources */,
 				11447EB320D1764000DFF5C7 /* HeroCardView.xib in Resources */,
+				11853EC22166A85F0055077B /* EmptyCollectionViewCell.xib in Resources */,
 				11CEE05C20D0012300D72186 /* Launch Screen.storyboard in Resources */,
+				11853EF52166D6540055077B /* Main.storyboard in Resources */,
 				11CEE05820CFE96100D72186 /* Assets.xcassets in Resources */,
 				1140F0C81F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
 				118FDC7820D515E5002FA5E8 /* ShareActivity.xcassets in Resources */,
 				11C7B45920D6A7E2009D63F4 /* StoreTableViewCell.xib in Resources */,
+				11853EE42166B0D40055077B /* CardGridTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -844,7 +910,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11853ECD2166ABF80055077B /* CardImageCollectionViewCell.xib in Resources */,
+				11853EC32166A85F0055077B /* EmptyCollectionViewCell.xib in Resources */,
 				11447EB420D1764000DFF5C7 /* HeroCardView.xib in Resources */,
+				11853EF62166D6550055077B /* Main.storyboard in Resources */,
+				11853EE52166B0D40055077B /* CardGridTableViewCell.xib in Resources */,
+				11853EBB21669AD50055077B /* EmptyTableViewCell.xib in Resources */,
 				11CEE05D20D0012300D72186 /* Launch Screen.storyboard in Resources */,
 				1147B76A1F226143004EF296 /* Settings.bundle in Resources */,
 				118FDC7920D515E5002FA5E8 /* ShareActivity.xcassets in Resources */,
@@ -909,12 +980,12 @@
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
-				"${BUILT_PRODUCTS_DIR}/SimulatorStatusMagic/SimulatorStatusMagic.framework",
 				"${BUILT_PRODUCTS_DIR}/Sync/Sync.framework",
 				"${BUILT_PRODUCTS_DIR}/iCarousel/iCarousel.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 				"${BUILT_PRODUCTS_DIR}/pop/pop.framework",
+				"${BUILT_PRODUCTS_DIR}/SimulatorStatusMagic/SimulatorStatusMagic.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -945,12 +1016,12 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SimulatorStatusMagic.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sync.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/iCarousel.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/pop.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SimulatorStatusMagic.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1059,12 +1130,12 @@
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
-				"${BUILT_PRODUCTS_DIR}/SimulatorStatusMagic/SimulatorStatusMagic.framework",
 				"${BUILT_PRODUCTS_DIR}/Sync/Sync.framework",
 				"${BUILT_PRODUCTS_DIR}/iCarousel/iCarousel.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 				"${BUILT_PRODUCTS_DIR}/pop/pop.framework",
+				"${BUILT_PRODUCTS_DIR}/SimulatorStatusMagic/SimulatorStatusMagic.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -1095,12 +1166,12 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SimulatorStatusMagic.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sync.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/iCarousel.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/pop.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SimulatorStatusMagic.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1177,7 +1248,6 @@
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
-				"${BUILT_PRODUCTS_DIR}/SimulatorStatusMagic/SimulatorStatusMagic.framework",
 				"${BUILT_PRODUCTS_DIR}/Sync/Sync.framework",
 				"${BUILT_PRODUCTS_DIR}/iCarousel/iCarousel.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
@@ -1213,7 +1283,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SimulatorStatusMagic.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sync.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/iCarousel.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
@@ -1232,6 +1301,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11853EC82166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */,
 				1147B7571F223607004EF296 /* SetsViewController.swift in Sources */,
 				11F336B220BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				1138A3C920F76D590023423C /* Throttler.swift in Sources */,
@@ -1248,6 +1318,7 @@
 				11932B7F215855AF00DC3D44 /* SetsViewModel.swift in Sources */,
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
 				11A5444C214471EB00B8C59F /* CardViewModel.swift in Sources */,
+				11853EBE2166A85F0055077B /* EmptyCollectionViewCell.swift in Sources */,
 				1150BCEE20B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				1165CD761F377F58006CC433 /* BannedListViewController.swift in Sources */,
 				1165CD791F377F81006CC433 /* ComprehensiveRulesViewController.swift in Sources */,
@@ -1259,6 +1330,7 @@
 				11A63E2721430B94005AE024 /* LatestSetItemCell.swift in Sources */,
 				11A63E1B2142F80E005AE024 /* LatestSetsViewModel.swift in Sources */,
 				114FE3A42146A313009E3201 /* CardPricingTableViewCell.swift in Sources */,
+				11853EE02166B0D40055077B /* CardGridTableViewCell.swift in Sources */,
 				114C1D692161D85C00825DD2 /* ListsViewController.swift in Sources */,
 				118281B120B67FA500865172 /* AccountViewController.swift in Sources */,
 				114C1D522161A13100825DD2 /* BannedListViewModel.swift in Sources */,
@@ -1278,6 +1350,7 @@
 				1140F0CC1F42CA500023E107 /* FCCard.swift in Sources */,
 				11C7B45520D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */,
 				1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */,
+				11853EB621669AD50055077B /* EmptyTableViewCell.swift in Sources */,
 				114C1D5B2161ABDC00825DD2 /* BannedViewController.swift in Sources */,
 				111D5A6C20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				11A63E2F21430E60005AE024 /* TopViewedItemCell.swift in Sources */,
@@ -1300,37 +1373,51 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11853EF42166D63F0055077B /* BaseViewController.swift in Sources */,
 				114C1D7C2161D8D600825DD2 /* DecksViewModel.swift in Sources */,
 				114C1D452160849B00825DD2 /* SearchViewModel.swift in Sources */,
 				11A63E3021430E60005AE024 /* TopViewedItemCell.swift in Sources */,
+				11853EF32166D62C0055077B /* StoreTableViewCell.swift in Sources */,
 				118FDC7420D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
 				11A63E102142CC34005AE024 /* ComprehensiveRulesViewModel.swift in Sources */,
+				11853EEE2166D6040055077B /* ArtistsViewController.swift in Sources */,
 				1150BCEF20B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				114C1D532161A13100825DD2 /* BannedListViewModel.swift in Sources */,
 				1138A3CA20F76D590023423C /* Throttler.swift in Sources */,
+				11853EE62166D4990055077B /* LoginViewModel.swift in Sources */,
 				11A63E2C21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
 				114C1D742161D8AA00825DD2 /* DeckViewController.swift in Sources */,
 				11663B152159C5AC00B095C2 /* SetsTableViewCell.swift in Sources */,
 				114FE3A52146A313009E3201 /* CardPricingTableViewCell.swift in Sources */,
+				11853EF02166D6160055077B /* ComprehensiveRulesViewController.swift in Sources */,
+				11853EE92166D5AA0055077B /* SetsViewController.swift in Sources */,
 				11BC2B77215AED3600045600 /* SetViewModel.swift in Sources */,
 				11F3BA3220D4141900511388 /* MGUtilities.swift in Sources */,
 				11A63E182142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
 				1168F7532155AC6E0059C9E0 /* CardActionsTableViewCell.swift in Sources */,
+				11853EBF2166A85F0055077B /* EmptyCollectionViewCell.swift in Sources */,
 				11A5444D214471EB00B8C59F /* CardViewModel.swift in Sources */,
 				11A5444721445ADF00B8C59F /* HeroCardView.swift in Sources */,
 				11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				118281B220B67FA500865172 /* AccountViewController.swift in Sources */,
+				11853EE82166D5A20055077B /* FeaturedViewController.swift in Sources */,
 				114C1D842161D8F600825DD2 /* ListsViewModel.swift in Sources */,
+				11853EC92166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */,
 				114C1D802161D8E600825DD2 /* ListViewModel.swift in Sources */,
+				11853EF12166D61C0055077B /* MoreViewController.swift in Sources */,
 				11BC2B7B215DC2C600045600 /* BrowserNavigatorTableViewCell.swift in Sources */,
+				11853EED2166D5E30055077B /* SearchViewController.swift in Sources */,
 				11A63E202142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
 				114C1D702161D89000825DD2 /* ListViewController.swift in Sources */,
 				11DFB8C82145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
 				114C1D662161D84C00825DD2 /* DecksViewController.swift in Sources */,
 				11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				11A63E2821430B94005AE024 /* LatestSetItemCell.swift in Sources */,
+				11853EEF2166D60F0055077B /* BannedListViewController.swift in Sources */,
 				114C1D582161ABC600825DD2 /* BannedViewModel.swift in Sources */,
 				1138A3CE20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
+				11853EEC2166D5DF0055077B /* SearchRequestGenerator.swift in Sources */,
+				11853EEA2166D5B40055077B /* BrowserTableViewCell.swift in Sources */,
 				11932B80215855AF00DC3D44 /* SetsViewModel.swift in Sources */,
 				118FDC7020D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
 				114C1D4F21613AC300825DD2 /* ArtistsViewModel.swift in Sources */,
@@ -1338,14 +1425,18 @@
 				114C1D602161D14F00825DD2 /* AccountHeroTableViewCell.swift in Sources */,
 				11A63E142142F536005AE024 /* FeaturedViewModel.swift in Sources */,
 				1140F0CD1F42CA500023E107 /* FCCard.swift in Sources */,
+				11853EF22166D6260055077B /* CardViewController.swift in Sources */,
 				115FFED0214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */,
 				11D55BCC2132545A002F8F49 /* SettingsViewController.swift in Sources */,
+				11853EE12166B0D40055077B /* CardGridTableViewCell.swift in Sources */,
 				114C1D5C2161ABDC00825DD2 /* BannedViewController.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
 				11A63E242142F847005AE024 /* TopViewedViewModel.swift in Sources */,
 				11A63E1C2142F80E005AE024 /* LatestSetsViewModel.swift in Sources */,
 				114C1D782161D8C200825DD2 /* DeckViewModel.swift in Sources */,
 				11448A6320CD3849008EFC40 /* Constants.swift in Sources */,
+				11853EEB2166D5B80055077B /* SetViewController.swift in Sources */,
+				11853EB721669AD50055077B /* EmptyTableViewCell.swift in Sources */,
 				114C1D4B2160A50600825DD2 /* MoreViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1354,7 +1445,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11853ECA2166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */,
 				110BB52E1F20892B00086841 /* SearchViewController.swift in Sources */,
+				11853EE72166D49A0055077B /* LoginViewModel.swift in Sources */,
 				11F336B420BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				1138A3CB20F76D590023423C /* Throttler.swift in Sources */,
 				11A63E112142CC34005AE024 /* ComprehensiveRulesViewModel.swift in Sources */,
@@ -1370,6 +1463,7 @@
 				11932B81215855AF00DC3D44 /* SetsViewModel.swift in Sources */,
 				1141A84020D00F4A00554872 /* SnapshotHelper.swift in Sources */,
 				110BB51A1F207C6400086841 /* ManaGuideUITests.swift in Sources */,
+				11853EC02166A85F0055077B /* EmptyCollectionViewCell.swift in Sources */,
 				118FDC7120D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
 				1165CD771F377F58006CC433 /* BannedListViewController.swift in Sources */,
 				1150BCF020B92E4700A36FCD /* LoginViewController.swift in Sources */,
@@ -1381,6 +1475,7 @@
 				1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */,
 				11A63E252142F847005AE024 /* TopViewedViewModel.swift in Sources */,
 				11A63E192142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
+				11853EE22166B0D40055077B /* CardGridTableViewCell.swift in Sources */,
 				114C1D6B2161D85C00825DD2 /* ListsViewController.swift in Sources */,
 				11A63E152142F536005AE024 /* FeaturedViewModel.swift in Sources */,
 				114C1D542161A13100825DD2 /* BannedListViewModel.swift in Sources */,
@@ -1400,6 +1495,7 @@
 				1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */,
 				118FDC7520D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
 				1147B7641F224198004EF296 /* SetViewController.swift in Sources */,
+				11853EB821669AD50055077B /* EmptyTableViewCell.swift in Sources */,
 				114C1D5D2161ABDC00825DD2 /* BannedViewController.swift in Sources */,
 				11A63E2921430B94005AE024 /* LatestSetItemCell.swift in Sources */,
 				11447EB820D177F700DFF5C7 /* HeroCardView.swift in Sources */,

@@ -2,9 +2,9 @@
   "default": {
     "title": {
       "font": "../../../ManaKit/ManaKit/Assets/fonts/beleren-bold-webfont.ttf",
-      "color": "#ffffff"
+      "color": "#F92D51"
     },
-    "background": "./Gray_Patterned_BG.jpg",
+    "background": "./background.jpg",
     "padding": 50
   },
 
@@ -13,25 +13,25 @@
     {
       "filter": "Sets",
       "keyword": {
-        "color": "#ffffff"
+        "color": "#F92D51"
       }
     },
     {
       "filter": "Search",
       "keyword": {
-        "color": "#ffffff"
+        "color": "#F92D51"
       }
     },
     {
       "filter": "Account",
       "keyword": {
-        "color": "#ffffff"
+        "color": "#F92D51"
       }
     },
     {
       "filter": "More",
       "keyword": {
-        "color": "#ffffff"
+        "color": "#F92D51"
       }
     }
   ]

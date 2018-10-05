@@ -14,14 +14,15 @@ import MBProgressHUD
 import ManaKit
 import PromiseKit
 
+protocol SearchViewControllerDelegate: NSObjectProtocol {
+    func reloadViewModel() -> SearchViewModel
+}
+
 class SearchViewController: BaseViewController {
-
-    // MARK: Constants
-    let searchController = UISearchController(searchResultsController: nil)
-
     // MARK: Variables
     var viewModel: SearchViewModel!
-    var collectionView: UICollectionView?
+    var delegate: SearchViewControllerDelegate?
+    let searchController = UISearchController(searchResultsController: nil)
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
@@ -37,19 +38,33 @@ class SearchViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
-                                                  object:nil)
+        // Settings
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.updateSettings(_:)),
+                                               name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+                                               object: nil)
+        // Favorites
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.updateData(_:)),
-                                               name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+                                               name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
+                                               object: nil)
+        // Ratings
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.updateData(_:)),
+                                               name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                object: nil)
         
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Filter"
         searchController.searchResultsUpdater = self
         definesPresentationContext = true
-        
+
+        rightMenuButton.image = UIImage.init(icon: .FABars,
+                                             size: CGSize(width: 30, height: 30),
+                                             textColor: .white,
+                                             backgroundColor: .clear)
+        rightMenuButton.title = nil
+
         if #available(iOS 11.0, *) {
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = false
@@ -57,12 +72,12 @@ class SearchViewController: BaseViewController {
             tableView.tableHeaderView = searchController.searchBar
         }
         
-        rightMenuButton.image = UIImage.init(icon: .FABars,
-                                             size: CGSize(width: 30, height: 30),
-                                             textColor: .white,
-                                             backgroundColor: .clear)
-        rightMenuButton.title = nil
-        
+        tableView.register(UINib(nibName: "EmptyTableViewCell",
+                                 bundle: nil),
+                           forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
+        tableView.register(UINib(nibName: "CardGridTableViewCell",
+                                 bundle: nil),
+                           forCellReuseIdentifier: CardGridTableViewCell.reuseIdentifier)
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"),
                            forCellReuseIdentifier: CardTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
@@ -71,6 +86,19 @@ class SearchViewController: BaseViewController {
         viewModel.fetchData()
     }
 
+    deinit {
+        // Remove notification listeners
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+                                                  object:nil)
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
+                                                  object:nil)
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
+                                                  object:nil)
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -114,19 +142,30 @@ class SearchViewController: BaseViewController {
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-//        if tableView != nil { // check if we have already loaded
-            updateDataDisplay()
-//        }
+        updateDataDisplay()
     }
 
-    // MARK: Custom methods
-    @objc func updateData(_ notification: Notification) {
+    // MARK: Notification handlers
+    @objc func updateSettings(_ notification: Notification) {
         let searchGenerator = SearchRequestGenerator()
         searchGenerator.syncValues(notification)
         
-        updateDataDisplay()
+        DispatchQueue.main.async {
+            self.updateDataDisplay()
+        }
     }
     
+    @objc func updateData(_ notification: Notification) {
+        if let delegate = delegate {
+            viewModel = delegate.reloadViewModel()
+            
+            DispatchQueue.main.async {
+                self.updateDataDisplay()
+            }
+        }
+    }
+    
+    // MARK: Custom methods
     func updateDataDisplay() {
         if #available(iOS 11.0, *) {
             navigationItem.searchController?.searchBar.isHidden = false
@@ -137,18 +176,30 @@ class SearchViewController: BaseViewController {
         
         viewModel.fetchData()
         tableView.reloadData()
-        collectionView?.reloadData()
+        
+        guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? CardGridTableViewCell else {
+            return
+        }
+        cell.collectionView.reloadData()
     }
 }
 
 // MARK: UITableViewDataSource
 extension SearchViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRows(inSection: section)
+        if viewModel.numberOfSections() == 0 {
+            return 1
+        } else {
+            return viewModel.numberOfRows(inSection: section)
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.numberOfSections()
+        if viewModel.numberOfSections() == 0 {
+            return 1
+        } else {
+            return viewModel.numberOfSections()
+        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -159,40 +210,39 @@ extension SearchViewController : UITableViewDataSource {
         
         switch displayBy {
         case "list":
-            guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell else {
-                fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
+            if viewModel.numberOfSections() == 0 {
+                guard let c = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.reuseIdentifier) as? EmptyTableViewCell else {
+                    fatalError("\(EmptyTableViewCell.reuseIdentifier) is nil")
+                }
+                cell = c
+                
+            } else {
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell else {
+                    fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
+                }
+                let card = viewModel!.object(forRowAt: indexPath)
+                c.card = card
+                cell = c
             }
-            let card = viewModel!.object(forRowAt: indexPath)
-            c.card = card
-            
-            collectionView = nil
-            cell = c
             
         case "grid":
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") else {
-                return UITableViewCell(frame: CGRect.zero)
+            guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
+                fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
             }
-            guard let collectionView = c.viewWithTag(100) as? UICollectionView else {
-                return UITableViewCell(frame: CGRect.zero)
-            }
+            let sectionIndexWidth = viewModel.sectionIndexTitles() != nil ? CGFloat(44) : CGFloat(0)
+            let width = tableView.frame.size.width - sectionIndexWidth
+            let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
+            var size = CGSize(width: 0, height: 0)
             
-            collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "Header")
-            collectionView.dataSource = self
-            collectionView.delegate = self
-            
-            if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                let sectionIndexWidth = viewModel.sectionIndexTitles() != nil ? CGFloat(44) : CGFloat(0)
-                let width = tableView.frame.size.width - sectionIndexWidth
-                let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
-                
-                flowLayout.itemSize = cardSize(inFrame: CGSize(width: width, height: height))
-                flowLayout.minimumInteritemSpacing = CGFloat(0)
-                flowLayout.minimumLineSpacing = CGFloat(10)
-                flowLayout.headerReferenceSize = CGSize(width: width, height: 22)
-                flowLayout.sectionHeadersPinToVisibleBounds = true
+            if viewModel.collectionNumberOfSections() == 0 {
+                size = CGSize(width: width, height: height)
+            } else {
+                size = cardSize(inFrame: CGSize(width: width, height: height))
             }
             
-            self.collectionView = collectionView
+            c.viewModel = viewModel
+            c.delegate = self
+            c.updateItemSize(with: size)
             cell = c
             
         default:
@@ -203,15 +253,27 @@ extension SearchViewController : UITableViewDataSource {
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        return viewModel.sectionIndexTitles()
+        if viewModel.numberOfSections() == 0 {
+            return nil
+        } else {
+            return viewModel.sectionIndexTitles()
+        }
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        return viewModel.sectionForSectionIndexTitle(title: title, at: index)
+        if viewModel.numberOfSections() == 0 {
+            return 0
+        } else {
+            return viewModel.sectionForSectionIndexTitle(title: title, at: index)
+        }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return viewModel.titleForHeaderInSection(section: section)
+        if viewModel.numberOfSections() == 0 {
+            return nil
+        } else {
+            return viewModel.titleForHeaderInSection(section: section)
+        }
     }
 }
 
@@ -227,7 +289,11 @@ extension SearchViewController : UITableViewDelegate {
         
         switch displayBy {
         case "list":
-            height = kCardTableViewCellHeight
+            if viewModel.numberOfSections() == 0 {
+                height = tableView.frame.size.height
+            } else {
+                height = kCardTableViewCellHeight
+            }
         case "grid":
             height = tableView.frame.size.height
         default:
@@ -249,90 +315,13 @@ extension SearchViewController : UITableViewDelegate {
                       "cardIDs": cards.map({ $0.id })]
         performSegue(withIdentifier: identifier, sender: sender)
     }
-}
-
-// UICollectionViewDataSource
-extension SearchViewController : UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.collectionNumberOfRows(inSection: section)
-    }
     
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return viewModel.collectionNumberOfSections()
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardImageCell", for: indexPath)
-        
-        guard let imageView = cell.viewWithTag(100) as? UIImageView else {
-            fatalError("Unexpected indexPath: \(indexPath)")
-        }
-        let card = viewModel.object(forRowAt: indexPath)
-        
-        if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
-            imageView.image = image
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        if viewModel.numberOfSections() == 0 {
+            return nil
         } else {
-            imageView.image = ManaKit.sharedInstance.cardBack(card)
-            
-            firstly {
-                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-            }.done {
-                guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) else {
-                    return
-                }
-                
-                let animations = {
-                    imageView.image = image
-                }
-                UIView.transition(with: imageView,
-                                  duration: 1.0,
-                                  options: .transitionFlipFromRight,
-                                  animations: animations,
-                                  completion: nil)
-            }.catch { error in
-                print("\(error)")
-            }
+            return indexPath
         }
-        
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let v = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier:"Header", for: indexPath)
-        
-        if kind == UICollectionElementKindSectionHeader {
-            v.backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1)
-            
-            if v.subviews.count == 0 {
-                let label = UILabel(frame: CGRect(x: 20, y: 0, width: collectionView.frame.size.width - 20, height: 22))
-                label.tag = 100
-                v.addSubview(label)
-            }
-            
-            guard let lab = v.viewWithTag(100) as? UILabel else {
-                return v
-            }
-            
-            lab.text = viewModel.collectionTitleForHeaderInSection(section: indexPath.section)//SectionIndexTitles()?[indexPath.section]
-        }
-        
-        return v
-    }
-}
-
-// UICollectionViewDelegate
-extension SearchViewController : UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let cards = viewModel.allObjects() else {
-            return
-        }
-        
-        let card = viewModel.object(forRowAt: indexPath)
-        let cardIndex = cards.index(of: card)
-        let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-        let sender = ["cardIndex": cardIndex as Any,
-                      "cardIDs": cards.map({ $0.id })]
-        performSegue(withIdentifier: identifier, sender: sender)
     }
 }
 
@@ -349,11 +338,14 @@ extension SearchViewController : UISearchResultsUpdating {
             return
         }
         
+        tableView.reloadData()
+        
         switch displayBy {
-        case "list":
-            tableView.reloadData()
         case "grid":
-            collectionView?.reloadData()
+            guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? CardGridTableViewCell else {
+                return
+            }
+            cell.collectionView.reloadData()
         default:
             ()
         }
@@ -361,9 +353,14 @@ extension SearchViewController : UISearchResultsUpdating {
     }
 }
 
-// MARK: NSFetchedResultsControllerDelegate
-extension SearchViewController : NSFetchedResultsControllerDelegate {
-    
+// MARK:
+extension SearchViewController : CardGridTableViewCellDelegate {
+    func showCard(identifier: String, cardIndex: Int, cardIDs: [String]) {
+        let sender = ["cardIndex": cardIndex as Any,
+                      "cardIDs": cardIDs]
+        performSegue(withIdentifier: identifier, sender: sender)
+    }
 }
+
 
 

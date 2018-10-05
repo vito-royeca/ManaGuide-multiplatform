@@ -40,19 +40,22 @@ class ComprehensiveRulesViewModel: NSObject {
     func numberOfRows(inSection section: Int) -> Int {
         guard let fetchedResultsController = _fetchedResultsController,
             let sections = fetchedResultsController.sections else {
-                return 0
+            return 0
         }
         
         return sections[section].numberOfObjects
     }
     
     func numberOfSections() -> Int {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-                return 0
-        }
         
-        return sections.count
+        guard let fetchedResultsController = _fetchedResultsController,
+            let fetchedObjects = fetchedResultsController.fetchedObjects,
+            let sections = fetchedResultsController.sections else {
+            return 0
+        }
+     
+        
+        return fetchedObjects.count == 0 ? 0 : sections.count
     }
     
     func sectionIndexTitles() -> [String]? {

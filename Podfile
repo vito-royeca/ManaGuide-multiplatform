@@ -28,7 +28,6 @@ def default_pods
     pod 'NYAlertViewController'
     pod 'OAuthSwift', '~> 1.1.2'
     pod 'PromiseKit', '~> 6.0'
-    pod 'SimulatorStatusMagic', :configurations => ['Debug']
     pod 'SSZipArchive'
     #pod 'SwiftOCR'
 end
@@ -39,9 +38,11 @@ end
 
 target 'ManaGuideTests' do
     default_pods
+    pod 'SimulatorStatusMagic', :configurations => ['Debug']
 end
 
 target 'ManaGuideUITests' do
     default_pods
+    pod 'SimulatorStatusMagic', :configurations => ['Debug']
 end
 

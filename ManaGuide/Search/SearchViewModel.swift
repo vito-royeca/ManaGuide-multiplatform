@@ -69,12 +69,16 @@ class SearchViewModel: NSObject {
         
         switch displayBy {
         case "list":
-            guard let fetchedResultsController = _fetchedResultsController,
-                let sections = fetchedResultsController.sections else {
-                    return number
+            if searchGenerator.getSectionName() == nil {
+                number = 0
+            } else {
+                guard let fetchedResultsController = _fetchedResultsController,
+                    let sections = fetchedResultsController.sections else {
+                        return number
+                }
+                
+                number = sections.count
             }
-            
-            number = sections.count
         case "grid":
             number = 1
         default:
@@ -174,14 +178,19 @@ class SearchViewModel: NSObject {
     }
     
     func collectionNumberOfSections() -> Int {
+        let searchGenerator = SearchRequestGenerator()
         var number = 0
         
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-            return number
+        if searchGenerator.getSectionName() == nil {
+            number = 0
+        } else {
+            guard let fetchedResultsController = _fetchedResultsController,
+                let sections = fetchedResultsController.sections else {
+                    return number
+            }
+
+            number = sections.count
         }
-        
-        number = sections.count
         
         return number
     }

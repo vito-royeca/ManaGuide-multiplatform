@@ -34,6 +34,9 @@ class ComprehensiveRulesViewController: BaseViewController {
         } else {
             tableView.tableHeaderView = searchController.searchBar
         }
+        tableView.register(UINib(nibName: "EmptyTableViewCell",
+                                 bundle: nil),
+                           forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
 
         viewModel.fetchData()
@@ -76,70 +79,118 @@ class ComprehensiveRulesViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension ComprehensiveRulesViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRows(inSection: section)
+        if viewModel.numberOfSections() == 0 {
+            return 1
+        } else {
+            return viewModel.numberOfRows(inSection: section)
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.numberOfSections()
+        if viewModel.numberOfSections() == 0 {
+            return 1
+        } else {
+            return viewModel.numberOfSections()
+        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell",
-                                                 for: indexPath)
-        guard let label = cell.viewWithTag(100) as? UILabel else {
-            fatalError("No view with tag 100")
-        }
+        var cell: UITableViewCell?
         
-        let rule = viewModel.object(forRowAt: indexPath)
-        
-        // Configure Cell
-        if let children = rule.children {
-            if children.allObjects.count > 0 {
-                cell.accessoryType = .disclosureIndicator
-                cell.selectionStyle = .default
-                
-            } else {
-                if let _ = rule.parent {
-                    cell.accessoryType = .none
-                    cell.selectionStyle = .none
+        if viewModel.numberOfSections() == 0 {
+            guard let c = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.reuseIdentifier) as? EmptyTableViewCell else {
+                fatalError("\(EmptyTableViewCell.reuseIdentifier) is nil")
+            }
+            cell = c
+            
+        } else {
+            let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell",
+                                                     for: indexPath)
+            guard let label = c.viewWithTag(100) as? UILabel else {
+                fatalError("No view with tag 100")
+            }
+            
+            let rule = viewModel.object(forRowAt: indexPath)
+            
+            // Configure Cell
+            if let children = rule.children {
+                if children.allObjects.count > 0 {
+                    c.accessoryType = .disclosureIndicator
+                    c.selectionStyle = .default
                     
                 } else {
-                    cell.accessoryType = .disclosureIndicator
-                    cell.selectionStyle = .default
+                    if let _ = rule.parent {
+                        c.accessoryType = .none
+                        c.selectionStyle = .none
+                        
+                    } else {
+                        c.accessoryType = .disclosureIndicator
+                        c.selectionStyle = .default
+                    }
                 }
             }
+            label.attributedText = viewModel.attributedTextFor(rule,
+                                                               withText: searchController.searchBar.text)
+            cell = c
         }
-        label.attributedText = viewModel.attributedTextFor(rule, withText: searchController.searchBar.text)
         
-        return cell
+        return cell!
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        return viewModel.sectionIndexTitles()
+        if viewModel.numberOfSections() == 0 {
+            return nil
+        } else {
+            return viewModel.sectionIndexTitles()
+        }
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        return viewModel.sectionForSectionIndexTitle(title: title, at: index)
+        if viewModel.numberOfSections() == 0 {
+            return 0
+        } else {
+            return viewModel.sectionForSectionIndexTitle(title: title, at: index)
+        }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return viewModel.titleForHeaderInSection(section: section)
+        if viewModel.numberOfSections() == 0 {
+            return nil
+        } else {
+            return viewModel.titleForHeaderInSection(section: section)
+        }
     }
 }
 
 extension ComprehensiveRulesViewController : UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        var height = CGFloat(0)
+        
+        if viewModel.numberOfSections() == 0 {
+            height = tableView.frame.size.height
+        } else {
+            height = UITableViewAutomaticDimension
+        }
+        
+        return height
+    }
+    
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        let rule = viewModel.object(forRowAt: indexPath)
-        
-        guard let children = rule.children else {
+        if viewModel.numberOfSections() == 0 {
             return nil
+        } else {
+            let rule = viewModel.object(forRowAt: indexPath)
+            
+            guard let children = rule.children else {
+                return nil
+            }
+            
+            guard children.allObjects.count > 0 else {
+                return nil
+            }
+            
+            return indexPath
         }
-        
-        guard children.allObjects.count > 0 else {
-            return nil
-        }
-        
-        return indexPath
     }
 }
 

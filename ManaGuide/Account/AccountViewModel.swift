@@ -73,11 +73,13 @@ enum AccountSection: Int {
     }
     
     static var count: Int {
-        return 5
+        return 3 // return 5 if Decks and Lists are included
     }
 }
 
 class AccountViewModel: NSObject {
+    var accountSection: AccountSection = .favorites
+    
     // MARK: Data monitors
     func saveUserMetadata() {
         guard let fbUser = Auth.auth().currentUser else {

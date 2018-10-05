@@ -16,6 +16,8 @@ protocol StoreTableViewCellDelegate : NSObjectProtocol {
 }
 
 class StoreTableViewCell: UITableViewCell {
+    static let reuseIdentifier = "StoreCell"
+    
     // MARK: Variables
     var supplier: CMSupplier?
     var delegate: StoreTableViewCellDelegate?

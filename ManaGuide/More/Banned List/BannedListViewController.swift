@@ -48,7 +48,7 @@ class BannedListViewController: BaseViewController {
                 return
             }
             
-            dest.viewModel = BannedViewModel(withFormat: format)
+            dest.bannedViewModel = BannedViewModel(withFormat: format)
         }
     }
 }

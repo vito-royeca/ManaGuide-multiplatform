@@ -36,21 +36,20 @@ class ManaGuideUITests: XCTestCase {
     
     func testScreenshots() {
         // Use recording to get started writing UI tests.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        
-        app.tables/*@START_MENU_TOKEN@*/.cells.buttons["See All >"]/*[[".cells.buttons[\"See All >\"]",".buttons[\"See All >\"]"],[[[-1,1],[-1,0]]],[1]]@END_MENU_TOKEN@*/.tap()
+        // Use XCTAssert and related functions to verify your tests produce the correct results.        
+        app.tables.cells.buttons["See All"].tap()
         snapshot("01Sets")
 
         app.tabBars.buttons["Search"].tap()
         app.navigationBars["Search"].children(matching: .button).element.tap()
         snapshot("02Search")
         app.navigationBars["Search"].children(matching: .button).element.tap()
-        
+
         app.tabBars.buttons["Account"].tap()
         app.navigationBars["Account"].buttons["Login"].tap()
         snapshot("03Account")
         app.navigationBars["Login"].buttons["Cancel"].tap()
-        
+
         app.tabBars.buttons["More"].tap()
         snapshot("04More")
     }
