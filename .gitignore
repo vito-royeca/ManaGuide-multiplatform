@@ -66,7 +66,7 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/test_output
 xcshareddata
-fastlane/screenshots/en-US/*.png
+#fastlane/screenshots/en-US/*.png
 5WD3ZMS87D.cer
 5WD3ZMS87D.certSigningRequest
 5WD3ZMS87D.p12
