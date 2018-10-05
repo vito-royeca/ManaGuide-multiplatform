@@ -83,6 +83,20 @@ class SetsViewModel: NSObject {
         return fetchedResultsController.object(at: indexPath)
     }
     
+    func allObjects() -> [CMSet]? {
+        guard let fetchedResultsController = _fetchedResultsController else {
+            return nil
+        }
+        return fetchedResultsController.fetchedObjects
+    }
+    
+    func isEmpty() -> Bool {
+        guard let objects = allObjects() else {
+            return false
+        }
+        return objects.count == 0
+    }
+    
     func fetchData() {
         let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
         let count = queryString.count
@@ -136,7 +150,7 @@ class SetsViewModel: NSObject {
         
         _sortDescriptors = [NSSortDescriptor(key: setsSortBy, ascending: setsOrderBy)]
     }
-
+    
     // MARK: Private methods
     private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMSet>?) -> NSFetchedResultsController<CMSet> {
         let context = ManaKit.sharedInstance.dataStack!.viewContext

@@ -79,7 +79,7 @@ class ComprehensiveRulesViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension ComprehensiveRulesViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return 1
         } else {
             return viewModel.numberOfRows(inSection: section)
@@ -87,7 +87,7 @@ extension ComprehensiveRulesViewController : UITableViewDataSource {
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return 1
         } else {
             return viewModel.numberOfSections()
@@ -97,7 +97,7 @@ extension ComprehensiveRulesViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: UITableViewCell?
         
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             guard let c = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.reuseIdentifier) as? EmptyTableViewCell else {
                 fatalError("\(EmptyTableViewCell.reuseIdentifier) is nil")
             }
@@ -138,7 +138,7 @@ extension ComprehensiveRulesViewController : UITableViewDataSource {
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return nil
         } else {
             return viewModel.sectionIndexTitles()
@@ -146,7 +146,7 @@ extension ComprehensiveRulesViewController : UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return 0
         } else {
             return viewModel.sectionForSectionIndexTitle(title: title, at: index)
@@ -154,7 +154,7 @@ extension ComprehensiveRulesViewController : UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return nil
         } else {
             return viewModel.titleForHeaderInSection(section: section)
@@ -166,7 +166,7 @@ extension ComprehensiveRulesViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         var height = CGFloat(0)
         
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             height = tableView.frame.size.height
         } else {
             height = UITableViewAutomaticDimension
@@ -176,7 +176,7 @@ extension ComprehensiveRulesViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return nil
         } else {
             let rule = viewModel.object(forRowAt: indexPath)

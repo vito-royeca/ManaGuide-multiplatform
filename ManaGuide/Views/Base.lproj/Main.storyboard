@@ -401,7 +401,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="29d-SW-nqs">
-                                <rect key="frame" x="85" y="20" width="261" height="412.66666666666669"/>
+                                <rect key="frame" x="85" y="20" width="261" height="409.66666666666669"/>
                                 <subviews>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username or Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0RH-D1-MV7">
                                         <rect key="frame" x="30.666666666666686" y="0.0" width="200" height="30"/>
@@ -466,10 +466,10 @@
                                         </userDefinedRuntimeAttributes>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="84B-iP-v78">
-                                        <rect key="frame" x="55.666666666666657" y="380.66666666666663" width="150" height="32"/>
+                                        <rect key="frame" x="55.666666666666657" y="380.66666666666663" width="150" height="29"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LFk-cs-s3D">
-                                                <rect key="frame" x="0.0" y="0.0" width="30" height="32"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="30" height="29"/>
                                                 <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="17"/>
                                                 <state key="normal" title=""/>
                                                 <connections>
@@ -477,7 +477,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D0K-YZ-sOM">
-                                                <rect key="frame" x="60" y="0.0" width="30" height="32"/>
+                                                <rect key="frame" x="60" y="0.0" width="30" height="29"/>
                                                 <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="17"/>
                                                 <state key="normal" title=""/>
                                                 <connections>
@@ -485,7 +485,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wrc-cf-AzJ">
-                                                <rect key="frame" x="120.00000000000003" y="0.0" width="30" height="32"/>
+                                                <rect key="frame" x="120.00000000000003" y="0.0" width="30" height="29"/>
                                                 <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="17"/>
                                                 <state key="normal" title=""/>
                                                 <connections>
@@ -2118,7 +2118,7 @@
         <segue reference="raG-Jp-fAl"/>
         <segue reference="zuQ-z5-rax"/>
         <segue reference="fNA-HR-HtU"/>
-        <segue reference="xMx-O9-Y4N"/>
+        <segue reference="ISp-PC-gA3"/>
         <segue reference="ad4-Pa-Oso"/>
     </inferredMetricsTieBreakers>
 </document>

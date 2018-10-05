@@ -11,6 +11,7 @@ import ManaKit
 
 class SetsTableViewCell: UITableViewCell {
     static let reuseIdentifier = "SetsCell"
+    static let cellHeight = CGFloat(80)
     
     // MARK: Outlets
     @IBOutlet weak var logoLabel: UILabel!

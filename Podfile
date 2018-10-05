@@ -38,7 +38,6 @@ end
 
 target 'ManaGuideTests' do
     default_pods
-    pod 'SimulatorStatusMagic', :configurations => ['Debug']
 end
 
 target 'ManaGuideUITests' do

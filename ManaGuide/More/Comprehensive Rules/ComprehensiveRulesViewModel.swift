@@ -47,15 +47,12 @@ class ComprehensiveRulesViewModel: NSObject {
     }
     
     func numberOfSections() -> Int {
-        
         guard let fetchedResultsController = _fetchedResultsController,
-            let fetchedObjects = fetchedResultsController.fetchedObjects,
             let sections = fetchedResultsController.sections else {
             return 0
         }
-     
         
-        return fetchedObjects.count == 0 ? 0 : sections.count
+        return sections.count
     }
     
     func sectionIndexTitles() -> [String]? {
@@ -90,6 +87,20 @@ class ComprehensiveRulesViewModel: NSObject {
             fatalError("fetchedResultsController is nil")
         }
         return fetchedResultsController.object(at: indexPath)
+    }
+    
+    func allObjects() -> [CMRule]? {
+        guard let fetchedResultsController = _fetchedResultsController else {
+            return nil
+        }
+        return fetchedResultsController.fetchedObjects
+    }
+    
+    func isEmpty() -> Bool {
+        guard let objects = allObjects() else {
+            return false
+        }
+        return objects.count == 0
     }
     
     func fetchData() {

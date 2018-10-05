@@ -66,7 +66,7 @@ class CardGridTableViewCell: UITableViewCell {
 // MARK: UICollectionViewDataSource
 extension CardGridTableViewCell : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if viewModel.collectionNumberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return 1
         } else {
             return viewModel.collectionNumberOfRows(inSection: section)
@@ -74,7 +74,7 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        if viewModel.collectionNumberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return 1
         } else {
             return viewModel.collectionNumberOfSections()
@@ -84,7 +84,7 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: UICollectionViewCell?
         
-        if viewModel.collectionNumberOfSections() == 0 {
+        if viewModel.isEmpty() {
             guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: EmptyCollectionViewCell.reuseIdentifier, for: indexPath) as? EmptyCollectionViewCell else {
                 fatalError("\(EmptyCollectionViewCell.reuseIdentifier) is nil")
             }
@@ -103,7 +103,7 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        if viewModel.collectionNumberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader,
                                                                    withReuseIdentifier:"HeaderEmpty",
                                                                    for: indexPath)

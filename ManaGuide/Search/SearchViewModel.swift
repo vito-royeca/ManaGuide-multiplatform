@@ -69,18 +69,15 @@ class SearchViewModel: NSObject {
         
         switch displayBy {
         case "list":
-            if searchGenerator.getSectionName() == nil {
-                number = 0
-            } else {
-                guard let fetchedResultsController = _fetchedResultsController,
-                    let sections = fetchedResultsController.sections else {
-                        return number
-                }
-                
-                number = sections.count
+            guard let fetchedResultsController = _fetchedResultsController,
+                let sections = fetchedResultsController.sections else {
+                return number
             }
+            number = sections.count
+            
         case "grid":
             number = 1
+            
         default:
             ()
         }
@@ -165,34 +162,21 @@ class SearchViewModel: NSObject {
     
     // MARK: UICollectionView methods
     func collectionNumberOfRows(inSection section: Int) -> Int {
-        var rows = 0
-        
         guard let fetchedResultsController = _fetchedResultsController,
             let sections = fetchedResultsController.sections else {
-            return rows
+            return 0
         }
         
-        rows = sections[section].numberOfObjects
-        
-        return rows
+        return sections[section].numberOfObjects
     }
     
     func collectionNumberOfSections() -> Int {
-        let searchGenerator = SearchRequestGenerator()
-        var number = 0
-        
-        if searchGenerator.getSectionName() == nil {
-            number = 0
-        } else {
-            guard let fetchedResultsController = _fetchedResultsController,
-                let sections = fetchedResultsController.sections else {
-                    return number
-            }
-
-            number = sections.count
+        guard let fetchedResultsController = _fetchedResultsController,
+            let sections = fetchedResultsController.sections else {
+            return 0
         }
         
-        return number
+        return sections.count
     }
     
     func collectionSectionIndexTitles() -> [String]? {
@@ -249,6 +233,13 @@ class SearchViewModel: NSObject {
         return fetchedResultsController.fetchedObjects
     }
     
+    func isEmpty() -> Bool {
+        guard let objects = allObjects() else {
+            return false
+        }
+        return objects.count == 0
+    }
+
     func fetchData() {
         let newRequest = SearchRequestGenerator().createSearchRequest(query: queryString, oldRequest: _request)
         

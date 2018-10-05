@@ -9,12 +9,12 @@ PODS:
   - ChameleonFramework/Swift (2.1.0):
     - ChameleonFramework/Default
   - Cosmos (11.0.3)
-  - Crashlytics (3.10.8):
-    - Fabric (~> 1.7.12)
+  - Crashlytics (3.10.9):
+    - Fabric (~> 1.7.13)
   - DACircularProgress (2.3.1)
   - DATASource (7.0.2)
   - DATAStack (8.0.2)
-  - Fabric (1.7.12)
+  - Fabric (1.7.13)
   - FBSDKCoreKit (4.37.0):
     - Bolts (~> 1.7)
   - FBSDKLoginKit (4.37.0):
@@ -267,11 +267,11 @@ SPEC CHECKSUMS:
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   ChameleonFramework: d21a3cc247abfe5e37609a283a8238b03575cf64
   Cosmos: eb506859929f4add2d2aec822a27efb2f718a95d
-  Crashlytics: 058dc1ba579f6c100bc60a6878703779bff383c4
+  Crashlytics: 55e24fc23989680285a21cb1146578d9d18e432c
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
   DATASource: b86db74542b5b27d4d2af43ae698022f19507379
   DATAStack: 9c415f6e7733eafb9cf5c076613bfb5958c407cb
-  Fabric: d7387db9a31aadff63b147a4b91d982c53afaa4f
+  Fabric: 25d0963b691fc97be566392243ff0ecef5a68338
   FBSDKCoreKit: fe5f3474499a81963e11e3f3a5c753d0a95ca2b4
   FBSDKLoginKit: 2f7249686d1e30ce8a5ef5400eedf50b3e3df332
   FBSDKMessengerShareKit: 41c0b1a667d685c9433f993eb9611b3d5074e1cb
@@ -311,6 +311,6 @@ SPEC CHECKSUMS:
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Sync: 5281923838f0f60e1d34063ac9ab692b6e012038
 
-PODFILE CHECKSUM: 266c0c7348d1999426524475e1411121384ab5e6
+PODFILE CHECKSUM: d9eae68aa21ea52a1a57d954a383f34b33361d6f
 
 COCOAPODS: 1.5.3

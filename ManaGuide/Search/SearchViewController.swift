@@ -171,13 +171,13 @@ class SearchViewController: BaseViewController {
             navigationItem.searchController?.searchBar.isHidden = false
             navigationItem.hidesSearchBarWhenScrolling = false
         } else {
-            tableView.tableHeaderView = searchController.searchBar
+            tableView?.tableHeaderView = searchController.searchBar
         }
         
         viewModel.fetchData()
-        tableView.reloadData()
+        tableView?.reloadData()
         
-        guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? CardGridTableViewCell else {
+        guard let cell = tableView?.cellForRow(at: IndexPath(row: 0, section: 0)) as? CardGridTableViewCell else {
             return
         }
         cell.collectionView.reloadData()
@@ -187,7 +187,7 @@ class SearchViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension SearchViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return 1
         } else {
             return viewModel.numberOfRows(inSection: section)
@@ -195,7 +195,7 @@ extension SearchViewController : UITableViewDataSource {
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return 1
         } else {
             return viewModel.numberOfSections()
@@ -210,7 +210,7 @@ extension SearchViewController : UITableViewDataSource {
         
         switch displayBy {
         case "list":
-            if viewModel.numberOfSections() == 0 {
+            if viewModel.isEmpty() {
                 guard let c = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.reuseIdentifier) as? EmptyTableViewCell else {
                     fatalError("\(EmptyTableViewCell.reuseIdentifier) is nil")
                 }
@@ -234,7 +234,7 @@ extension SearchViewController : UITableViewDataSource {
             let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
             var size = CGSize(width: 0, height: 0)
             
-            if viewModel.collectionNumberOfSections() == 0 {
+            if viewModel.isEmpty() {
                 size = CGSize(width: width, height: height)
             } else {
                 size = cardSize(inFrame: CGSize(width: width, height: height))
@@ -253,7 +253,7 @@ extension SearchViewController : UITableViewDataSource {
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return nil
         } else {
             return viewModel.sectionIndexTitles()
@@ -261,7 +261,7 @@ extension SearchViewController : UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return 0
         } else {
             return viewModel.sectionForSectionIndexTitle(title: title, at: index)
@@ -269,7 +269,7 @@ extension SearchViewController : UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return nil
         } else {
             return viewModel.titleForHeaderInSection(section: section)
@@ -289,7 +289,7 @@ extension SearchViewController : UITableViewDelegate {
         
         switch displayBy {
         case "list":
-            if viewModel.numberOfSections() == 0 {
+            if viewModel.isEmpty() {
                 height = tableView.frame.size.height
             } else {
                 height = kCardTableViewCellHeight
@@ -317,7 +317,7 @@ extension SearchViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if viewModel.numberOfSections() == 0 {
+        if viewModel.isEmpty() {
             return nil
         } else {
             return indexPath
