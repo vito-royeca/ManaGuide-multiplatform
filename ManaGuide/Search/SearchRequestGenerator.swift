@@ -159,7 +159,7 @@ class SearchRequestGenerator: NSObject {
         newRequest.sortDescriptors = createSortDescriptors()
         newRequest.predicate = predicate
         
-        print("\(newRequest)")
+//        print("\(newRequest)")
         return newRequest
     }
     

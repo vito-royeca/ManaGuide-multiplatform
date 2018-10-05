@@ -1,0 +1,21 @@
+Mana Guide is probably the best card database for the most popular tradable and collectible card game.
+
+Features:
+
+ - All Sets
+Contains all sets from Alpha to the latest set.
+
+- Advanced Card Search
+Find the specific cards you need with advanced filters.
+
+- Card Pricing
+View and track card pricing data.
+
+- Card Rating
+Rate cards and view the top rated 
+
+- And a whole lot more
+Basic Rules
+Comprehensive Rules
+Tournament Rules
+Various lists
