@@ -232,12 +232,14 @@ extension SearchViewController : UITableViewDataSource {
             }
             let sectionIndexWidth = viewModel.sectionIndexTitles() != nil ? CGFloat(44) : CGFloat(0)
             let width = tableView.frame.size.width - sectionIndexWidth
-            let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
+            var height = tableView.frame.size.height
             var size = CGSize(width: 0, height: 0)
             
             if viewModel.isEmpty() {
+                height /= 3
                 size = CGSize(width: width, height: height)
             } else {
+                height -= kCardTableViewCellHeight - CGFloat(44)
                 size = cardSize(inFrame: CGSize(width: width, height: height))
             }
             
@@ -291,7 +293,7 @@ extension SearchViewController : UITableViewDelegate {
         switch displayBy {
         case "list":
             if viewModel.isEmpty() {
-                height = tableView.frame.size.height
+                height = tableView.frame.size.height / 3
             } else {
                 height = kCardTableViewCellHeight
             }

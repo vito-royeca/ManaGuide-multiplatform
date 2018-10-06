@@ -499,8 +499,8 @@
 		114C1D482160A42100825DD2 /* Banned List */ = {
 			isa = PBXGroup;
 			children = (
-				114C1D512161A13100825DD2 /* BannedListViewModel.swift */,
 				1165CD751F377F58006CC433 /* BannedListViewController.swift */,
+				114C1D512161A13100825DD2 /* BannedListViewModel.swift */,
 			);
 			path = "Banned List";
 			sourceTree = "<group>";

@@ -93,6 +93,13 @@ class BannedListViewModel: NSObject {
         return fetchedResultsController.fetchedObjects
     }
     
+    func isEmpty() -> Bool {
+        guard let objects = allObjects() else {
+            return false
+        }
+        return objects.count == 0
+    }
+
     func fetchData() {
         let request: NSFetchRequest<CMFormat> = CMFormat.fetchRequest()
         let count = queryString.count

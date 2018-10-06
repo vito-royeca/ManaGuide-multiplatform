@@ -162,7 +162,7 @@ extension SetsViewController : UITableViewDataSource {
 extension SetsViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if viewModel.isEmpty() {
-            return tableView.frame.size.height
+            return tableView.frame.size.height / 3
         } else {
             return SetsTableViewCell.cellHeight
         }

@@ -35,6 +35,10 @@ class BannedListViewController: BaseViewController {
         } else {
             tableView.tableHeaderView = searchController.searchBar
         }
+        
+        tableView.register(UINib(nibName: "EmptyTableViewCell",
+                                 bundle: nil),
+                           forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
         
         viewModel.fetchData()
@@ -56,43 +60,90 @@ class BannedListViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension BannedListViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRows(inSection: section)
+        if viewModel.isEmpty() {
+            return 1
+        } else {
+            return viewModel.numberOfRows(inSection: section)
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.numberOfSections()
+        if viewModel.isEmpty() {
+            return 1
+        } else {
+            return viewModel.numberOfSections()
+        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "BannedCell",
-                                                 for: indexPath)
-        // Configure Cell
-        guard let label = cell.textLabel else {
-            fatalError("UILabel not found")
-        }
-        label.text = viewModel.object(forRowAt: indexPath).name
+        var cell: UITableViewCell?
         
-        return cell
+        if viewModel.isEmpty() {
+            guard let c = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.reuseIdentifier) as? EmptyTableViewCell else {
+                fatalError("\(EmptyTableViewCell.reuseIdentifier) is nil")
+            }
+            cell = c
+            
+        } else {
+            let c = tableView.dequeueReusableCell(withIdentifier: "BannedCell",
+                                                  for: indexPath)
+            
+            guard let label = c.textLabel else {
+                fatalError("UILabel not found")
+            }
+            label.text = viewModel.object(forRowAt: indexPath).name
+            cell = c
+        }
+        
+        return cell!
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        return viewModel.sectionIndexTitles()
+        if viewModel.isEmpty() {
+            return nil
+        } else {
+            return viewModel.sectionIndexTitles()
+        }
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        return viewModel.sectionForSectionIndexTitle(title: title, at: index)
+        if viewModel.isEmpty() {
+            return 0
+        } else {
+            return viewModel.sectionForSectionIndexTitle(title: title, at: index)
+        }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return viewModel.titleForHeaderInSection(section: section)
+        if viewModel.isEmpty() {
+            return nil
+        } else {
+            return viewModel.titleForHeaderInSection(section: section)
+        }
     }
 }
 
 // MARK: UITableViewDelegate
 extension BannedListViewController : UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if viewModel.isEmpty() {
+            return tableView.frame.size.height / 3
+        } else {
+            return UITableViewAutomaticDimension
+        }
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let format = viewModel.object(forRowAt: indexPath)
         performSegue(withIdentifier: "showBanned", sender: ["format": format])
+    }
+    
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        if viewModel.isEmpty() {
+            return nil
+        } else {
+            return indexPath
+        }
     }
 }
 
