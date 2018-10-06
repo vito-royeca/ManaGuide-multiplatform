@@ -24,25 +24,31 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="88"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Data Found" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O3i-07-Ghy">
-                        <rect key="frame" x="20" y="30" width="280" height="30"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UnH-Pj-bhL">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="88"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                <integer key="value" value="10"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Data Found" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O3i-07-Ghy">
+                        <rect key="frame" x="20" y="29" width="280" height="30"/>
                         <fontDescription key="fontDescription" name="Beleren-Bold" family="Beleren" pointSize="25"/>
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UnH-Pj-bhL">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="88"/>
-                    </imageView>
                 </subviews>
             </view>
             <constraints>
                 <constraint firstItem="UnH-Pj-bhL" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="5Bx-Zc-Gsd"/>
-                <constraint firstItem="O3i-07-Ghy" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="Ohl-ap-1Ns"/>
+                <constraint firstItem="O3i-07-Ghy" firstAttribute="centerY" secondItem="ZTg-uK-7eu" secondAttribute="centerY" id="7FF-T2-Oc6"/>
+                <constraint firstItem="O3i-07-Ghy" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="KbP-EQ-dTX"/>
+                <constraint firstAttribute="trailing" secondItem="O3i-07-Ghy" secondAttribute="trailing" constant="20" id="Rza-oy-FTl"/>
                 <constraint firstAttribute="bottom" secondItem="UnH-Pj-bhL" secondAttribute="bottom" id="azw-xM-abf"/>
                 <constraint firstItem="UnH-Pj-bhL" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="l2R-mn-Lsm"/>
-                <constraint firstAttribute="trailing" secondItem="O3i-07-Ghy" secondAttribute="trailing" constant="20" id="qWi-Xl-mxq"/>
                 <constraint firstAttribute="trailing" secondItem="UnH-Pj-bhL" secondAttribute="trailing" id="rJG-tK-XfT"/>
-                <constraint firstItem="O3i-07-Ghy" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="30" id="reW-gS-x9d"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <size key="customSize" width="191" height="132"/>

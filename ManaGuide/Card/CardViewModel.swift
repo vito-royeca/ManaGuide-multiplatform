@@ -45,8 +45,8 @@ enum CardDetailsSection : Int {
     case oracleText
     case originalText
     case flavorText
-    case artist
     case set
+    case artist
     case otherNames
     case otherPrintings
     case variations
@@ -62,8 +62,8 @@ enum CardDetailsSection : Int {
         case .oracleText: return "Text"
         case .originalText: return "Original Text"
         case .flavorText: return "Flavor Text"
-        case .artist: return "Artist"
         case .set: return "Set"
+        case .artist: return "Artist"
         case .otherNames: return "Other Names"
         case .otherPrintings: return "Other Printings"
         case .variations: return "Variations"
@@ -152,6 +152,18 @@ class CardViewModel: NSObject {
         return fetchedObjects.count
     }
     
+    func numberOfOtherNames() -> Int {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        var count = 0
+        
+        if let names_ = card.names_ {
+            if let array = names_.allObjects as? [CMCard] {
+                count = array.filter({ $0.name != card.name}).count
+            }
+        }
+        return count
+    }
+    
     func numberOfOtherPrintings() -> Int {
         guard let otherPrintingsFRC = _otherPrintingsFRC,
             let fetchedObjects = otherPrintingsFRC.fetchedObjects else {
@@ -170,6 +182,81 @@ class CardViewModel: NSObject {
         return fetchedObjects.count
     }
     
+    func numberOfRulings() -> Int {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        var count = 0
+        
+        if let rulings_ = card.rulings_ {
+            count = rulings_.count
+        }
+        return count
+    }
+    
+    func numberOfLegalities() -> Int {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        var count = 0
+        
+        if let cardLegalities_ = card.cardLegalities_ {
+            count = cardLegalities_.count
+        }
+        return count
+    }
+    
+    func otherCard(inRow row: Int) -> CMCard? {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        var otherCard: CMCard?
+        
+        if let names_ = card.names_ {
+            if let array = names_.allObjects as? [CMCard] {
+                let array2 = array.filter({ $0.name != card.name})
+                if array2.count > 0 {
+                    otherCard = array2[row]
+                }
+            }
+        }
+        return otherCard
+    }
+    
+    func rulingText(inRow row: Int, pointSize: CGFloat) -> NSAttributedString? {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let rulings_ = card.rulings_ else {
+            return nil
+        }
+        
+        guard let array = rulings_.allObjects.sorted(by: {(first: Any, second: Any) -> Bool in
+            if let a = first as? CMRuling,
+                let b = second as? CMRuling {
+                if let aDate = a.date,
+                    let bDate = b.date {
+                    return aDate > bDate
+                }
+            }
+            return false
+        }) as? [CMRuling] else {
+            return nil
+        }
+        
+        if array.count > 0 {
+            let ruling = array[row]
+            var contents = ""
+            
+            if let date = ruling.date {
+                contents.append(date)
+            }
+            if let text = ruling.text {
+                if contents.count > 0 {
+                    contents.append("\n\n")
+                }
+                contents.append(text)
+            }
+            
+            return NSAttributedString(symbol: contents,
+                                      pointSize: pointSize)
+        } else {
+            return nil
+        }
+    }
+    
     func numberOfSections() -> Int {
         var sections = 0
         
@@ -186,7 +273,6 @@ class CardViewModel: NSObject {
     }
     
     func titleForHeaderInSection(section: Int) -> String? {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         var headerTitle: String?
         
         switch content {
@@ -202,55 +288,40 @@ class CardViewModel: NSObject {
                 headerTitle = CardDetailsSection.originalText.description
             case CardDetailsSection.flavorText.rawValue:
                 headerTitle = CardDetailsSection.flavorText.description
-            case CardDetailsSection.artist.rawValue:
-                headerTitle = CardDetailsSection.artist.description
             case CardDetailsSection.set.rawValue:
                 headerTitle = CardDetailsSection.set.description
+            case CardDetailsSection.artist.rawValue:
+                headerTitle = CardDetailsSection.artist.description
             case CardDetailsSection.otherNames.rawValue:
                 headerTitle = CardDetailsSection.otherNames.description
-                var count = 0
-                
-                if let names_ = card.names_ {
-                    if let array = names_.allObjects as? [CMCard] {
-                        count = array.filter({ $0.name != card.name}).count
-                        
-                    }
+                let count = numberOfOtherNames()
+                if count > 0 {
+                    headerTitle?.append(": \(count)")
                 }
-                headerTitle?.append(": \(count)")
             case CardDetailsSection.otherPrintings.rawValue:
                 headerTitle = CardDetailsSection.otherPrintings.description
-                var count = 0
-                
-                if let otherPrintingsFRC = _otherPrintingsFRC,
-                    let fetchedObjects = otherPrintingsFRC.fetchedObjects {
-                    count = fetchedObjects.count
+                let count = numberOfOtherPrintings()
+                if count > 0 {
+                    headerTitle?.append(": \(count)")
                 }
-                headerTitle?.append(": \(count)")
             case CardDetailsSection.variations.rawValue:
                 headerTitle = CardDetailsSection.variations.description
-                var count = 0
-                
-                if let variationsFRC = _variationsFRC,
-                    let fetchedObjects = variationsFRC.fetchedObjects {
-                    count = fetchedObjects.count
+                let count = numberOfVariations()
+                if count > 0 {
+                    headerTitle?.append(": \(count)")
                 }
-                headerTitle?.append(": \(count)")
             case CardDetailsSection.rulings.rawValue:
                 headerTitle = CardDetailsSection.rulings.description
-                var count = 0
-                
-                if let rulings_ = card.rulings_ {
-                    count = rulings_.count
+                let count = numberOfRulings()
+                if count > 0 {
+                    headerTitle?.append(": \(count)")
                 }
-                headerTitle?.append(": \(count)")
             case CardDetailsSection.legalities.rawValue:
                 headerTitle = CardDetailsSection.legalities.description
-                var count = 0
-                
-                if let cardLegalities_ = card.cardLegalities_ {
-                    count = cardLegalities_.count
+                let count = numberOfLegalities()
+                if count > 0 {
+                    headerTitle?.append(": \(count)")
                 }
-                headerTitle?.append(": \(count)")
             case CardDetailsSection.otherDetails.rawValue:
                 headerTitle = CardDetailsSection.otherDetails.description
             default:

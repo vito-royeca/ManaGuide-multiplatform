@@ -9,7 +9,6 @@
 import UIKit
 
 import CoreData
-import ChameleonFramework
 import ManaKit
 import PromiseKit
 
@@ -38,10 +37,10 @@ class HeroCardView: UIView {
     func showImage() {
         if let image = ManaKit.sharedInstance.cardImage(card, imageType: .artCrop) {
             cropImage.image = image
-            updateNameLabelColorFrom(image: image)
+            MGUtilities.updateColor(ofLabel: nameLabel, from: image)
         } else {
             cropImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
-            updateNameLabelColorFrom(image: cropImage.image!)
+            MGUtilities.updateColor(ofLabel: nameLabel, from: cropImage.image!)
             
             firstly {
                 ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
@@ -58,7 +57,7 @@ class HeroCardView: UIView {
                                   options: .transitionCrossDissolve,
                                   animations: animations,
                                   completion: nil)
-                self.updateNameLabelColorFrom(image: image)
+                MGUtilities.updateColor(ofLabel: self.nameLabel, from: image)
                 
             }.catch { error in
                 print("\(error)")
@@ -98,16 +97,6 @@ class HeroCardView: UIView {
         nameLabel.text = ""
         setIcon.text = ""
         setIcon.backgroundColor = UIColor.clear
-    }
-    
-    func updateNameLabelColorFrom(image: UIImage) {
-        let averageColor = AverageColorFromImage(image)
-        let shadowColor = averageColor
-        let shadowOffset = CGSize(width: 2, height: 2)
-
-        nameLabel.textColor = UIColor.white
-        nameLabel.shadowColor = shadowColor
-        nameLabel.shadowOffset = shadowOffset
     }
 }
 

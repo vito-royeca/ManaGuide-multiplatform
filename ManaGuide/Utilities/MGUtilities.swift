@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ChameleonFramework
 import Kanna
 import ManaKit
 
@@ -219,5 +220,14 @@ class MGUtilities {
         attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
         
         return attributedString
+    }
+    
+    class func updateColor(ofLabel label: UILabel, from image: UIImage) {
+        let shadowColor = AverageColorFromImage(image)
+        let shadowOffset = CGSize(width: 2, height: 2)
+        
+        label.textColor = UIColor.white
+        label.shadowColor = shadowColor
+        label.shadowOffset = shadowOffset
     }
 }

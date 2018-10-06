@@ -38,22 +38,6 @@ class SearchViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        // Settings
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.updateSettings(_:)),
-                                               name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
-                                               object: nil)
-        // Favorites
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.updateData(_:)),
-                                               name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
-                                               object: nil)
-        // Ratings
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.updateData(_:)),
-                                               name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
-                                               object: nil)
-        
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Filter"
         searchController.searchResultsUpdater = self
@@ -86,7 +70,33 @@ class SearchViewController: BaseViewController {
         viewModel.fetchData()
     }
 
-    deinit {
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Settings
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.updateSettings(_:)),
+                                               name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+                                               object: nil)
+        // Favorites
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.updateData(_:)),
+                                               name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
+                                               object: nil)
+        // Ratings
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.updateData(_:)),
+                                               name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
+                                               object: nil)
+        
+        if #available(iOS 11.0, *) {
+            navigationItem.hidesSearchBarWhenScrolling = true
+        }
+        updateDataDisplay()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         // Remove notification listeners
         NotificationCenter.default.removeObserver(self,
                                                   name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
@@ -97,15 +107,6 @@ class SearchViewController: BaseViewController {
         NotificationCenter.default.removeObserver(self,
                                                   name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                   object:nil)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        if #available(iOS 11.0, *) {
-            navigationItem.hidesSearchBarWhenScrolling = true
-        }
-        updateDataDisplay()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

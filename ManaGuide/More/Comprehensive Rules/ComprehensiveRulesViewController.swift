@@ -34,6 +34,9 @@ class ComprehensiveRulesViewController: BaseViewController {
         } else {
             tableView.tableHeaderView = searchController.searchBar
         }
+        tableView.register(UINib(nibName: "DynamicHeightTableViewCell",
+                                 bundle: nil),
+                           forCellReuseIdentifier: DynamicHeightTableViewCell.reuseIdentifier)
         tableView.register(UINib(nibName: "EmptyTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
@@ -53,11 +56,9 @@ class ComprehensiveRulesViewController: BaseViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showRule" {
             guard let dest = segue.destination as? ComprehensiveRulesViewController,
-                let cell = sender as? UITableViewCell,
-                let indexPath = tableView.indexPath(for: cell) else {
+                let rule = sender as? CMRule else {
                 return
             }
-            let rule = viewModel.object(forRowAt: indexPath)
             
             dest.viewModel = ComprehensiveRulesViewModel(withRule: rule)
             
@@ -104,10 +105,8 @@ extension ComprehensiveRulesViewController : UITableViewDataSource {
             cell = c
             
         } else {
-            let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell",
-                                                     for: indexPath)
-            guard let label = c.viewWithTag(100) as? UILabel else {
-                fatalError("No view with tag 100")
+            guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell else {
+                fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
             }
             
             let rule = viewModel.object(forRowAt: indexPath)
@@ -129,8 +128,8 @@ extension ComprehensiveRulesViewController : UITableViewDataSource {
                     }
                 }
             }
-            label.attributedText = viewModel.attributedTextFor(rule,
-                                                               withText: searchController.searchBar.text)
+            c.dynamicLabel.attributedText = viewModel.attributedTextFor(rule,
+                                                                        withText: searchController.searchBar.text)
             cell = c
         }
         
@@ -175,6 +174,11 @@ extension ComprehensiveRulesViewController : UITableViewDelegate {
         return height
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let rule = viewModel.object(forRowAt: indexPath)
+        performSegue(withIdentifier: "showRule", sender: rule)
+    }
+
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         if viewModel.isEmpty() {
             return nil

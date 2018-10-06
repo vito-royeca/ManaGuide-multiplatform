@@ -25,8 +25,8 @@ class CardViewController: BaseViewController {
     // MARK: Variables
     var viewModel: CardViewModel!
 
-    var otherPrintingsCollectionView: UICollectionView?
-    var variationsCollectionView: UICollectionView?
+//    var otherPrintingsCollectionView: UICollectionView?
+//    var variationsCollectionView: UICollectionView?
     var cardViewIncremented = false
     
     // MARK: Outlets
@@ -107,6 +107,12 @@ class CardViewController: BaseViewController {
         
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"),
                            forCellReuseIdentifier: "CardCell")
+        tableView.register(UINib(nibName: "DynamicHeightTableViewCell",
+                                 bundle: nil),
+                           forCellReuseIdentifier: DynamicHeightTableViewCell.reuseIdentifier)
+        tableView.register(UINib(nibName: "EmptyTableViewCell",
+                                 bundle: nil),
+                           forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
         tableView.register(UINib(nibName: "StoreTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: StoreTableViewCell.reuseIdentifier)
@@ -189,19 +195,18 @@ class CardViewController: BaseViewController {
                     parentView = parentView?.superview
                 }
                 
-                if let parentView = parentView {
-                    if parentView == otherPrintingsCollectionView {
-                        if let otherPrintingsCollectionView = otherPrintingsCollectionView,
-                            let indexPath = otherPrintingsCollectionView.indexPath(for: cell) {
-                            let card = viewModel.otherPrinting(forRowAt: indexPath)
-                            cardIDs = [card.id!]
-                        }
-                    } else if parentView == variationsCollectionView {
-                        if let variationsCollectionView = variationsCollectionView,
-                            let indexPath = variationsCollectionView.indexPath(for: cell) {
-                            let card = viewModel.variation(forRowAt: indexPath)
-                            cardIDs = [card.id!]
-                        }
+                if let parentView = parentView as? UICollectionView,
+                    let indexPath = parentView.indexPath(for: cell) {
+                
+                    switch parentView.tag {
+                    case CardDetailsSection.otherPrintings.rawValue:
+                        let card = viewModel.otherPrinting(forRowAt: indexPath)
+                        cardIDs = [card.id!]
+                    case CardDetailsSection.variations.rawValue:
+                        let card = viewModel.variation(forRowAt: indexPath)
+                        cardIDs = [card.id!]
+                    default:
+                        ()
                     }
                 }
             } else if let dict = sender as? [String: Any]  {
@@ -505,9 +510,8 @@ extension CardViewController : UITableViewDataSource {
                 if let text = card.manaCost {
                     label.attributedText = NSAttributedString(symbol: text, pointSize: label.font.pointSize)
                 } else {
-                    label.text = " "
+                    label.text = "\n"
                 }
-                
                 c.selectionStyle = .none
                 c.accessoryType = .none
                 cell = c
@@ -522,81 +526,57 @@ extension CardViewController : UITableViewDataSource {
                     label.attributedText = MGUtilities.composeType(of: card, pointSize: label.font.pointSize)
                     label.adjustsFontSizeToFitWidth = true
                 } else {
-                    label.text = " "
+                    label.text = "\n"
                     label.adjustsFontSizeToFitWidth = false
                 }
-                
                 c.selectionStyle = .none
                 c.accessoryType = .none
                 cell = c
                 
             case CardDetailsSection.oracleText.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                    let label = c.viewWithTag(100) as? UILabel else {
-                    return UITableViewCell(frame: CGRect.zero)
+                guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell else {
+                    fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
                 }
                 
                 if let text = card.text {
-                    label.attributedText = NSAttributedString(symbol: "\n\(text)\n ", pointSize: label.font.pointSize)
+                    c.dynamicLabel.attributedText = NSAttributedString(symbol: "\n\(text)\n ",
+                                                                      pointSize: c.dynamicLabel.font.pointSize)
                 } else {
-                    label.text = " "
+                    c.dynamicLabel.text = "\n"
                 }
-                
                 c.selectionStyle = .none
                 c.accessoryType = .none
                 cell = c
                 
             case CardDetailsSection.originalText.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                    let label = c.viewWithTag(100) as? UILabel else {
-                    return UITableViewCell(frame: CGRect.zero)
+                guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell else {
+                    fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
                 }
                 
                 if let text = card.originalText {
-                    label.attributedText = NSAttributedString(symbol: "\n\(text)\n ", pointSize: label.font.pointSize)
+                    c.dynamicLabel.attributedText = NSAttributedString(symbol: "\n\(text)\n ",
+                                                                       pointSize: c.dynamicLabel.font.pointSize)
                 } else {
-                    label.text = " "
+                    c.dynamicLabel.text = "\n"
                 }
-                    
                 c.selectionStyle = .none
                 c.accessoryType = .none
                 cell = c
                 
             case CardDetailsSection.flavorText.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                    let label = c.viewWithTag(100) as? UILabel else {
-                    return UITableViewCell(frame: CGRect.zero)
+                guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell else {
+                    fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
                 }
                 
                 if let text = card.flavor {
-                    label.text = "\n\(text)\n"
+                    c.dynamicLabel.text = "\n\(text)\n"
                 } else {
-                    label.text = "\n"
+                    c.dynamicLabel.text = "\n"
                 }
-                
                 c.selectionStyle = .none
                 c.accessoryType = .none
                 cell = c
-                
-            case CardDetailsSection.artist.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
-                    let label = c.textLabel,
-                    let detailTextLabel = c.detailTextLabel else {
-                    return UITableViewCell(frame: CGRect.zero)
-                }
-                
-                if let artist = card.artist_ {
-                    label.adjustsFontSizeToFitWidth = true
-                    label.text = artist.name
-                    detailTextLabel.text = "More Cards"
-                } else {
-                    label.text = " "
-                    detailTextLabel.text = " "
-                }
-                c.selectionStyle = .default
-                c.accessoryType = .disclosureIndicator
-                cell = c
-                
+            
             case CardDetailsSection.set.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
                     let label = c.textLabel,
@@ -605,7 +585,7 @@ extension CardViewController : UITableViewDataSource {
                     let setName = set.name,
                     let keyruneUnicode = ManaKit.sharedInstance.keyruneUnicode(forSet: set),
                     let keyruneColor = ManaKit.sharedInstance.keyruneColor(forCard: card) else {
-                    return UITableViewCell(frame: CGRect.zero)
+                        return UITableViewCell(frame: CGRect.zero)
                 }
                 
                 let attributes = [NSFontAttributeName: UIFont(name: "Keyrune", size: 17)!,
@@ -624,125 +604,102 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .disclosureIndicator
                 cell = c
 
-            case CardDetailsSection.otherNames.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
-                    let label = c.textLabel else {
-                        return UITableViewCell(frame: CGRect.zero)
-                }
-                
-                var otherCard: CMCard?
-                
-                if let names_ = card.names_ {
-                    if let array = names_.allObjects as? [CMCard] {
-                        let array2 = array.filter({ $0.name != card.name})
-                        if array2.count > 0 {
-                            otherCard = array2[indexPath.row]
-                        }
-                    }
-                }
-                
-                if let otherCard = otherCard {
-                    label.text = otherCard.name
-                    c.selectionStyle = .default
-                    c.accessoryType = .disclosureIndicator
-                } else {
-                    label.text = " "
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                }
-                
-                cell = c
-
-            case CardDetailsSection.otherPrintings.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
-                    return UITableViewCell(frame: CGRect.zero)
-                }
-                
-                c.selectionStyle = .none
-                c.accessoryType = .none
-                cell = c
-                
-            case CardDetailsSection.variations.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
-                    return UITableViewCell(frame: CGRect.zero)
-                }
-                
-                c.selectionStyle = .none
-                c.accessoryType = .none
-                cell = c
-                
-            case CardDetailsSection.rulings.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                    let label = c.viewWithTag(100) as? UILabel,
-                    let rulings_ = card.rulings_ else {
-                    return UITableViewCell(frame: CGRect.zero)
-                }
-                
-                let array = rulings_.allObjects.sorted(by: {(first: Any, second: Any) -> Bool in
-                    if let a = first as? CMRuling,
-                        let b = second as? CMRuling {
-                        if let aDate = a.date,
-                            let bDate = b.date {
-                            return aDate > bDate
-                        }
-                    }
-                    return false
-                }) as! [CMRuling]
-                
-                
-                if array.count > 0 {
-                    let ruling = array[indexPath.row]
-                    var contents = ""
-                    
-                    if let date = ruling.date {
-                        contents.append(date)
-                    }
-                    if let text = ruling.text {
-                        if contents.count > 0 {
-                            contents.append("\n\n")
-                        }
-                        contents.append(text)
-                    }
-                    
-                    label.attributedText = NSAttributedString(symbol: contents, pointSize: label.font.pointSize)
-                } else {
-                    label.text = "\n"
-                }
-                
-                c.selectionStyle = .none
-                c.accessoryType = .none
-                cell = c
-                
-            case CardDetailsSection.legalities.rawValue:
+            case CardDetailsSection.artist.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
                     let label = c.textLabel,
-                    let detailTextLabel = c.detailTextLabel,
-                    let cardLegalities_ = card.cardLegalities_ else {
+                    let detailTextLabel = c.detailTextLabel else {
                     return UITableViewCell(frame: CGRect.zero)
                 }
                 
-                let array = cardLegalities_.allObjects as! [CMCardLegality]
-                
-                if array.count > 0 {
-                    let cardLegality = array[indexPath.row]
-                    label.text = cardLegality.format!.name
-                    detailTextLabel.text = cardLegality.legality!.name
+                if let artist = card.artist_ {
+                    label.adjustsFontSizeToFitWidth = true
+                    label.text = artist.name
+                    detailTextLabel.text = "More Cards"
                 } else {
                     label.text = " "
                     detailTextLabel.text = " "
                 }
-                    
-                c.selectionStyle = .none
-                c.accessoryType = .none
+
+                c.selectionStyle = .default
+                c.accessoryType = .disclosureIndicator
                 cell = c
                 
-            case CardDetailsSection.otherDetails.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                    let label = c.viewWithTag(100) as? UILabel else {
-                    return UITableViewCell(frame: CGRect.zero)
+            case CardDetailsSection.otherNames.rawValue:
+                if let otherCard = viewModel.otherCard(inRow: indexPath.row) {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                        let label = c.textLabel else {
+                        fatalError("BasicCell is nil")
+                    }
+                    
+                    label.text = otherCard.name
+                    c.selectionStyle = .default
+                    c.accessoryType = .disclosureIndicator
+                    cell = c
+
+                } else {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
+                        fatalError("Thumbnails is nil")
+                    }
+                    cell = c
                 }
+
+            case CardDetailsSection.otherPrintings.rawValue:
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
+                    fatalError("Thumbnails is nil")
+                }
+                cell = c
                 
-                label.attributedText = MGUtilities.composeOtherDetails(forCard: card)
+            case CardDetailsSection.variations.rawValue:
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
+                    fatalError("Thumbnails is nil")
+                }
+                cell = c
+                
+            case CardDetailsSection.rulings.rawValue:
+                if viewModel.numberOfRulings() == 0 {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
+                        fatalError("Thumbnails is nil")
+                    }
+                    cell = c
+                } else {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell else {
+                        fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
+                    }
+                    c.dynamicLabel.attributedText = viewModel.rulingText(inRow: indexPath.row,
+                                                                         pointSize: c.dynamicLabel.font.pointSize)
+                    c.selectionStyle = .none
+                    c.accessoryType = .none
+                    cell = c
+                }
+            case CardDetailsSection.legalities.rawValue:
+                if viewModel.numberOfLegalities() == 0 {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
+                        fatalError("Thumbnails is nil")
+                    }
+                    cell = c
+                } else {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
+                        let label = c.textLabel,
+                        let detailTextLabel = c.detailTextLabel,
+                        let cardLegalities_ = card.cardLegalities_ else {
+                        fatalError("RightDetailCell is nil")
+                    }
+                    let array = cardLegalities_.allObjects as! [CMCardLegality]
+                    
+                    if array.count > 0 {
+                        let cardLegality = array[indexPath.row]
+                        label.text = cardLegality.format!.name
+                        detailTextLabel.text = cardLegality.legality!.name
+                    }
+                    c.selectionStyle = .none
+                    c.accessoryType = .none
+                    cell = c
+                }
+            case CardDetailsSection.otherDetails.rawValue:
+                guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell else {
+                    fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
+                }
+                c.dynamicLabel.attributedText = MGUtilities.composeOtherDetails(forCard: card)
                 c.selectionStyle = .none
                 c.accessoryType = .none
                 cell = c
@@ -758,25 +715,26 @@ extension CardViewController : UITableViewDataSource {
             let count = suppliers.allObjects.count
             
             if count == 0 {
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                    let label = c.viewWithTag(100) as? UILabel else {
-                    return UITableViewCell(frame: CGRect.zero)
-                }
-                
                 if card.storePricingLastUpdate == nil {
-                    label.attributedText = NSAttributedString(html: "<html><center>Loading...</center></html>")
-                } else {
-                    label.attributedText = NSAttributedString(html: "<html><center>No data found.</center></html>")
-                }
-                label.isUserInteractionEnabled = false
-                if let taps = label.gestureRecognizers {
-                    for tap in taps {
-                        label.removeGestureRecognizer(tap)
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell else {
+                        fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
                     }
+                    c.dynamicLabel.attributedText = NSAttributedString(html: "<html><center>Loading...</center></html>")
+                    c.dynamicLabel.isUserInteractionEnabled = false
+                    if let taps = c.dynamicLabel.gestureRecognizers {
+                        for tap in taps {
+                            c.dynamicLabel.removeGestureRecognizer(tap)
+                        }
+                    }
+                    c.selectionStyle = .none
+                    c.accessoryType = .none
+                    cell = c
+                } else {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.reuseIdentifier) as? EmptyTableViewCell else {
+                        fatalError("\(EmptyTableViewCell.reuseIdentifier) is nil")
+                    }
+                    cell = c
                 }
-                c.selectionStyle = .none
-                c.accessoryType = .none
-                cell = c
                 
             } else {
                 if indexPath.row <= count - 1 {
@@ -794,15 +752,14 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                     
                 } else {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: "DynamicHeightCell"),
-                        let label = c.viewWithTag(100) as? UILabel,
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell,
                         let note = card.storePricingNote else {
-                            return UITableViewCell(frame: CGRect.zero)
+                        fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
                     }
                     
-                    label.attributedText = NSAttributedString(html: note)
-                    label.isUserInteractionEnabled = true
-                    label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleLink(_:))))
+                    c.dynamicLabel.attributedText = NSAttributedString(html: note)
+                    c.dynamicLabel.isUserInteractionEnabled = true
+                    c.dynamicLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleLink(_:))))
                     
                     c.selectionStyle = .none
                     c.accessoryType = .none
@@ -825,40 +782,29 @@ extension CardViewController : UITableViewDelegate {
         switch viewModel.content {
         case .details:
             switch indexPath.section {
-            case CardDetailsSection.otherPrintings.rawValue:
+            case CardDetailsSection.otherNames.rawValue,
+                 CardDetailsSection.otherPrintings.rawValue,
+                 CardDetailsSection.variations.rawValue,
+                 CardDetailsSection.rulings.rawValue,
+                 CardDetailsSection.legalities.rawValue:
                 guard let collectionView = cell.viewWithTag(100) as? UICollectionView else {
                     return
                 }
                 
                 if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                    let width = CGFloat(100)
-                    let height = CGFloat(72)
+                    let width = CGFloat(138)
+                    let height = CGFloat(100)
                     flowLayout.itemSize = CGSize(width: width, height: height)
                     flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
                 }
                 
+                collectionView.register(UINib(nibName: "EmptyCollectionViewCell",
+                                              bundle: nil),
+                                        forCellWithReuseIdentifier: EmptyCollectionViewCell.reuseIdentifier)
+                collectionView.tag = indexPath.section
                 collectionView.dataSource = self
                 collectionView.delegate = self
-                otherPrintingsCollectionView = collectionView
                 collectionView.reloadData()
-                
-            case CardDetailsSection.variations.rawValue:
-                guard let collectionView = cell.viewWithTag(100) as? UICollectionView else {
-                    return
-                }
-                
-                if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                    let width = CGFloat(100)
-                    let height = CGFloat(72)
-                    flowLayout.itemSize = CGSize(width: width, height: height)
-                    flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
-                }
-                
-                collectionView.dataSource = self
-                collectionView.delegate = self
-                variationsCollectionView = collectionView
-                collectionView.reloadData()
-                
             default:
                 ()
             }
@@ -886,16 +832,34 @@ extension CardViewController : UITableViewDelegate {
             
         case .details:
             switch indexPath.section {
+            case CardDetailsSection.otherNames.rawValue:
+                if viewModel.numberOfOtherNames() == 0 {
+                    height = CGFloat(100)
+                } else {
+                    height = UITableViewAutomaticDimension
+                }
             case CardDetailsSection.otherPrintings.rawValue,
                  CardDetailsSection.variations.rawValue:
-                height = CGFloat(88)
+                height = CGFloat(100)
+            case CardDetailsSection.rulings.rawValue:
+                if viewModel.numberOfRulings() == 0 {
+                    height = CGFloat(100)
+                } else {
+                    height = UITableViewAutomaticDimension
+                }
+            case CardDetailsSection.legalities.rawValue:
+                if viewModel.numberOfLegalities() == 0 {
+                    height = CGFloat(100)
+                } else {
+                    height = UITableViewAutomaticDimension
+                }
             default:
                 height = UITableViewAutomaticDimension
             }
             
         case .store:
             guard let suppliers = card.suppliers else {
-                return CGFloat(0)
+                return tableView.frame.size.height
             }
             let count = suppliers.allObjects.count
             
@@ -918,38 +882,25 @@ extension CardViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
         var path: IndexPath?
         
         switch viewModel.content {
         case .details:
             switch indexPath.section {
-            case CardDetailsSection.artist.rawValue,
-                 CardDetailsSection.set.rawValue:
+            case CardDetailsSection.set.rawValue,
+                 CardDetailsSection.artist.rawValue:
                 path = indexPath
             case CardDetailsSection.otherNames.rawValue:
-                var otherCard: CMCard?
-                
-                if let names_ = card.names_ {
-                    if let array = names_.allObjects as? [CMCard] {
-                        let array2 = array.filter({ $0.name != card.name})
-                        if array2.count > 0 {
-                            otherCard = array2[indexPath.row]
-                        }
-                    }
-                }
-                
-                if let _ = otherCard {
+                if let _ = viewModel.otherCard(inRow: indexPath.row) {
                     path = indexPath
                 }
-                
             default:
                 ()
             }
         default:
             ()
         }
-            
+
         return path
     }
     
@@ -959,6 +910,13 @@ extension CardViewController : UITableViewDelegate {
         switch viewModel.content {
         case .details:
             switch indexPath.section {
+            case CardDetailsSection.set.rawValue:
+                guard let set = card.set else {
+                    return
+                }
+                
+                performSegue(withIdentifier: "showSet", sender: ["set": set])
+
             case CardDetailsSection.artist.rawValue:
                 guard let artist = card.artist_ else {
                     return
@@ -975,31 +933,10 @@ extension CardViewController : UITableViewDelegate {
                 performSegue(withIdentifier: "showSearch", sender: ["request": request,
                                                                     "title": artist.name!])
                 
-            case CardDetailsSection.set.rawValue:
-                guard let set = card.set else {
-                    return
-                }
-                
-                performSegue(withIdentifier: "showSet", sender: ["set": set])
-                
             case CardDetailsSection.otherNames.rawValue:
-                var otherCard: CMCard?
-                
-                if let names_ = card.names_ {
-                    if let array = names_.allObjects as? [CMCard] {
-                        let array2 = array.filter({ $0.name != card.name})
-                        if array2.count > 0 {
-                            otherCard = array2[indexPath.row]
-                        }
-                    }
+                if let otherCard = viewModel.otherCard(inRow: indexPath.row) {
+                    performSegue(withIdentifier: "showCard", sender: ["card": otherCard])
                 }
-                
-                guard let oc = otherCard else {
-                    return
-                }
-                
-                performSegue(withIdentifier: "showCard", sender: ["card": oc])
-                
             default:
                 ()
             }
@@ -1014,61 +951,86 @@ extension CardViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var items = 0
         
-        if collectionView == otherPrintingsCollectionView {
-            items = viewModel.numberOfOtherPrintings()
-        } else if collectionView == variationsCollectionView {
-            items = viewModel.numberOfVariations()
+        switch collectionView.tag {
+        case CardDetailsSection.otherNames.rawValue:
+            items = viewModel.numberOfOtherNames() == 0 ? 1 : viewModel.numberOfOtherNames()
+        case CardDetailsSection.otherPrintings.rawValue:
+            items = viewModel.numberOfOtherPrintings() == 0 ? 1 : viewModel.numberOfOtherPrintings()
+        case CardDetailsSection.variations.rawValue:
+            items = viewModel.numberOfVariations() == 0 ? 1 : viewModel.numberOfVariations()
+        case CardDetailsSection.rulings.rawValue:
+            items = viewModel.numberOfRulings() == 0 ? 1 : viewModel.numberOfRulings()
+        case CardDetailsSection.legalities.rawValue:
+            items = viewModel.numberOfLegalities() == 0 ? 1 : viewModel.numberOfLegalities()
+        default:
+            ()
         }
-
+        
         return items
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ThumbnailItemCell", for: indexPath)
+        var cell: UICollectionViewCell?
         var card: CMCard?
         
-        if collectionView == otherPrintingsCollectionView {
-            card = viewModel.otherPrinting(forRowAt: indexPath)
-        } else if collectionView == variationsCollectionView {
-            card = viewModel.variation(forRowAt: indexPath)
-        }
-        
-        guard let c = card,
-            let thumbnailImage = cell.viewWithTag(100) as? UIImageView,
-            let setImage = cell.viewWithTag(200) as? UILabel else {
-            return cell
-        }
-        
-        if let croppedImage = ManaKit.sharedInstance.croppedImage(c) {
-            thumbnailImage.image = croppedImage
-        } else {
-            thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
-            
-            firstly {
-                ManaKit.sharedInstance.downloadImage(ofCard: c, imageType: .artCrop)
-            }.done {
-                guard let image = ManaKit.sharedInstance.croppedImage(c) else {
-                    return
-                }
-                
-                let animations = {
-                    thumbnailImage.image = image
-                }
-                UIView.transition(with: thumbnailImage,
-                                  duration: 1.0,
-                                  options: .transitionCrossDissolve,
-                                  animations: animations,
-                                  completion: nil)
-            }.catch { error in
-                
+        switch collectionView.tag {
+        case CardDetailsSection.otherPrintings.rawValue:
+            if viewModel.numberOfOtherPrintings() > 0 {
+                card = viewModel.otherPrinting(forRowAt: indexPath)
             }
+        case CardDetailsSection.variations.rawValue:
+            if viewModel.numberOfVariations() > 0 {
+                card = viewModel.variation(forRowAt: indexPath)
+            }
+        default:
+            ()
         }
         
-        setImage.layer.cornerRadius = setImage.frame.height / 2
-        setImage.text = ManaKit.sharedInstance.keyruneUnicode(forSet: c.set!)
-        setImage.textColor = ManaKit.sharedInstance.keyruneColor(forCard: c)
+        if let card = card {
+            let c = collectionView.dequeueReusableCell(withReuseIdentifier: "ThumbnailItemCell", for: indexPath)
+            
+            guard let thumbnailImage = c.viewWithTag(100) as? UIImageView,
+                let setImage = c.viewWithTag(200) as? UILabel else {
+                fatalError("thumbnailImage not found")
+            }
+            
+            if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
+                thumbnailImage.image = croppedImage
+            } else {
+                thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
+                
+                firstly {
+                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
+                }.done {
+                    guard let image = ManaKit.sharedInstance.croppedImage(card) else {
+                        return
+                    }
+                    
+                    let animations = {
+                        thumbnailImage.image = image
+                    }
+                    UIView.transition(with: thumbnailImage,
+                                      duration: 1.0,
+                                      options: .transitionCrossDissolve,
+                                      animations: animations,
+                                      completion: nil)
+                }.catch { error in
+                        
+                }
+            }
+            setImage.layer.cornerRadius = setImage.frame.height / 2
+            setImage.text = ManaKit.sharedInstance.keyruneUnicode(forSet: card.set!)
+            setImage.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
+            cell = c
+        } else {
+            guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: EmptyCollectionViewCell.reuseIdentifier, for: indexPath) as? EmptyCollectionViewCell else {
+                fatalError("\(EmptyCollectionViewCell.reuseIdentifier) is nil")
+            }
+            c.noDataLabel.font = UIFont(name: "Beleren", size: 15.0)
+            cell = c
+        }
         
-        return cell
+        return cell!
     }
 }
 

@@ -106,6 +106,12 @@
 		1150BCEE20B92E4700A36FCD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1150BCED20B92E4700A36FCD /* LoginViewController.swift */; };
 		1150BCEF20B92E4700A36FCD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1150BCED20B92E4700A36FCD /* LoginViewController.swift */; };
 		1150BCF020B92E4700A36FCD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1150BCED20B92E4700A36FCD /* LoginViewController.swift */; };
+		115C5F682168053600662395 /* DynamicHeightTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115C5F662168053600662395 /* DynamicHeightTableViewCell.swift */; };
+		115C5F692168053600662395 /* DynamicHeightTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115C5F662168053600662395 /* DynamicHeightTableViewCell.swift */; };
+		115C5F6A2168053600662395 /* DynamicHeightTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115C5F662168053600662395 /* DynamicHeightTableViewCell.swift */; };
+		115C5F6B2168053600662395 /* DynamicHeightTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 115C5F672168053600662395 /* DynamicHeightTableViewCell.xib */; };
+		115C5F6C2168053600662395 /* DynamicHeightTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 115C5F672168053600662395 /* DynamicHeightTableViewCell.xib */; };
+		115C5F6D2168053600662395 /* DynamicHeightTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 115C5F672168053600662395 /* DynamicHeightTableViewCell.xib */; };
 		115FFECF214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115FFECE214C2FE100FDB8B0 /* AccountViewModel.swift */; };
 		115FFED0214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115FFECE214C2FE100FDB8B0 /* AccountViewModel.swift */; };
 		115FFED1214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115FFECE214C2FE100FDB8B0 /* AccountViewModel.swift */; };
@@ -311,6 +317,8 @@
 		114C1D822161D8F600825DD2 /* ListsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListsViewModel.swift; sourceTree = "<group>"; };
 		114FE3A32146A313009E3201 /* CardPricingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPricingTableViewCell.swift; sourceTree = "<group>"; };
 		1150BCED20B92E4700A36FCD /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		115C5F662168053600662395 /* DynamicHeightTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicHeightTableViewCell.swift; sourceTree = "<group>"; };
+		115C5F672168053600662395 /* DynamicHeightTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DynamicHeightTableViewCell.xib; sourceTree = "<group>"; };
 		115FFECE214C2FE100FDB8B0 /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
 		1165CD721F377395006CC433 /* MoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreViewController.swift; sourceTree = "<group>"; };
 		1165CD751F377F58006CC433 /* BannedListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannedListViewController.swift; sourceTree = "<group>"; };
@@ -545,6 +553,8 @@
 		11853EC42166A8890055077B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				115C5F662168053600662395 /* DynamicHeightTableViewCell.swift */,
+				115C5F672168053600662395 /* DynamicHeightTableViewCell.xib */,
 				11853EBC2166A85F0055077B /* EmptyCollectionViewCell.swift */,
 				11853EBD2166A85F0055077B /* EmptyCollectionViewCell.xib */,
 				11853EB421669AD50055077B /* EmptyTableViewCell.swift */,
@@ -880,6 +890,7 @@
 				11C7B45820D6A7E2009D63F4 /* StoreTableViewCell.xib in Resources */,
 				110BB4FF1F207C6400086841 /* Main.storyboard in Resources */,
 				118FDC7720D515E5002FA5E8 /* ShareActivity.xcassets in Resources */,
+				115C5F6B2168053600662395 /* DynamicHeightTableViewCell.xib in Resources */,
 				11447EB220D1764000DFF5C7 /* HeroCardView.xib in Resources */,
 				11853EE32166B0D40055077B /* CardGridTableViewCell.xib in Resources */,
 				1147B7691F226143004EF296 /* Settings.bundle in Resources */,
@@ -896,6 +907,7 @@
 				11853EBA21669AD50055077B /* EmptyTableViewCell.xib in Resources */,
 				11447EB320D1764000DFF5C7 /* HeroCardView.xib in Resources */,
 				11853EC22166A85F0055077B /* EmptyCollectionViewCell.xib in Resources */,
+				115C5F6C2168053600662395 /* DynamicHeightTableViewCell.xib in Resources */,
 				11CEE05C20D0012300D72186 /* Launch Screen.storyboard in Resources */,
 				11853EF52166D6540055077B /* Main.storyboard in Resources */,
 				11CEE05820CFE96100D72186 /* Assets.xcassets in Resources */,
@@ -919,6 +931,7 @@
 				11CEE05D20D0012300D72186 /* Launch Screen.storyboard in Resources */,
 				1147B76A1F226143004EF296 /* Settings.bundle in Resources */,
 				118FDC7920D515E5002FA5E8 /* ShareActivity.xcassets in Resources */,
+				115C5F6D2168053600662395 /* DynamicHeightTableViewCell.xib in Resources */,
 				1140F0C91F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
 				11CEE05920CFE96200D72186 /* Assets.xcassets in Resources */,
 				11C7B45A20D6A7E2009D63F4 /* StoreTableViewCell.xib in Resources */,
@@ -1355,6 +1368,7 @@
 				114C1D5F2161D14F00825DD2 /* AccountHeroTableViewCell.swift in Sources */,
 				114C1D732161D8AA00825DD2 /* DeckViewController.swift in Sources */,
 				114C1D7F2161D8E600825DD2 /* ListViewModel.swift in Sources */,
+				115C5F682168053600662395 /* DynamicHeightTableViewCell.swift in Sources */,
 				11B2AA331F29DE490067E833 /* CardViewController.swift in Sources */,
 				11447EB620D177F700DFF5C7 /* HeroCardView.swift in Sources */,
 				11A63E172142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
@@ -1427,6 +1441,7 @@
 				115FFED0214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */,
 				11D55BCC2132545A002F8F49 /* SettingsViewController.swift in Sources */,
 				11853EE12166B0D40055077B /* CardGridTableViewCell.swift in Sources */,
+				115C5F692168053600662395 /* DynamicHeightTableViewCell.swift in Sources */,
 				114C1D5C2161ABDC00825DD2 /* BannedViewController.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
 				11A63E242142F847005AE024 /* TopViewedViewModel.swift in Sources */,
@@ -1446,6 +1461,7 @@
 				11853ECA2166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */,
 				110BB52E1F20892B00086841 /* SearchViewController.swift in Sources */,
 				11853EE72166D49A0055077B /* LoginViewModel.swift in Sources */,
+				115C5F6A2168053600662395 /* DynamicHeightTableViewCell.swift in Sources */,
 				11F336B420BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				1138A3CB20F76D590023423C /* Throttler.swift in Sources */,
 				11A63E112142CC34005AE024 /* ComprehensiveRulesViewModel.swift in Sources */,
