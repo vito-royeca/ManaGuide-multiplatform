@@ -24,10 +24,6 @@ import NYAlertViewController
 class CardViewController: BaseViewController {
     // MARK: Variables
     var viewModel: CardViewModel!
-
-//    var otherPrintingsCollectionView: UICollectionView?
-//    var variationsCollectionView: UICollectionView?
-    var cardViewIncremented = false
     
     // MARK: Outlets
     @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
@@ -48,12 +44,12 @@ class CardViewController: BaseViewController {
             tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
             
         case .details:
-            if !cardViewIncremented {
-                cardViewIncremented = true
+            if !viewModel.cardViewIncremented {
+                viewModel.cardViewIncremented = true
                 incrementCardViews()
             }
             
-            viewModel.fetchExtraData()
+//            viewModel.fetchExtraData()
             tableView.reloadData()
             tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
             
@@ -91,12 +87,6 @@ class CardViewController: BaseViewController {
     }
     
     // MARK: Overrides
-    deinit {
-        NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name.NSManagedObjectContextObjectsDidChange,
-                                                  object: nil)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -105,14 +95,12 @@ class CardViewController: BaseViewController {
         contentSegmentedControl.setFAIcon(icon: .FAEye, forSegmentAtIndex: 1)
         contentSegmentedControl.setFAIcon(icon: .FAShoppingCart, forSegmentAtIndex: 2)
         
-        tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"),
-                           forCellReuseIdentifier: "CardCell")
         tableView.register(UINib(nibName: "DynamicHeightTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: DynamicHeightTableViewCell.reuseIdentifier)
-        tableView.register(UINib(nibName: "EmptyTableViewCell",
+        tableView.register(UINib(nibName: "CardGridTableViewCell",
                                  bundle: nil),
-                           forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
+                           forCellReuseIdentifier: CardGridTableViewCell.reuseIdentifier)
         tableView.register(UINib(nibName: "StoreTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: StoreTableViewCell.reuseIdentifier)
@@ -183,39 +171,15 @@ class CardViewController: BaseViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showCard" {
-            guard let dest = segue.destination as? CardViewController else {
-                return
+            guard let dest = segue.destination as? CardViewController,
+                let dict = sender as? [String: Any],
+//                let cardIndex = dict["cardIndex"] as? Int,
+                let cardIDs = dict["cardIDs"] as? [String] else {
+                    return
             }
             
-            var cardIDs: [String]?
-            
-            if let cell = sender as? UICollectionViewCell {
-                var parentView = cell.superview
-                while parentView is UICollectionView != true {
-                    parentView = parentView?.superview
-                }
-                
-                if let parentView = parentView as? UICollectionView,
-                    let indexPath = parentView.indexPath(for: cell) {
-                
-                    switch parentView.tag {
-                    case CardDetailsSection.otherPrintings.rawValue:
-                        let card = viewModel.otherPrinting(forRowAt: indexPath)
-                        cardIDs = [card.id!]
-                    case CardDetailsSection.variations.rawValue:
-                        let card = viewModel.variation(forRowAt: indexPath)
-                        cardIDs = [card.id!]
-                    default:
-                        ()
-                    }
-                }
-            } else if let dict = sender as? [String: Any]  {
-                if let card = dict["card"] as? CMCard {
-                    cardIDs = [card.id!]
-                }
-            }
-            
-            dest.viewModel = CardViewModel(withCardIndex: 0, withCardIDs: cardIDs!, withSortDescriptors: nil)
+            dest.viewModel = CardViewModel(withCardIndex: 0,
+                                           withCardIDs: cardIDs, withSortDescriptors: nil)
             
         } else if segue.identifier == "showSearch" {
             guard let dest = segue.destination as? SearchViewController,
@@ -387,7 +351,7 @@ class CardViewController: BaseViewController {
         let card = viewModel.object(forRowAt: IndexPath(row: index, section: 0))
         
         viewModel.cardIndex = index
-        cardViewIncremented = false
+        viewModel.cardViewIncremented = false
         title = card.name
         
         if viewModel.content == .image {
@@ -428,6 +392,21 @@ class CardViewController: BaseViewController {
             }
             open(url)
         }
+    }
+    
+    func setupCardGridCell(cell: CardGridTableViewCell, withRequest request: NSFetchRequest<CMCard>) {
+        let vm = SearchViewModel(withRequest: request, andTitle: nil)
+        let width = CGFloat(138)
+        let height = CGFloat(100)
+        
+        vm.fetchData()
+        cell.viewModel = vm
+        cell.delegate = self
+        cell.imageType = .artCrop
+        cell.flowLayout.itemSize = CGSize(width: width, height: height)
+        cell.flowLayout.minimumInteritemSpacing = CGFloat(10)
+        cell.flowLayout.scrollDirection = .horizontal
+        cell.collectionView.reloadData()
     }
 }
 
@@ -625,41 +604,51 @@ extension CardViewController : UITableViewDataSource {
                 cell = c
                 
             case CardDetailsSection.otherNames.rawValue:
-                if let otherCard = viewModel.otherCard(inRow: indexPath.row) {
+                if viewModel.numberOfOtherNames() == 0 {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
+                        fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
+                    }
+                    let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+                    request.predicate = NSPredicate(format: "name = nil")
+                    setupCardGridCell(cell: c, withRequest: request)
+                    cell = c
+                } else {
                     guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
                         let label = c.textLabel else {
-                        fatalError("BasicCell is nil")
+                            fatalError("BasicCell is nil")
                     }
                     
-                    label.text = otherCard.name
+                    if let otherCard = viewModel.otherCard(inRow: indexPath.row) {
+                        label.text = otherCard.name
+                    }
                     c.selectionStyle = .default
                     c.accessoryType = .disclosureIndicator
                     cell = c
-
-                } else {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
-                        fatalError("Thumbnails is nil")
-                    }
-                    cell = c
                 }
+                
 
             case CardDetailsSection.otherPrintings.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
-                    fatalError("Thumbnails is nil")
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
+                    fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                 }
+                setupCardGridCell(cell: c, withRequest: viewModel.requestForOtherPrintings())
                 cell = c
                 
             case CardDetailsSection.variations.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
-                    fatalError("Thumbnails is nil")
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
+                    fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                 }
+                setupCardGridCell(cell: c, withRequest: viewModel.requestForVariations())
                 cell = c
                 
             case CardDetailsSection.rulings.rawValue:
                 if viewModel.numberOfRulings() == 0 {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
-                        fatalError("Thumbnails is nil")
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
+                        fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                     }
+                    let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+                    request.predicate = NSPredicate(format: "name = nil")
+                    setupCardGridCell(cell: c, withRequest: request)
                     cell = c
                 } else {
                     guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell else {
@@ -673,9 +662,12 @@ extension CardViewController : UITableViewDataSource {
                 }
             case CardDetailsSection.legalities.rawValue:
                 if viewModel.numberOfLegalities() == 0 {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: "ThumbnailsCell") else {
-                        fatalError("Thumbnails is nil")
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
+                        fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                     }
+                    let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+                    request.predicate = NSPredicate(format: "name = nil")
+                    setupCardGridCell(cell: c, withRequest: request)
                     cell = c
                 } else {
                     guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
@@ -778,41 +770,6 @@ extension CardViewController : UITableViewDataSource {
 
 // MARK: UITableViewDelegate
 extension CardViewController : UITableViewDelegate {
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        switch viewModel.content {
-        case .details:
-            switch indexPath.section {
-            case CardDetailsSection.otherNames.rawValue,
-                 CardDetailsSection.otherPrintings.rawValue,
-                 CardDetailsSection.variations.rawValue,
-                 CardDetailsSection.rulings.rawValue,
-                 CardDetailsSection.legalities.rawValue:
-                guard let collectionView = cell.viewWithTag(100) as? UICollectionView else {
-                    return
-                }
-                
-                if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                    let width = CGFloat(138)
-                    let height = CGFloat(100)
-                    flowLayout.itemSize = CGSize(width: width, height: height)
-                    flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
-                }
-                
-                collectionView.register(UINib(nibName: "EmptyCollectionViewCell",
-                                              bundle: nil),
-                                        forCellWithReuseIdentifier: EmptyCollectionViewCell.reuseIdentifier)
-                collectionView.tag = indexPath.section
-                collectionView.dataSource = self
-                collectionView.delegate = self
-                collectionView.reloadData()
-            default:
-                ()
-            }
-        default:
-            ()
-        }
-    }
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
         var height = CGFloat(0)
@@ -946,106 +903,6 @@ extension CardViewController : UITableViewDelegate {
     }
 }
 
-// MARK: UICollectionViewDataSource
-extension CardViewController : UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var items = 0
-        
-        switch collectionView.tag {
-        case CardDetailsSection.otherNames.rawValue:
-            items = viewModel.numberOfOtherNames() == 0 ? 1 : viewModel.numberOfOtherNames()
-        case CardDetailsSection.otherPrintings.rawValue:
-            items = viewModel.numberOfOtherPrintings() == 0 ? 1 : viewModel.numberOfOtherPrintings()
-        case CardDetailsSection.variations.rawValue:
-            items = viewModel.numberOfVariations() == 0 ? 1 : viewModel.numberOfVariations()
-        case CardDetailsSection.rulings.rawValue:
-            items = viewModel.numberOfRulings() == 0 ? 1 : viewModel.numberOfRulings()
-        case CardDetailsSection.legalities.rawValue:
-            items = viewModel.numberOfLegalities() == 0 ? 1 : viewModel.numberOfLegalities()
-        default:
-            ()
-        }
-        
-        return items
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        var cell: UICollectionViewCell?
-        var card: CMCard?
-        
-        switch collectionView.tag {
-        case CardDetailsSection.otherPrintings.rawValue:
-            if viewModel.numberOfOtherPrintings() > 0 {
-                card = viewModel.otherPrinting(forRowAt: indexPath)
-            }
-        case CardDetailsSection.variations.rawValue:
-            if viewModel.numberOfVariations() > 0 {
-                card = viewModel.variation(forRowAt: indexPath)
-            }
-        default:
-            ()
-        }
-        
-        if let card = card {
-            let c = collectionView.dequeueReusableCell(withReuseIdentifier: "ThumbnailItemCell", for: indexPath)
-            
-            guard let thumbnailImage = c.viewWithTag(100) as? UIImageView,
-                let setImage = c.viewWithTag(200) as? UILabel else {
-                fatalError("thumbnailImage not found")
-            }
-            
-            if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
-                thumbnailImage.image = croppedImage
-            } else {
-                thumbnailImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cropBack)
-                
-                firstly {
-                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
-                }.done {
-                    guard let image = ManaKit.sharedInstance.croppedImage(card) else {
-                        return
-                    }
-                    
-                    let animations = {
-                        thumbnailImage.image = image
-                    }
-                    UIView.transition(with: thumbnailImage,
-                                      duration: 1.0,
-                                      options: .transitionCrossDissolve,
-                                      animations: animations,
-                                      completion: nil)
-                }.catch { error in
-                        
-                }
-            }
-            setImage.layer.cornerRadius = setImage.frame.height / 2
-            setImage.text = ManaKit.sharedInstance.keyruneUnicode(forSet: card.set!)
-            setImage.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
-            cell = c
-        } else {
-            guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: EmptyCollectionViewCell.reuseIdentifier, for: indexPath) as? EmptyCollectionViewCell else {
-                fatalError("\(EmptyCollectionViewCell.reuseIdentifier) is nil")
-            }
-            c.noDataLabel.font = UIFont(name: "Beleren", size: 15.0)
-            cell = c
-        }
-        
-        return cell!
-    }
-}
-
-// UICollectionViewDelegate
-extension CardViewController : UICollectionViewDelegate {
-//    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-//        if collectionView == otherPrintingsCollectionView {
-//            if let thumbnailImage = cell.viewWithTag(100) as? UIImageView {
-//                thumbnailImage.layer.cornerRadius = 10
-//                thumbnailImage.layer.masksToBounds = true
-//            }
-//        }
-//    }
-}
-
 // MARK: iCarouselDataSource
 extension CardViewController : iCarouselDataSource {
     func numberOfItems(in carousel: iCarousel) -> Int {
@@ -1161,3 +1018,11 @@ extension CardViewController : CardActionsTableViewCellDelegate {
     }
 }
 
+// MARK: CardGridTableViewCellDelegate
+extension CardViewController : CardGridTableViewCellDelegate {
+    func showCard(identifier: String, cardIndex: Int, cardIDs: [String]) {
+        let sender = ["cardIndex": cardIndex as Any,
+                      "cardIDs": cardIDs]
+        performSegue(withIdentifier: identifier, sender: sender)
+    }
+}

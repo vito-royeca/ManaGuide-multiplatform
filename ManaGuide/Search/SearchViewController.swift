@@ -231,7 +231,8 @@ extension SearchViewController : UITableViewDataSource {
                 fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
             }
             let sectionIndexWidth = viewModel.sectionIndexTitles() != nil ? CGFloat(44) : CGFloat(0)
-            let width = tableView.frame.size.width - sectionIndexWidth
+            let margins = CGFloat(16)
+            let width = tableView.frame.size.width - sectionIndexWidth - margins
             var height = tableView.frame.size.height
             var size = CGSize(width: 0, height: 0)
             
@@ -245,6 +246,7 @@ extension SearchViewController : UITableViewDataSource {
             
             c.viewModel = viewModel
             c.delegate = self
+            c.imageType = .normal
             c.updateItemSize(with: size)
             cell = c
             

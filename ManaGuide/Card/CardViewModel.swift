@@ -81,11 +81,12 @@ enum CardDetailsSection : Int {
 class CardViewModel: NSObject {
     // MARK: Variables
     var cardIndex = 0
+    var cardViewIncremented = false
     var content: CardContent = .image
     
     private var _fetchedResultsController: NSFetchedResultsController<CMCard>?
-    private var _otherPrintingsFRC: NSFetchedResultsController<CMCard>?
-    private var _variationsFRC: NSFetchedResultsController<CMCard>?
+//    private var _otherPrintingsFRC: NSFetchedResultsController<CMCard>?
+//    private var _variationsFRC: NSFetchedResultsController<CMCard>?
     private var _sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
                                     NSSortDescriptor(key: "set.releaseDate", ascending: true),
                                     NSSortDescriptor(key: "number", ascending: true),
@@ -165,21 +166,35 @@ class CardViewModel: NSObject {
     }
     
     func numberOfOtherPrintings() -> Int {
-        guard let otherPrintingsFRC = _otherPrintingsFRC,
-            let fetchedObjects = otherPrintingsFRC.fetchedObjects else {
-            return 0
-        }
+//        guard let otherPrintingsFRC = _otherPrintingsFRC,
+//            let fetchedObjects = otherPrintingsFRC.fetchedObjects else {
+//            return 0
+//        }
+//
+//        return fetchedObjects.count
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        var count = 0
         
-        return fetchedObjects.count
+        if let printings_ = card.printings_ {
+            count = printings_.count - 1
+        }
+        return count
     }
     
     func numberOfVariations() -> Int {
-        guard let variationsFRC = _variationsFRC,
-            let fetchedObjects = variationsFRC.fetchedObjects else {
-            return 0
-        }
+//        guard let variationsFRC = _variationsFRC,
+//            let fetchedObjects = variationsFRC.fetchedObjects else {
+//            return 0
+//        }
+//
+//        return fetchedObjects.count
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        var count = 0
         
-        return fetchedObjects.count
+        if let variations_ = card.variations_ {
+            count = variations_.count
+        }
+        return count
     }
     
     func numberOfRulings() -> Int {
@@ -200,61 +215,6 @@ class CardViewModel: NSObject {
             count = cardLegalities_.count
         }
         return count
-    }
-    
-    func otherCard(inRow row: Int) -> CMCard? {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
-        var otherCard: CMCard?
-        
-        if let names_ = card.names_ {
-            if let array = names_.allObjects as? [CMCard] {
-                let array2 = array.filter({ $0.name != card.name})
-                if array2.count > 0 {
-                    otherCard = array2[row]
-                }
-            }
-        }
-        return otherCard
-    }
-    
-    func rulingText(inRow row: Int, pointSize: CGFloat) -> NSAttributedString? {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
-        guard let rulings_ = card.rulings_ else {
-            return nil
-        }
-        
-        guard let array = rulings_.allObjects.sorted(by: {(first: Any, second: Any) -> Bool in
-            if let a = first as? CMRuling,
-                let b = second as? CMRuling {
-                if let aDate = a.date,
-                    let bDate = b.date {
-                    return aDate > bDate
-                }
-            }
-            return false
-        }) as? [CMRuling] else {
-            return nil
-        }
-        
-        if array.count > 0 {
-            let ruling = array[row]
-            var contents = ""
-            
-            if let date = ruling.date {
-                contents.append(date)
-            }
-            if let text = ruling.text {
-                if contents.count > 0 {
-                    contents.append("\n\n")
-                }
-                contents.append(text)
-            }
-            
-            return NSAttributedString(symbol: contents,
-                                      pointSize: pointSize)
-        } else {
-            return nil
-        }
     }
     
     func numberOfSections() -> Int {
@@ -342,45 +302,129 @@ class CardViewModel: NSObject {
         return fetchedResultsController.object(at: indexPath)
     }
     
-    func otherPrinting(forRowAt indexPath: IndexPath) -> CMCard {
-        guard let otherPrintingsFRC = _otherPrintingsFRC else {
-            fatalError("otherPrintingsFRC is nil")
-        }
-        return otherPrintingsFRC.object(at: indexPath)
-    }
-    
-    func variation(forRowAt indexPath: IndexPath) -> CMCard {
-        guard let variationsFRC = _variationsFRC else {
-            fatalError("variationsFRC is nil")
-        }
-        return variationsFRC.object(at: indexPath)
-    }
-    
-    func fetchExtraData() {
+    func otherCard(inRow row: Int) -> CMCard? {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        var otherCard: CMCard?
+        
+        if let names_ = card.names_ {
+            if let array = names_.allObjects as? [CMCard] {
+                let array2 = array.filter({ $0.name != card.name})
+                if array2.count > 0 {
+                    otherCard = array2[row]
+                }
+            }
+        }
+        return otherCard
+    }
+    
+    func rulingText(inRow row: Int, pointSize: CGFloat) -> NSAttributedString? {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let rulings_ = card.rulings_ else {
+            return nil
+        }
+        
+        guard let array = rulings_.allObjects.sorted(by: {(first: Any, second: Any) -> Bool in
+            if let a = first as? CMRuling,
+                let b = second as? CMRuling {
+                if let aDate = a.date,
+                    let bDate = b.date {
+                    return aDate > bDate
+                }
+            }
+            return false
+        }) as? [CMRuling] else {
+            return nil
+        }
+        
+        if array.count > 0 {
+            let ruling = array[row]
+            var contents = ""
+            
+            if let date = ruling.date {
+                contents.append(date)
+            }
+            if let text = ruling.text {
+                if contents.count > 0 {
+                    contents.append("\n\n")
+                }
+                contents.append(text)
+            }
+            
+            return NSAttributedString(symbol: contents,
+                                      pointSize: pointSize)
+        } else {
+            return nil
+        }
+    }
+
+    func requestForOtherPrintings() -> NSFetchRequest<CMCard> {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+        
         if let printings_ = card.printings_ {
-            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
             let sets = printings_.allObjects as! [CMSet]
             var filteredSets = [CMSet]()
             
             if let set = card.set {
                 filteredSets = sets.filter({ $0.code != set.code})
             }
-            
             request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, filteredSets.map({$0.code}))
             request.sortDescriptors = _sortDescriptors
-            _otherPrintingsFRC = getFetchedResultsController(with: request)
         }
+        return request
+    }
+    
+    func requestForVariations() -> NSFetchRequest<CMCard> {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         
         if let variations_ = card.variations_,
             let variations = variations_.allObjects as? [CMCard] {
-            
-            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
             request.predicate = NSPredicate(format: "id IN %@", variations.map({$0.id}))
             request.sortDescriptors = _sortDescriptors
-            _variationsFRC = getFetchedResultsController(with: request)
         }
+        return request
     }
+    
+//    func otherPrinting(forRowAt indexPath: IndexPath) -> CMCard {
+//        guard let otherPrintingsFRC = _otherPrintingsFRC else {
+//            fatalError("otherPrintingsFRC is nil")
+//        }
+//        return otherPrintingsFRC.object(at: indexPath)
+//    }
+//
+//    func variation(forRowAt indexPath: IndexPath) -> CMCard {
+//        guard let variationsFRC = _variationsFRC else {
+//            fatalError("variationsFRC is nil")
+//        }
+//        return variationsFRC.object(at: indexPath)
+//    }
+    
+//    func fetchExtraData() {
+//        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+//        if let printings_ = card.printings_ {
+//            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+//            let sets = printings_.allObjects as! [CMSet]
+//            var filteredSets = [CMSet]()
+//
+//            if let set = card.set {
+//                filteredSets = sets.filter({ $0.code != set.code})
+//            }
+//
+//            request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, filteredSets.map({$0.code}))
+//            request.sortDescriptors = _sortDescriptors
+//            _otherPrintingsFRC = getFetchedResultsController(with: request)
+//        }
+//
+//        if let variations_ = card.variations_,
+//            let variations = variations_.allObjects as? [CMCard] {
+//
+//            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+//            request.predicate = NSPredicate(format: "id IN %@", variations.map({$0.id}))
+//            request.sortDescriptors = _sortDescriptors
+//            _variationsFRC = getFetchedResultsController(with: request)
+//        }
+//    }
     
     func userRatingForCurrentCard() -> Double {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))

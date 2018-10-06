@@ -553,6 +553,10 @@
 		11853EC42166A8890055077B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				11853EDE2166B0D40055077B /* CardGridTableViewCell.swift */,
+				11853EDF2166B0D40055077B /* CardGridTableViewCell.xib */,
+				11853EC62166ABF70055077B /* CardImageCollectionViewCell.swift */,
+				11853EC72166ABF70055077B /* CardImageCollectionViewCell.xib */,
 				115C5F662168053600662395 /* DynamicHeightTableViewCell.swift */,
 				115C5F672168053600662395 /* DynamicHeightTableViewCell.xib */,
 				11853EBC2166A85F0055077B /* EmptyCollectionViewCell.swift */,
@@ -657,10 +661,6 @@
 		11D55BC5213253A4002F8F49 /* Search */ = {
 			isa = PBXGroup;
 			children = (
-				11853EDE2166B0D40055077B /* CardGridTableViewCell.swift */,
-				11853EDF2166B0D40055077B /* CardGridTableViewCell.xib */,
-				11853EC62166ABF70055077B /* CardImageCollectionViewCell.swift */,
-				11853EC72166ABF70055077B /* CardImageCollectionViewCell.xib */,
 				1138A3D020F786E00023423C /* SearchRequestGenerator.swift */,
 				110BB52C1F20892B00086841 /* SearchViewController.swift */,
 				114C1D432160849B00825DD2 /* SearchViewModel.swift */,

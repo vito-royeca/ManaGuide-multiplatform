@@ -20,7 +20,8 @@ class CardGridTableViewCell: UITableViewCell {
     // MARK: Variables
     var viewModel: SearchViewModel!
     var delegate: CardGridTableViewCellDelegate?
-
+    var imageType: ManaKit.ImageType = .normal
+    
     // MARK: Outlets
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
@@ -88,6 +89,9 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
             guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: EmptyCollectionViewCell.reuseIdentifier, for: indexPath) as? EmptyCollectionViewCell else {
                 fatalError("\(EmptyCollectionViewCell.reuseIdentifier) is nil")
             }
+            if imageType == .artCrop {
+                c.noDataLabel.font = UIFont(name: "Beleren", size: 15.0)
+            }
             cell = c
         } else {
             guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: CardImageCollectionViewCell.reuseIdentifier, for: indexPath) as? CardImageCollectionViewCell else {
@@ -95,6 +99,7 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
             }
             
             let card = viewModel.object(forRowAt: indexPath)
+            c.imageType = imageType
             c.card = card
             cell = c
         }

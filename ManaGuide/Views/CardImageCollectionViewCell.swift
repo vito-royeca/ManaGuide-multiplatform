@@ -14,21 +14,40 @@ class CardImageCollectionViewCell: UICollectionViewCell {
     static let reuseIdentifier = "CardImageCell"
     
     // MARK: Variables
+    var imageType: ManaKit.ImageType = .normal
+    
     var card: CMCard? {
         didSet {
             guard let card = card else {
                 return
             }
             
-            if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
+            switch imageType {
+            case .artCrop:
+                setLogoLabel.backgroundColor = UIColor.white
+                setLogoLabel.text = ManaKit.sharedInstance.keyruneUnicode(forSet: card.set!)
+                setLogoLabel.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
+                cardImage.contentMode = .scaleToFill
+            default:
+                setLogoLabel.backgroundColor = UIColor.clear
+                setLogoLabel.text = nil
+                cardImage.contentMode = .scaleAspectFit
+            }
+            
+            if let image = ManaKit.sharedInstance.cardImage(card, imageType: imageType) {
                 cardImage.image = image
             } else {
-                cardImage.image = ManaKit.sharedInstance.cardBack(card)
+                switch imageType {
+                case .artCrop:
+                    cardImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
+                default:
+                    cardImage.image = ManaKit.sharedInstance.cardBack(card)
+                }
                 
                 firstly {
-                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: imageType)
                 }.done {
-                    guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) else {
+                    guard let image = ManaKit.sharedInstance.cardImage(card, imageType: self.imageType) else {
                         return
                     }
                     
@@ -49,12 +68,13 @@ class CardImageCollectionViewCell: UICollectionViewCell {
     
     // MARK: Outlets
     @IBOutlet weak var cardImage: UIImageView!
-    
+    @IBOutlet weak var setLogoLabel: UILabel!
     
     // MARK: Overrides
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        setLogoLabel.layer.cornerRadius = setLogoLabel.frame.height / 2
     }
 
 }

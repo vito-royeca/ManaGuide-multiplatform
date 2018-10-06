@@ -20,7 +20,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="dtV-bU-sUu">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="87.5"/>
+                        <rect key="frame" x="8" y="0.0" width="304" height="87.5"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="qsn-tG-ELo">
                             <size key="itemSize" width="50" height="50"/>
@@ -31,10 +31,10 @@
                     </collectionView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="dtV-bU-sUu" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="O3B-91-e8z"/>
-                    <constraint firstAttribute="trailing" secondItem="dtV-bU-sUu" secondAttribute="trailing" id="UR8-lM-v0A"/>
-                    <constraint firstItem="dtV-bU-sUu" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="cwP-wV-ol5"/>
-                    <constraint firstAttribute="bottom" secondItem="dtV-bU-sUu" secondAttribute="bottom" id="nfb-uP-WXX"/>
+                    <constraint firstItem="dtV-bU-sUu" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Bfv-5r-Zby"/>
+                    <constraint firstAttribute="trailing" secondItem="dtV-bU-sUu" secondAttribute="trailing" constant="8" id="Nhu-do-MWC"/>
+                    <constraint firstItem="dtV-bU-sUu" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="Ps2-Sm-xy9"/>
+                    <constraint firstAttribute="bottom" secondItem="dtV-bU-sUu" secondAttribute="bottom" id="VAQ-eB-XzC"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>

@@ -9,6 +9,11 @@
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="keyrune.ttf">
+            <string>Keyrune</string>
+        </array>
+    </customFonts>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -21,18 +26,40 @@
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="nAi-l8-7Bt">
                         <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                <integer key="value" value="10"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                     </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VeH-Y7-z1v">
+                        <rect key="frame" x="80" y="80" width="20" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="20" id="HB5-6H-PTe"/>
+                            <constraint firstAttribute="height" constant="20" id="hEc-lB-PK2"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" name="Keyrune" family="Keyrune" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                        </userDefinedRuntimeAttributes>
+                    </label>
                 </subviews>
             </view>
             <constraints>
                 <constraint firstItem="nAi-l8-7Bt" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="7s8-nR-2N0"/>
                 <constraint firstAttribute="trailing" secondItem="nAi-l8-7Bt" secondAttribute="trailing" id="8cR-nc-8K9"/>
                 <constraint firstItem="nAi-l8-7Bt" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="A6D-ef-YHZ"/>
+                <constraint firstItem="ZTg-uK-7eu" firstAttribute="bottom" secondItem="VeH-Y7-z1v" secondAttribute="bottom" id="Gpz-oo-wrD"/>
                 <constraint firstAttribute="bottom" secondItem="nAi-l8-7Bt" secondAttribute="bottom" id="THc-27-hEn"/>
+                <constraint firstItem="ZTg-uK-7eu" firstAttribute="trailing" secondItem="VeH-Y7-z1v" secondAttribute="trailing" id="dFA-Rh-9SX"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <connections>
                 <outlet property="cardImage" destination="nAi-l8-7Bt" id="30V-Mq-BRI"/>
+                <outlet property="setLogoLabel" destination="VeH-Y7-z1v" id="hun-5u-63r"/>
             </connections>
             <point key="canvasLocation" x="-70.400000000000006" y="153.82308845577214"/>
         </collectionViewCell>

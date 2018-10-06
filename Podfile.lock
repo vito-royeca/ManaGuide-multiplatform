@@ -165,7 +165,7 @@ PODS:
   - SDWebImage/Core (4.4.2)
   - SimulatorStatusMagic (2.3)
   - SSZipArchive (2.1.4)
-  - Sync (5.0.1)
+  - Sync (5.1.0)
 
 DEPENDENCIES:
   - ChameleonFramework/Swift (from `https://github.com/ViccAlexander/Chameleon.git`)
@@ -309,7 +309,7 @@ SPEC CHECKSUMS:
   SDWebImage: 624d6e296c69b244bcede364c72ae0430ac14681
   SimulatorStatusMagic: 631fe6e4195a8a8d587ad8744af9015126526cc2
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
-  Sync: 5281923838f0f60e1d34063ac9ab692b6e012038
+  Sync: 0412c2b068eb7cf1a04607e948ef92cbd6114d0f
 
 PODFILE CHECKSUM: d9eae68aa21ea52a1a57d954a383f34b33361d6f
 
