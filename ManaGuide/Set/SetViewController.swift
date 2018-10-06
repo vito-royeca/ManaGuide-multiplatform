@@ -18,7 +18,6 @@ class SetViewController: BaseViewController {
     // MARK: Variables
     let searchController = UISearchController(searchResultsController: nil)
     var viewModel: SetViewModel!
-    var collectionView: UICollectionView?
     
     // MARK: Outlets
     @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
@@ -69,6 +68,12 @@ class SetViewController: BaseViewController {
                                              backgroundColor: .clear)
         rightMenuButton.title = nil
         
+        tableView.register(UINib(nibName: "EmptyTableViewCell",
+                                 bundle: nil),
+                           forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
+        tableView.register(UINib(nibName: "CardGridTableViewCell",
+                                 bundle: nil),
+                           forCellReuseIdentifier: CardGridTableViewCell.reuseIdentifier)
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"),
                            forCellReuseIdentifier: CardTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
@@ -159,18 +164,30 @@ class SetViewController: BaseViewController {
         
         viewModel.fetchData()
         tableView.reloadData()
-        collectionView?.reloadData()
+
+        guard let cell = tableView?.cellForRow(at: IndexPath(row: 0, section: 0)) as? CardGridTableViewCell else {
+            return
+        }
+        cell.collectionView.reloadData()
     }
 }
 
 // MARK: UITableViewDataSource
 extension SetViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRows(inSection: section)
+        if viewModel.isEmpty() {
+            return 1
+        } else {
+            return viewModel.numberOfRows(inSection: section)
+        }
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.numberOfSections()
+        if viewModel.isEmpty() {
+            return 1
+        } else {
+            return viewModel.numberOfSections()
+        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -182,40 +199,42 @@ extension SetViewController : UITableViewDataSource {
         case .cards:
             switch displayBy {
             case "list":
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell else {
-                    fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
+                if viewModel.isEmpty() {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.reuseIdentifier) as? EmptyTableViewCell else {
+                        fatalError("\(EmptyTableViewCell.reuseIdentifier) is nil")
+                    }
+                    cell = c
+                    
+                } else {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell else {
+                        fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
+                    }
+                    let card = viewModel!.object(forRowAt: indexPath)
+                    c.card = card
+                    cell = c
                 }
-                let card = viewModel!.object(forRowAt: indexPath)
-                c.card = card
-                
-                collectionView = nil
-                cell = c
 
             case "grid":
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "GridCell") else {
-                    return UITableViewCell(frame: CGRect.zero)
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
+                    fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                 }
-                guard let collectionView = c.viewWithTag(100) as? UICollectionView else {
-                    return UITableViewCell(frame: CGRect.zero)
-                }
+                let sectionIndexWidth = viewModel.sectionIndexTitles() != nil ? CGFloat(44) : CGFloat(0)
+                let width = tableView.frame.size.width - sectionIndexWidth
+                var height = tableView.frame.size.height
+                var size = CGSize(width: 0, height: 0)
                 
-                collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "Header")
-                collectionView.dataSource = self
-                collectionView.delegate = self
-                
-                if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                    let sectionIndexWidth = viewModel.sectionIndexTitles() != nil ? CGFloat(44) : CGFloat(0)
-                    let width = tableView.frame.size.width - sectionIndexWidth
-                    let height = tableView.frame.size.height - kCardTableViewCellHeight - CGFloat(44)
-                    
-                    flowLayout.itemSize = cardSize(inFrame: CGSize(width: width, height: height))
-                    flowLayout.minimumInteritemSpacing = CGFloat(0)
-                    flowLayout.minimumLineSpacing = CGFloat(10)
-                    flowLayout.headerReferenceSize = CGSize(width: width, height: 22)
-                    flowLayout.sectionHeadersPinToVisibleBounds = true
+                if viewModel.isEmpty() {
+                    height /= 3
+                    size = CGSize(width: width, height: height)
+                } else {
+                    height -= kCardTableViewCellHeight - CGFloat(44)
+                    size = cardSize(inFrame: CGSize(width: width, height: height))
                 }
                 
-                self.collectionView = collectionView
+                c.viewModel = viewModel.getSearchViewModel()
+                c.delegate = self
+                c.imageType = .normal
+                c.updateItemSize(with: size)
                 cell = c
                 
             default:
@@ -238,26 +257,35 @@ extension SetViewController : UITableViewDataSource {
                 let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 10.0)
                 c.webView.delegate = self
                 c.webView.loadRequest(request)
-                
-                collectionView = nil
                 cell = c
             }
-            
         }
         
         return cell!
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        return viewModel.sectionIndexTitles()
+        if viewModel.isEmpty() {
+            return nil
+        } else {
+            return viewModel.sectionIndexTitles()
+        }
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        return viewModel.sectionForSectionIndexTitle(title: title, at: index)
+        if viewModel.isEmpty() {
+            return 0
+        } else {
+            return viewModel.sectionForSectionIndexTitle(title: title, at: index)
+        }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return viewModel.titleForHeaderInSection(section: section)
+        if viewModel.isEmpty() {
+            return nil
+        } else {
+            return viewModel.titleForHeaderInSection(section: section)
+        }
     }
 }
 
@@ -275,7 +303,11 @@ extension SetViewController : UITableViewDelegate {
             
             switch displayBy {
             case "list":
-                height = kCardTableViewCellHeight
+                if viewModel.isEmpty() {
+                    height = tableView.frame.size.height / 3
+                } else {
+                    height = kCardTableViewCellHeight
+                }
             case "grid":
                 height = tableView.frame.size.height
             default:
@@ -310,90 +342,30 @@ extension SetViewController : UITableViewDelegate {
             ()
         }
     }
-}
-
-// UICollectionViewDataSource
-extension SetViewController : UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.collectionNumberOfRows(inSection: section)
-    }
     
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return viewModel.collectionNumberOfSections()
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardImageCell", for: indexPath)
-        
-        guard let imageView = cell.viewWithTag(100) as? UIImageView else {
-            fatalError("Unexpected indexPath: \(indexPath)")
-        }
-        let card = viewModel.object(forRowAt: indexPath)
-        
-        if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
-            imageView.image = image
-        } else {
-            imageView.image = ManaKit.sharedInstance.cardBack(card)
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        switch viewModel.setContent {
+        case .cards:
+            let searchGenerator = SearchRequestGenerator()
+            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
+                return nil
+            }
             
-            firstly {
-                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
-            }.done {
-                guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) else {
-                    return
+            switch displayBy {
+            case "list":
+                if viewModel.isEmpty() {
+                    return nil
+                } else {
+                    return indexPath
                 }
-                    
-                let animations = {
-                    imageView.image = image
-                }
-                UIView.transition(with: imageView,
-                                  duration: 1.0,
-                                  options: .transitionFlipFromRight,
-                                  animations: animations,
-                                  completion: nil)
-            }.catch { error in
-                print("\(error)")
+            default:
+                ()
             }
+        default:
+            ()
         }
         
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let v = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier:"Header", for: indexPath)
-
-        if kind == UICollectionElementKindSectionHeader {
-            v.backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1)
-
-            if v.subviews.count == 0 {
-                let label = UILabel(frame: CGRect(x: 20, y: 0, width: collectionView.frame.size.width - 20, height: 22))
-                label.tag = 100
-                v.addSubview(label)
-            }
-
-            guard let lab = v.viewWithTag(100) as? UILabel else {
-                return v
-            }
-
-            lab.text = viewModel.collectionTitleForHeaderInSection(section: indexPath.section)//SectionIndexTitles()?[indexPath.section]
-        }
-
-        return v
-    }
-}
-
-// UICollectionViewDelegate
-extension SetViewController : UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let cards = viewModel.allObjects() else {
-            return
-        }
-        
-        let card = viewModel.object(forRowAt: indexPath)
-        let cardIndex = cards.index(of: card)
-        let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-        let sender = ["cardIndex": cardIndex as Any,
-                      "cardIDs": cards.map({ $0.id })]
-        performSegue(withIdentifier: identifier, sender: sender)
+        return nil
     }
 }
 
@@ -503,13 +475,12 @@ extension SetViewController : UISearchResultsUpdating {
             return
         }
         
-        switch displayBy {
-        case "list":
-            tableView.reloadData()
-        case "grid":
-            collectionView?.reloadData()
-        default:
-            ()
+        tableView.reloadData()
+        if displayBy == "grid" {
+            guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? CardGridTableViewCell else {
+                return
+            }
+            cell.collectionView.reloadData()
         }
     }
 }
@@ -545,4 +516,11 @@ extension SetViewController : BrowserNavigatorTableViewCellDelegate {
     }
 }
 
-
+// MARK: CardGridTableViewCellDelegate
+extension SetViewController : CardGridTableViewCellDelegate {
+    func showCard(identifier: String, cardIndex: Int, cardIDs: [String]) {
+        let sender = ["cardIndex": cardIndex as Any,
+                      "cardIDs": cardIDs]
+        performSegue(withIdentifier: identifier, sender: sender)
+    }
+}

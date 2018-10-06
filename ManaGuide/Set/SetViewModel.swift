@@ -110,63 +110,6 @@ class SetViewModel: NSObject {
         return titleHeader
     }
     
-    // MARK: UICollectionView methods
-    func collectionNumberOfRows(inSection section: Int) -> Int {
-        var rows = 0
-        
-        switch setContent {
-        case .cards:
-            rows = _searchViewModel!.collectionNumberOfRows(inSection: section)
-        case .wiki:
-            rows = 2
-        }
-        
-        return rows
-    }
-    
-    func collectionNumberOfSections() -> Int {
-        var number = 0
-        
-        switch setContent {
-        case .cards:
-            number = _searchViewModel!.collectionNumberOfSections()
-        case .wiki:
-            number = 1
-        }
-        
-        return number
-    }
-    
-    func collectionSectionIndexTitles() -> [String]? {
-        return _searchViewModel!.sectionIndexTitles()
-    }
-    
-    func collectionSectionForSectionIndexTitle(title: String, at index: Int) -> Int {
-        var sectionIndex = 0
-        
-        switch setContent {
-        case .cards:
-            sectionIndex = _searchViewModel!.collectionSectionForSectionIndexTitle(title: title, at: index)
-        case .wiki:
-            ()
-        }
-        
-        return sectionIndex
-    }
-    
-    func collectionTitleForHeaderInSection(section: Int) -> String? {
-        var titleHeader: String?
-        
-        switch setContent {
-        case .cards:
-            titleHeader = _searchViewModel!.collectionTitleForHeaderInSection(section: section)
-        case .wiki:
-            ()
-        }
-        
-        return titleHeader
-    }
-    
     // MARK: Custom methods
     func object(forRowAt indexPath: IndexPath) -> CMCard {
         return _searchViewModel!.object(forRowAt: indexPath)
@@ -176,6 +119,13 @@ class SetViewModel: NSObject {
         return _searchViewModel!.allObjects()
     }
     
+    func isEmpty() -> Bool {
+        guard let objects = allObjects() else {
+            return false
+        }
+        return objects.count == 0
+    }
+
     func fetchData() {
         _searchViewModel!.queryString = queryString
         _searchViewModel!.fetchData()
@@ -186,6 +136,13 @@ class SetViewModel: NSObject {
         return _searchViewModel!.getSearchTitle()
     }
     
+    func getSearchViewModel() -> SearchViewModel {
+        guard let searchViewModel = _searchViewModel else {
+            fatalError("")
+        }
+        return searchViewModel
+    }
+
     func wikiURL() -> URL? {
         guard let set = _set else {
             return nil

@@ -231,8 +231,7 @@ extension SearchViewController : UITableViewDataSource {
                 fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
             }
             let sectionIndexWidth = viewModel.sectionIndexTitles() != nil ? CGFloat(44) : CGFloat(0)
-            let margins = CGFloat(16)
-            let width = tableView.frame.size.width - sectionIndexWidth - margins
+            let width = tableView.frame.size.width - sectionIndexWidth
             var height = tableView.frame.size.height
             var size = CGSize(width: 0, height: 0)
             
@@ -344,21 +343,16 @@ extension SearchViewController : UISearchResultsUpdating {
         }
         
         tableView.reloadData()
-        
-        switch displayBy {
-        case "grid":
+        if displayBy == "grid" {
             guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? CardGridTableViewCell else {
                 return
             }
             cell.collectionView.reloadData()
-        default:
-            ()
         }
-
     }
 }
 
-// MARK:
+// MARK: CardGridTableViewCellDelegate
 extension SearchViewController : CardGridTableViewCellDelegate {
     func showCard(identifier: String, cardIndex: Int, cardIDs: [String]) {
         let sender = ["cardIndex": cardIndex as Any,
