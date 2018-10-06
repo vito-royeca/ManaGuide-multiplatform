@@ -85,8 +85,6 @@ class CardViewModel: NSObject {
     var content: CardContent = .image
     
     private var _fetchedResultsController: NSFetchedResultsController<CMCard>?
-//    private var _otherPrintingsFRC: NSFetchedResultsController<CMCard>?
-//    private var _variationsFRC: NSFetchedResultsController<CMCard>?
     private var _sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
                                     NSSortDescriptor(key: "set.releaseDate", ascending: true),
                                     NSSortDescriptor(key: "number", ascending: true),
@@ -166,12 +164,6 @@ class CardViewModel: NSObject {
     }
     
     func numberOfOtherPrintings() -> Int {
-//        guard let otherPrintingsFRC = _otherPrintingsFRC,
-//            let fetchedObjects = otherPrintingsFRC.fetchedObjects else {
-//            return 0
-//        }
-//
-//        return fetchedObjects.count
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         var count = 0
         
@@ -182,12 +174,6 @@ class CardViewModel: NSObject {
     }
     
     func numberOfVariations() -> Int {
-//        guard let variationsFRC = _variationsFRC,
-//            let fetchedObjects = variationsFRC.fetchedObjects else {
-//            return 0
-//        }
-//
-//        return fetchedObjects.count
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         var count = 0
         
@@ -385,46 +371,6 @@ class CardViewModel: NSObject {
         }
         return request
     }
-    
-//    func otherPrinting(forRowAt indexPath: IndexPath) -> CMCard {
-//        guard let otherPrintingsFRC = _otherPrintingsFRC else {
-//            fatalError("otherPrintingsFRC is nil")
-//        }
-//        return otherPrintingsFRC.object(at: indexPath)
-//    }
-//
-//    func variation(forRowAt indexPath: IndexPath) -> CMCard {
-//        guard let variationsFRC = _variationsFRC else {
-//            fatalError("variationsFRC is nil")
-//        }
-//        return variationsFRC.object(at: indexPath)
-//    }
-    
-//    func fetchExtraData() {
-//        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
-//        if let printings_ = card.printings_ {
-//            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-//            let sets = printings_.allObjects as! [CMSet]
-//            var filteredSets = [CMSet]()
-//
-//            if let set = card.set {
-//                filteredSets = sets.filter({ $0.code != set.code})
-//            }
-//
-//            request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, filteredSets.map({$0.code}))
-//            request.sortDescriptors = _sortDescriptors
-//            _otherPrintingsFRC = getFetchedResultsController(with: request)
-//        }
-//
-//        if let variations_ = card.variations_,
-//            let variations = variations_.allObjects as? [CMCard] {
-//
-//            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-//            request.predicate = NSPredicate(format: "id IN %@", variations.map({$0.id}))
-//            request.sortDescriptors = _sortDescriptors
-//            _variationsFRC = getFetchedResultsController(with: request)
-//        }
-//    }
     
     func userRatingForCurrentCard() -> Double {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))

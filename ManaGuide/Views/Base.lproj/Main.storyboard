@@ -1297,18 +1297,7 @@
                                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                                                 <rect key="frame" x="0.0" y="0.0" width="88" height="88"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
-                                                                <subviews>
-                                                                    <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="TXj-cN-1hp">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="88" height="88"/>
-                                                                    </imageView>
-                                                                </subviews>
                                                             </view>
-                                                            <constraints>
-                                                                <constraint firstAttribute="trailing" secondItem="TXj-cN-1hp" secondAttribute="trailing" id="03V-Vw-DKQ"/>
-                                                                <constraint firstItem="TXj-cN-1hp" firstAttribute="leading" secondItem="gtX-4V-P9Z" secondAttribute="leading" id="8yl-0e-LUs"/>
-                                                                <constraint firstAttribute="bottom" secondItem="TXj-cN-1hp" secondAttribute="bottom" id="jmy-sX-BO9"/>
-                                                                <constraint firstItem="TXj-cN-1hp" firstAttribute="top" secondItem="gtX-4V-P9Z" secondAttribute="top" id="nHJ-Wk-e9r"/>
-                                                            </constraints>
                                                         </collectionViewCell>
                                                     </cells>
                                                 </collectionView>
@@ -2047,9 +2036,9 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Vbm-cg-ye0"/>
-        <segue reference="jVZ-a8-OYH"/>
-        <segue reference="lLZ-BR-fAo"/>
+        <segue reference="X4a-uC-2tC"/>
+        <segue reference="J88-7q-TTb"/>
         <segue reference="Mbq-CH-LY8"/>
-        <segue reference="whl-Hr-bZH"/>
+        <segue reference="bra-At-7UT"/>
     </inferredMetricsTieBreakers>
 </document>

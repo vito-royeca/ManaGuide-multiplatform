@@ -101,6 +101,9 @@ class CardViewController: BaseViewController {
         tableView.register(UINib(nibName: "CardGridTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: CardGridTableViewCell.reuseIdentifier)
+        tableView.register(UINib(nibName: "EmptyTableViewCell",
+                                 bundle: nil),
+                           forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
         tableView.register(UINib(nibName: "StoreTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: StoreTableViewCell.reuseIdentifier)
