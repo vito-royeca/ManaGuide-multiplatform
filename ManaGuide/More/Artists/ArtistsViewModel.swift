@@ -12,10 +12,11 @@ import ManaKit
 class ArtistsViewModel: NSObject {
     // MARK: Variables
     var queryString = ""
+    var searchCancelled = false
+    
     private var _sectionIndexTitles: [String]?
     private var _sectionTitles: [String]?
     private var _fetchedResultsController: NSFetchedResultsController<CMArtist>?
-    
     private let _sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
                                     NSSortDescriptor(key: "lastName", ascending: true),
                                     NSSortDescriptor(key: "firstName", ascending: true)]

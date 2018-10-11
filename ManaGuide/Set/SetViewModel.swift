@@ -29,6 +29,7 @@ enum SetContent: Int {
 class SetViewModel: NSObject {
     // MARK: Variables
     var queryString = ""
+    var searchCancelled = false
     var setContent: SetContent = .cards
 
     private var _set: CMSet?

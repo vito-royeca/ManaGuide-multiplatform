@@ -39,8 +39,9 @@ class SearchViewController: BaseViewController {
 
         // Do any additional setup after loading the view.
         searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Filter"
         searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
+        searchController.searchBar.placeholder = "Filter"
         definesPresentationContext = true
 
         rightMenuButton.image = UIImage.init(icon: .FABars,
@@ -182,6 +183,24 @@ class SearchViewController: BaseViewController {
             return
         }
         cell.collectionView.reloadData()
+    }
+    
+    @objc func doSearch() {
+        viewModel.queryString = searchController.searchBar.text ?? ""
+        viewModel.fetchData()
+        
+        let searchGenerator = SearchRequestGenerator()
+        guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
+            return
+        }
+        
+        tableView.reloadData()
+        if displayBy == "grid" {
+            guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? CardGridTableViewCell else {
+                return
+            }
+            cell.collectionView.reloadData()
+        }
     }
 }
 
@@ -332,25 +351,30 @@ extension SearchViewController : UITableViewDelegate {
 // MARK: UISearchResultsUpdating
 extension SearchViewController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-//        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
-//        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
-        viewModel.queryString = searchController.searchBar.text ?? ""
-        viewModel.fetchData()
-        
-        let searchGenerator = SearchRequestGenerator()
-        guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
-            return
-        }
-        
-        tableView.reloadData()
-        if displayBy == "grid" {
-            guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? CardGridTableViewCell else {
-                return
-            }
-            cell.collectionView.reloadData()
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
+        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
+    }
+}
+
+// MARK: UISearchResultsUpdating
+extension SearchViewController : UISearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        viewModel.searchCancelled = false
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.searchCancelled = true
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        if viewModel.searchCancelled {
+            searchBar.text = viewModel.queryString
+        } else {
+            viewModel.queryString = searchBar.text ?? ""
         }
     }
 }
+
 
 // MARK: CardGridTableViewCellDelegate
 extension SearchViewController : CardGridTableViewCellDelegate {

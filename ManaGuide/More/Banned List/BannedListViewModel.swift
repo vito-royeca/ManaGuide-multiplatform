@@ -12,10 +12,11 @@ import ManaKit
 class BannedListViewModel: NSObject {
     // MARK: Variables
     var queryString = ""
+    var searchCancelled = false
+    
     private var _sectionIndexTitles: [String]?
     private var _sectionTitles: [String]?
     private var _fetchedResultsController: NSFetchedResultsController<CMFormat>?
-    
     private let _sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
     private let _sectionName = "nameSection"
     

@@ -40,6 +40,7 @@ class SetsViewController: BaseViewController {
                                                object: nil)
         
         searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchBar.delegate = self
         searchController.searchBar.placeholder = "Filter"
         searchController.searchResultsUpdater = self
         definesPresentationContext = true
@@ -88,6 +89,12 @@ class SetsViewController: BaseViewController {
         }
         
         viewModel.updateSorting(with: userInfo)
+        viewModel.fetchData()
+        tableView.reloadData()
+    }
+    
+    @objc func doSearch() {
+        viewModel.queryString = searchController.searchBar.text ?? ""
         viewModel.fetchData()
         tableView.reloadData()
     }
@@ -185,12 +192,26 @@ extension SetsViewController : UITableViewDelegate {
 // MARK: UISearchResultsUpdating
 extension SetsViewController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        guard let text = searchController.searchBar.text else {
-            return
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
+        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
+    }
+}
+
+// MARK: UISearchResultsUpdating
+extension SetsViewController : UISearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        viewModel.searchCancelled = false
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.searchCancelled = true
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        if viewModel.searchCancelled {
+            searchBar.text = viewModel.queryString
+        } else {
+            viewModel.queryString = searchBar.text ?? ""
         }
-        
-        viewModel.queryString = text
-        viewModel.fetchData()
-        tableView.reloadData()
     }
 }

@@ -25,8 +25,9 @@ class ArtistsViewController: BaseViewController {
 
         // Do any additional setup after loading the view.
         searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Filter"
         searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
+        searchController.searchBar.placeholder = "Filter"
         definesPresentationContext = true
         
         if #available(iOS 11.0, *) {
@@ -62,6 +63,13 @@ class ArtistsViewController: BaseViewController {
             
             dest.viewModel = SearchViewModel(withRequest: request, andTitle: dict["title"] as? String)
         }
+    }
+    
+    // MARK: Custom methods
+    @objc func doSearch() {
+        viewModel.queryString = searchController.searchBar.text ?? ""
+        viewModel.fetchData()
+        tableView.reloadData()
     }
 }
 
@@ -162,13 +170,27 @@ extension ArtistsViewController : UITableViewDelegate {
 // MARK: UISearchResultsUpdating
 extension ArtistsViewController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        guard let text = searchController.searchBar.text else {
-            return
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
+        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
+    }
+}
+
+// MARK: UISearchResultsUpdating
+extension ArtistsViewController : UISearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        viewModel.searchCancelled = false
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.searchCancelled = true
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        if viewModel.searchCancelled {
+            searchBar.text = viewModel.queryString
+        } else {
+            viewModel.queryString = searchBar.text ?? ""
         }
-        
-        viewModel.queryString = text
-        viewModel.fetchData()
-        tableView.reloadData()
     }
 }
 

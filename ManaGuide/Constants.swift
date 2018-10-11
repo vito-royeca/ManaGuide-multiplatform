@@ -20,9 +20,9 @@ enum LookAndFeel {
 
 // TCGPlayer
 enum TCGPlayerSettings {
-    static let PartnerKey       = "ManaGuide"
-    static let PublicKey        = "A49D81FB-5A76-4634-9152-E1FB5A657720"
-    static let PrivateKey       = "C018EF82-2A4D-4F7A-A785-04ADEBF2A8E5"
+    static let PartnerKey     = "ManaGuide"
+    static let PublicKey      = "A49D81FB-5A76-4634-9152-E1FB5A657720"
+    static let PrivateKey     = "C018EF82-2A4D-4F7A-A785-04ADEBF2A8E5"
 }
 
 enum GitHubSettings {

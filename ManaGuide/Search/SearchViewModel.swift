@@ -12,6 +12,8 @@ import ManaKit
 class SearchViewModel: NSObject {
     // MARK: Variables
     var queryString = ""
+    var searchCancelled = false
+    
     private var _request: NSFetchRequest<CMCard>?
     private var _title: String?
     private var _sectionIndexTitles: [String]?

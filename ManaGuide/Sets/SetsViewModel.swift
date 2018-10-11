@@ -12,6 +12,7 @@ import ManaKit
 class SetsViewModel: NSObject {
     // MARK: Variables
     var queryString = ""
+    var searchCancelled = false
     
     private var _sectionIndexTitles: [String]?
     private var _sectionTitles: [String]?
