@@ -16,6 +16,7 @@ enum AccountSection: Int {
     case favorites
     case ratedCards
     case decks
+    case collections
     case lists
     
     var description : String {
@@ -25,6 +26,7 @@ enum AccountSection: Int {
         case .favorites: return "Favorites"
         case .ratedCards: return "Rated Cards"
         case .decks: return "Decks"
+        case .collections: return "Collections"
         case .lists: return "Lists"
         }
     }
@@ -52,11 +54,20 @@ enum AccountSection: Int {
                            bgLarge: false,
                            size: CGSize(width: 20, height: 20))
         case .decks:
-            return UIImage(bgIcon: .FADropbox,
+            return UIImage(bgIcon: .FACubes,
                            orientation: UIImage.Orientation.up,
                            bgTextColor: LookAndFeel.GlobalTintColor,
                            bgBackgroundColor: UIColor.clear,
-                           topIcon: .FADropbox,
+                           topIcon: .FACubes,
+                           topTextColor: UIColor.clear,
+                           bgLarge: false,
+                           size: CGSize(width: 20, height: 20))
+        case .collections:
+            return UIImage(bgIcon: .FAFolder,
+                           orientation: UIImage.Orientation.up,
+                           bgTextColor: LookAndFeel.GlobalTintColor,
+                           bgBackgroundColor: UIColor.clear,
+                           topIcon: .FAFolder,
                            topTextColor: UIColor.clear,
                            bgLarge: false,
                            size: CGSize(width: 20, height: 20))
@@ -73,7 +84,7 @@ enum AccountSection: Int {
     }
     
     static var count: Int {
-        return 3 // return 5 if Decks and Lists are included
+        return 3 // return 6 if Decks, Collection, and Lists are included
     }
 }
 

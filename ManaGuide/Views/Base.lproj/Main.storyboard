@@ -139,6 +139,49 @@
             </objects>
             <point key="canvasLocation" x="1429" y="2367"/>
         </scene>
+        <!--Collections-->
+        <scene sceneID="seD-Ua-j3I">
+            <objects>
+                <viewController id="MTb-7i-dLV" customClass="CollectionsViewController" customModule="ManaGuide" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="yfn-qZ-vs1"/>
+                        <viewControllerLayoutGuide type="bottom" id="inu-41-D8U"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="ITe-rl-6zO">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Collections" id="Ihi-Pd-oNM">
+                        <barButtonItem key="backBarButtonItem" title=" " id="Cxi-9W-qGB"/>
+                    </navigationItem>
+                    <connections>
+                        <segue destination="2AI-NE-5zU" kind="show" identifier="showCollection" id="2Ro-zY-FJw"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qti-FY-TZS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2561" y="1572"/>
+        </scene>
+        <!--Collection-->
+        <scene sceneID="Xk0-ck-gg0">
+            <objects>
+                <viewController id="2AI-NE-5zU" customClass="CollectionViewController" customModule="ManaGuide" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="4yY-Ub-DQT"/>
+                        <viewControllerLayoutGuide type="bottom" id="IJb-NG-uPs"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="apm-h3-feg">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Collection" id="FX8-oh-6Fc"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="yqx-zh-LwF" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3541" y="1572"/>
+        </scene>
         <!--Banned and Restricted List-->
         <scene sceneID="8Ya-VG-lap">
             <objects>
@@ -680,7 +723,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HWh-yF-yFy" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2560.8695652173915" y="1571.7391304347827"/>
+            <point key="canvasLocation" x="2561" y="2367"/>
         </scene>
         <!--List-->
         <scene sceneID="ULo-2v-Kcw">
@@ -713,7 +756,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bzn-da-vY3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3540.579710144928" y="1571.7391304347827"/>
+            <point key="canvasLocation" x="3541" y="2367"/>
         </scene>
         <!--PDF Viewer-->
         <scene sceneID="FJg-vf-mUU">
@@ -734,7 +777,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qKa-4H-Xpu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2561" y="2367"/>
+            <point key="canvasLocation" x="4874" y="2367"/>
         </scene>
         <!--Featured-->
         <scene sceneID="Qng-H5-Uwz">
@@ -1945,7 +1988,8 @@
                         <segue destination="AXD-UP-8RO" kind="presentation" identifier="showLogin" id="raG-Jp-fAl"/>
                         <segue destination="t1B-qF-FHV" kind="show" identifier="showSearch" id="ad4-Pa-Oso"/>
                         <segue destination="qgC-JD-Akd" kind="show" identifier="showDecks" id="FA3-5I-awu"/>
-                        <segue destination="6UT-WB-OCK" kind="show" identifier="showLists" id="KpX-Mh-JVa"/>
+                        <segue destination="MTb-7i-dLV" kind="show" identifier="showCollections" id="J5I-gS-dhe"/>
+                        <segue destination="6UT-WB-OCK" kind="show" identifier="showLists" id="4eK-rV-hVQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZzT-MW-J9Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -2035,10 +2079,10 @@
         <image name="forwardButton" width="32" height="32"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Vbm-cg-ye0"/>
+        <segue reference="raG-Jp-fAl"/>
         <segue reference="X4a-uC-2tC"/>
         <segue reference="J88-7q-TTb"/>
         <segue reference="Mbq-CH-LY8"/>
-        <segue reference="bra-At-7UT"/>
+        <segue reference="ad4-Pa-Oso"/>
     </inferredMetricsTieBreakers>
 </document>

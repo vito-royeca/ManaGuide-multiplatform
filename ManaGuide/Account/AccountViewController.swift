@@ -74,6 +74,18 @@ class AccountViewController: BaseViewController {
             dest.viewModel = SearchViewModel(withRequest: request,
                                              andTitle: dict["title"] as? String)
             dest.delegate = self
+        } else if segue.identifier == "showDecks" {
+            guard let dest = segue.destination as? DecksViewController else {
+                return
+            }
+        } else if segue.identifier == "showCollections" {
+            guard let dest = segue.destination as? CollectionsViewController else {
+                return
+            }
+        } else if segue.identifier == "showLists" {
+            guard let dest = segue.destination as? ListsViewController else {
+                return
+            }
         }
     }
     
@@ -125,42 +137,6 @@ class AccountViewController: BaseViewController {
         
         return request
     }
-    
-    // TODO: fix this
-    func deckRequest() -> NSFetchRequest<CMCard> {
-        guard let user = viewModel.getLoggedInUser() else {
-            fatalError("No logged in User")
-        }
-        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        
-        if let favorites = user.favorites,
-            let cards = favorites.allObjects as? [CMCard] {
-            request.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
-        } else {
-            // fetch non-existent cards
-            request.predicate = NSPredicate(format: "id = %@", "-1")
-        }
-        
-        return request
-    }
-    
-    // TODO: fix this
-    func listRequest() -> NSFetchRequest<CMCard> {
-        guard let user = viewModel.getLoggedInUser() else {
-            fatalError("No logged in User")
-        }
-        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        
-        if let favorites = user.favorites,
-            let cards = favorites.allObjects as? [CMCard] {
-            request.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
-        } else {
-            // fetch non-existent cards
-            request.predicate = NSPredicate(format: "id = %@", "-1")
-        }
-        
-        return request
-    }
 }
 
 // MARK: UITableViewDataSource
@@ -181,7 +157,6 @@ extension AccountViewController : UITableViewDataSource {
             guard let c = tableView.dequeueReusableCell(withIdentifier: AccountHeroTableViewCell.reuseIdentifier) as? AccountHeroTableViewCell else {
                 fatalError("\(AccountHeroTableViewCell.reuseIdentifier) not found")
             }
-            
             c.user = Auth.auth().currentUser
             cell = c
 
@@ -193,7 +168,6 @@ extension AccountViewController : UITableViewDataSource {
             }
             imageView.image = AccountSection.favorites.imageIcon
             label.text = AccountSection.favorites.description
-            
             c.accessoryType = .disclosureIndicator
             cell = c
 
@@ -205,7 +179,6 @@ extension AccountViewController : UITableViewDataSource {
             }
             imageView.image = AccountSection.ratedCards.imageIcon
             label.text = AccountSection.ratedCards.description
-            
             c.accessoryType = .disclosureIndicator
             cell = c
 
@@ -217,10 +190,20 @@ extension AccountViewController : UITableViewDataSource {
             }
             imageView.image = AccountSection.decks.imageIcon
             label.text = AccountSection.decks.description
-            
             c.accessoryType = .disclosureIndicator
             cell = c
         
+        case AccountSection.collections.rawValue:
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                let label = c.textLabel,
+                let imageView = c.imageView else {
+                    fatalError("BasicCell not found")
+            }
+            imageView.image = AccountSection.collections.imageIcon
+            label.text = AccountSection.collections.description
+            c.accessoryType = .disclosureIndicator
+            cell = c
+            
         case AccountSection.lists.rawValue:
             guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
                 let label = c.textLabel,
@@ -229,7 +212,6 @@ extension AccountViewController : UITableViewDataSource {
             }
             imageView.image = AccountSection.lists.imageIcon
             label.text = AccountSection.lists.description
-            
             c.accessoryType = .disclosureIndicator
             cell = c
             
@@ -284,11 +266,15 @@ extension AccountViewController : UITableViewDelegate {
         case AccountSection.decks.rawValue:
             viewModel.accountSection = .decks
             performSegue(withIdentifier: "showDecks",
-                         sender: ["title": "Decks"])
+                         sender: nil)
+        case AccountSection.collections.rawValue:
+            viewModel.accountSection = .collections
+            performSegue(withIdentifier: "showCollections",
+                         sender: nil)
         case AccountSection.lists.rawValue:
             viewModel.accountSection = .lists
             performSegue(withIdentifier: "showLists",
-                         sender: ["title": "Lists"])
+                         sender: nil)
         default:
             ()
         }
