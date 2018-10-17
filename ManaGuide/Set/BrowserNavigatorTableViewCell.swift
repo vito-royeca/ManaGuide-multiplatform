@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Font_Awesome_Swift
+import FontAwesome_swift
 
 protocol BrowserNavigatorTableViewCellDelegate: NSObjectProtocol {
     func back()
@@ -44,34 +44,22 @@ class BrowserNavigatorTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         
-        backButton.setImage(UIImage(bgIcon: .FAArrowCircleLeft,
-                                    orientation: UIImage.Orientation.up,
-                                    bgTextColor: LookAndFeel.GlobalTintColor,
-                                    bgBackgroundColor: UIColor.clear,
-                                    topIcon: .FAArrowCircleLeft,
-                                    topTextColor: UIColor.clear,
-                                    bgLarge: true,
-                                    size: CGSize(width: 20, height: 20)),
+        backButton.setImage(UIImage.fontAwesomeIcon(name: .arrowCircleLeft,
+                                                    style: .solid,
+                                                    textColor: LookAndFeel.GlobalTintColor,
+                                                    size: CGSize(width: 20, height: 20)),
                             for: .normal)
         
-        forwardButton.setImage(UIImage(bgIcon: .FAArrowRight,
-                                       orientation: UIImage.Orientation.up,
-                                       bgTextColor: LookAndFeel.GlobalTintColor,
-                                       bgBackgroundColor: UIColor.clear,
-                                       topIcon: .FAArrowRight,
-                                       topTextColor: UIColor.clear,
-                                       bgLarge: true,
-                                       size: CGSize(width: 20, height: 20)),
+        forwardButton.setImage(UIImage.fontAwesomeIcon(name: .arrowRight,
+                                                       style: .solid,
+                                                       textColor: LookAndFeel.GlobalTintColor,
+                                                       size: CGSize(width: 20, height: 20)),
                                for: .normal)
-        
-        refreshButton.setImage(UIImage(bgIcon: .FARefresh,
-                                       orientation: UIImage.Orientation.up,
-                                       bgTextColor: LookAndFeel.GlobalTintColor,
-                                       bgBackgroundColor: UIColor.clear,
-                                       topIcon: .FARefresh,
-                                       topTextColor: UIColor.clear,
-                                       bgLarge: true,
-                                       size: CGSize(width: 20, height: 20)),
+
+        refreshButton.setImage(UIImage.fontAwesomeIcon(name: .redo,
+                                                       style: .solid,
+                                                       textColor: LookAndFeel.GlobalTintColor,
+                                                       size: CGSize(width: 20, height: 20)),
                                for: .normal)
         
         selectionStyle = .none

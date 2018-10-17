@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Font_Awesome_Swift
+import FontAwesome_swift
 import ManaKit
 import PromiseKit
 
@@ -53,7 +53,8 @@ class TopViewedItemCell: UICollectionViewCell {
             logoLabel.text = ManaKit.sharedInstance.keyruneUnicode(forSet: card.set!)
             logoLabel.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
             nameLabel.text = card.name
-            viewsLabel.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
+//            viewsLabel.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
+//            viewsLabel.text = "\(String.fontAwesome(code: .eye)) \(card.views)"
         }
     }
     

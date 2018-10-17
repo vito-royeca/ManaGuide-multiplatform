@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import FontAwesome_swift
 import GoogleSignIn
 import MBProgressHUD
 import PromiseKit
@@ -26,6 +27,9 @@ class LoginViewController: BaseViewController {
     // MARK: Outlets
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var facebookButton: UIButton!
+    @IBOutlet weak var googleButton: UIButton!
+    @IBOutlet weak var githubButton: UIButton!
     
     // MARK: Actions
     @IBAction func cancelAction(_ sender: UIBarButtonItem) {
@@ -266,6 +270,21 @@ class LoginViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        facebookButton.setImage(UIImage.fontAwesomeIcon(name: .facebook,
+                                                        style: .brands,
+                                                        textColor: LookAndFeel.GlobalTintColor,
+                                                        size: CGSize(width: 30, height: 30)),
+                                for: .normal)
+        googleButton.setImage(UIImage.fontAwesomeIcon(name: .google,
+                                                      style: .brands,
+                                                      textColor: LookAndFeel.GlobalTintColor,
+                                                      size: CGSize(width: 30, height: 30)),
+                                for: .normal)
+        githubButton.setImage(UIImage.fontAwesomeIcon(name: .github,
+                                                      style: .brands,
+                                                      textColor: LookAndFeel.GlobalTintColor,
+                                                      size: CGSize(width: 30, height: 30)),
+                              for: .normal)
         GIDSignIn.sharedInstance().delegate = self
         GIDSignIn.sharedInstance().uiDelegate = self
     }

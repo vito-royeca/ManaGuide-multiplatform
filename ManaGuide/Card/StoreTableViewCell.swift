@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FontAwesome_swift
 import ManaKit
 
 let kStoreTableViewCellHeight = CGFloat(60)
@@ -27,6 +28,8 @@ class StoreTableViewCell: UITableViewCell {
     @IBOutlet weak var conditionLabel: UILabel!
     @IBOutlet weak var quantityLabel: UILabel!
     @IBOutlet weak var priceLabel: UILabel!
+    @IBOutlet weak var shoppingCartButton: UIButton!
+    
     
     // MARK: Actions
     
@@ -51,6 +54,11 @@ class StoreTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        shoppingCartButton.setImage(UIImage.fontAwesomeIcon(name: .shoppingCart,
+                                                            style: .solid,
+                                                            textColor: LookAndFeel.GlobalTintColor,
+                                                            size: CGSize(width: 20, height: 20)),
+                                    for: .normal)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

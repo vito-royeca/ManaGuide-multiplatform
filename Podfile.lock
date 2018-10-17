@@ -8,11 +8,10 @@ PODS:
   - ChameleonFramework/Default (2.1.0)
   - ChameleonFramework/Swift (2.1.0):
     - ChameleonFramework/Default
-  - Cosmos (11.0.3)
+  - Cosmos (17.0.0)
   - Crashlytics (3.10.9):
     - Fabric (~> 1.7.13)
   - DACircularProgress (2.3.1)
-  - Eureka (4.3.0)
   - Fabric (1.7.13)
   - FBSDKCoreKit (4.37.0):
     - Bolts (~> 1.7)
@@ -66,7 +65,7 @@ PODS:
   - FirebaseUI/Storage (5.2.2):
     - Firebase/Storage (~> 5.0)
     - SDWebImage (~> 4.0)
-  - Font-Awesome-Swift (1.6.4)
+  - FontAwesome.swift (1.4.5)
   - GoogleAppMeasurement (5.2.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
     - GoogleUtilities/MethodSwizzler (~> 5.2)
@@ -146,7 +145,7 @@ PODS:
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
   - NYAlertViewController (1.3.0)
-  - OAuthSwift (1.1.2)
+  - OAuthSwift (1.2.2)
   - pop (1.0.12)
   - PromiseKit (6.5.2):
     - PromiseKit/CorePromise (= 6.5.2)
@@ -166,9 +165,8 @@ PODS:
 
 DEPENDENCIES:
   - ChameleonFramework/Swift (from `https://github.com/ViccAlexander/Chameleon.git`)
-  - Cosmos (~> 11.0)
+  - Cosmos
   - Crashlytics
-  - Eureka
   - Fabric
   - FBSDKCoreKit
   - FBSDKLoginKit
@@ -178,7 +176,7 @@ DEPENDENCIES:
   - Firebase/Core
   - Firebase/Database
   - FirebaseUI/Storage
-  - Font-Awesome-Swift (from `https://github.com/Vaberer/Font-Awesome-Swift`, branch `swift-3`)
+  - FontAwesome.swift
   - GoogleSignIn
   - iCarousel
   - IDMPhotoBrowser
@@ -189,8 +187,8 @@ DEPENDENCIES:
   - MMDrawerController
   - "MMDrawerController+Storyboard"
   - NYAlertViewController
-  - OAuthSwift (~> 1.1.2)
-  - PromiseKit (~> 6.0)
+  - OAuthSwift
+  - PromiseKit
   - SimulatorStatusMagic
   - SSZipArchive
 
@@ -200,7 +198,6 @@ SPEC REPOS:
     - Cosmos
     - Crashlytics
     - DACircularProgress
-    - Eureka
     - Fabric
     - FBSDKCoreKit
     - FBSDKLoginKit
@@ -215,6 +212,7 @@ SPEC REPOS:
     - FirebaseInstanceID
     - FirebaseStorage
     - FirebaseUI
+    - FontAwesome.swift
     - GoogleAppMeasurement
     - GoogleSignIn
     - GoogleToolboxForMac
@@ -242,9 +240,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   ChameleonFramework:
     :git: https://github.com/ViccAlexander/Chameleon.git
-  Font-Awesome-Swift:
-    :branch: swift-3
-    :git: https://github.com/Vaberer/Font-Awesome-Swift
   Kanna:
     :branch: feature/v3.0.0
     :git: https://github.com/tid-kijyun/Kanna
@@ -253,9 +248,6 @@ CHECKOUT OPTIONS:
   ChameleonFramework:
     :commit: 6dd284bde21ea2e7f9fd89bc36f40df16e16369d
     :git: https://github.com/ViccAlexander/Chameleon.git
-  Font-Awesome-Swift:
-    :commit: a1fa6a2529e0d4fe2f0cc735f6d907612e1b7535
-    :git: https://github.com/Vaberer/Font-Awesome-Swift
   Kanna:
     :commit: 50b2fa6c8d2341a693b5256624257c58c4502142
     :git: https://github.com/tid-kijyun/Kanna
@@ -263,10 +255,9 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   ChameleonFramework: d21a3cc247abfe5e37609a283a8238b03575cf64
-  Cosmos: eb506859929f4add2d2aec822a27efb2f718a95d
+  Cosmos: 309e489f21ffc91a1eeecfebef7f817cd2fcfba6
   Crashlytics: 55e24fc23989680285a21cb1146578d9d18e432c
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
-  Eureka: 6d711cb30ca333b4bc893110285a722ae3840114
   Fabric: 25d0963b691fc97be566392243ff0ecef5a68338
   FBSDKCoreKit: fe5f3474499a81963e11e3f3a5c753d0a95ca2b4
   FBSDKLoginKit: 2f7249686d1e30ce8a5ef5400eedf50b3e3df332
@@ -281,7 +272,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: 78ba376fcd5b94c001f9999b2cbd3d1f1e56e78d
   FirebaseStorage: fd82e5e5c474897e19972b34b22ac0f589dce04e
   FirebaseUI: 09519bf436a055cd696bf68687d624423150e4c0
-  Font-Awesome-Swift: 4820aea879741d76968a89653715b375ec0cf99e
+  FontAwesome.swift: a351dbb86b9fcec9aad6bce2fdd5b95e9a7b8828
   GoogleAppMeasurement: 2b3a023a61239c8d002e6e4fcf4abce8eddce0e0
   GoogleSignIn: 11183592dc63e105475c7305a325045ff95e02b7
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
@@ -299,7 +290,7 @@ SPEC CHECKSUMS:
   "MMDrawerController+Storyboard": c98f86c0f32cdef1d466d19a7da3ad2fc6c6ac00
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   NYAlertViewController: b93f82e2c1fc6d5e9485512ddbe7b481f463a074
-  OAuthSwift: 5aa5659984d3ca3206ba636a9e7a9c6626b2e8bd
+  OAuthSwift: 27b34fe80b76b67cd8f45571e0be2432bc9f6de1
   pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
   PromiseKit: 27c1601bfb73405871b805bcb8cf7e55c4dad3db
   SDWebImage: 624d6e296c69b244bcede364c72ae0430ac14681
@@ -307,6 +298,6 @@ SPEC CHECKSUMS:
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Sync: 0412c2b068eb7cf1a04607e948ef92cbd6114d0f
 
-PODFILE CHECKSUM: 578eb169ac4e4d66c6415badc29acf001cad871d
+PODFILE CHECKSUM: 1de4df46ea488cc272fb0c077eba4cc89f88ebae
 
 COCOAPODS: 1.5.3

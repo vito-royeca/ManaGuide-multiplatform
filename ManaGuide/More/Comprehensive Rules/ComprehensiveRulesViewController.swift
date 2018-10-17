@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Font_Awesome_Swift
 import ManaKit
 
 class ComprehensiveRulesViewController: BaseViewController {

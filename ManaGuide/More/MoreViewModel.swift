@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FontAwesome_swift
 
 enum MoreSection: Int {
     case rules
@@ -67,23 +68,15 @@ enum MoreRuleRow: Int {
              .tournament,
              .ipr,
              .jar:
-            return UIImage(bgIcon: .FAFilePdfO,
-                           orientation: UIImage.Orientation.up,
-                           bgTextColor: LookAndFeel.GlobalTintColor,
-                           bgBackgroundColor: UIColor.clear,
-                           topIcon: .FAFilePdfO,
-                           topTextColor: UIColor.clear,
-                           bgLarge: false,
-                           size: CGSize(width: 20, height: 20))
+            return UIImage.fontAwesomeIcon(name: .filePdf,
+                                           style: .solid,
+                                           textColor: LookAndFeel.GlobalTintColor,
+                                           size: CGSize(width: 20, height: 20))
         case .comprehensive:
-            return UIImage(bgIcon: .FADatabase,
-                           orientation: UIImage.Orientation.up,
-                           bgTextColor: LookAndFeel.GlobalTintColor,
-                           bgBackgroundColor: UIColor.clear,
-                           topIcon: .FADatabase,
-                           topTextColor: UIColor.clear,
-                           bgLarge: false,
-                           size: CGSize(width: 20, height: 20))
+            return UIImage.fontAwesomeIcon(name: .database,
+                                           style: .solid,
+                                           textColor: LookAndFeel.GlobalTintColor,
+                                           size: CGSize(width: 20, height: 20))
         }
     }
     
@@ -108,30 +101,21 @@ enum MoreListRow: Int {
     
     var imageIcon : UIImage {
         switch self {
-        case .bannedAndRestricted: return UIImage(bgIcon: .FABan,
-                                                  orientation: UIImage.Orientation.up,
-                                                  bgTextColor: LookAndFeel.GlobalTintColor,
-                                                  bgBackgroundColor: UIColor.clear,
-                                                  topIcon: .FABan,
-                                                  topTextColor: UIColor.clear,
-                                                  bgLarge: false,
-                                                  size: CGSize(width: 20, height: 20))
-        case .reserved: return UIImage(bgIcon: .FAArchive,
-                                       orientation: UIImage.Orientation.up,
-                                       bgTextColor: LookAndFeel.GlobalTintColor,
-                                       bgBackgroundColor: UIColor.clear,
-                                       topIcon: .FAArchive,
-                                       topTextColor: UIColor.clear,
-                                       bgLarge: false,
-                                       size: CGSize(width: 20, height: 20))
-        case .artists: return UIImage(bgIcon: .FAPaintBrush,
-                                      orientation: UIImage.Orientation.up,
-                                      bgTextColor: LookAndFeel.GlobalTintColor,
-                                      bgBackgroundColor: UIColor.clear,
-                                      topIcon: .FAPaintBrush,
-                                      topTextColor: UIColor.clear,
-                                      bgLarge: false,
-                                      size: CGSize(width: 20, height: 20))
+        case .bannedAndRestricted:
+            return UIImage.fontAwesomeIcon(name: .ban,
+                                           style: .solid,
+                                           textColor: LookAndFeel.GlobalTintColor,
+                                           size: CGSize(width: 20, height: 20))
+        case .reserved:
+            return UIImage.fontAwesomeIcon(name: .archive,
+                                           style: .solid,
+                                           textColor: LookAndFeel.GlobalTintColor,
+                                           size: CGSize(width: 20, height: 20))
+        case .artists:
+            return UIImage.fontAwesomeIcon(name: .paintBrush,
+                                           style: .solid,
+                                           textColor: LookAndFeel.GlobalTintColor,
+                                           size: CGSize(width: 20, height: 20))
         }
     }
     

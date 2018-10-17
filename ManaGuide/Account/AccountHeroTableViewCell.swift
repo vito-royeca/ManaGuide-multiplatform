@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import FontAwesome_swift
 import SDWebImage
 
 class AccountHeroTableViewCell: UITableViewCell {
@@ -16,20 +17,17 @@ class AccountHeroTableViewCell: UITableViewCell {
     // MARK: Variables
     var user: User? {
         didSet {
-            let tmpImage = UIImage(bgIcon: .FAUserCircle,
-                                   orientation: UIImage.Orientation.up,
-                                   bgTextColor: UIColor.lightGray,
-                                   bgBackgroundColor: UIColor.clear,
-                                   topIcon: .FAUserCircle,
-                                   topTextColor: UIColor.clear,
-                                   bgLarge: true,
-                                   size: CGSize(width: 60, height: 60))
-            avatarImage.image = tmpImage
+            let image = UIImage.fontAwesomeIcon(name: .userCircle,
+                                                style: .solid,
+                                                textColor: UIColor.lightGray,
+                                                size: CGSize(width: 60, height: 60))
+            avatarImage.image = image
             
             if let u = user {
                 avatarImage.sd_setImage(with: u.photoURL, completed: nil)
                 nameLabel.text = u.displayName
             } else {
+                avatarImage.image = image
                 nameLabel.text = "Not logged in"
             }
         }

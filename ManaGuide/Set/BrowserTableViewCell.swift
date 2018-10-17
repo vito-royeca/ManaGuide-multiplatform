@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Font_Awesome_Swift
 
 class BrowserTableViewCell: UITableViewCell {
     static let reuseIdentifier = "BrowserCell"

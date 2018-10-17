@@ -8,7 +8,7 @@
 
 import UIKit
 import CoreData
-import Font_Awesome_Swift
+import FontAwesome_swift
 import InAppSettingsKit
 import MBProgressHUD
 import ManaKit
@@ -44,10 +44,10 @@ class SearchViewController: BaseViewController {
         searchController.searchBar.placeholder = "Filter"
         definesPresentationContext = true
 
-        rightMenuButton.image = UIImage.init(icon: .FABars,
-                                             size: CGSize(width: 30, height: 30),
-                                             textColor: .white,
-                                             backgroundColor: .clear)
+        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars,
+                                                        style: .solid,
+                                                        textColor: LookAndFeel.GlobalTintColor,
+                                                        size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
 
         if #available(iOS 11.0, *) {
@@ -93,6 +93,10 @@ class SearchViewController: BaseViewController {
         if #available(iOS 11.0, *) {
             navigationItem.hidesSearchBarWhenScrolling = true
         }
+        
+        if let delegate = delegate {
+            viewModel = delegate.reloadViewModel()
+        }
         updateDataDisplay()
     }
 
@@ -102,9 +106,11 @@ class SearchViewController: BaseViewController {
         NotificationCenter.default.removeObserver(self,
                                                   name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                   object:nil)
+        // Favorites
         NotificationCenter.default.removeObserver(self,
                                                   name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                                   object:nil)
+        // Ratings
         NotificationCenter.default.removeObserver(self,
                                                   name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                   object:nil)

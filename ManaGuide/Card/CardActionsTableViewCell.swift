@@ -23,14 +23,15 @@ class CardActionsTableViewCell: UITableViewCell {
     // MARK: Outlets
     @IBOutlet weak var ratingView: CosmosView!
     @IBOutlet weak var ratingLabel: UILabel!
-    @IBOutlet weak var favoriteLabel: UILabel!
+    @IBOutlet weak var favoriteButton: UIButton!
     @IBOutlet weak var viewsLabel: UILabel!
 
     // MARK: Actions
-    @IBAction func favoriteAction(_ sender: UITapGestureRecognizer) {
+    
+    @IBAction func favoriteAction(_ sender: UIButton) {
         delegate?.favoriteAction()
     }
-
+    
     // MARK: Overrides
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -44,10 +45,8 @@ class CardActionsTableViewCell: UITableViewCell {
             self.delegate?.ratingAction()
         }
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(favoriteAction(_:)))
-        favoriteLabel.addGestureRecognizer(tap)
-        favoriteLabel.textColor = LookAndFeel.GlobalTintColor
-        
+        favoriteButton.setTitleColor(LookAndFeel.GlobalTintColor,
+                                     for: .normal)
         selectionStyle = .none
         accessoryType = .none
     }

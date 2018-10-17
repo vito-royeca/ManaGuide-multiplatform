@@ -9,6 +9,12 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
+        <array key="Font Awesome 5 Brands-Regular-400.otf">
+            <string>FontAwesome5BrandsRegular</string>
+        </array>
+        <array key="Font Awesome 5 Free-Regular-400.otf">
+            <string>FontAwesome5FreeRegular</string>
+        </array>
         <array key="FontAwesome.ttf">
             <string>FontAwesome</string>
         </array>
@@ -505,24 +511,21 @@
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LFk-cs-s3D">
                                                 <rect key="frame" x="0.0" y="0.0" width="30" height="29"/>
-                                                <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="17"/>
-                                                <state key="normal" title=""/>
+                                                <fontDescription key="fontDescription" name="FontAwesome5BrandsRegular" family="Font Awesome 5 Brands" pointSize="17"/>
                                                 <connections>
                                                     <action selector="facebookAction:" destination="Scc-uM-cUd" eventType="touchUpInside" id="Fbs-iX-jAa"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D0K-YZ-sOM">
                                                 <rect key="frame" x="60" y="0.0" width="30" height="29"/>
-                                                <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="17"/>
-                                                <state key="normal" title=""/>
+                                                <fontDescription key="fontDescription" name="FontAwesome5BrandsRegular" family="Font Awesome 5 Brands" pointSize="17"/>
                                                 <connections>
                                                     <action selector="googleAction:" destination="Scc-uM-cUd" eventType="touchUpInside" id="GgZ-Rt-0bU"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wrc-cf-AzJ">
                                                 <rect key="frame" x="120.00000000000003" y="0.0" width="30" height="29"/>
-                                                <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="17"/>
-                                                <state key="normal" title=""/>
+                                                <fontDescription key="fontDescription" name="FontAwesome5BrandsRegular" family="Font Awesome 5 Brands" pointSize="17"/>
                                                 <connections>
                                                     <action selector="githubAction:" destination="Scc-uM-cUd" eventType="touchUpInside" id="hKM-wT-wTv"/>
                                                 </connections>
@@ -548,6 +551,9 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="facebookButton" destination="LFk-cs-s3D" id="gow-hC-P2q"/>
+                        <outlet property="githubButton" destination="Wrc-cf-AzJ" id="tsh-gV-KA0"/>
+                        <outlet property="googleButton" destination="D0K-YZ-sOM" id="u2E-PU-5ae"/>
                         <outlet property="passwordTextField" destination="1Ec-DK-e3o" id="D6g-wp-FtM"/>
                         <outlet property="usernameTextField" destination="0RH-D1-MV7" id="sSQ-Ha-iEn"/>
                     </connections>
@@ -1223,11 +1229,11 @@
                         <viewControllerLayoutGuide type="bottom" id="841-wA-QXv"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="eGO-g0-CCv">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="uA5-1d-p4e">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BrowserNavigatorCell" id="ToY-iY-7LW" customClass="BrowserNavigatorTableViewCell" customModule="ManaGuide" customModuleProvider="target">
@@ -1411,11 +1417,11 @@
                         <viewControllerLayoutGuide type="bottom" id="tqU-jq-t3l"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="fcE-qX-xlo">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="XTg-F2-G7x">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
+                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BasicCell" textLabel="bGb-Ks-SVK" style="IBUITableViewCellStyleDefault" id="gLf-9z-exN">
@@ -1590,16 +1596,16 @@
                                                                 <constraint firstAttribute="trailing" secondItem="tmf-UN-dCC" secondAttribute="trailing" id="xZk-wT-bes"/>
                                                             </constraints>
                                                         </view>
-                                                        <label opaque="NO" tag="200" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zlv-oV-4Az">
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vqx-gM-lyw">
                                                             <rect key="frame" x="138" y="0.0" width="138" height="43.666666666666664"/>
-                                                            <gestureRecognizers/>
-                                                            <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="30"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
+                                                            <fontDescription key="fontDescription" name="FontAwesome5FreeRegular" family="Font Awesome 5 Free" pointSize="30"/>
+                                                            <connections>
+                                                                <action selector="favoriteAction:" destination="5vn-4Y-X1k" eventType="touchUpInside" id="EWc-jj-WPC"/>
+                                                            </connections>
+                                                        </button>
                                                         <label opaque="NO" userInteractionEnabled="NO" tag="300" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" 100" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kkd-kM-zpB">
                                                             <rect key="frame" x="276" y="0.0" width="138" height="43.666666666666664"/>
-                                                            <fontDescription key="fontDescription" name="FontAwesome" family="FontAwesome" pointSize="13"/>
+                                                            <fontDescription key="fontDescription" name="FontAwesome5FreeRegular" family="Font Awesome 5 Free" pointSize="13"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
@@ -1615,7 +1621,7 @@
                                         </tableViewCellContentView>
                                         <gestureRecognizers/>
                                         <connections>
-                                            <outlet property="favoriteLabel" destination="Zlv-oV-4Az" id="wnO-86-yMb"/>
+                                            <outlet property="favoriteButton" destination="Vqx-gM-lyw" id="xfp-aw-gWZ"/>
                                             <outlet property="ratingLabel" destination="tmf-UN-dCC" id="I04-KN-NiY"/>
                                             <outlet property="ratingView" destination="vFr-mb-cVm" id="GN2-VO-zZx"/>
                                             <outlet property="viewsLabel" destination="kkd-kM-zpB" id="PdZ-wE-EL2"/>
@@ -1776,10 +1782,10 @@
             </objects>
             <point key="canvasLocation" x="-2636" y="827"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Main View Controller-->
         <scene sceneID="D7a-6b-jNA">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="YyA-zA-fE5" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="YyA-zA-fE5" customClass="MainViewController" customModule="ManaGuide" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" translucent="NO" id="g2q-wT-IyZ">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1909,7 +1915,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="87.666666666666671"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Z2o-S7-Rfc">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Z2o-S7-Rfc">
                                                     <rect key="frame" x="14" y="13.999999999999996" width="60" height="59.666666666666657"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="60" id="bvL-Y3-vPj"/>
@@ -2082,7 +2088,7 @@
         <segue reference="raG-Jp-fAl"/>
         <segue reference="X4a-uC-2tC"/>
         <segue reference="J88-7q-TTb"/>
-        <segue reference="Mbq-CH-LY8"/>
+        <segue reference="xMx-O9-Y4N"/>
         <segue reference="ad4-Pa-Oso"/>
     </inferredMetricsTieBreakers>
 </document>

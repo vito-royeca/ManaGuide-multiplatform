@@ -8,7 +8,7 @@
 
 import UIKit
 import CoreData
-import Font_Awesome_Swift
+import FontAwesome_swift
 import InAppSettingsKit
 import ManaKit
 import MBProgressHUD
@@ -40,8 +40,17 @@ class SetViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        contentSegmentedControl.setFAIcon(icon: .FADatabase, forSegmentAtIndex: 0)
-        contentSegmentedControl.setFAIcon(icon: .FAWikipediaW, forSegmentAtIndex: 1)
+        contentSegmentedControl.setImage(UIImage.fontAwesomeIcon(name: .database,
+                                                                 style: .solid,
+                                                                 textColor: LookAndFeel.GlobalTintColor,
+                                                                 size: CGSize(width: 30, height: 30)),
+                                         forSegmentAt: 0)
+        contentSegmentedControl.setImage(UIImage.fontAwesomeIcon(name: .wikipediaW,
+                                                                 style: .brands,
+                                                                 textColor: LookAndFeel.GlobalTintColor,
+                                                                 size: CGSize(width: 30, height: 30)),
+                                         forSegmentAt: 1)
+        
         NotificationCenter.default.removeObserver(self,
                                                   name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                   object:nil)
@@ -63,10 +72,10 @@ class SetViewController: BaseViewController {
             tableView.tableHeaderView = searchController.searchBar
         }
 
-        rightMenuButton.image = UIImage.init(icon: .FABars,
-                                             size: CGSize(width: 30, height: 30),
-                                             textColor: .white,
-                                             backgroundColor: .clear)
+        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars,
+                                                        style: .solid,
+                                                        textColor: LookAndFeel.GlobalTintColor,
+                                                        size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
         
         tableView.register(UINib(nibName: "EmptyTableViewCell",

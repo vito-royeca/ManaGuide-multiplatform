@@ -8,6 +8,7 @@
 
 import CoreData
 import Firebase
+import FontAwesome_swift
 import ManaKit
 import PromiseKit
 
@@ -36,50 +37,30 @@ enum AccountSection: Int {
         case .accountHeader:
             return nil
         case .favorites:
-            return UIImage(bgIcon: .FAHeart,
-                           orientation: UIImage.Orientation.up,
-                           bgTextColor: LookAndFeel.GlobalTintColor,
-                           bgBackgroundColor: UIColor.clear,
-                           topIcon: .FAHeart,
-                           topTextColor: UIColor.clear,
-                           bgLarge: false,
-                           size: CGSize(width: 20, height: 20))
+            return UIImage.fontAwesomeIcon(name: .heart,
+                                           style: .solid,
+                                           textColor: LookAndFeel.GlobalTintColor,
+                                           size: CGSize(width: 20, height: 20))
         case .ratedCards:
-            return UIImage(bgIcon: .FAStar,
-                           orientation: UIImage.Orientation.up,
-                           bgTextColor: LookAndFeel.GlobalTintColor,
-                           bgBackgroundColor: UIColor.clear,
-                           topIcon: .FAStar,
-                           topTextColor: UIColor.clear,
-                           bgLarge: false,
-                           size: CGSize(width: 20, height: 20))
+            return UIImage.fontAwesomeIcon(name: .star,
+                                           style: .solid,
+                                           textColor: LookAndFeel.GlobalTintColor,
+                                           size: CGSize(width: 20, height: 20))
         case .decks:
-            return UIImage(bgIcon: .FACubes,
-                           orientation: UIImage.Orientation.up,
-                           bgTextColor: LookAndFeel.GlobalTintColor,
-                           bgBackgroundColor: UIColor.clear,
-                           topIcon: .FACubes,
-                           topTextColor: UIColor.clear,
-                           bgLarge: false,
-                           size: CGSize(width: 20, height: 20))
+            return UIImage.fontAwesomeIcon(name: .cubes,
+                                           style: .solid,
+                                           textColor: LookAndFeel.GlobalTintColor,
+                                           size: CGSize(width: 20, height: 20))
         case .collections:
-            return UIImage(bgIcon: .FAFolder,
-                           orientation: UIImage.Orientation.up,
-                           bgTextColor: LookAndFeel.GlobalTintColor,
-                           bgBackgroundColor: UIColor.clear,
-                           topIcon: .FAFolder,
-                           topTextColor: UIColor.clear,
-                           bgLarge: false,
-                           size: CGSize(width: 20, height: 20))
+            return UIImage.fontAwesomeIcon(name: .folder,
+                                           style: .solid,
+                                           textColor: LookAndFeel.GlobalTintColor,
+                                           size: CGSize(width: 20, height: 20))
         case .lists:
-            return UIImage(bgIcon: .FAList,
-                           orientation: UIImage.Orientation.up,
-                           bgTextColor: LookAndFeel.GlobalTintColor,
-                           bgBackgroundColor: UIColor.clear,
-                           topIcon: .FAList,
-                           topTextColor: UIColor.clear,
-                           bgLarge: false,
-                           size: CGSize(width: 20, height: 20))
+            return UIImage.fontAwesomeIcon(name: .list,
+                                           style: .solid,
+                                           textColor: LookAndFeel.GlobalTintColor,
+                                           size: CGSize(width: 20, height: 20))
         }
     }
     

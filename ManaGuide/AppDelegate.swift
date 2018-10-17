@@ -42,33 +42,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                   privateKey: TCGPlayerSettings.PrivateKey)
         // Set the global tint color
         window?.tintColor = LookAndFeel.GlobalTintColor
-
-        // change the account icon
-        if let rootVC = window?.rootViewController as? MMDrawerController {
-            if let tabBarVC = rootVC.centerViewController as? UITabBarController {
-                tabBarVC.tabBar.items![2].image = UIImage(bgIcon: .FAUserCircle,
-                                                          orientation: UIImageOrientation.up,
-                                                          bgTextColor: UIColor.blue,
-                                                          bgBackgroundColor: UIColor.clear,
-                                                          topIcon: .FAUserCircle,
-                                                          topTextColor: UIColor.clear,
-                                                          bgLarge: false,
-                                                          size: CGSize(width: 30, height: 30))
-                
-                // setup the ViewModels
-                if let viewControllers = tabBarVC.viewControllers {
-                    for vc in viewControllers {
-                        if let nvc = vc as? UINavigationController {
-                            for child in nvc.viewControllers {
-                                if let searchVC = child as? SearchViewController {
-                                    searchVC.viewModel = SearchViewModel(withRequest: nil, andTitle: "Search")
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
         
         return true
     }

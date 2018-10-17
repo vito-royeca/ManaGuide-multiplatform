@@ -13,7 +13,7 @@ import FBSDKCoreKit
 import FBSDKShareKit
 import FBSDKMessengerShareKit
 import Firebase
-import Font_Awesome_Swift
+import FontAwesome_swift
 import iCarousel
 import IDMPhotoBrowser
 import ManaKit
@@ -49,7 +49,6 @@ class CardViewController: BaseViewController {
                 incrementCardViews()
             }
             
-//            viewModel.fetchExtraData()
             tableView.reloadData()
             tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
             
@@ -91,9 +90,21 @@ class CardViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        contentSegmentedControl.setFAIcon(icon: .FAImage, forSegmentAtIndex: 0)
-        contentSegmentedControl.setFAIcon(icon: .FAEye, forSegmentAtIndex: 1)
-        contentSegmentedControl.setFAIcon(icon: .FAShoppingCart, forSegmentAtIndex: 2)
+        contentSegmentedControl.setImage(UIImage.fontAwesomeIcon(name: .image,
+                                                                 style: .solid,
+                                                                 textColor: LookAndFeel.GlobalTintColor,
+                                                                 size: CGSize(width: 30, height: 30)),
+                                         forSegmentAt: 0)
+        contentSegmentedControl.setImage(UIImage.fontAwesomeIcon(name: .eye,
+                                                                 style: .solid,
+                                                                 textColor: LookAndFeel.GlobalTintColor,
+                                                                 size: CGSize(width: 30, height: 30)),
+                                         forSegmentAt: 1)
+        contentSegmentedControl.setImage(UIImage.fontAwesomeIcon(name: .shoppingCart,
+                                                                 style: .solid,
+                                                                 textColor: LookAndFeel.GlobalTintColor,
+                                                                 size: CGSize(width: 30, height: 30)),
+                                         forSegmentAt: 2)
         
         tableView.register(UINib(nibName: "DynamicHeightTableViewCell",
                                  bundle: nil),
@@ -468,11 +479,12 @@ extension CardViewController : UITableViewDataSource {
                 c.delegate = self
                 c.ratingView.rating = card.rating
                 c.ratingLabel.text = viewModel.ratingStringForCard()
-                c.favoriteLabel.setFAText(prefixText: "",
-                                   icon: viewModel.isCurrentCardFavorite() ? .FAHeart : .FAHeartO,
-                                   postfixText: "",
-                                   size: CGFloat(30))
-                c.viewsLabel.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
+                c.favoriteButton.setImage(UIImage.fontAwesomeIcon(name: .heart,
+                                                                  style: viewModel.isCurrentCardFavorite() ? .solid : .regular,
+                                                                  textColor: LookAndFeel.GlobalTintColor,
+                                                                  size: CGSize(width: 30, height: 30)),
+                                          for: .normal)
+                c.viewsLabel.text = "\u{f06e} \(card.views)"
                 cell = c
                 
             default:

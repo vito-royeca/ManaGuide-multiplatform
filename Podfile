@@ -3,10 +3,10 @@ use_frameworks!
 
 def default_pods
     pod 'ChameleonFramework/Swift', :git => 'https://github.com/ViccAlexander/Chameleon.git'
-    pod 'Cosmos', '~> 11.0'
+    pod 'Cosmos'
     pod 'Fabric'
     pod 'Crashlytics'
-    pod 'Eureka'
+    #pod 'Eureka'
     pod 'FBSDKCoreKit'
     pod 'FBSDKLoginKit'
     pod 'FBSDKShareKit'
@@ -15,7 +15,8 @@ def default_pods
     pod 'Firebase/Database'
     pod 'Firebase/Auth'
     pod 'FirebaseUI/Storage'
-    pod 'Font-Awesome-Swift', :git => 'https://github.com/Vaberer/Font-Awesome-Swift', :branch => 'swift-3'
+    #pod 'Font-Awesome-Swift', :git => 'https://github.com/Vaberer/Font-Awesome-Swift', :branch => 'swift-3'
+    pod 'FontAwesome.swift'
     pod 'GoogleSignIn'
     pod 'IDMPhotoBrowser'
     pod 'InAppSettingsKit'
@@ -26,8 +27,8 @@ def default_pods
     pod 'MMDrawerController'
     pod 'MMDrawerController+Storyboard'
     pod 'NYAlertViewController'
-    pod 'OAuthSwift', '~> 1.1.2'
-    pod 'PromiseKit', '~> 6.0'
+    pod 'OAuthSwift'
+    pod 'PromiseKit'
     pod 'SSZipArchive'
     #pod 'SwiftOCR'
 end

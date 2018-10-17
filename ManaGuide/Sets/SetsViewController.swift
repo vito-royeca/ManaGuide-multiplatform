@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Font_Awesome_Swift
+import FontAwesome_swift
 import InAppSettingsKit
 import ManaKit
 
@@ -57,7 +57,10 @@ class SetsViewController: BaseViewController {
                            forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
         
-        rightMenuButton.image = UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
+        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars,
+                                                        style: .solid,
+                                                        textColor: .clear,
+                                                        size: CGSize(width: 30, height: 30)) //UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
         
         viewModel.fetchData()
