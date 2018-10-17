@@ -625,7 +625,7 @@ class CardViewModel: NSObject {
                 if firstAttempt {
                     return TransactionResult.abort()
                 } else {
-                    userRef.setValue(["ratedCards": [id: rating]])
+                    userRef.setValue([id: rating])
                     return TransactionResult.success(withValue: currentData)
                 }
             }
@@ -635,17 +635,17 @@ class CardViewModel: NSObject {
                 if let snapshot = snapshot,
                     let ratedCards = snapshot.value as? [String: Double] {
                     
-                    for (k2,v2) in ratedCards {
+                    for (k,v) in ratedCards {
                         if let c = ManaKit.sharedInstance.findObject("CMCard",
-                                                                  objectFinder: ["id": k2 as AnyObject],
+                                                                  objectFinder: ["id": k as AnyObject],
                                                                   createIfNotFound: false) as? CMCard,
                             let cardRating = ManaKit.sharedInstance.findObject("CMCardRating",
                                                                            objectFinder: ["user.id": user.id! as AnyObject,
-                                                                                          "card.id": k2 as AnyObject],
+                                                                                          "card.id": k as AnyObject],
                                                                            createIfNotFound: true) as? CMCardRating {
                             cardRating.card = c
                             cardRating.user = user
-                            cardRating.rating = v2
+                            cardRating.rating = v
                             user.addToRatings(cardRating)
                         }
                     }
