@@ -91,12 +91,12 @@ class CardViewController: BaseViewController {
 
         // Do any additional setup after loading the view.
         contentSegmentedControl.setImage(UIImage.fontAwesomeIcon(name: .image,
-                                                                 style: .solid,
+                                                                 style: .regular,
                                                                  textColor: LookAndFeel.GlobalTintColor,
                                                                  size: CGSize(width: 30, height: 30)),
                                          forSegmentAt: 0)
         contentSegmentedControl.setImage(UIImage.fontAwesomeIcon(name: .eye,
-                                                                 style: .solid,
+                                                                 style: .regular,
                                                                  textColor: LookAndFeel.GlobalTintColor,
                                                                  size: CGSize(width: 30, height: 30)),
                                          forSegmentAt: 1)
@@ -417,6 +417,7 @@ class CardViewController: BaseViewController {
         cell.viewModel = vm
         cell.delegate = self
         cell.imageType = .artCrop
+        cell.animationOptions = .transitionCrossDissolve
         cell.flowLayout.itemSize = CGSize(width: width, height: height)
         cell.flowLayout.minimumInteritemSpacing = CGFloat(10)
         cell.flowLayout.scrollDirection = .horizontal

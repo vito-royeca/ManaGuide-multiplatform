@@ -15,7 +15,8 @@ class CardImageCollectionViewCell: UICollectionViewCell {
     
     // MARK: Variables
     var imageType: ManaKit.ImageType = .normal
-    
+    var animationOptions: UIView.AnimationOptions = []
+
     var card: CMCard? {
         didSet {
             guard let card = card else {
@@ -56,7 +57,7 @@ class CardImageCollectionViewCell: UICollectionViewCell {
                     }
                     UIView.transition(with: self.cardImage,
                                       duration: 1.0,
-                                      options: .transitionFlipFromRight,
+                                      options: self.animationOptions,
                                       animations: animations,
                                       completion: nil)
                 }.catch { error in

@@ -271,6 +271,7 @@ extension SearchViewController : UITableViewDataSource {
             c.viewModel = viewModel
             c.delegate = self
             c.imageType = .normal
+            c.animationOptions = .transitionFlipFromLeft
             c.updateItemSize(with: size)
             cell = c
             

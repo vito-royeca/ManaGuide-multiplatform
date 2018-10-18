@@ -262,6 +262,7 @@ extension SetViewController : UITableViewDataSource {
                 c.viewModel = viewModel.getSearchViewModel()
                 c.delegate = self
                 c.imageType = .normal
+                c.animationOptions = .transitionFlipFromLeft
                 c.updateItemSize(with: size)
                 cell = c
                 

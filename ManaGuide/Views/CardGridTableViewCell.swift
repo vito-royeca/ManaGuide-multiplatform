@@ -21,6 +21,7 @@ class CardGridTableViewCell: UITableViewCell {
     var viewModel: SearchViewModel!
     var delegate: CardGridTableViewCellDelegate?
     var imageType: ManaKit.ImageType = .normal
+    var animationOptions: UIView.AnimationOptions = []
     
     // MARK: Outlets
     @IBOutlet weak var collectionView: UICollectionView!
@@ -100,6 +101,7 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
             
             let card = viewModel.object(forRowAt: indexPath)
             c.imageType = imageType
+            c.animationOptions = animationOptions
             c.card = card
             cell = c
         }

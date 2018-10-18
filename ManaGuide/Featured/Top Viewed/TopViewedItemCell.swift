@@ -53,8 +53,7 @@ class TopViewedItemCell: UICollectionViewCell {
             logoLabel.text = ManaKit.sharedInstance.keyruneUnicode(forSet: card.set!)
             logoLabel.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
             nameLabel.text = card.name
-//            viewsLabel.setFAText(prefixText: "", icon: .FAEye, postfixText: " \(card.views)", size: CGFloat(13))
-//            viewsLabel.text = "\(String.fontAwesome(code: .eye)) \(card.views)"
+            viewsLabel.text = "\u{f06e} \(card.views)"
         }
     }
     
@@ -62,5 +61,6 @@ class TopViewedItemCell: UICollectionViewCell {
     private func setupUI() {
         cardImage.layer.cornerRadius = 10
         logoLabel.layer.cornerRadius = logoLabel.frame.height / 2
+        viewsLabel.font = UIFont.fontAwesome(ofSize: 13, style: .regular)
     }
 }
