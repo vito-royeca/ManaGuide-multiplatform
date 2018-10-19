@@ -79,36 +79,36 @@ enum CardDetailsSection : Int {
 }
 
 enum CardOtherDetailsSection : Int {
-    case layout
-    case convertedManaCost
     case colors
     case colorIdentity
+    case convertedManaCost
+    case layout
+    case number
     case originalType
+    case rarity
+    case releaseDate
+    case reservedList
+    case setOnlineOnly
+    case source
     case subTypes
     case superTypes
-    case rarity
-    case setOnlineOnly
-    case reservedList
-    case releaseDate
-    case source
-    case number
     
     var description : String {
         switch self {
         // Use Internationalization, as appropriate.
-        case .layout: return "Layout"
-        case .convertedManaCost: return "Converted Mana Cost"
         case .colors: return "Colors"
         case .colorIdentity: return "Color identity"
+        case .convertedManaCost: return "Converted Mana Cost"
+        case .layout: return "Layout"
+        case .number: return "Number"
         case .originalType: return "Original Type"
+        case .rarity: return "Rarity"
+        case .releaseDate: return "Release Date"
+        case .reservedList: return "Reserved List"
+        case .setOnlineOnly: return "Set Online Only"
+        case .source: return "Source"
         case .subTypes: return "Subtypes"
         case .superTypes: return "Supertypes"
-        case .rarity: return "Rarity"
-        case .setOnlineOnly: return "Set Online Only"
-        case .reservedList: return "Reserved List"
-        case .releaseDate: return "Release Date"
-        case .source: return "Source"
-        case .number: return "Number"
         }
     }
     
@@ -384,6 +384,86 @@ class CardViewModel: NSObject {
         }
     }
 
+    func textOf(otherDetails: CardOtherDetailsSection) -> String {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        var text = "\u{2014}"
+        
+        switch otherDetails {
+        case .layout:
+            if let layout = card.layout_,
+                let name = layout.name {
+                text = name
+            }
+        case .convertedManaCost:
+            text = "\(String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))"
+        case .colors:
+            if let colors_ = card.colors_,
+                let s = colors_.allObjects as? [CMColor] {
+                
+                let string = s.map({ $0.name! }).joined(separator: ", ")
+                if string.count > 0 {
+                    text = string
+                }
+            }
+        case .colorIdentity:
+            if let colorIdentities_ = card.colorIdentities_ {
+                if let s = colorIdentities_.allObjects as? [CMColor] {
+                    
+                    let string = s.map({ $0.name! }).joined(separator: ", ")
+                    if string.count > 0 {
+                        text = string
+                    }
+                }
+            }
+        case .originalType:
+            if let originalType = card.originalType {
+                text = originalType
+            }
+        case .subTypes:
+            if let subtypes_ = card.subtypes_,
+                let s = subtypes_.allObjects as? [CMCardType] {
+                
+                let string = s.map({ $0.name! }).joined(separator: ", ")
+                if string.count > 0 {
+                    text = string
+                }
+            }
+        case .superTypes:
+            if let supertypes_ = card.supertypes_,
+                let s = supertypes_.allObjects as? [CMCardType] {
+                
+                let string = s.map({ $0.name! }).joined(separator: ", ")
+                if string.count > 0 {
+                    text = string
+                }
+            }
+        case .rarity:
+            if let rarity = card.rarity_ {
+                text = rarity.name!
+            }
+        case .setOnlineOnly:
+            if let set = card.set {
+                text = set.onlineOnly ? "Yes" : "No"
+            }
+        case .reservedList:
+            text = card.reserved ? "Yes" : "No"
+        case .releaseDate:
+            if let releaseDate = card.releaseDate ?? card.set!.releaseDate {
+                text = releaseDate
+            }
+        case .source:
+            if let source = card.source {
+                text = source
+            }
+        case .number:
+            if let number = card.number ?? card.mciNumber {
+                text = number
+            }
+        }
+        
+        return text
+    }
+    
     func requestForOtherPrintings() -> NSFetchRequest<CMCard> {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()

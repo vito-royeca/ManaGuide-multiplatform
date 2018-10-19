@@ -704,10 +704,16 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                 }
             case CardDetailsSection.otherDetails.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell else {
-                    fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
+                guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
+                    let label = c.textLabel,
+                    let detailTextLabel = c.detailTextLabel,
+                    let otherDetails = CardOtherDetailsSection(rawValue: indexPath.row) else {
+                    fatalError("RightDetailCell is nil")
                 }
-                c.dynamicLabel.attributedText = MGUtilities.composeOtherDetails(forCard: card)
+                label.text = otherDetails.description
+                detailTextLabel.adjustsFontSizeToFitWidth = true
+                detailTextLabel.text = viewModel.textOf(otherDetails: otherDetails)
+                
                 c.selectionStyle = .none
                 c.accessoryType = .none
                 cell = c
