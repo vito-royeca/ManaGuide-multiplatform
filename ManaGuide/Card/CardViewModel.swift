@@ -79,6 +79,7 @@ enum CardDetailsSection : Int {
 }
 
 enum CardOtherDetailsSection : Int {
+//    case border
     case colors
     case colorIdentity
     case convertedManaCost
@@ -96,6 +97,7 @@ enum CardOtherDetailsSection : Int {
     var description : String {
         switch self {
         // Use Internationalization, as appropriate.
+//        case .border: return "Border"
         case .colors: return "Colors"
         case .colorIdentity: return "Color identity"
         case .convertedManaCost: return "Converted Mana Cost"
@@ -389,13 +391,11 @@ class CardViewModel: NSObject {
         var text = "\u{2014}"
         
         switch otherDetails {
-        case .layout:
-            if let layout = card.layout_,
-                let name = layout.name {
-                text = name
-            }
-        case .convertedManaCost:
-            text = "\(String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))"
+//        case .border:
+//            if let border = card.border_,
+//                let name = border.name {
+//                text = name
+//            }
         case .colors:
             if let colors_ = card.colors_,
                 let s = colors_.allObjects as? [CMColor] {
@@ -415,9 +415,38 @@ class CardViewModel: NSObject {
                     }
                 }
             }
+        case .convertedManaCost:
+            text = "\(String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))"
+        case .layout:
+            if let layout = card.layout_,
+                let name = layout.name {
+                text = name
+            }
+        case .number:
+            if let number = card.number ?? card.mciNumber {
+                text = number
+            }
         case .originalType:
             if let originalType = card.originalType {
                 text = originalType
+            }
+        case .rarity:
+            if let rarity = card.rarity_ {
+                text = rarity.name!
+            }
+        case .releaseDate:
+            if let releaseDate = card.releaseDate ?? card.set!.releaseDate {
+                text = releaseDate
+            }
+        case .reservedList:
+            text = card.reserved ? "Yes" : "No"
+        case .setOnlineOnly:
+            if let set = card.set {
+                text = set.onlineOnly ? "Yes" : "No"
+            }
+        case .source:
+            if let source = card.source {
+                text = source
             }
         case .subTypes:
             if let subtypes_ = card.subtypes_,
@@ -436,28 +465,6 @@ class CardViewModel: NSObject {
                 if string.count > 0 {
                     text = string
                 }
-            }
-        case .rarity:
-            if let rarity = card.rarity_ {
-                text = rarity.name!
-            }
-        case .setOnlineOnly:
-            if let set = card.set {
-                text = set.onlineOnly ? "Yes" : "No"
-            }
-        case .reservedList:
-            text = card.reserved ? "Yes" : "No"
-        case .releaseDate:
-            if let releaseDate = card.releaseDate ?? card.set!.releaseDate {
-                text = releaseDate
-            }
-        case .source:
-            if let source = card.source {
-                text = source
-            }
-        case .number:
-            if let number = card.number ?? card.mciNumber {
-                text = number
             }
         }
         

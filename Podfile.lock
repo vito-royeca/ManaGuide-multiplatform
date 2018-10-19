@@ -118,7 +118,7 @@ PODS:
   - InAppSettingsKit (2.9.1)
   - Kanna (4.0.2)
   - leveldb-library (1.20)
-  - ManaKit (2.8.5):
+  - ManaKit (2.8.6):
     - Kanna (~> 4.0.0)
     - PromiseKit
     - SDWebImage
@@ -279,7 +279,7 @@ SPEC CHECKSUMS:
   InAppSettingsKit: acb6bc78cf00bbcfa63c4a26fd67f266bc7cfcd2
   Kanna: c60b61d72554bf04ed1ee074f9b379855cab4892
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
-  ManaKit: 2cdef73e4d55a18fb63ba03f09b2e9309f67ef12
+  ManaKit: f88643a2609d58ebbe59f7a7e86015f69ce55cf6
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MMDrawerController: e3a54a5570388463ad3b36975251575b50c4e1a0
   "MMDrawerController+Storyboard": c98f86c0f32cdef1d466d19a7da3ad2fc6c6ac00
