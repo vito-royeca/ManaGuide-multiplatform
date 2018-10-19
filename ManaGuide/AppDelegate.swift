@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         print("docsPath = \(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])")
 
@@ -69,7 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 
-    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         var handled = false
         
         if url.absoluteString.hasPrefix("fb") {
@@ -78,8 +78,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                                             options: options)
         } else if url.absoluteString.hasPrefix("com.googleusercontent.apps") {
             handled = GIDSignIn.sharedInstance().handle(url,
-                                                        sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String,
-                                                        annotation: options[UIApplicationOpenURLOptionsKey.annotation])
+                                                        sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+                                                        annotation: options[UIApplication.OpenURLOptionsKey.annotation])
         } else if (url.host == "oauth-callback") {
             OAuthSwift.handle(url: url)
             handled = true

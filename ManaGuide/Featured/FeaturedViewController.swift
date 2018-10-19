@@ -96,7 +96,7 @@ class FeaturedViewController: BaseViewController {
             
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
-                let dest = nav.childViewControllers.first as? CardViewController,
+                let dest = nav.children.first as? CardViewController,
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
                 let cardIDs = dict["cardIDs"] as? [String] else {
@@ -305,7 +305,7 @@ extension FeaturedViewController : UITableViewDelegate {
              FeaturedSection.topViewed.rawValue:
             height = view.frame.size.height / 3
         default:
-            height = UITableViewAutomaticDimension
+            height = UITableView.automaticDimension
         }
         
         return height

@@ -28,7 +28,7 @@ class LatestCardsViewModel: NSObject {
         return card
     }
     
-    func fetchData() {
+    @objc func fetchData() {
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         let sets = fetchLatestSets()
         

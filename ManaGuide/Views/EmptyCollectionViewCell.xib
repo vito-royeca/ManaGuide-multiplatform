@@ -34,7 +34,7 @@
                         </userDefinedRuntimeAttributes>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Data Found" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O3i-07-Ghy">
-                        <rect key="frame" x="20" y="29" width="280" height="30"/>
+                        <rect key="frame" x="20" y="58" width="280" height="30"/>
                         <fontDescription key="fontDescription" name="Beleren-Bold" family="Beleren" pointSize="25"/>
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
@@ -43,7 +43,7 @@
             </view>
             <constraints>
                 <constraint firstItem="UnH-Pj-bhL" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="5Bx-Zc-Gsd"/>
-                <constraint firstItem="O3i-07-Ghy" firstAttribute="centerY" secondItem="ZTg-uK-7eu" secondAttribute="centerY" id="7FF-T2-Oc6"/>
+                <constraint firstAttribute="bottom" secondItem="O3i-07-Ghy" secondAttribute="bottom" id="5Qm-ZS-l0M"/>
                 <constraint firstItem="O3i-07-Ghy" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="KbP-EQ-dTX"/>
                 <constraint firstAttribute="trailing" secondItem="O3i-07-Ghy" secondAttribute="trailing" constant="20" id="Rza-oy-FTl"/>
                 <constraint firstAttribute="bottom" secondItem="UnH-Pj-bhL" secondAttribute="bottom" id="azw-xM-abf"/>

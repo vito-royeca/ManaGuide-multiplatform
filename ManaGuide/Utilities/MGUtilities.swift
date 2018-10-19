@@ -96,8 +96,8 @@ class MGUtilities {
         let titleParagraphStyle = NSMutableParagraphStyle()
         titleParagraphStyle.alignment = .left
         
-        let attributes = [NSFontAttributeName: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
-                          NSParagraphStyleAttributeName: titleParagraphStyle]
+        let attributes = [convertFromNSAttributedStringKey(NSAttributedString.Key.font): UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
+                          convertFromNSAttributedStringKey(NSAttributedString.Key.paragraphStyle): titleParagraphStyle]
         
         var text = "Layout: "
         if let layout = card.layout_ {
@@ -109,11 +109,11 @@ class MGUtilities {
         } else {
             text.append("\u{2014}")
         }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nConverted Mana Cost: "
         text.append("\(String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))")
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nColors: "
         if let colors_ = card.colors_ {
@@ -126,7 +126,7 @@ class MGUtilities {
         } else {
             text.append("\u{2014}")
         }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nColors Identity: "
         if let colorIdentities_ = card.colorIdentities_ {
@@ -139,7 +139,7 @@ class MGUtilities {
         } else {
             text.append("\u{2014}")
         }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nOriginal Type: "
         if let originalType = card.originalType {
@@ -147,7 +147,7 @@ class MGUtilities {
         } else {
             text.append("\u{2014}")
         }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nSubtypes: "
         if let subtypes_ = card.subtypes_ {
@@ -160,7 +160,7 @@ class MGUtilities {
         } else {
             text.append("\u{2014}")
         }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nSupertypes: "
         if let supertypes_ = card.supertypes_ {
@@ -173,7 +173,7 @@ class MGUtilities {
         } else {
             text.append("\u{2014}")
         }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nRarity: "
         if let rarity = card.rarity_ {
@@ -181,7 +181,7 @@ class MGUtilities {
         } else {
             text.append("\u{2014}")
         }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nSet Online Only: "
         if let set = card.set {
@@ -189,11 +189,11 @@ class MGUtilities {
         } else {
             text.append("\u{2014}")
         }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nReserved List: "
         text.append(card.reserved ? "Yes" : "No")
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nRelease Date: "
         if let releaseDate = card.releaseDate ?? card.set!.releaseDate {
@@ -201,7 +201,7 @@ class MGUtilities {
         } else {
             text.append("\u{2014}")
         }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nSource: "
         if let source = card.source {
@@ -209,7 +209,7 @@ class MGUtilities {
         } else {
             text.append("\u{2014}")
         }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nNumber: "
         if let number = card.number ?? card.mciNumber {
@@ -217,7 +217,7 @@ class MGUtilities {
         } else {
             text.append("\u{2014}")
         }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: attributes))
+        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         return attributedString
     }
@@ -230,4 +230,15 @@ class MGUtilities {
         label.shadowColor = shadowColor
         label.shadowOffset = shadowOffset
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
+	return input.rawValue
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
 }

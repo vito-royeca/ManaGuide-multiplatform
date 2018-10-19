@@ -78,6 +78,45 @@ enum CardDetailsSection : Int {
     }
 }
 
+enum CardOtherDetailsSection : Int {
+    case layout
+    case convertedManaCost
+    case colors
+    case colorIdentity
+    case originalType
+    case subTypes
+    case superTypes
+    case rarity
+    case setOnlineOnly
+    case reservedList
+    case releaseDate
+    case source
+    case number
+    
+    var description : String {
+        switch self {
+        // Use Internationalization, as appropriate.
+        case .layout: return "Layout"
+        case .convertedManaCost: return "Converted Mana Cost"
+        case .colors: return "Colors"
+        case .colorIdentity: return "Color identity"
+        case .originalType: return "Original Type"
+        case .subTypes: return "Subtypes"
+        case .superTypes: return "Supertypes"
+        case .rarity: return "Rarity"
+        case .setOnlineOnly: return "Set Online Only"
+        case .reservedList: return "Reserved List"
+        case .releaseDate: return "Release Date"
+        case .source: return "Source"
+        case .number: return "Number"
+        }
+    }
+    
+    static var count: Int {
+        return 13
+    }
+}
+
 class CardViewModel: NSObject {
     // MARK: Variables
     var cardIndex = 0
@@ -128,6 +167,8 @@ class CardViewModel: NSObject {
                 if let cardLegalities_ = card.cardLegalities_ {
                     rows = cardLegalities_.allObjects.count >= 1 ? cardLegalities_.allObjects.count : 1
                 }
+            case CardDetailsSection.otherDetails.rawValue:
+                rows = CardOtherDetailsSection.count
             default:
                 rows = 1
             }
@@ -734,6 +775,8 @@ class CardViewModel: NSObject {
             if let d = NSKeyedUnarchiver.unarchiveObject(with: imageURIs) as? [String: String] {
                 dict["image_uris"] = d
             }
+        } else {
+            dict["image_uri"] = ManaKit.sharedInstance.imageURL(ofCard: card, imageType: .normal)
         }
         dict["ImageURL"] = nil
         dict["CropURL"] = nil

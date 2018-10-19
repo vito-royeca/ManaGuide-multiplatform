@@ -34,7 +34,7 @@
                         </userDefinedRuntimeAttributes>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Data Found" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A2c-sX-kpB">
-                        <rect key="frame" x="16" y="29" width="288" height="30"/>
+                        <rect key="frame" x="16" y="57.5" width="288" height="30"/>
                         <fontDescription key="fontDescription" name="Beleren-Bold" family="Beleren" pointSize="25"/>
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
@@ -43,10 +43,10 @@
                 <constraints>
                     <constraint firstItem="6OT-Ok-0fD" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="2WA-Jz-cU0"/>
                     <constraint firstAttribute="trailing" secondItem="6OT-Ok-0fD" secondAttribute="trailing" id="6IR-g3-03U"/>
-                    <constraint firstItem="A2c-sX-kpB" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Kcx-2T-LFO"/>
                     <constraint firstAttribute="trailing" secondItem="A2c-sX-kpB" secondAttribute="trailing" constant="16" id="LH1-8l-1vb"/>
                     <constraint firstItem="A2c-sX-kpB" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="SSR-sv-GBC"/>
                     <constraint firstItem="6OT-Ok-0fD" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="nlV-LP-iRm"/>
+                    <constraint firstAttribute="bottom" secondItem="A2c-sX-kpB" secondAttribute="bottom" id="uJ2-Wo-VGt"/>
                     <constraint firstAttribute="bottom" secondItem="6OT-Ok-0fD" secondAttribute="bottom" id="xsq-kD-eag"/>
                 </constraints>
             </tableViewCellContentView>

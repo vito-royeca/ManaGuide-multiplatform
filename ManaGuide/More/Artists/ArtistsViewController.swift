@@ -145,7 +145,7 @@ extension ArtistsViewController : UITableViewDelegate {
         if viewModel.isEmpty() {
             return tableView.frame.size.height / 3
         } else {
-            return UITableViewAutomaticDimension
+            return UITableView.automaticDimension
         }
     }
     

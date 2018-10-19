@@ -1,4 +1,4 @@
-platform :ios, "9.0"
+platform :ios, "10.3"
 use_frameworks!
 
 def default_pods
@@ -15,13 +15,12 @@ def default_pods
     pod 'Firebase/Database'
     pod 'Firebase/Auth'
     pod 'FirebaseUI/Storage'
-    #pod 'Font-Awesome-Swift', :git => 'https://github.com/Vaberer/Font-Awesome-Swift', :branch => 'swift-3'
     pod 'FontAwesome.swift'
     pod 'GoogleSignIn'
     pod 'IDMPhotoBrowser'
     pod 'InAppSettingsKit'
     pod 'iCarousel'
-    pod 'Kanna', :git => 'https://github.com/tid-kijyun/Kanna', :branch => 'feature/v3.0.0'
+    pod 'Kanna', '~> 4.0.0'
     pod 'ManaKit'
     pod 'MBProgressHUD'
     pod 'MMDrawerController'

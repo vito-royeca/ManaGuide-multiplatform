@@ -33,10 +33,10 @@ class CardGridTableViewCell: UITableViewCell {
         // Initialization code
         
         collectionView.register(UICollectionReusableView.self,
-                                forSupplementaryViewOfKind: UICollectionElementKindSectionHeader,
+                                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                                 withReuseIdentifier: "Header")
         collectionView.register(UICollectionReusableView.self,
-                                forSupplementaryViewOfKind: UICollectionElementKindSectionHeader,
+                                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                                 withReuseIdentifier: "HeaderEmpty")
         collectionView.register(UINib(nibName: "EmptyCollectionViewCell",
                                       bundle: nil),
@@ -111,15 +111,15 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if viewModel.isEmpty() {
-            return collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader,
+            return collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader,
                                                                    withReuseIdentifier:"HeaderEmpty",
                                                                    for: indexPath)
         } else {
-            let v = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader,
+            let v = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader,
                                                                     withReuseIdentifier:"Header",
                                                                     for: indexPath)
             
-            if kind == UICollectionElementKindSectionHeader {
+            if kind == UICollectionView.elementKindSectionHeader {
                 v.backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1)
                 
                 if v.subviews.count == 0 {

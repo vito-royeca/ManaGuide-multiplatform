@@ -175,7 +175,7 @@ extension ComprehensiveRulesViewController : UITableViewDelegate {
         if viewModel.isEmpty() {
             height = tableView.frame.size.height / 3
         } else {
-            height = UITableViewAutomaticDimension
+            height = UITableView.automaticDimension
         }
         
         return height

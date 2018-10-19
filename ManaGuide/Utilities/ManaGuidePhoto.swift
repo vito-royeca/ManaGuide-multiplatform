@@ -14,7 +14,8 @@ import PromiseKit
 
 class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
     var card: CMCard?
-    var progressUpdateBlock: IDMProgressUpdateBlock?
+    @objc var progressUpdateBlock: IDMProgressUpdateBlock?
+    
     private var _underlyingImage: UIImage?
     
     init(withCard card: CMCard) {

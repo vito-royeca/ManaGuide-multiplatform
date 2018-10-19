@@ -118,7 +118,7 @@ class SetViewController: BaseViewController {
             
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
-                let dest = nav.childViewControllers.first as? CardViewController,
+                let dest = nav.children.first as? CardViewController,
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
                 let cardIDs = dict["cardIDs"] as? [String] else {
@@ -400,7 +400,7 @@ extension SetViewController : UITableViewDelegate {
 
 // MARK: UIWebViewDelegate
 extension SetViewController : UIWebViewDelegate {
-    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
+    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebView.NavigationType) -> Bool {
         guard let url = request.url,
             let host = url.host else {
             return false

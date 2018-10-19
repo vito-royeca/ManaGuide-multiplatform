@@ -146,7 +146,7 @@ extension LatestCardsTableViewCell : iCarouselDelegate {
         
         switch option {
         case .wrap:
-            returnValue = CGFloat(true)
+            returnValue = CGFloat(1)
         default:
             returnValue = value
         }

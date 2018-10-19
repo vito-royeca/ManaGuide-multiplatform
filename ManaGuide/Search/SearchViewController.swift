@@ -137,7 +137,7 @@ class SearchViewController: BaseViewController {
             
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
-                let dest = nav.childViewControllers.first as? CardViewController,
+                let dest = nav.children.first as? CardViewController,
                 let cardIndex = dict["cardIndex"] as? Int,
                 let cardIDs = dict["cardIDs"] as? [String] else {
                 return
