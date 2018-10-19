@@ -62,5 +62,5 @@ class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: IDMPhoto_LOADING_DID_END_NOTIFICATION),
                                         object: self)
     }
-
 }
+

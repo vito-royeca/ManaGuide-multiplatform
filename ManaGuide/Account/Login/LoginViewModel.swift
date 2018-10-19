@@ -210,7 +210,6 @@ class LoginViewModel: NSObject {
                                           oauthSwift: oauthswift)//OAuthSwiftOpenURLExternally.sharedInstance
             let state = generateRandomString(length: 20)
             
-//            safari.delegate = vc
             oauthswift.authorizeURLHandler = safari
             
             let _ = oauthswift.authorize(

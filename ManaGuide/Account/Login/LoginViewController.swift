@@ -200,8 +200,6 @@ class LoginViewController: BaseViewController {
     }
     
     @IBAction func facebookAction(_ sender: UIButton) {
-        MBProgressHUD.showAdded(to: self.view, animated: true)
-        
         firstly {
             viewModel.facebookLogin(withViewController: self)
         }.then { (credential: AuthCredential) in
@@ -217,14 +215,10 @@ class LoginViewController: BaseViewController {
                                           }
                                      })
         }.done {
-            MBProgressHUD.hide(for: self.view,
-                               animated: true)
             self.dismiss(animated: true, completion: {
                 self.delegate?.actionAfterLogin(error: nil)
             })
         }.catch { error in
-            MBProgressHUD.hide(for: self.view,
-                               animated: true)
             self.showMessage(title: "Error",
                              message: error.localizedDescription)
         }
@@ -235,8 +229,6 @@ class LoginViewController: BaseViewController {
     }
     
     @IBAction func githubAction(_ sender: UIButton) {
-        MBProgressHUD.showAdded(to: self.view, animated: true)
-        
         firstly {
             viewModel.githubLogin(withViewController: self)
         }.then { (credential: AuthCredential) in
@@ -252,14 +244,10 @@ class LoginViewController: BaseViewController {
                                 }
                             })
         }.done {
-            MBProgressHUD.hide(for: self.view,
-                               animated: true)
             self.dismiss(animated: true, completion: {
                 self.delegate?.actionAfterLogin(error: nil)
             })
         }.catch { error in
-            MBProgressHUD.hide(for: self.view,
-                               animated: true)
             self.showMessage(title: "Error",
                              message: error.localizedDescription)
         }
@@ -314,8 +302,6 @@ extension LoginViewController : GIDSignInDelegate {
             let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
                                                            accessToken: authentication.accessToken)
             
-            MBProgressHUD.showAdded(to: self.view, animated: true)
-            
             firstly {
                 self.viewModel.authSignInAndRetrieveData(credential: credential)
             }.then { (authResult: AuthDataResult?) in
@@ -327,8 +313,6 @@ extension LoginViewController : GIDSignInDelegate {
                     self.delegate?.actionAfterLogin(error: nil)
                 })
             }.catch { error in
-                MBProgressHUD.hide(for: self.view,
-                                   animated: true)
                 self.showMessage(title: "Error",
                                  message: error.localizedDescription)
             }
@@ -358,10 +342,3 @@ extension LoginViewController : GIDSignInUIDelegate {
     }
 }
 
-// MARK: SFSafariViewControllerDelegate
-extension LoginViewController : SFSafariViewControllerDelegate {
-    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        // when the user cancels the OAuth safari view
-        MBProgressHUD.hide(for: self.view, animated: true)
-    }
-}
