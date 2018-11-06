@@ -16,10 +16,10 @@ let kMaxFetchTopRated  = UInt(10)
 
 class TopRatedViewModel: NSObject {
     // MARK: Variables
-    let sortDescriptors = [NSSortDescriptor(key: "rating", ascending: false),
+    let sortDescriptors = [NSSortDescriptor(key: "firebaseRating", ascending: false),
                            NSSortDescriptor(key: "name", ascending: true),
                            NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                           NSSortDescriptor(key: "number", ascending: true)]
+                           NSSortDescriptor(key: "collectorNumber", ascending: true)]
     
     private var _fetchedResultsController: NSFetchedResultsController<CMCard>?
     private var _firebaseQuery: DatabaseQuery?
@@ -82,10 +82,10 @@ class TopRatedViewModel: NSObject {
             
                     
                     if let card = ManaKit.sharedInstance.findObject("CMCard",
-                                                                    objectFinder: ["id": c.key as AnyObject],
+                                                                    objectFinder: ["firebaseID": c.key as AnyObject],
                                                                     createIfNotFound: false) as? CMCard {
-                        card.rating = fcard.rating == nil ? 0 : fcard.rating!
-                        card.ratings = fcard.ratings == nil ? Int32(0) : Int32(fcard.ratings!.count)
+                        card.firebaseRating = fcard.rating == nil ? 0 : fcard.rating!
+                        card.firebaseRatings = fcard.ratings == nil ? Int32(0) : Int32(fcard.ratings!.count)
                     }
                 }
             }
@@ -96,7 +96,7 @@ class TopRatedViewModel: NSObject {
             
                 // refresh data
                 let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-                request.predicate = NSPredicate(format: "rating > 0")
+                request.predicate = NSPredicate(format: "firebaseRating > 0")
                 request.fetchLimit = 10
                 request.sortDescriptors = self.sortDescriptors
                 self._fetchedResultsController = self.getFetchedResultsController(with: request)

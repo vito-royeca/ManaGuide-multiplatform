@@ -11,16 +11,16 @@ import Firebase
 import ManaKit
 
 enum CardContent: Int {
-    case image
+    case card
     case details
     case store
     
     var description : String {
         switch self {
         // Use Internationalization, as appropriate.
-        case .image: return "Image"
+        case .card: return "Card"
         case .details: return "Details"
-        case .store: return "Store"
+        case .store: return "Store Pricing"
         }
     }
     
@@ -40,16 +40,12 @@ enum CardImageSection : Int {
 }
 
 enum CardDetailsSection : Int {
-    case manaCost
-    case type
-    case oracleText
-    case originalText
-    case flavorText
+    case mainData
     case set
     case artist
-    case otherNames
-    case otherPrintings
     case variations
+    case parts
+    case otherPrintings
     case rulings
     case legalities
     case otherDetails
@@ -57,16 +53,12 @@ enum CardDetailsSection : Int {
     var description : String {
         switch self {
         // Use Internationalization, as appropriate.
-        case .manaCost: return "Mana Cost"
-        case .type: return "Type"
-        case .oracleText: return "Text"
-        case .originalText: return "Original Text"
-        case .flavorText: return "Flavor Text"
+        case .mainData: return "Main Data"
         case .set: return "Set"
         case .artist: return "Artist"
-        case .otherNames: return "Other Names"
-        case .otherPrintings: return "Other Printings"
         case .variations: return "Variations"
+        case .parts: return "Faces, Tokens, & Other Parts"
+        case .otherPrintings: return "Other Printings"
         case .rulings: return "Rulings"
         case .legalities: return "Legalities"
         case .otherDetails: return "Other Details"
@@ -74,12 +66,22 @@ enum CardDetailsSection : Int {
     }
     
     static var count: Int {
-        return 13
+        return 9
+    }
+}
+
+enum CardDetailsMainDataSection : Int {
+    case name
+    case type
+    case text
+    
+    static var count: Int {
+        return 3
     }
 }
 
 enum CardOtherDetailsSection : Int {
-//    case border
+    case border
     case colors
     case colorIdentity
     case convertedManaCost
@@ -97,7 +99,7 @@ enum CardOtherDetailsSection : Int {
     var description : String {
         switch self {
         // Use Internationalization, as appropriate.
-//        case .border: return "Border"
+        case .border: return "Border"
         case .colors: return "Colors"
         case .colorIdentity: return "Color identity"
         case .convertedManaCost: return "Converted Mana Cost"
@@ -115,7 +117,7 @@ enum CardOtherDetailsSection : Int {
     }
     
     static var count: Int {
-        return 13
+        return 14
     }
 }
 
@@ -123,15 +125,16 @@ class CardViewModel: NSObject {
     // MARK: Variables
     var cardIndex = 0
     var cardViewIncremented = false
-    var content: CardContent = .image
+    var content: CardContent = .card
     
     private var _fetchedResultsController: NSFetchedResultsController<CMCard>?
-    private var _sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
-                                    NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                                    NSSortDescriptor(key: "number", ascending: true),
-                                    NSSortDescriptor(key: "mciNumber", ascending: true)]
+    private var _sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                    NSSortDescriptor(key: "name", ascending: true),
+                                    NSSortDescriptor(key: "collectorNumber", ascending: true)]
 
-    init(withCardIndex cardIndex: Int, withCardIDs cardIDs: [String], withSortDescriptors sortDescriptors: [NSSortDescriptor]?) {
+    init(withCardIndex cardIndex: Int,
+         withCardIDs cardIDs: [String],
+         withSortDescriptors sortDescriptors: [NSSortDescriptor]?) {
         super.init()
         
         self.cardIndex = cardIndex
@@ -147,26 +150,40 @@ class CardViewModel: NSObject {
         var rows = 0
         
         switch content {
-        case .image:
+        case .card:
             rows = 1
             
         case .details:
             switch section {
-            case CardDetailsSection.otherNames.rawValue:
-                if let names_ = card.names_ {
-                    if let array = names_.allObjects as? [CMCard] {
-                        rows = array.filter({ $0.name != card.name}).count
+            case CardDetailsSection.mainData.rawValue:
+                if let facesSet = card.faces,
+                    let faces = facesSet.allObjects as? [CMCard] {
+                    if faces.count > 0 {
+                        for face in faces {
+                            rows += 3
+                            if let type = face.typeLine,
+                                let name = type.name {
+                                if name.contains("Creature") || name.contains("Planeswalker") {
+                                    rows += 1
+                                }
+                            }
+                        }
+                    } else {
+                        rows = 3
+                        if let type = card.typeLine,
+                            let name = type.name {
+                            if name.contains("Creature") || name.contains("Planeswalker") {
+                                rows += 1
+                            }
+                        }
                     }
                 }
-                if rows == 0 {
-                    rows = 1
-                }
             case CardDetailsSection.rulings.rawValue:
-                if let rulings_ = card.rulings_ {
+                if let rulings_ = card.rulings {
                     rows = rulings_.allObjects.count >= 1 ? rulings_.allObjects.count : 1
                 }
             case CardDetailsSection.legalities.rawValue:
-                if let cardLegalities_ = card.cardLegalities_ {
+                if let cardLegalities_ = card.cardLegalities {
                     rows = cardLegalities_.allObjects.count >= 1 ? cardLegalities_.allObjects.count : 1
                 }
             case CardDetailsSection.otherDetails.rawValue:
@@ -176,7 +193,9 @@ class CardViewModel: NSObject {
             }
             
         case .store:
-            guard let suppliers = card.suppliers else {
+            guard let storePricing = card.tcgplayerStorePricing,
+                let suppliersSet = storePricing.suppliers,
+                let suppliers = suppliersSet.allObjects as? [CMStoreSupplier] else {
                 return rows
             }
             rows = suppliers.count + 1
@@ -193,15 +212,23 @@ class CardViewModel: NSObject {
         
         return fetchedObjects.count
     }
-    
-    func numberOfOtherNames() -> Int {
+
+    func numberOfVariations() -> Int {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         var count = 0
         
-        if let names_ = card.names_ {
-            if let array = names_.allObjects as? [CMCard] {
-                count = array.filter({ $0.name != card.name}).count
-            }
+        if let variations = card.variations {
+            count = variations.count
+        }
+        return count
+    }
+    
+    func numberOfParts() -> Int {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        var count = 0
+        
+        if let parts = card.parts {
+            count = parts.count
         }
         return count
     }
@@ -210,18 +237,8 @@ class CardViewModel: NSObject {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         var count = 0
         
-        if let printings_ = card.printings_ {
-            count = printings_.count - 1
-        }
-        return count
-    }
-    
-    func numberOfVariations() -> Int {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
-        var count = 0
-        
-        if let variations_ = card.variations_ {
-            count = variations_.count
+        if let printings = card.otherPrintings {
+            count = printings.count
         }
         return count
     }
@@ -230,8 +247,8 @@ class CardViewModel: NSObject {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         var count = 0
         
-        if let rulings_ = card.rulings_ {
-            count = rulings_.count
+        if let rulings = card.rulings {
+            count = rulings.count
         }
         return count
     }
@@ -240,8 +257,8 @@ class CardViewModel: NSObject {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         var count = 0
         
-        if let cardLegalities_ = card.cardLegalities_ {
-            count = cardLegalities_.count
+        if let cardLegalities = card.cardLegalities {
+            count = cardLegalities.count
         }
         return count
     }
@@ -250,7 +267,7 @@ class CardViewModel: NSObject {
         var sections = 0
         
         switch content {
-        case .image:
+        case .card:
             sections = CardImageSection.count
         case .details:
             sections = CardDetailsSection.count
@@ -267,35 +284,25 @@ class CardViewModel: NSObject {
         switch content {
         case .details:
             switch section {
-            case CardDetailsSection.manaCost.rawValue:
-                headerTitle = CardDetailsSection.manaCost.description
-            case CardDetailsSection.type.rawValue:
-                headerTitle = CardDetailsSection.type.description
-            case CardDetailsSection.oracleText.rawValue:
-                headerTitle = CardDetailsSection.oracleText.description
-            case CardDetailsSection.originalText.rawValue:
-                headerTitle = CardDetailsSection.originalText.description
-            case CardDetailsSection.flavorText.rawValue:
-                headerTitle = CardDetailsSection.flavorText.description
             case CardDetailsSection.set.rawValue:
                 headerTitle = CardDetailsSection.set.description
             case CardDetailsSection.artist.rawValue:
                 headerTitle = CardDetailsSection.artist.description
-            case CardDetailsSection.otherNames.rawValue:
-                headerTitle = CardDetailsSection.otherNames.description
-                let count = numberOfOtherNames()
+            case CardDetailsSection.variations.rawValue:
+                headerTitle = CardDetailsSection.variations.description
+                let count = numberOfVariations()
+                if count > 0 {
+                    headerTitle?.append(": \(count)")
+                }
+            case CardDetailsSection.parts.rawValue:
+                headerTitle = CardDetailsSection.parts.description
+                let count = numberOfParts()
                 if count > 0 {
                     headerTitle?.append(": \(count)")
                 }
             case CardDetailsSection.otherPrintings.rawValue:
                 headerTitle = CardDetailsSection.otherPrintings.description
                 let count = numberOfOtherPrintings()
-                if count > 0 {
-                    headerTitle?.append(": \(count)")
-                }
-            case CardDetailsSection.variations.rawValue:
-                headerTitle = CardDetailsSection.variations.description
-                let count = numberOfVariations()
                 if count > 0 {
                     headerTitle?.append(": \(count)")
                 }
@@ -331,37 +338,22 @@ class CardViewModel: NSObject {
         return fetchedResultsController.object(at: indexPath)
     }
     
-    func otherCard(inRow row: Int) -> CMCard? {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
-        var otherCard: CMCard?
-        
-        if let names_ = card.names_ {
-            if let array = names_.allObjects as? [CMCard] {
-                let array2 = array.filter({ $0.name != card.name})
-                if array2.count > 0 {
-                    otherCard = array2[row]
-                }
-            }
-        }
-        return otherCard
-    }
-    
     func rulingText(inRow row: Int, pointSize: CGFloat) -> NSAttributedString? {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
-        guard let rulings_ = card.rulings_ else {
+        guard let rulings_ = card.rulings else {
             return nil
         }
         
         guard let array = rulings_.allObjects.sorted(by: {(first: Any, second: Any) -> Bool in
-            if let a = first as? CMRuling,
-                let b = second as? CMRuling {
+            if let a = first as? CMCardRuling,
+                let b = second as? CMCardRuling {
                 if let aDate = a.date,
                     let bDate = b.date {
                     return aDate > bDate
                 }
             }
             return false
-        }) as? [CMRuling] else {
+        }) as? [CMCardRuling] else {
             return nil
         }
         
@@ -386,19 +378,51 @@ class CardViewModel: NSObject {
         }
     }
 
+    func cardText(inRow row: Int, cardIndex index: Int, pointSize: CGFloat) -> NSAttributedString {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        var face: CMCard?
+        var contents = ""
+        
+        if let facesSet = card.faces,
+            let faces = facesSet.allObjects as? [CMCard] {
+//            let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
+//                return a.faceOrder > b.faceOrder
+//            })
+            if faces.count > 0 {
+                face = faces[index]
+            } else {
+                face = card
+            }
+        }
+        
+        if let face = face {
+            if let oracleText = face.oracleText {
+                contents.append(oracleText)
+            }
+            if let flavorText = face.flavorText {
+                if contents.count > 0 {
+                    contents.append("\n\n")
+                }
+                contents.append(flavorText)
+            }
+        }
+        return NSAttributedString(symbol: "\n\(contents)\n",
+                                  pointSize: pointSize)
+    }
+    
     func textOf(otherDetails: CardOtherDetailsSection) -> String {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         var text = "\u{2014}"
         
         switch otherDetails {
-//        case .border:
-//            if let border = card.border_,
-//                let name = border.name {
-//                text = name
-//            }
+        case .border:
+            if let border = card.borderColor,
+                let name = border.name {
+                text = name
+            }
         case .colors:
-            if let colors_ = card.colors_,
-                let s = colors_.allObjects as? [CMColor] {
+            if let colors_ = card.colors,
+                let s = colors_.allObjects as? [CMCardColor] {
                 
                 let string = s.map({ $0.name! }).joined(separator: ", ")
                 if string.count > 0 {
@@ -406,8 +430,8 @@ class CardViewModel: NSObject {
                 }
             }
         case .colorIdentity:
-            if let colorIdentities_ = card.colorIdentities_ {
-                if let s = colorIdentities_.allObjects as? [CMColor] {
+            if let colorIdentities_ = card.colorIdentities {
+                if let s = colorIdentities_.allObjects as? [CMCardColor] {
                     
                     let string = s.map({ $0.name! }).joined(separator: ", ")
                     if string.count > 0 {
@@ -416,22 +440,23 @@ class CardViewModel: NSObject {
                 }
             }
         case .convertedManaCost:
-            text = "\(String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))"
+            text = "\(String(format: card.convertedManaCost == floor(card.convertedManaCost) ? "%.0f" : "%.1f", card.convertedManaCost))"
         case .layout:
-            if let layout = card.layout_,
+            if let layout = card.layout,
                 let name = layout.name {
                 text = name
             }
         case .number:
-            if let number = card.number ?? card.mciNumber {
+            if let number = card.collectorNumber {
                 text = number
             }
         case .originalType:
-            if let originalType = card.originalType {
-                text = originalType
+            if let originalType = card.mtgjsonOriginalType,
+                let name = originalType.name{
+                text = name
             }
         case .rarity:
-            if let rarity = card.rarity_ {
+            if let rarity = card.rarity {
                 text = rarity.name!
             }
         case .releaseDate:
@@ -439,17 +464,17 @@ class CardViewModel: NSObject {
                 text = releaseDate
             }
         case .reservedList:
-            text = card.reserved ? "Yes" : "No"
+            text = card.isReserved ? "Yes" : "No"
         case .setOnlineOnly:
             if let set = card.set {
-                text = set.onlineOnly ? "Yes" : "No"
+                text = set.isOnlineOnly ? "Yes" : "No"
             }
         case .source:
             if let source = card.source {
                 text = source
             }
         case .subTypes:
-            if let subtypes_ = card.subtypes_,
+            if let subtypes_ = card.mtgjsonSubtypes,
                 let s = subtypes_.allObjects as? [CMCardType] {
                 
                 let string = s.map({ $0.name! }).joined(separator: ", ")
@@ -458,7 +483,7 @@ class CardViewModel: NSObject {
                 }
             }
         case .superTypes:
-            if let supertypes_ = card.supertypes_,
+            if let supertypes_ = card.mtgjsonSupertypes,
                 let s = supertypes_.allObjects as? [CMCardType] {
                 
                 let string = s.map({ $0.name! }).joined(separator: ", ")
@@ -475,14 +500,10 @@ class CardViewModel: NSObject {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         
-        if let printings_ = card.printings_ {
-            let sets = printings_.allObjects as! [CMSet]
-            var filteredSets = [CMSet]()
+        if let printingsSet = card.otherPrintings,
+            let printings = printingsSet.allObjects as? [CMCard] {
             
-            if let set = card.set {
-                filteredSets = sets.filter({ $0.code != set.code})
-            }
-            request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, filteredSets.map({$0.code}))
+            request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, printings.map({ $0.set!.code! }))
             request.sortDescriptors = _sortDescriptors
         }
         return request
@@ -492,9 +513,21 @@ class CardViewModel: NSObject {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         
-        if let variations_ = card.variations_,
-            let variations = variations_.allObjects as? [CMCard] {
+        if let variationsSet = card.variations,
+            let variations = variationsSet.allObjects as? [CMCard] {
             request.predicate = NSPredicate(format: "id IN %@", variations.map({$0.id}))
+            request.sortDescriptors = _sortDescriptors
+        }
+        return request
+    }
+    
+    func requestForParts() -> NSFetchRequest<CMCard> {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+        
+        if let partsSet = card.parts,
+            let parts = partsSet.allObjects as? [CMCard] {
+            request.predicate = NSPredicate(format: "id IN %@", parts.map({$0.id}))
             request.sortDescriptors = _sortDescriptors
         }
         return request
@@ -543,7 +576,7 @@ class CardViewModel: NSObject {
     func ratingStringForCard() -> String {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         
-        return "\(card.ratings) Rating\(card.ratings > 1 ? "s" : "")"
+        return "\(card.firebaseRatings) Rating\(card.firebaseRatings > 1 ? "s" : "")"
     }
     
     // MARK: Firebase methods
@@ -555,7 +588,7 @@ class CardViewModel: NSObject {
                 let user = ManaKit.sharedInstance.findObject("CMUser",
                                                              objectFinder: ["id": fbUser.uid as AnyObject],
                                                              createIfNotFound: false) as? CMUser,
-                let id = card.id else {
+                let id = card.firebaseID else {
                 return
             }
             
@@ -610,7 +643,7 @@ class CardViewModel: NSObject {
     func incrementCardViews(firstAttempt: Bool) {
         let completion = { () -> Void in
             let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0))
-            let ref = Database.database().reference().child("cards").child(card.id!)
+            let ref = Database.database().reference().child("cards").child(card.firebaseID!)
             
             ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                 if var post = currentData.value as? [String : Any] {
@@ -638,7 +671,7 @@ class CardViewModel: NSObject {
                     }
                     let fcard = FCCard(snapshot: snapshot)
                     
-                    card.views = Int64(fcard.views == nil ? 1 : fcard.views!)
+                    card.firebaseViews = Int64(fcard.views == nil ? 1 : fcard.views!)
                     
                     ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
                         try! backgroundContext.save()
@@ -665,7 +698,7 @@ class CardViewModel: NSObject {
                 let user = ManaKit.sharedInstance.findObject("CMUser",
                                                              objectFinder: ["id": fbUser.uid as AnyObject],
                                                              createIfNotFound: false) as? CMUser,
-                let id = card.id else {
+                let id = card.firebaseID else {
                     return
             }
             
@@ -706,8 +739,8 @@ class CardViewModel: NSObject {
                     }
                     let fcard = FCCard(snapshot: snapshot)
                     
-                    card.rating = fcard.rating == nil ? rating : fcard.rating!
-                    card.ratings = fcard.ratings == nil ? Int32(1) : Int32(fcard.ratings!.count)
+                    card.firebaseRating = fcard.rating == nil ? rating : fcard.rating!
+                    card.firebaseRatings = fcard.ratings == nil ? Int32(1) : Int32(fcard.ratings!.count)
                     
                     ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
                         try! backgroundContext.save()
@@ -736,7 +769,7 @@ class CardViewModel: NSObject {
             let user = ManaKit.sharedInstance.findObject("CMUser",
                                                          objectFinder: ["id": fbUser.uid as AnyObject],
                                                          createIfNotFound: false) as? CMUser,
-            let id = card.id else {
+            let id = card.firebaseID else {
                 return
         }
         let userRef = Database.database().reference().child("users").child(fbUser.uid).child("ratedCards")
@@ -765,7 +798,7 @@ class CardViewModel: NSObject {
                     
                     for (k,v) in ratedCards {
                         if let c = ManaKit.sharedInstance.findObject("CMCard",
-                                                                  objectFinder: ["id": k as AnyObject],
+                                                                  objectFinder: ["firebaseId": k as AnyObject],
                                                                   createIfNotFound: false) as? CMCard,
                             let cardRating = ManaKit.sharedInstance.findObject("CMCardRating",
                                                                            objectFinder: ["user.id": user.id! as AnyObject,
@@ -790,12 +823,11 @@ class CardViewModel: NSObject {
                 self.updateUserRatings(rating: rating, firstAttempt: false)
             }
         }
-        
     }
 
     private func saveCardData(firstAttempt: Bool, completion: @escaping () -> Void) {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
-        let ref = Database.database().reference().child("cards").child(card.id!)
+        let ref = Database.database().reference().child("cards").child(card.firebaseID!)
         
         ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
             if var post = currentData.value as? [String : Any] {
@@ -828,7 +860,7 @@ class CardViewModel: NSObject {
     
     func loadCardData() {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
-        let ref = Database.database().reference().child("cards").child(card.id!)
+        let ref = Database.database().reference().child("cards").child(card.firebaseID!)
         
         ref.observeSingleEvent(of: .value, with: { snapshot in
             guard let value = snapshot.value as? [String : Any] else {
@@ -838,10 +870,10 @@ class CardViewModel: NSObject {
             
             // update views
             if let views = value["Views"] as? Int {
-                card.views = Int64(views)
+                card.firebaseViews = Int64(views)
             }
             if let rating = value["Rating"] as? Double {
-                card.rating = rating
+                card.firebaseRating = rating
             }
             try! ManaKit.sharedInstance.dataStack?.mainContext.save()
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
@@ -855,11 +887,11 @@ class CardViewModel: NSObject {
         var dict = [String: Any]()
         
         dict["Name"] = card.name
-        dict["CMC"] = card.cmc
+        dict["CMC"] = card.convertedManaCost
         dict["ManaCost"] = card.manaCost
         
-        if let imageURIs = card.imageURIs {
-            if let d = NSKeyedUnarchiver.unarchiveObject(with: imageURIs) as? [String: String] {
+        if let imageUris = card.imageURIs {
+            if let d = NSKeyedUnarchiver.unarchiveObject(with: imageUris as Data) as? [String: String] {
                 dict["image_uris"] = d
             }
         } else {
@@ -869,7 +901,7 @@ class CardViewModel: NSObject {
         dict["CropURL"] = nil
         
         var cardType: CMCardType?
-        if let types = card.types_ {
+        if let types = card.mtgjsonTypes {
             if types.count > 1 {
                 cardType = types.allObjects.first as? CMCardType
                 
@@ -893,7 +925,7 @@ class CardViewModel: NSObject {
             dict["Type"] = ""
         }
         
-        if let rarity = card.rarity_ {
+        if let rarity = card.rarity {
             dict["Rarity"] = rarity.name
         } else {
             dict["Rarity"] = ""
@@ -902,7 +934,7 @@ class CardViewModel: NSObject {
         if let set = card.set {
             dict["Set_Name"] = set.name
             dict["Set_Code"] = set.code
-            dict["Set_KeyruneCode"] = set.keyruneCode
+            dict["Set_KeyruneCode"] = set.myKeyruneCode
         }
         
         if let keyruneColor = ManaKit.sharedInstance.keyruneColor(forCard: card) {

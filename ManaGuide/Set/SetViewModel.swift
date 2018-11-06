@@ -36,10 +36,10 @@ class SetViewModel: NSObject {
     private var _searchViewModel: SearchViewModel?
     
     // MARK: Init
-    init(withSet set: CMSet) {
+    init(withSet set: CMSet, languageCode: String) {
         super.init()
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        request.predicate = NSPredicate(format: "set.code = %@", set.code!)
+        request.predicate = NSPredicate(format: "set.code = %@ AND language.code = %@", set.code!, languageCode)
         
         _set = set
         _searchViewModel = SearchViewModel(withRequest: request, andTitle: set.name)

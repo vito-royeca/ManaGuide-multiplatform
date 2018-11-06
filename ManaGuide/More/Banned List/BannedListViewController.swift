@@ -49,7 +49,7 @@ class BannedListViewController: BaseViewController {
         if segue.identifier == "showBanned" {
             guard let dest = segue.destination as? BannedViewController,
                 let dict = sender as? [String: Any],
-                let format = dict["format"] as? CMFormat else {
+                let format = dict["format"] as? CMCardFormat else {
                 return
             }
             

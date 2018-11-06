@@ -19,7 +19,7 @@
 			<array>
 				<string>releaseDate</string>
 				<string>name</string>
-				<string>type_.name</string>
+				<string>setType.name</string>
 			</array>
 			<key>Titles</key>
 			<array>

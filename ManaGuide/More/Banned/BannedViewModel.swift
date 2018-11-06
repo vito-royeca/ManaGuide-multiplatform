@@ -31,10 +31,10 @@ class BannedViewModel: NSObject {
     var queryString = ""
     var bannedContent: BannedContent = .banned
     
-    private var _format: CMFormat?
+    private var _format: CMCardFormat?
     
     // MARK: Init
-    init(withFormat format: CMFormat) {
+    init(withFormat format: CMCardFormat) {
         super.init()
 
         _format = format

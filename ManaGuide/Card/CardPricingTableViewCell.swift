@@ -13,12 +13,6 @@ import PromiseKit
 class CardPricingTableViewCell: UITableViewCell {
     static let reuseIdentifier = "CardPricingCell"
     
-    // MARK: Outlets
-    @IBOutlet weak var lowPriceLabel: UILabel!
-    @IBOutlet weak var midPriceLabel: UILabel!
-    @IBOutlet weak var highPriceLabel: UILabel!
-    @IBOutlet weak var foilPriceLabel: UILabel!
-    
     // MARK: Variables
     var card: CMCard? {
         didSet {
@@ -29,21 +23,27 @@ class CardPricingTableViewCell: UITableViewCell {
             
             var willFetchPricing = false
             if let set = card.set {
-                willFetchPricing = !set.onlineOnly
+                willFetchPricing = !set.isOnlineOnly
             }
             if willFetchPricing {
                 firstly {
                     ManaKit.sharedInstance.fetchTCGPlayerCardPricing(card: card)
-                }.done {
-                    self.updatePricing()
-                }.catch { error in
-                    self.updatePricing()
+                    }.done {
+                        self.updatePricing()
+                    }.catch { error in
+                        self.updatePricing()
                 }
             } else {
                 updatePricing()
             }
         }
     }
+    
+    // MARK: Outlets
+    @IBOutlet weak var lowPriceLabel: UILabel!
+    @IBOutlet weak var midPriceLabel: UILabel!
+    @IBOutlet weak var highPriceLabel: UILabel!
+    @IBOutlet weak var foilPriceLabel: UILabel!
     
     // MARK: Overrides
     override func awakeFromNib() {
@@ -63,45 +63,35 @@ class CardPricingTableViewCell: UITableViewCell {
     // MARK: Custom methods
     func clearDataDisplay() {
         lowPriceLabel.text = "NA"
-        lowPriceLabel.textColor = kNormalColor
+        lowPriceLabel.textColor = ManaKit.PriceColors.normal
         
         midPriceLabel.text = "NA"
-        midPriceLabel.textColor = kNormalColor
+        midPriceLabel.textColor = ManaKit.PriceColors.normal
         
         highPriceLabel.text = "NA"
-        highPriceLabel.textColor = kNormalColor
+        highPriceLabel.textColor = ManaKit.PriceColors.normal
         
         foilPriceLabel.text = "NA"
-        foilPriceLabel.textColor = kNormalColor
+        foilPriceLabel.textColor = ManaKit.PriceColors.normal
     }
 
     func updatePricing() {
         guard let card = card,
             let pricing = card.pricing else {
-                lowPriceLabel.text = "NA"
-                lowPriceLabel.textColor = kNormalColor
-                
-                midPriceLabel.text = "NA"
-                midPriceLabel.textColor = kNormalColor
-                
-                highPriceLabel.text = "NA"
-                highPriceLabel.textColor = kNormalColor
-                
-                foilPriceLabel.text = "NA"
-                foilPriceLabel.textColor = kNormalColor
+                clearDataDisplay()
                 return
         }
         
         lowPriceLabel.text = pricing.low > 0 ? String(format: "$%.2f", pricing.low) : "NA"
-        lowPriceLabel.textColor = pricing.low > 0 ? kLowPriceColor : kNormalColor
+        lowPriceLabel.textColor = pricing.low > 0 ? ManaKit.PriceColors.low : ManaKit.PriceColors.normal
         
         midPriceLabel.text = pricing.average > 0 ? String(format: "$%.2f", pricing.average) : "NA"
-        midPriceLabel.textColor = pricing.average > 0 ? kMidPriceColor : kNormalColor
+        midPriceLabel.textColor = pricing.average > 0 ? ManaKit.PriceColors.mid : ManaKit.PriceColors.normal
         
         highPriceLabel.text = pricing.high > 0 ? String(format: "$%.2f", pricing.high) : "NA"
-        highPriceLabel.textColor = pricing.high > 0 ? kHighPriceColor : kNormalColor
+        highPriceLabel.textColor = pricing.high > 0 ? ManaKit.PriceColors.high : ManaKit.PriceColors.normal
         
         foilPriceLabel.text = pricing.foil > 0 ? String(format: "$%.2f", pricing.foil) : "NA"
-        foilPriceLabel.textColor = pricing.foil > 0 ? kFoilPriceColor : kNormalColor
+        foilPriceLabel.textColor = pricing.foil > 0 ? ManaKit.PriceColors.foil : ManaKit.PriceColors.normal
     }
 }

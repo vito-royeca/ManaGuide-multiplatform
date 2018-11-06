@@ -16,7 +16,7 @@ class BannedListViewModel: NSObject {
     
     private var _sectionIndexTitles: [String]?
     private var _sectionTitles: [String]?
-    private var _fetchedResultsController: NSFetchedResultsController<CMFormat>?
+    private var _fetchedResultsController: NSFetchedResultsController<CMCardFormat>?
     private let _sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
     private let _sectionName = "nameSection"
     
@@ -80,14 +80,14 @@ class BannedListViewModel: NSObject {
     }
     
     // MARK: Custom methods
-    func object(forRowAt indexPath: IndexPath) -> CMFormat {
+    func object(forRowAt indexPath: IndexPath) -> CMCardFormat {
         guard let fetchedResultsController = _fetchedResultsController else {
             fatalError("fetchedResultsController is nil")
         }
         return fetchedResultsController.object(at: indexPath)
     }
     
-    func allObjects() -> [CMFormat]? {
+    func allObjects() -> [CMCardFormat]? {
         guard let fetchedResultsController = _fetchedResultsController else {
             return nil
         }
@@ -102,7 +102,7 @@ class BannedListViewModel: NSObject {
     }
 
     func fetchData() {
-        let request: NSFetchRequest<CMFormat> = CMFormat.fetchRequest()
+        let request: NSFetchRequest<CMCardFormat> = CMCardFormat.fetchRequest()
         let count = queryString.count
         var predicate = NSPredicate(format: "ANY cardLegalities.legality.name IN %@", ["Banned", "Restricted"])
         
@@ -121,15 +121,15 @@ class BannedListViewModel: NSObject {
     }
     
     // MARK: Private methods
-    private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMFormat>?) -> NSFetchedResultsController<CMFormat> {
+    private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMCardFormat>?) -> NSFetchedResultsController<CMCardFormat> {
         let context = ManaKit.sharedInstance.dataStack!.viewContext
-        var request: NSFetchRequest<CMFormat>?
+        var request: NSFetchRequest<CMCardFormat>?
         
         if let fetchRequest = fetchRequest {
             request = fetchRequest
         } else {
             // create a default fetchRequest
-            request = CMFormat.fetchRequest()
+            request = CMCardFormat.fetchRequest()
             request!.predicate = NSPredicate(format: "ANY cardLegalities.legality.name IN %@", ["Banned", "Restricted"])
             request!.sortDescriptors = _sortDescriptors
         }

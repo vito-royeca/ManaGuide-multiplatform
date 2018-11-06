@@ -26,7 +26,7 @@ class EmptyTableViewCell: UITableViewCell {
         guard let card = ManaKit.sharedInstance.findObject("CMCard",
                                                            objectFinder: objectFinder,
                                                            createIfNotFound: false) as? CMCard else {
-                                                            return
+            return
         }
         
         if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {

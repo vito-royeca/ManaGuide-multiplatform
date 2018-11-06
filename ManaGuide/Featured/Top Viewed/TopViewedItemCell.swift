@@ -53,7 +53,7 @@ class TopViewedItemCell: UICollectionViewCell {
             logoLabel.text = ManaKit.sharedInstance.keyruneUnicode(forSet: card.set!)
             logoLabel.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
             nameLabel.text = card.name
-            viewsLabel.text = "\u{f06e} \(card.views)"
+            viewsLabel.text = "\u{f06e} \(card.firebaseViews)"
         }
     }
     

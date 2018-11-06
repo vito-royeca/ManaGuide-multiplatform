@@ -114,7 +114,7 @@ class FeaturedViewController: BaseViewController {
                 return
             }
             
-            dest.viewModel = SetViewModel(withSet: set)
+            dest.viewModel = SetViewModel(withSet: set, languageCode: "en")
 
         } else if segue.identifier == "showSets" {
             guard let dest = segue.destination as? SetsViewController else {

@@ -261,8 +261,7 @@ class SearchViewModel: NSObject {
             // create a default fetchRequest
             request = CMCard.fetchRequest()
             request!.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
-                                        NSSortDescriptor(key: "number", ascending: true),
-                                        NSSortDescriptor(key: "mciNumber", ascending: true)]
+                                        NSSortDescriptor(key: "collectorNumber", ascending: true)]
         }
         
         // Create Fetched Results Controller
@@ -304,22 +303,22 @@ class SearchViewModel: NSObject {
             
             switch sortBy {
             case "name":
-                prefix = card.nameSection
+                prefix = card.myNameSection
             case "number":
                 _sectionIndexTitles = nil
                 _sectionTitles = nil
                 return
             case "type":
-                if let typeSection = card.typeSection {
-                    prefix = String(typeSection.prefix(1))
+                if let type = card.typeLine {
+                    prefix = type.nameSection
                 }
             case "rarity":
-                if let rarity = card.rarity_ {
-                    prefix = String(rarity.name!.prefix(1))
+                if let rarity = card.rarity {
+                    prefix = rarity.nameSection
                 }
             case "artist":
-                if let artist = card.artist_ {
-                    prefix = String(artist.name!.prefix(1))
+                if let artist = card.artist {
+                    prefix = artist.nameSection
                 }
             default:
                 ()

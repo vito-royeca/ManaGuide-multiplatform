@@ -16,7 +16,7 @@ class ArtistsViewModel: NSObject {
     
     private var _sectionIndexTitles: [String]?
     private var _sectionTitles: [String]?
-    private var _fetchedResultsController: NSFetchedResultsController<CMArtist>?
+    private var _fetchedResultsController: NSFetchedResultsController<CMCardArtist>?
     private let _sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
                                     NSSortDescriptor(key: "lastName", ascending: true),
                                     NSSortDescriptor(key: "firstName", ascending: true)]
@@ -82,14 +82,14 @@ class ArtistsViewModel: NSObject {
     }
     
     // MARK: Custom methods
-    func object(forRowAt indexPath: IndexPath) -> CMArtist {
+    func object(forRowAt indexPath: IndexPath) -> CMCardArtist {
         guard let fetchedResultsController = _fetchedResultsController else {
             fatalError("fetchedResultsController is nil")
         }
         return fetchedResultsController.object(at: indexPath)
     }
     
-    func allObjects() -> [CMArtist]? {
+    func allObjects() -> [CMCardArtist]? {
         guard let fetchedResultsController = _fetchedResultsController else {
             return nil
         }
@@ -104,7 +104,7 @@ class ArtistsViewModel: NSObject {
     }
 
     func fetchData() {
-        let request: NSFetchRequest<CMArtist> = CMArtist.fetchRequest()
+        let request: NSFetchRequest<CMCardArtist> = CMCardArtist.fetchRequest()
         let count = queryString.count
         
         if count > 0 {
@@ -121,15 +121,15 @@ class ArtistsViewModel: NSObject {
     }
     
     // MARK: Private methods
-    private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMArtist>?) -> NSFetchedResultsController<CMArtist> {
+    private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMCardArtist>?) -> NSFetchedResultsController<CMCardArtist> {
         let context = ManaKit.sharedInstance.dataStack!.viewContext
-        var request: NSFetchRequest<CMArtist>?
+        var request: NSFetchRequest<CMCardArtist>?
         
         if let fetchRequest = fetchRequest {
             request = fetchRequest
         } else {
             // create a default fetchRequest
-            request = CMArtist.fetchRequest()
+            request = CMCardArtist.fetchRequest()
             request!.sortDescriptors = _sortDescriptors
         }
         

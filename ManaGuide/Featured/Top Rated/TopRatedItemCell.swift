@@ -54,7 +54,7 @@ class TopRatedItemCell: UICollectionViewCell {
             logoLabel.text = ManaKit.sharedInstance.keyruneUnicode(forSet: card.set!)
             logoLabel.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
             nameLabel.text = card.name
-            ratingView.rating = card.rating
+            ratingView.rating = card.firebaseRating
         }
     }
     

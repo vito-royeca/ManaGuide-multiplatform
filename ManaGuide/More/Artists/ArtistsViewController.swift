@@ -152,7 +152,7 @@ extension ArtistsViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let artist = viewModel.object(forRowAt: indexPath)
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        request.predicate = NSPredicate(format: "artist_.name = %@", artist.name!)
+        request.predicate = NSPredicate(format: "artist.name = %@", artist.name!)
         
         performSegue(withIdentifier: "showSearch", sender: ["request": request,
                                                             "title": artist.name!])

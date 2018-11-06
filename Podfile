@@ -6,7 +6,7 @@ def default_pods
     pod 'Cosmos'
     pod 'Fabric'
     pod 'Crashlytics'
-    #pod 'Eureka'
+    pod 'Eureka'
     pod 'FBSDKCoreKit'
     pod 'FBSDKLoginKit'
     pod 'FBSDKShareKit'

@@ -100,16 +100,18 @@ class AccountViewModel: NSObject {
             if let dict = value["favorites"] as? [String : Any] {
                 for (k,_) in dict {
                     if let card = ManaKit.sharedInstance.findObject("CMCard",
-                                                                 objectFinder: ["id": k as AnyObject],
+                                                                 objectFinder: ["firebaseId": k as AnyObject],
                                                                  createIfNotFound: false) as? CMCard {
                         user.addToFavorites(card)
                     }
                 }
             }
-            try! ManaKit.sharedInstance.dataStack?.mainContext.save()
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
-                                            object: nil,
-                                            userInfo: nil)
+            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                try! backgroundContext.save()
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
+                                                object: nil,
+                                                userInfo: nil)
+            }
             
             // remove the ratedCards
             if let set = user.ratings,
@@ -123,7 +125,7 @@ class AccountViewModel: NSObject {
                 for (k,v) in dict {
                     if  let rating = v as? Double,
                         let card = ManaKit.sharedInstance.findObject("CMCard",
-                                                                    objectFinder: ["id": k as AnyObject],
+                                                                    objectFinder: ["firebaseId": k as AnyObject],
                                                                     createIfNotFound: false) as? CMCard,
                         let cardRating = ManaKit.sharedInstance.findObject("CMCardRating",
                                                                            objectFinder: ["user.id": userId as AnyObject,
@@ -137,10 +139,12 @@ class AccountViewModel: NSObject {
                 }
                 
             }
-            try! ManaKit.sharedInstance.dataStack?.mainContext.save()
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
-                                            object: nil,
-                                            userInfo: nil)
+            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                try! backgroundContext.save()
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
+                                                object: nil,
+                                                userInfo: nil)
+            }
         })
     }
     

@@ -20,7 +20,7 @@ class StoreTableViewCell: UITableViewCell {
     static let reuseIdentifier = "StoreCell"
     
     // MARK: Variables
-    var supplier: CMSupplier?
+    var supplier: CMStoreSupplier?
     var delegate: StoreTableViewCellDelegate?
     
     // MARK: Outlets
@@ -68,7 +68,7 @@ class StoreTableViewCell: UITableViewCell {
     }
     
     // MARK: Custom methods
-    func display(_ supplier: CMSupplier) {
+    func display(_ supplier: CMStoreSupplier) {
         self.supplier = supplier
         
         nameLabel.text = supplier.name

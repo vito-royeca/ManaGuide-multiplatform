@@ -18,7 +18,7 @@
 			<key>Values</key>
 			<array>
 				<string>name</string>
-				<string>number</string>
+				<string>collectorNumber</string>
 				<string>type</string>
 				<string>rarity</string>
 				<string>artist</string>

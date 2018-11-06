@@ -59,7 +59,7 @@ class SetsViewController: BaseViewController {
         
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars,
                                                         style: .solid,
-                                                        textColor: .clear,
+                                                        textColor: LookAndFeel.GlobalTintColor,
                                                         size: CGSize(width: 30, height: 30)) //UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
         
@@ -77,11 +77,13 @@ class SetsViewController: BaseViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showSet" {
             guard let dest = segue.destination as? SetViewController,
-                let set = sender as? CMSet else {
+            let dict = sender as? [String: Any],
+            let set = dict["set"] as? CMSet,
+            let languageCode = dict["languageCode"] as? String else {
                 return
             }
             
-            dest.viewModel = SetViewModel(withSet: set)
+            dest.viewModel = SetViewModel(withSet: set, languageCode: languageCode)
         }
     }
 
@@ -137,6 +139,7 @@ extension SetsViewController : UITableViewDataSource {
             }
             
             c.set = viewModel.object(forRowAt: indexPath)
+            c.delegate = self
             cell = c
         }
         
@@ -178,18 +181,20 @@ extension SetsViewController : UITableViewDelegate {
         }
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let set = viewModel.object(forRowAt: indexPath)
-        performSegue(withIdentifier: "showSet", sender: set)
-    }
-    
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if viewModel.isEmpty() {
-            return nil
-        } else {
-            return indexPath
-        }
-    }
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        let set = viewModel.object(forRowAt: indexPath)
+//        let sender = ["set": set,
+//                      "languageCode": "en"] as [String : Any]
+//        performSegue(withIdentifier: "showSet", sender: sender)
+//    }
+//    
+//    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+//        if viewModel.isEmpty() {
+//            return nil
+//        } else {
+//            return indexPath
+//        }
+//    }
 }
 
 // MARK: UISearchResultsUpdating
@@ -216,5 +221,18 @@ extension SetsViewController : UISearchBarDelegate {
         } else {
             viewModel.queryString = searchBar.text ?? ""
         }
+    }
+}
+
+// MARK:
+extension SetsViewController: SetsTableViewCellDelegate {
+    func languageAction(cell: UITableViewCell, code: String) {
+        guard let indexPath = tableView.indexPath(for: cell) else {
+            return
+        }
+        let set = viewModel.object(forRowAt: indexPath)
+        let sender = ["set": set,
+                      "languageCode": code] as [String : Any]
+        performSegue(withIdentifier: "showSet", sender: sender)
     }
 }

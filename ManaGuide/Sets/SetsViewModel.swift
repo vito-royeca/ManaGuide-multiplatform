@@ -129,11 +129,11 @@ class SetsViewModel: NSObject {
                 
                 switch setsSortBy {
                 case "releaseDate":
-                    _sectionName = "yearSection"
+                    _sectionName = "myYearSection"
                 case "name":
-                    _sectionName = "nameSection"
+                    _sectionName = "myNameSection"
                 case "type_.name":
-                    _sectionName = "typeSection"
+                    _sectionName = "setType.nameSection"
                 default:
                     ()
                 }
@@ -195,8 +195,8 @@ class SetsViewModel: NSObject {
         }
 
         switch sectionName {
-        case "nameSection",
-             "typeSection":
+        case "myNameSection",
+             "setType.nameSection":
             _sectionIndexTitles = [String]()
             _sectionTitles = [String]()
         default:
@@ -209,10 +209,10 @@ class SetsViewModel: NSObject {
             var prefix: String?
             
             switch sectionName {
-            case "nameSection":
-                prefix = set.nameSection
-            case "typeSection":
-                prefix = String(set.typeSection!.prefix(1))
+            case "myNameSection":
+                prefix = set.myNameSection
+            case "setType.nameSection":
+                prefix = set.setType!.nameSection
             default:
                 ()
             }
@@ -243,7 +243,7 @@ class SetsViewModel: NSObject {
         if let value = UserDefaults.standard.value(forKey: "setsSectionName") as? String {
             values["setsSectionName"] = value
         } else {
-            values["setsSectionName"] = "yearSection"
+            values["setsSectionName"] = "myYearSection"
         }
         
         if let value = UserDefaults.standard.value(forKey: "setsSortBy") as? String {

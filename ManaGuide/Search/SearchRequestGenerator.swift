@@ -114,15 +114,15 @@ class SearchRequestGenerator: NSObject {
         
         switch sortBy {
         case "name":
-            sectionName = "nameSection"
+            sectionName = "myNameSection"
         case "number":
             sectionName = nil
         case "type":
-            sectionName = "typeSection"
+            sectionName = "typeLine.nameSection"
         case "rarity":
-            sectionName = "rarity_.name"
+            sectionName = "rarity.name"
         case "artist":
-            sectionName = "artist_.name"
+            sectionName = "artist.name"
         default:
             ()
         }
@@ -157,7 +157,14 @@ class SearchRequestGenerator: NSObject {
         }
         
         newRequest.sortDescriptors = createSortDescriptors()
-        newRequest.predicate = predicate
+        
+        let idPredicate = NSPredicate(format: "id != nil")
+        if let predicate = predicate {
+            newRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
+                                                                                       idPredicate])
+        } else {
+            newRequest.predicate = idPredicate
+        }
         
 //        print("\(newRequest)")
         return newRequest
@@ -173,9 +180,9 @@ class SearchRequestGenerator: NSObject {
             sortDescriptors.append(NSSortDescriptor(key: sectionName, ascending: orderBy))
             sortDescriptors.append(NSSortDescriptor(key: "name", ascending: orderBy))
             sortDescriptors.append(NSSortDescriptor(key: "set.releaseDate", ascending: orderBy))
-            sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: orderBy))
+            sortDescriptors.append(NSSortDescriptor(key: "myNumberOrder", ascending: orderBy))
         } else {
-            sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: orderBy))
+            sortDescriptors.append(NSSortDescriptor(key: "myNumberOrder", ascending: orderBy))
             sortDescriptors.append(NSSortDescriptor(key: "name", ascending: orderBy))
             sortDescriptors.append(NSSortDescriptor(key: "set.releaseDate", ascending: orderBy))
         }
@@ -307,10 +314,10 @@ class SearchRequestGenerator: NSObject {
         }
         
         if searchColorIdentityMatch == "contains" {
-            subpredicates.append(NSPredicate(format: "ANY colorIdentities_.name IN %@", arrayColors))
+            subpredicates.append(NSPredicate(format: "ANY colorIdentities.name IN %@", arrayColors))
         } else {
             for color in arrayColors {
-                subpredicates.append(NSPredicate(format: "ANY colorIdentities_.name == %@", color))
+                subpredicates.append(NSPredicate(format: "ANY colorIdentities.name == %@", color))
             }
         }
         

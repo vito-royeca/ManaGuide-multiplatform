@@ -164,7 +164,7 @@ extension MoreViewController : UITableViewDelegate {
                 
             case MoreListRow.reserved.rawValue:
                 let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-                request.predicate = NSPredicate(format: "reserved = true")
+                request.predicate = NSPredicate(format: "isReserved = true")
                 identifier = "showSearch"
                 sender = ["title": "Reserved List",
                           "request": request]

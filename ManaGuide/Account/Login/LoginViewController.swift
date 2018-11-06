@@ -140,6 +140,13 @@ class LoginViewController: BaseViewController {
                 return
             }
             
+            let completion = { (_ error: Error?) in
+                if let error = error {
+                    self.showMessage(title: "Error",
+                                     message: error.localizedDescription)
+                }
+            }
+
             var errors = [String]()
             for error in self.viewModel.validate(name: name) {
                 errors.append(error)
@@ -162,12 +169,7 @@ class LoginViewController: BaseViewController {
                     self.viewModel.updateUser(email: authResult?.user.email,
                                               photoURL: authResult?.user.photoURL,
                                               displayName: name,
-                                              completion: { (_ error: Error?) in
-                                                  if let error = error {
-                                                  self.showMessage(title: "Error",
-                                                                   message: error.localizedDescription)
-                                                  }
-                                              })
+                                              completion: completion)
                 }.done {
                     self.dismiss(animated: true, completion: {
                         self.delegate?.actionAfterLogin(error: nil)
@@ -200,6 +202,13 @@ class LoginViewController: BaseViewController {
     }
     
     @IBAction func facebookAction(_ sender: UIButton) {
+        let completion = { (_ error: Error?) in
+            if let error = error {
+                self.showMessage(title: "Error",
+                                 message: error.localizedDescription)
+            }
+        }
+        
         firstly {
             viewModel.facebookLogin(withViewController: self)
         }.then { (credential: AuthCredential) in
@@ -208,12 +217,7 @@ class LoginViewController: BaseViewController {
             self.viewModel.updateUser(email: authResult?.user.email,
                                       photoURL: authResult?.user.photoURL,
                                       displayName: authResult?.user.displayName,
-                                      completion: { (_ error: Error?) in
-                                          if let error = error {
-                                              self.showMessage(title: "Error",
-                                                               message: error.localizedDescription)
-                                          }
-                                     })
+                                      completion: completion)
         }.done {
             self.dismiss(animated: true, completion: {
                 self.delegate?.actionAfterLogin(error: nil)
@@ -229,20 +233,22 @@ class LoginViewController: BaseViewController {
     }
     
     @IBAction func githubAction(_ sender: UIButton) {
+        let completion = { (_ error: Error?) in
+            if let error = error {
+                self.showMessage(title: "Error",
+                                 message: error.localizedDescription)
+            }
+        }
+        
         firstly {
             viewModel.githubLogin(withViewController: self)
         }.then { (credential: AuthCredential) in
             self.viewModel.authSignInAndRetrieveData(credential: credential)
         }.map { (authResult: AuthDataResult?) -> Void in
             self.viewModel.updateUser(email: authResult?.user.email,
-                            photoURL: authResult?.user.photoURL,
-                            displayName: authResult?.user.displayName,
-                            completion: { (_ error: Error?) in
-                                if let error = error {
-                                    self.showMessage(title: "Error",
-                                                     message: error.localizedDescription)
-                                }
-                            })
+                                      photoURL: authResult?.user.photoURL,
+                                      displayName: authResult?.user.displayName,
+                                      completion: completion)
         }.done {
             self.dismiss(animated: true, completion: {
                 self.delegate?.actionAfterLogin(error: nil)

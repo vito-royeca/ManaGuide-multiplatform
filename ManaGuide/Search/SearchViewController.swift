@@ -264,7 +264,7 @@ extension SearchViewController : UITableViewDataSource {
                 height /= 3
                 size = CGSize(width: width, height: height)
             } else {
-                height -= kCardTableViewCellHeight - CGFloat(44)
+                height -= CardTableViewCell.cellHeight - CGFloat(44)
                 size = cardSize(inFrame: CGSize(width: width, height: height))
             }
             
@@ -322,7 +322,7 @@ extension SearchViewController : UITableViewDelegate {
             if viewModel.isEmpty() {
                 height = tableView.frame.size.height / 3
             } else {
-                height = kCardTableViewCellHeight
+                height = CardTableViewCell.cellHeight
             }
         case "grid":
             height = tableView.frame.size.height

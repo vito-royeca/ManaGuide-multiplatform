@@ -18,7 +18,7 @@ class MGUtilities {
         var image: UIImage?
         var text:String?
         
-        if let types = card.types_ {
+        if let types = card.mtgjsonTypes {
             if types.count > 1 {
                 image = ManaKit.sharedInstance.symbolImage(name: "Multiple")
                 cardType = types.allObjects.first as? CMCardType
@@ -44,7 +44,7 @@ class MGUtilities {
         }
         
         // type
-        if let type = card.type_,
+        if let type = card.typeLine,
             let cardType = cardType {
             
             text = " "
@@ -100,7 +100,7 @@ class MGUtilities {
                           convertFromNSAttributedStringKey(NSAttributedString.Key.paragraphStyle): titleParagraphStyle]
         
         var text = "Layout: "
-        if let layout = card.layout_ {
+        if let layout = card.layout {
             if let name = layout.name {
                 text.append(name)
             } else {
@@ -112,12 +112,12 @@ class MGUtilities {
         attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nConverted Mana Cost: "
-        text.append("\(String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))")
+        text.append("\(String(format: card.convertedManaCost == floor(card.convertedManaCost) ? "%.0f" : "%.1f", card.convertedManaCost))")
         attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nColors: "
-        if let colors_ = card.colors_ {
-            if let s = colors_.allObjects as? [CMColor] {
+        if let colors_ = card.colors {
+            if let s = colors_.allObjects as? [CMCardColor] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
                 text.append(string.count > 0 ? string : "\u{2014}")
             } else {
@@ -129,8 +129,8 @@ class MGUtilities {
         attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nColors Identity: "
-        if let colorIdentities_ = card.colorIdentities_ {
-            if let s = colorIdentities_.allObjects as? [CMColor] {
+        if let colorIdentities_ = card.colorIdentities {
+            if let s = colorIdentities_.allObjects as? [CMCardColor] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
                 text.append(string.count > 0 ? string : "\u{2014}")
             } else {
@@ -142,15 +142,15 @@ class MGUtilities {
         attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nOriginal Type: "
-        if let originalType = card.originalType {
-            text.append(originalType)
+        if let originalType = card.mtgjsonOriginalType {
+            text.append(originalType.name!)
         } else {
             text.append("\u{2014}")
         }
         attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nSubtypes: "
-        if let subtypes_ = card.subtypes_ {
+        if let subtypes_ = card.mtgjsonSubtypes {
             if let s = subtypes_.allObjects as? [CMCardType] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
                 text.append(string.count > 0 ? string : "\u{2014}")
@@ -163,7 +163,7 @@ class MGUtilities {
         attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nSupertypes: "
-        if let supertypes_ = card.supertypes_ {
+        if let supertypes_ = card.mtgjsonSupertypes {
             if let s = supertypes_.allObjects as? [CMCardType] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
                 text.append(string.count > 0 ? string : "\u{2014}")
@@ -176,7 +176,7 @@ class MGUtilities {
         attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nRarity: "
-        if let rarity = card.rarity_ {
+        if let rarity = card.rarity {
             text.append(rarity.name!)
         } else {
             text.append("\u{2014}")
@@ -185,14 +185,14 @@ class MGUtilities {
         
         text = "\nSet Online Only: "
         if let set = card.set {
-            text.append(set.onlineOnly ? "Yes" : "No")
+            text.append(set.isOnlineOnly ? "Yes" : "No")
         } else {
             text.append("\u{2014}")
         }
         attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nReserved List: "
-        text.append(card.reserved ? "Yes" : "No")
+        text.append(card.isReserved ? "Yes" : "No")
         attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nRelease Date: "
@@ -212,7 +212,7 @@ class MGUtilities {
         attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nNumber: "
-        if let number = card.number ?? card.mciNumber {
+        if let number = card.collectorNumber {
             text.append(number)
         } else {
             text.append("\u{2014}")

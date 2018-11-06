@@ -14,6 +14,7 @@ let kMaxLatestCards = 10
 class LatestCardsViewModel: NSObject {
     // MARK: Variables
     private var _cardMIDs = [NSManagedObjectID]()
+    private var _sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
     
     // MARK: Custom methods
     func numberOfItems() -> Int {
@@ -32,7 +33,7 @@ class LatestCardsViewModel: NSObject {
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         let sets = fetchLatestSets()
         
-        request.predicate = NSPredicate(format: "multiverseid != 0 AND set.code IN %@", sets.map( { $0.code} ))
+        request.predicate = NSPredicate(format: "language.code = %@ AND imageURIs != nil AND set.code IN %@ AND id != nil", "en", sets.map( { $0.code} ))
         _cardMIDs = [NSManagedObjectID]()
         let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
         
@@ -47,7 +48,8 @@ class LatestCardsViewModel: NSObject {
     
     private func fetchLatestSets() -> [CMSet] {
         let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
+        request.predicate = NSPredicate(format: "parent = nil")
+        request.sortDescriptors = _sortDescriptors
         request.fetchLimit = kMaxLatestSets
         
         return try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)

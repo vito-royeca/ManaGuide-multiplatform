@@ -16,10 +16,10 @@ let kMaxFetchTopViewed  = UInt(10)
 
 class TopViewedViewModel: NSObject {
     // MARK: Variables
-    let sortDescriptors = [NSSortDescriptor(key: "views", ascending: false),
+    let sortDescriptors = [NSSortDescriptor(key: "firebaseViews", ascending: false),
                            NSSortDescriptor(key: "name", ascending: true),
                            NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                           NSSortDescriptor(key: "number", ascending: true)]
+                           NSSortDescriptor(key: "collectorNumber", ascending: true)]
     
     private var _fetchedResultsController: NSFetchedResultsController<CMCard>?
     private var _firebaseQuery: DatabaseQuery?
@@ -85,9 +85,9 @@ class TopViewedViewModel: NSObject {
                     
                     
                     if let card = ManaKit.sharedInstance.findObject("CMCard",
-                                                                    objectFinder: ["id": c.key as AnyObject],
+                                                                    objectFinder: ["firebaseID": c.key as AnyObject],
                                                                     createIfNotFound: false) as? CMCard {
-                        card.views = Int64(fcard.views == nil ? 0 : fcard.views!)
+                        card.firebaseViews = Int64(fcard.views == nil ? 0 : fcard.views!)
                     }
                 }
             }
@@ -98,7 +98,7 @@ class TopViewedViewModel: NSObject {
             
                 // refresh data
                 let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-                request.predicate = NSPredicate(format: "views > 0")
+                request.predicate = NSPredicate(format: "firebaseViews > 0")
                 request.fetchLimit = 10
                 request.sortDescriptors = self.sortDescriptors
                 self._fetchedResultsController = self.getFetchedResultsController(with: request)

@@ -45,6 +45,7 @@ class LatestSetsViewModel: NSObject {
     
     func fetchData() {
         let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
+        request.predicate = NSPredicate(format: "parent = nil")
         request.sortDescriptors = _sortDescriptors
         request.fetchLimit = kMaxLatestSets
         
