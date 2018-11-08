@@ -37,9 +37,9 @@ class ArtistsViewController: BaseViewController {
             tableView.tableHeaderView = searchController.searchBar
         }
         
-        tableView.register(UINib(nibName: "EmptyTableViewCell",
+        tableView.register(UINib(nibName: "SearchModeTableViewCell",
                                  bundle: nil),
-                           forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
+                           forCellReuseIdentifier: SearchModeTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
         
         viewModel.fetchData()
@@ -61,7 +61,9 @@ class ArtistsViewController: BaseViewController {
                 return
             }
             
-            dest.viewModel = SearchViewModel(withRequest: request, andTitle: dict["title"] as? String)
+            dest.viewModel = SearchViewModel(withRequest: request,
+                                             andTitle: dict["title"] as? String,
+                                             andMode: .loading)
         }
     }
     
@@ -94,10 +96,12 @@ extension ArtistsViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: UITableViewCell?
         
+        
         if viewModel.isEmpty() {
-            guard let c = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.reuseIdentifier) as? EmptyTableViewCell else {
-                fatalError("\(EmptyTableViewCell.reuseIdentifier) is nil")
+            guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
+                fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
             }
+            c.mode = .noResultsFound
             cell = c
             
         } else {

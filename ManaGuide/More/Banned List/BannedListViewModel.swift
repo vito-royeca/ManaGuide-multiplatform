@@ -96,7 +96,7 @@ class BannedListViewModel: NSObject {
     
     func isEmpty() -> Bool {
         guard let objects = allObjects() else {
-            return false
+            return true
         }
         return objects.count == 0
     }

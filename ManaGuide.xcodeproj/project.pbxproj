@@ -142,18 +142,18 @@
 		118281B120B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
 		118281B220B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
 		118281B320B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
-		11853EB621669AD50055077B /* EmptyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EB421669AD50055077B /* EmptyTableViewCell.swift */; };
-		11853EB721669AD50055077B /* EmptyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EB421669AD50055077B /* EmptyTableViewCell.swift */; };
-		11853EB821669AD50055077B /* EmptyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EB421669AD50055077B /* EmptyTableViewCell.swift */; };
-		11853EB921669AD50055077B /* EmptyTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EB521669AD50055077B /* EmptyTableViewCell.xib */; };
-		11853EBA21669AD50055077B /* EmptyTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EB521669AD50055077B /* EmptyTableViewCell.xib */; };
-		11853EBB21669AD50055077B /* EmptyTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EB521669AD50055077B /* EmptyTableViewCell.xib */; };
-		11853EBE2166A85F0055077B /* EmptyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EBC2166A85F0055077B /* EmptyCollectionViewCell.swift */; };
-		11853EBF2166A85F0055077B /* EmptyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EBC2166A85F0055077B /* EmptyCollectionViewCell.swift */; };
-		11853EC02166A85F0055077B /* EmptyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EBC2166A85F0055077B /* EmptyCollectionViewCell.swift */; };
-		11853EC12166A85F0055077B /* EmptyCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EBD2166A85F0055077B /* EmptyCollectionViewCell.xib */; };
-		11853EC22166A85F0055077B /* EmptyCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EBD2166A85F0055077B /* EmptyCollectionViewCell.xib */; };
-		11853EC32166A85F0055077B /* EmptyCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EBD2166A85F0055077B /* EmptyCollectionViewCell.xib */; };
+		11853EB621669AD50055077B /* SearchModeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EB421669AD50055077B /* SearchModeTableViewCell.swift */; };
+		11853EB721669AD50055077B /* SearchModeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EB421669AD50055077B /* SearchModeTableViewCell.swift */; };
+		11853EB821669AD50055077B /* SearchModeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EB421669AD50055077B /* SearchModeTableViewCell.swift */; };
+		11853EB921669AD50055077B /* SearchModeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EB521669AD50055077B /* SearchModeTableViewCell.xib */; };
+		11853EBA21669AD50055077B /* SearchModeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EB521669AD50055077B /* SearchModeTableViewCell.xib */; };
+		11853EBB21669AD50055077B /* SearchModeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EB521669AD50055077B /* SearchModeTableViewCell.xib */; };
+		11853EBE2166A85F0055077B /* SearchModeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EBC2166A85F0055077B /* SearchModeCollectionViewCell.swift */; };
+		11853EBF2166A85F0055077B /* SearchModeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EBC2166A85F0055077B /* SearchModeCollectionViewCell.swift */; };
+		11853EC02166A85F0055077B /* SearchModeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EBC2166A85F0055077B /* SearchModeCollectionViewCell.swift */; };
+		11853EC12166A85F0055077B /* SearchModeCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EBD2166A85F0055077B /* SearchModeCollectionViewCell.xib */; };
+		11853EC22166A85F0055077B /* SearchModeCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EBD2166A85F0055077B /* SearchModeCollectionViewCell.xib */; };
+		11853EC32166A85F0055077B /* SearchModeCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11853EBD2166A85F0055077B /* SearchModeCollectionViewCell.xib */; };
 		11853EC82166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EC62166ABF70055077B /* CardImageCollectionViewCell.swift */; };
 		11853EC92166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EC62166ABF70055077B /* CardImageCollectionViewCell.swift */; };
 		11853ECA2166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11853EC62166ABF70055077B /* CardImageCollectionViewCell.swift */; };
@@ -354,10 +354,10 @@
 		11663B132159C5AC00B095C2 /* SetsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetsTableViewCell.swift; sourceTree = "<group>"; };
 		1168F7512155AC6E0059C9E0 /* CardActionsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardActionsTableViewCell.swift; sourceTree = "<group>"; };
 		118281B020B67FA500865172 /* AccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewController.swift; sourceTree = "<group>"; };
-		11853EB421669AD50055077B /* EmptyTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyTableViewCell.swift; sourceTree = "<group>"; };
-		11853EB521669AD50055077B /* EmptyTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyTableViewCell.xib; sourceTree = "<group>"; };
-		11853EBC2166A85F0055077B /* EmptyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCollectionViewCell.swift; sourceTree = "<group>"; };
-		11853EBD2166A85F0055077B /* EmptyCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyCollectionViewCell.xib; sourceTree = "<group>"; };
+		11853EB421669AD50055077B /* SearchModeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModeTableViewCell.swift; sourceTree = "<group>"; };
+		11853EB521669AD50055077B /* SearchModeTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchModeTableViewCell.xib; sourceTree = "<group>"; };
+		11853EBC2166A85F0055077B /* SearchModeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModeCollectionViewCell.swift; sourceTree = "<group>"; };
+		11853EBD2166A85F0055077B /* SearchModeCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchModeCollectionViewCell.xib; sourceTree = "<group>"; };
 		11853EC62166ABF70055077B /* CardImageCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardImageCollectionViewCell.swift; sourceTree = "<group>"; };
 		11853EC72166ABF70055077B /* CardImageCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CardImageCollectionViewCell.xib; sourceTree = "<group>"; };
 		11853EDE2166B0D40055077B /* CardGridTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardGridTableViewCell.swift; sourceTree = "<group>"; };
@@ -593,10 +593,10 @@
 				11853EC72166ABF70055077B /* CardImageCollectionViewCell.xib */,
 				115C5F662168053600662395 /* DynamicHeightTableViewCell.swift */,
 				115C5F672168053600662395 /* DynamicHeightTableViewCell.xib */,
-				11853EBC2166A85F0055077B /* EmptyCollectionViewCell.swift */,
-				11853EBD2166A85F0055077B /* EmptyCollectionViewCell.xib */,
-				11853EB421669AD50055077B /* EmptyTableViewCell.swift */,
-				11853EB521669AD50055077B /* EmptyTableViewCell.xib */,
+				11853EBC2166A85F0055077B /* SearchModeCollectionViewCell.swift */,
+				11853EBD2166A85F0055077B /* SearchModeCollectionViewCell.xib */,
+				11853EB421669AD50055077B /* SearchModeTableViewCell.swift */,
+				11853EB521669AD50055077B /* SearchModeTableViewCell.xib */,
 				11CEE05A20D0012300D72186 /* Launch Screen.storyboard */,
 				110BB4FD1F207C6400086841 /* Main.storyboard */,
 			);
@@ -940,8 +940,8 @@
 			files = (
 				11853ECB2166ABF70055077B /* CardImageCollectionViewCell.xib in Resources */,
 				110BB5011F207C6400086841 /* Assets.xcassets in Resources */,
-				11853EB921669AD50055077B /* EmptyTableViewCell.xib in Resources */,
-				11853EC12166A85F0055077B /* EmptyCollectionViewCell.xib in Resources */,
+				11853EB921669AD50055077B /* SearchModeTableViewCell.xib in Resources */,
+				11853EC12166A85F0055077B /* SearchModeCollectionViewCell.xib in Resources */,
 				11CEE05B20D0012300D72186 /* Launch Screen.storyboard in Resources */,
 				11C7B45820D6A7E2009D63F4 /* StoreTableViewCell.xib in Resources */,
 				110BB4FF1F207C6400086841 /* Main.storyboard in Resources */,
@@ -960,9 +960,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				11853ECC2166ABF70055077B /* CardImageCollectionViewCell.xib in Resources */,
-				11853EBA21669AD50055077B /* EmptyTableViewCell.xib in Resources */,
+				11853EBA21669AD50055077B /* SearchModeTableViewCell.xib in Resources */,
 				11447EB320D1764000DFF5C7 /* HeroCardView.xib in Resources */,
-				11853EC22166A85F0055077B /* EmptyCollectionViewCell.xib in Resources */,
+				11853EC22166A85F0055077B /* SearchModeCollectionViewCell.xib in Resources */,
 				115C5F6C2168053600662395 /* DynamicHeightTableViewCell.xib in Resources */,
 				11CEE05C20D0012300D72186 /* Launch Screen.storyboard in Resources */,
 				11853EF52166D6540055077B /* Main.storyboard in Resources */,
@@ -979,11 +979,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				11853ECD2166ABF80055077B /* CardImageCollectionViewCell.xib in Resources */,
-				11853EC32166A85F0055077B /* EmptyCollectionViewCell.xib in Resources */,
+				11853EC32166A85F0055077B /* SearchModeCollectionViewCell.xib in Resources */,
 				11447EB420D1764000DFF5C7 /* HeroCardView.xib in Resources */,
 				11853EF62166D6550055077B /* Main.storyboard in Resources */,
 				11853EE52166B0D40055077B /* CardGridTableViewCell.xib in Resources */,
-				11853EBB21669AD50055077B /* EmptyTableViewCell.xib in Resources */,
+				11853EBB21669AD50055077B /* SearchModeTableViewCell.xib in Resources */,
 				11CEE05D20D0012300D72186 /* Launch Screen.storyboard in Resources */,
 				1147B76A1F226143004EF296 /* Settings.bundle in Resources */,
 				118FDC7920D515E5002FA5E8 /* ShareActivity.xcassets in Resources */,
@@ -1382,7 +1382,7 @@
 				11932B7F215855AF00DC3D44 /* SetsViewModel.swift in Sources */,
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
 				11A5444C214471EB00B8C59F /* CardViewModel.swift in Sources */,
-				11853EBE2166A85F0055077B /* EmptyCollectionViewCell.swift in Sources */,
+				11853EBE2166A85F0055077B /* SearchModeCollectionViewCell.swift in Sources */,
 				115D4E2021894EE9006A94EE /* CardNameTableViewCell.swift in Sources */,
 				1150BCEE20B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				1165CD761F377F58006CC433 /* BannedListViewController.swift in Sources */,
@@ -1418,7 +1418,7 @@
 				1140F0CC1F42CA500023E107 /* FCCard.swift in Sources */,
 				11C7B45520D6A7E2009D63F4 /* StoreTableViewCell.swift in Sources */,
 				1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */,
-				11853EB621669AD50055077B /* EmptyTableViewCell.swift in Sources */,
+				11853EB621669AD50055077B /* SearchModeTableViewCell.swift in Sources */,
 				114C1D5B2161ABDC00825DD2 /* BannedViewController.swift in Sources */,
 				111D5A6C20AF57590046285B /* ArtistsViewController.swift in Sources */,
 				11A63E2F21430E60005AE024 /* TopViewedItemCell.swift in Sources */,
@@ -1469,7 +1469,7 @@
 				11F3BA3220D4141900511388 /* MGUtilities.swift in Sources */,
 				11A63E182142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
 				1168F7532155AC6E0059C9E0 /* CardActionsTableViewCell.swift in Sources */,
-				11853EBF2166A85F0055077B /* EmptyCollectionViewCell.swift in Sources */,
+				11853EBF2166A85F0055077B /* SearchModeCollectionViewCell.swift in Sources */,
 				11A5444D214471EB00B8C59F /* CardViewModel.swift in Sources */,
 				11A5444721445ADF00B8C59F /* HeroCardView.swift in Sources */,
 				11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
@@ -1515,7 +1515,7 @@
 				114C1D782161D8C200825DD2 /* DeckViewModel.swift in Sources */,
 				11448A6320CD3849008EFC40 /* Constants.swift in Sources */,
 				11853EEB2166D5B80055077B /* SetViewController.swift in Sources */,
-				11853EB721669AD50055077B /* EmptyTableViewCell.swift in Sources */,
+				11853EB721669AD50055077B /* SearchModeTableViewCell.swift in Sources */,
 				114C1D4B2160A50600825DD2 /* MoreViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1549,7 +1549,7 @@
 				11932B81215855AF00DC3D44 /* SetsViewModel.swift in Sources */,
 				1141A84020D00F4A00554872 /* SnapshotHelper.swift in Sources */,
 				110BB51A1F207C6400086841 /* ManaGuideUITests.swift in Sources */,
-				11853EC02166A85F0055077B /* EmptyCollectionViewCell.swift in Sources */,
+				11853EC02166A85F0055077B /* SearchModeCollectionViewCell.swift in Sources */,
 				118FDC7120D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
 				1165CD771F377F58006CC433 /* BannedListViewController.swift in Sources */,
 				1150BCF020B92E4700A36FCD /* LoginViewController.swift in Sources */,
@@ -1582,7 +1582,7 @@
 				1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */,
 				118FDC7520D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
 				1147B7641F224198004EF296 /* SetViewController.swift in Sources */,
-				11853EB821669AD50055077B /* EmptyTableViewCell.swift in Sources */,
+				11853EB821669AD50055077B /* SearchModeTableViewCell.swift in Sources */,
 				114C1D5D2161ABDC00825DD2 /* BannedViewController.swift in Sources */,
 				11A63E2921430B94005AE024 /* LatestSetItemCell.swift in Sources */,
 				11447EB820D177F700DFF5C7 /* HeroCardView.swift in Sources */,

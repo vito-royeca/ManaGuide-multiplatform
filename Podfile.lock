@@ -21,20 +21,20 @@ PODS:
   - FBSDKMessengerShareKit (1.3.2)
   - FBSDKShareKit (4.38.1):
     - FBSDKCoreKit
-  - Firebase/Auth (5.11.0):
+  - Firebase/Auth (5.12.0):
     - Firebase/CoreOnly
-    - FirebaseAuth (= 5.0.4)
-  - Firebase/Core (5.11.0):
+    - FirebaseAuth (= 5.0.5)
+  - Firebase/Core (5.12.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 5.3.0)
-  - Firebase/CoreOnly (5.11.0):
-    - FirebaseCore (= 5.1.6)
-  - Firebase/Database (5.11.0):
+  - Firebase/CoreOnly (5.12.0):
+    - FirebaseCore (= 5.1.7)
+  - Firebase/Database (5.12.0):
     - Firebase/CoreOnly
     - FirebaseDatabase (= 5.0.3)
-  - Firebase/Storage (5.11.0):
+  - Firebase/Storage (5.12.0):
     - Firebase/CoreOnly
-    - FirebaseStorage (= 3.0.2)
+    - FirebaseStorage (= 3.0.3)
   - FirebaseAnalytics (5.3.0):
     - FirebaseCore (~> 5.1)
     - FirebaseInstanceID (~> 3.3)
@@ -44,13 +44,13 @@ PODS:
     - GoogleUtilities/Network (~> 5.2)
     - "GoogleUtilities/NSData+zlib (~> 5.2)"
     - nanopb (~> 0.3)
-  - FirebaseAuth (5.0.4):
+  - FirebaseAuth (5.0.5):
     - FirebaseAuthInterop (~> 1.0)
-    - FirebaseCore (~> 5.0)
+    - FirebaseCore (~> 5.1)
     - GoogleUtilities/Environment (~> 5.2)
     - GTMSessionFetcher/Core (~> 1.1)
   - FirebaseAuthInterop (1.0.0)
-  - FirebaseCore (5.1.6):
+  - FirebaseCore (5.1.7):
     - GoogleUtilities/Logger (~> 5.2)
   - FirebaseDatabase (5.0.3):
     - FirebaseCore (~> 5.0)
@@ -59,14 +59,14 @@ PODS:
     - FirebaseCore (~> 5.1)
     - GoogleUtilities/Environment (~> 5.3)
     - GoogleUtilities/UserDefaults (~> 5.3)
-  - FirebaseStorage (3.0.2):
+  - FirebaseStorage (3.0.3):
     - FirebaseAuthInterop (~> 1.0)
-    - FirebaseCore (~> 5.0)
+    - FirebaseCore (~> 5.1)
     - GTMSessionFetcher/Core (~> 1.1)
   - FirebaseUI/Storage (5.2.2):
     - Firebase/Storage (~> 5.0)
     - SDWebImage (~> 4.0)
-  - FontAwesome.swift (1.4.5)
+  - FontAwesome.swift (1.4.6)
   - GoogleAppMeasurement (5.3.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
     - GoogleUtilities/MethodSwizzler (~> 5.2)
@@ -119,7 +119,7 @@ PODS:
   - InAppSettingsKit (2.9.1)
   - Kanna (4.0.2)
   - leveldb-library (1.20)
-  - ManaKit (3.0.4):
+  - ManaKit (3.0.6):
     - Kanna (~> 4.0.0)
     - PromiseKit
     - SDWebImage
@@ -262,16 +262,16 @@ SPEC CHECKSUMS:
   FBSDKLoginKit: 4621c690d9dd8628031a4791497062183ea34b0d
   FBSDKMessengerShareKit: bdd14265f5845e6d1c95a128ab33705a68ca1c21
   FBSDKShareKit: 6ffe22f0a0618eb7424d4104ab0ef3ce9643d42a
-  Firebase: b48f9e653da971ecce5b8c749684bc8bb2d26bd3
+  Firebase: 9190018e296139d938b99521cde0c15a6e8d2946
   FirebaseAnalytics: 63202d2665de4e6adcbdce189135255d8b5962ba
-  FirebaseAuth: 504b198ceb3472dca5c65bb95544ea44cfc9439e
+  FirebaseAuth: 9299ab178271bec7426967b05b2718bb6fc31f17
   FirebaseAuthInterop: 0ffa57668be100582bb7643d4fcb7615496c41fc
-  FirebaseCore: d16552f06821489ce1affe2e5e3e5593402ddfe3
+  FirebaseCore: 027d350adc039aa5483357c6f56556f117c5170e
   FirebaseDatabase: e2bcbc106adc4b11a2da3ec2eb63c0c4a44f2f54
   FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
-  FirebaseStorage: fd82e5e5c474897e19972b34b22ac0f589dce04e
+  FirebaseStorage: 3d22c041370593e639fba013d1eb698a8dae2881
   FirebaseUI: 09519bf436a055cd696bf68687d624423150e4c0
-  FontAwesome.swift: a351dbb86b9fcec9aad6bce2fdd5b95e9a7b8828
+  FontAwesome.swift: 18fb500c0decc2bbfadf2ae16a936704ec2c49bd
   GoogleAppMeasurement: 5029d78f2b438bd30ffb44e6c558b57c21622727
   GoogleSignIn: 11183592dc63e105475c7305a325045ff95e02b7
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
@@ -283,7 +283,7 @@ SPEC CHECKSUMS:
   InAppSettingsKit: acb6bc78cf00bbcfa63c4a26fd67f266bc7cfcd2
   Kanna: c60b61d72554bf04ed1ee074f9b379855cab4892
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
-  ManaKit: ef895479952284eb82f1538f30305d586e139837
+  ManaKit: b2ab40f10e64f2181ae8f2ca8e987493223fa817
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MMDrawerController: e3a54a5570388463ad3b36975251575b50c4e1a0
   "MMDrawerController+Storyboard": c98f86c0f32cdef1d466d19a7da3ad2fc6c6ac00

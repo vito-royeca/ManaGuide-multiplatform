@@ -125,16 +125,37 @@ class SetsTableViewCell: UITableViewCell {
         // Initialization code
         
         enButton.setBackgroundColor(LookAndFeel.GlobalTintColor, for: .normal)
+        enButton.setBackgroundColor(UIColor.lightGray, for: .disabled)
+        
         esButton.setBackgroundColor(LookAndFeel.GlobalTintColor, for: .normal)
+        esButton.setBackgroundColor(UIColor.lightGray, for: .disabled)
+        
         frButton.setBackgroundColor(LookAndFeel.GlobalTintColor, for: .normal)
+        frButton.setBackgroundColor(UIColor.lightGray, for: .disabled)
+        
         deButton.setBackgroundColor(LookAndFeel.GlobalTintColor, for: .normal)
+        deButton.setBackgroundColor(UIColor.lightGray, for: .disabled)
+        
         itButton.setBackgroundColor(LookAndFeel.GlobalTintColor, for: .normal)
+        itButton.setBackgroundColor(UIColor.lightGray, for: .disabled)
+        
         ptButton.setBackgroundColor(LookAndFeel.GlobalTintColor, for: .normal)
+        ptButton.setBackgroundColor(UIColor.lightGray, for: .disabled)
+        
         jaButton.setBackgroundColor(LookAndFeel.GlobalTintColor, for: .normal)
+        jaButton.setBackgroundColor(UIColor.lightGray, for: .disabled)
+        
         koButton.setBackgroundColor(LookAndFeel.GlobalTintColor, for: .normal)
+        koButton.setBackgroundColor(UIColor.lightGray, for: .disabled)
+        
         ruButton.setBackgroundColor(LookAndFeel.GlobalTintColor, for: .normal)
+        ruButton.setBackgroundColor(UIColor.lightGray, for: .disabled)
+        
         zhsButton.setBackgroundColor(LookAndFeel.GlobalTintColor, for: .normal)
+        zhsButton.setBackgroundColor(UIColor.lightGray, for: .disabled)
+        
         zhtButton.setBackgroundColor(LookAndFeel.GlobalTintColor, for: .normal)
+        zhtButton.setBackgroundColor(UIColor.lightGray, for: .disabled)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

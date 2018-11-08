@@ -52,9 +52,9 @@ class SetsViewController: BaseViewController {
             tableView.tableHeaderView = searchController.searchBar
         }
         
-        tableView.register(UINib(nibName: "EmptyTableViewCell",
+        tableView.register(UINib(nibName: "SearchModeTableViewCell",
                                  bundle: nil),
-                           forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
+                           forCellReuseIdentifier: SearchModeTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
         
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars,
@@ -62,8 +62,7 @@ class SetsViewController: BaseViewController {
                                                         textColor: LookAndFeel.GlobalTintColor,
                                                         size: CGSize(width: 30, height: 30)) //UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
-        
-        viewModel.fetchData()
+        title = "Sets"
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -71,6 +70,11 @@ class SetsViewController: BaseViewController {
         
         if #available(iOS 11.0, *) {
             navigationItem.hidesSearchBarWhenScrolling = true
+        }
+        
+        if viewModel.isEmpty() {
+            viewModel.fetchData()
+            tableView.reloadData()
         }
     }
     
@@ -127,9 +131,10 @@ extension SetsViewController : UITableViewDataSource {
         var cell: UITableViewCell?
         
         if viewModel.isEmpty() {
-            guard let c = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.reuseIdentifier) as? EmptyTableViewCell else {
-                fatalError("\(EmptyTableViewCell.reuseIdentifier) is nil")
+            guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
+                fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
             }
+            c.mode = .noResultsFound
             cell = c
             
         } else {
@@ -180,21 +185,6 @@ extension SetsViewController : UITableViewDelegate {
             return SetsTableViewCell.cellHeight
         }
     }
-    
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let set = viewModel.object(forRowAt: indexPath)
-//        let sender = ["set": set,
-//                      "languageCode": "en"] as [String : Any]
-//        performSegue(withIdentifier: "showSet", sender: sender)
-//    }
-//    
-//    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-//        if viewModel.isEmpty() {
-//            return nil
-//        } else {
-//            return indexPath
-//        }
-//    }
 }
 
 // MARK: UISearchResultsUpdating

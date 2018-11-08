@@ -51,7 +51,9 @@ class BannedViewModel: NSObject {
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         request.predicate = NSPredicate(format: "id IN %@", cardLegalities.map { $0.card!.id })
         
-        let searchViewModel = SearchViewModel(withRequest: request, andTitle: formatName)
+        let searchViewModel = SearchViewModel(withRequest: request,
+                                              andTitle: formatName,
+                                              andMode: .loading)
         searchViewModel.queryString = queryString
         
         return searchViewModel

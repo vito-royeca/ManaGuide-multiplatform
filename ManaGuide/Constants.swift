@@ -13,11 +13,6 @@ import UIKit
 enum LookAndFeel {
     // #F92D51
     static let GlobalTintColor = UIColor(red:0.98, green:0.18, blue:0.32, alpha:1.0)
-
-    static let LoadingCardName     = "Stasis"
-    static let LoadingSetCode      = "LEA"
-    static let EmptySearchCardName = "Frantic Search"
-    static let EmptySearchSetCode  = "VMA"
 }
 
 // TCGPlayer

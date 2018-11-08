@@ -87,14 +87,11 @@ enum CardOtherDetailsSection : Int {
     case convertedManaCost
     case layout
     case number
-    case originalType
     case rarity
     case releaseDate
     case reservedList
     case setOnlineOnly
     case source
-    case subTypes
-    case superTypes
     
     var description : String {
         switch self {
@@ -105,19 +102,16 @@ enum CardOtherDetailsSection : Int {
         case .convertedManaCost: return "Converted Mana Cost"
         case .layout: return "Layout"
         case .number: return "Number"
-        case .originalType: return "Original Type"
         case .rarity: return "Rarity"
         case .releaseDate: return "Release Date"
         case .reservedList: return "Reserved List"
         case .setOnlineOnly: return "Set Online Only"
         case .source: return "Source"
-        case .subTypes: return "Subtypes"
-        case .superTypes: return "Supertypes"
         }
     }
     
     static var count: Int {
-        return 14
+        return 11
     }
 }
 
@@ -381,33 +375,49 @@ class CardViewModel: NSObject {
     func cardText(inRow row: Int, cardIndex index: Int, pointSize: CGFloat) -> NSAttributedString {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         var face: CMCard?
-        var contents = ""
+        let attributedString = NSMutableAttributedString()
         
         if let facesSet = card.faces,
             let faces = facesSet.allObjects as? [CMCard] {
-//            let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
-//                return a.faceOrder > b.faceOrder
-//            })
             if faces.count > 0 {
-                face = faces[index]
+                let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
+                    return a.faceOrder > b.faceOrder
+                })
+                face = orderedFaces[index]
             } else {
                 face = card
             }
         }
         
         if let face = face {
-            if let oracleText = face.oracleText {
-                contents.append(oracleText)
-            }
-            if let flavorText = face.flavorText {
-                if contents.count > 0 {
-                    contents.append("\n\n")
+            if let language = face.language,
+                let code = language.code {
+             
+                if code == "en" {
+                    if let oracleText = face.oracleText {
+                        attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
+                                                                   pointSize: pointSize))
+                    }
+                } else {
+                    if let oracleText = face.printedText {
+                        attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
+                                                                   pointSize: pointSize))
+                    }
                 }
-                contents.append(flavorText)
+                
+                if let flavorText = face.flavorText {
+                    if attributedString.string.count > 0 {
+                        attributedString.append(NSAttributedString(symbol: "\n",
+                                                                   pointSize: pointSize))
+                    }
+                    let attributes = [NSAttributedString.Key.font: UIFont(name: "TimesNewRomanPS-ItalicMT", size: pointSize)]
+                    attributedString.append(NSAttributedString(string: "\(flavorText)",
+                        attributes: attributes as [NSAttributedString.Key : Any]))
+                }
             }
+            
         }
-        return NSAttributedString(symbol: "\n\(contents)\n",
-                                  pointSize: pointSize)
+        return attributedString
     }
     
     func textOf(otherDetails: CardOtherDetailsSection) -> String {
@@ -450,11 +460,6 @@ class CardViewModel: NSObject {
             if let number = card.collectorNumber {
                 text = number
             }
-        case .originalType:
-            if let originalType = card.mtgjsonOriginalType,
-                let name = originalType.name{
-                text = name
-            }
         case .rarity:
             if let rarity = card.rarity {
                 text = rarity.name!
@@ -472,24 +477,6 @@ class CardViewModel: NSObject {
         case .source:
             if let source = card.source {
                 text = source
-            }
-        case .subTypes:
-            if let subtypes_ = card.mtgjsonSubtypes,
-                let s = subtypes_.allObjects as? [CMCardType] {
-                
-                let string = s.map({ $0.name! }).joined(separator: ", ")
-                if string.count > 0 {
-                    text = string
-                }
-            }
-        case .superTypes:
-            if let supertypes_ = card.mtgjsonSupertypes,
-                let s = supertypes_.allObjects as? [CMCardType] {
-                
-                let string = s.map({ $0.name! }).joined(separator: ", ")
-                if string.count > 0 {
-                    text = string
-                }
             }
         }
         
@@ -900,27 +887,8 @@ class CardViewModel: NSObject {
         dict["ImageURL"] = nil
         dict["CropURL"] = nil
         
-        var cardType: CMCardType?
-        if let types = card.mtgjsonTypes {
-            if types.count > 1 {
-                cardType = types.allObjects.first as? CMCardType
-                
-                for t in types.allObjects {
-                    if let t = t as? CMCardType {
-                        if t.name == "Creature" {
-                            cardType = t
-                        }
-                    }
-                }
-            } else {
-                if let type = types.allObjects.first as? CMCardType {
-                    cardType = type
-                }
-            }
-        }
-        
-        if let cardType = cardType {
-            dict["Type"] = cardType.name
+        if let type = card.typeLine {
+            dict["Type"] = type.name
         } else {
             dict["Type"] = ""
         }

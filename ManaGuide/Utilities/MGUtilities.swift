@@ -12,84 +12,6 @@ import Kanna
 import ManaKit
 
 class MGUtilities {
-    class func composeType(of card: CMCard, pointSize: CGFloat) -> NSMutableAttributedString {
-        let attributedString = NSMutableAttributedString()
-        var cardType: CMCardType?
-        var image: UIImage?
-        var text:String?
-        
-        if let types = card.mtgjsonTypes {
-            if types.count > 1 {
-                image = ManaKit.sharedInstance.symbolImage(name: "Multiple")
-                cardType = types.allObjects.first as? CMCardType
-                
-                for t in types.allObjects {
-                    if let t = t as? CMCardType {
-                        if t.name == "Creature" {
-                            cardType = t
-                        }
-                    }
-                }
-            } else {
-                if let type = types.allObjects.first as? CMCardType {
-                    cardType = type
-                }
-            }
-        }
-        
-        if let cardType = cardType {
-            if let name = cardType.name {
-                image = ManaKit.sharedInstance.symbolImage(name: name)
-            }
-        }
-        
-        // type
-        if let type = card.typeLine,
-            let cardType = cardType {
-            
-            text = " "
-            if let name = type.name {
-                text!.append(name)
-            }
-            if let name = cardType.name {
-                if name == "Creature" {
-                    if let power = card.power,
-                        let toughness = card.toughness {
-                        text!.append(" (\(power)/\(toughness))")
-                    }
-                }
-            }
-        }
-        
-        
-        if let image = image {
-            let imageAttachment =  NSTextAttachment()
-            imageAttachment.image = image
-            
-            let ratio = image.size.width / image.size.height
-            let height = CGFloat(17)
-            let width = ratio * height
-            var imageOffsetY = CGFloat(0)
-            
-            if height > pointSize {
-                imageOffsetY = -(height - pointSize) / 2.0
-            } else {
-                imageOffsetY = -(pointSize - height) / 2.0
-            }
-            
-            imageAttachment.bounds = CGRect(x: 0, y: imageOffsetY, width: width, height: height)
-            
-            let attachmentString = NSAttributedString(attachment: imageAttachment)
-            attributedString.append(attachmentString)
-        }
-        
-        if let text = text {
-            attributedString.append(NSAttributedString(string: text))
-        }
-        
-        return attributedString
-    }
-    
     class func composeOtherDetails(forCard card: CMCard) -> NSAttributedString {
         let attributedString = NSMutableAttributedString()
         
@@ -131,40 +53,6 @@ class MGUtilities {
         text = "\nColors Identity: "
         if let colorIdentities_ = card.colorIdentities {
             if let s = colorIdentities_.allObjects as? [CMCardColor] {
-                let string = s.map({ $0.name! }).joined(separator: ", ")
-                text.append(string.count > 0 ? string : "\u{2014}")
-            } else {
-                text.append("\u{2014}")
-            }
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
-        
-        text = "\nOriginal Type: "
-        if let originalType = card.mtgjsonOriginalType {
-            text.append(originalType.name!)
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
-        
-        text = "\nSubtypes: "
-        if let subtypes_ = card.mtgjsonSubtypes {
-            if let s = subtypes_.allObjects as? [CMCardType] {
-                let string = s.map({ $0.name! }).joined(separator: ", ")
-                text.append(string.count > 0 ? string : "\u{2014}")
-            } else {
-                text.append("\u{2014}")
-            }
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
-        
-        text = "\nSupertypes: "
-        if let supertypes_ = card.mtgjsonSupertypes {
-            if let s = supertypes_.allObjects as? [CMCardType] {
                 let string = s.map({ $0.name! }).joined(separator: ", ")
                 text.append(string.count > 0 ? string : "\u{2014}")
             } else {

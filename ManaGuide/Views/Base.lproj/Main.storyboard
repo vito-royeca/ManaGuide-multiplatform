@@ -1128,7 +1128,7 @@
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="200" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wbk-hl-1Ca">
                                                     <rect key="frame" x="66" y="6.9999999999999982" width="280" height="20.333333333333329"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                     <userDefinedRuntimeAttributes>
@@ -1142,25 +1142,22 @@
                                                         <constraint firstAttribute="width" constant="40" id="YsV-kN-Kky"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
                                                     </userDefinedRuntimeAttributes>
                                                 </label>
-                                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="156" translatesAutoresizingMaskIntoConstraints="NO" id="1vZ-yJ-2FI">
-                                                    <rect key="frame" x="66" y="30" width="325.33333333333331" height="17"/>
+                                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="1vZ-yJ-2FI">
+                                                    <rect key="frame" x="66" y="30" width="325" height="17"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" tag="400" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Release Date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gQa-up-Kj2">
-                                                            <rect key="frame" x="0.0" y="0.0" width="84.666666666666671" height="17"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" tag="400" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Released: 1993-01-01" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="150" translatesAutoresizingMaskIntoConstraints="NO" id="gQa-up-Kj2">
+                                                            <rect key="frame" x="0.0" y="0.0" width="162.66666666666666" height="17"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <label opaque="NO" userInteractionEnabled="NO" tag="500" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100 Cards" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="it4-rV-c9o">
-                                                            <rect key="frame" x="240.66666666666666" y="0.0" width="84.666666666666657" height="17"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" tag="500" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100 Cards" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="150" translatesAutoresizingMaskIntoConstraints="NO" id="it4-rV-c9o">
+                                                            <rect key="frame" x="162.66666666666663" y="0.0" width="162.33333333333337" height="17"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                     </subviews>
@@ -1174,9 +1171,6 @@
                                                             <state key="normal" title="EN">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
-                                                            <userDefinedRuntimeAttributes>
-                                                                <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
-                                                            </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <action selector="languageAction:" destination="eBC-aH-KIr" eventType="touchUpInside" id="Jd0-bo-m0b"/>
                                                             </connections>
@@ -1187,9 +1181,6 @@
                                                             <state key="normal" title="ES">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
-                                                            <userDefinedRuntimeAttributes>
-                                                                <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
-                                                            </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <action selector="languageAction:" destination="eBC-aH-KIr" eventType="touchUpInside" id="DAe-r7-qpR"/>
                                                             </connections>
@@ -1200,9 +1191,6 @@
                                                             <state key="normal" title="FR">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
-                                                            <userDefinedRuntimeAttributes>
-                                                                <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
-                                                            </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <action selector="languageAction:" destination="eBC-aH-KIr" eventType="touchUpInside" id="icl-Ei-NZo"/>
                                                             </connections>
@@ -1213,9 +1201,6 @@
                                                             <state key="normal" title="DE">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
-                                                            <userDefinedRuntimeAttributes>
-                                                                <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
-                                                            </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <action selector="languageAction:" destination="eBC-aH-KIr" eventType="touchUpInside" id="pgj-Ue-oL3"/>
                                                             </connections>
@@ -1226,9 +1211,6 @@
                                                             <state key="normal" title="IT">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
-                                                            <userDefinedRuntimeAttributes>
-                                                                <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
-                                                            </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <action selector="languageAction:" destination="eBC-aH-KIr" eventType="touchUpInside" id="aho-SA-Sxd"/>
                                                             </connections>
@@ -1239,9 +1221,6 @@
                                                             <state key="normal" title="PT">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
-                                                            <userDefinedRuntimeAttributes>
-                                                                <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
-                                                            </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <action selector="languageAction:" destination="eBC-aH-KIr" eventType="touchUpInside" id="bfW-Qr-99u"/>
                                                             </connections>
@@ -1252,9 +1231,6 @@
                                                             <state key="normal" title="JA">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
-                                                            <userDefinedRuntimeAttributes>
-                                                                <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
-                                                            </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <action selector="languageAction:" destination="eBC-aH-KIr" eventType="touchUpInside" id="6sJ-g2-HZ3"/>
                                                             </connections>
@@ -1265,9 +1241,6 @@
                                                             <state key="normal" title="KO">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
-                                                            <userDefinedRuntimeAttributes>
-                                                                <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
-                                                            </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <action selector="languageAction:" destination="eBC-aH-KIr" eventType="touchUpInside" id="Qvk-lW-h32"/>
                                                             </connections>
@@ -1278,9 +1251,6 @@
                                                             <state key="normal" title="RU">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
-                                                            <userDefinedRuntimeAttributes>
-                                                                <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
-                                                            </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <action selector="languageAction:" destination="eBC-aH-KIr" eventType="touchUpInside" id="cZh-Gc-Jrt"/>
                                                             </connections>
@@ -1291,9 +1261,6 @@
                                                             <state key="normal" title="汉语">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
-                                                            <userDefinedRuntimeAttributes>
-                                                                <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
-                                                            </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <action selector="languageAction:" destination="eBC-aH-KIr" eventType="touchUpInside" id="hmT-0D-g1x"/>
                                                             </connections>
@@ -1304,9 +1271,6 @@
                                                             <state key="normal" title="漢語">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
-                                                            <userDefinedRuntimeAttributes>
-                                                                <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
-                                                            </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <action selector="languageAction:" destination="eBC-aH-KIr" eventType="touchUpInside" id="hun-yK-iY3"/>
                                                             </connections>
@@ -1322,6 +1286,7 @@
                                                 <constraint firstAttribute="trailing" secondItem="Fmy-la-Xxl" secondAttribute="trailing" constant="23" id="Jh0-JZ-T3u"/>
                                                 <constraint firstItem="GOW-hf-ydl" firstAttribute="leading" secondItem="wls-KK-h5D" secondAttribute="trailing" constant="8" id="Mxv-ZD-laJ"/>
                                                 <constraint firstItem="1vZ-yJ-2FI" firstAttribute="leading" secondItem="wls-KK-h5D" secondAttribute="trailing" constant="8" id="NIH-Ds-gSl"/>
+                                                <constraint firstAttribute="trailing" secondItem="1vZ-yJ-2FI" secondAttribute="trailing" constant="23" id="QYu-A5-FUK"/>
                                                 <constraint firstItem="Wbk-hl-1Ca" firstAttribute="leading" secondItem="wls-KK-h5D" secondAttribute="trailing" constant="8" id="dZZ-Du-9Tx"/>
                                                 <constraint firstItem="GOW-hf-ydl" firstAttribute="top" secondItem="1vZ-yJ-2FI" secondAttribute="bottom" constant="3" id="lRo-fW-kpk"/>
                                                 <constraint firstItem="Fmy-la-Xxl" firstAttribute="leading" secondItem="Wbk-hl-1Ca" secondAttribute="trailing" constant="5" id="ouK-GC-pPx"/>
@@ -1786,15 +1751,21 @@
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="100" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Card Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MK4-SM-3Ez">
                                                     <rect key="frame" x="20" y="12" width="374" height="20"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
+                                                    </userDefinedRuntimeAttributes>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="200" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="CC" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5uh-tw-vfD">
                                                     <rect key="frame" x="20" y="12" width="374" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="adjustsFontSizeToFitWidth" value="YES"/>
+                                                    </userDefinedRuntimeAttributes>
                                                 </label>
                                             </subviews>
                                             <constraints>
@@ -1820,7 +1791,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Creature" translatesAutoresizingMaskIntoConstraints="NO" id="06Q-6p-Rtf">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Creature" translatesAutoresizingMaskIntoConstraints="NO" id="06Q-6p-Rtf">
                                                     <rect key="frame" x="20" y="12" width="20" height="20"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="20" id="B3s-Yn-QKK"/>
@@ -1829,6 +1800,9 @@
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Type" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gMZ-Fx-jir">
                                                     <rect key="frame" x="48" y="12" width="346" height="20"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="20" id="6gt-jc-Png"/>
+                                                    </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -1839,11 +1813,11 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="06Q-6p-Rtf" firstAttribute="leading" secondItem="F6B-Lb-aY2" secondAttribute="leading" constant="20" id="1Nv-Po-q25"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="gMZ-Fx-jir" secondAttribute="bottom" constant="1" id="OLO-ED-WW2"/>
+                                                <constraint firstItem="gMZ-Fx-jir" firstAttribute="top" secondItem="F6B-Lb-aY2" secondAttribute="topMargin" constant="1" id="Ucw-ow-N88"/>
+                                                <constraint firstItem="gMZ-Fx-jir" firstAttribute="leading" secondItem="06Q-6p-Rtf" secondAttribute="trailing" constant="8" id="cWP-fd-JsR"/>
                                                 <constraint firstItem="06Q-6p-Rtf" firstAttribute="top" secondItem="F6B-Lb-aY2" secondAttribute="top" constant="12" id="dCn-XM-sDc"/>
-                                                <constraint firstItem="gMZ-Fx-jir" firstAttribute="trailing" secondItem="F6B-Lb-aY2" secondAttribute="trailingMargin" id="ebm-vE-Sxc"/>
-                                                <constraint firstItem="gMZ-Fx-jir" firstAttribute="top" secondItem="F6B-Lb-aY2" secondAttribute="topMargin" constant="1" id="goI-tu-4iv"/>
-                                                <constraint firstItem="gMZ-Fx-jir" firstAttribute="leading" secondItem="06Q-6p-Rtf" secondAttribute="trailing" constant="8" id="qiv-jY-ZXO"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="gMZ-Fx-jir" secondAttribute="bottom" constant="1" id="j2C-fm-SPJ"/>
+                                                <constraint firstItem="gMZ-Fx-jir" firstAttribute="trailing" secondItem="F6B-Lb-aY2" secondAttribute="trailingMargin" id="uBR-k1-bzM"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>

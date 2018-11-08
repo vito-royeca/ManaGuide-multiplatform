@@ -93,7 +93,7 @@ class SetsViewModel: NSObject {
     
     func isEmpty() -> Bool {
         guard let objects = allObjects() else {
-            return false
+            return true
         }
         return objects.count == 0
     }
@@ -122,8 +122,11 @@ class SetsViewModel: NSObject {
         var setsOrderBy = defaults["setsOrderBy"] as! Bool
         _sectionName = defaults["setsSectionName"] as? String
         
-        
         if let values = values {
+            if let value = values["setsOrderBy"] as? Bool {
+                setsOrderBy = value
+            }
+            
             if let value = values["setsSortBy"] as? String {
                 setsSortBy = value
                 
@@ -132,15 +135,11 @@ class SetsViewModel: NSObject {
                     _sectionName = "myYearSection"
                 case "name":
                     _sectionName = "myNameSection"
-                case "type_.name":
-                    _sectionName = "setType.nameSection"
+                case "setType.name":
+                    _sectionName = "setType.name"
                 default:
                     ()
                 }
-            }
-            
-            if let value = values["setsOrderBy"] as? Bool {
-                setsOrderBy = value
             }
         }
         
@@ -196,7 +195,7 @@ class SetsViewModel: NSObject {
 
         switch sectionName {
         case "myNameSection",
-             "setType.nameSection":
+             "setType.name":
             _sectionIndexTitles = [String]()
             _sectionTitles = [String]()
         default:
@@ -211,7 +210,7 @@ class SetsViewModel: NSObject {
             switch sectionName {
             case "myNameSection":
                 prefix = set.myNameSection
-            case "setType.nameSection":
+            case "setType.name":
                 prefix = set.setType!.nameSection
             default:
                 ()

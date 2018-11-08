@@ -100,7 +100,7 @@ class AccountViewModel: NSObject {
             if let dict = value["favorites"] as? [String : Any] {
                 for (k,_) in dict {
                     if let card = ManaKit.sharedInstance.findObject("CMCard",
-                                                                 objectFinder: ["firebaseId": k as AnyObject],
+                                                                 objectFinder: ["firebaseID": k as AnyObject],
                                                                  createIfNotFound: false) as? CMCard {
                         user.addToFavorites(card)
                     }
@@ -125,7 +125,7 @@ class AccountViewModel: NSObject {
                 for (k,v) in dict {
                     if  let rating = v as? Double,
                         let card = ManaKit.sharedInstance.findObject("CMCard",
-                                                                    objectFinder: ["firebaseId": k as AnyObject],
+                                                                    objectFinder: ["firebaseID": k as AnyObject],
                                                                     createIfNotFound: false) as? CMCard,
                         let cardRating = ManaKit.sharedInstance.findObject("CMCardRating",
                                                                            objectFinder: ["user.id": userId as AnyObject,

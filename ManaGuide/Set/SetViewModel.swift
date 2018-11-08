@@ -42,7 +42,7 @@ class SetViewModel: NSObject {
         request.predicate = NSPredicate(format: "set.code = %@ AND language.code = %@", set.code!, languageCode)
         
         _set = set
-        _searchViewModel = SearchViewModel(withRequest: request, andTitle: set.name)
+        _searchViewModel = SearchViewModel(withRequest: request, andTitle: set.name, andMode: .loading)
     }
     
     // MARK: UITableView methods
@@ -122,7 +122,7 @@ class SetViewModel: NSObject {
     
     func isEmpty() -> Bool {
         guard let objects = allObjects() else {
-            return false
+            return true
         }
         return objects.count == 0
     }

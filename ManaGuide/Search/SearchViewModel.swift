@@ -8,12 +8,52 @@
 
 import CoreData
 import ManaKit
+import PromiseKit
+
+enum SearchViewModelMode: Int {
+    case standBy
+    case loading
+    case noResultsFound
+    case resultsFound
+    case error
+    
+    var cardArt: [String: String]? {
+        switch self {
+        case .standBy:
+            return ["setCode": "leb",
+                    "name": "Library of Leng"]
+        case .loading:
+            return ["setCode": "vma",
+                    "name": "Frantic Search"]
+        case .noResultsFound:
+            return ["setCode": "leg",
+                    "name": "Lost Soul"]
+        case .resultsFound:
+            return nil
+        case .error:
+            return ["setCode": "plc",
+                    "name": "Dismal Failure"]
+        }
+    }
+    
+    var description : String? {
+        switch self {
+        // Use Internationalization, as appropriate.
+        case .standBy: return "Ready"
+        case .loading: return "Loading..."
+        case .noResultsFound: return "No data found"
+        case .resultsFound: return nil
+        case .error: return "nil"
+        }
+    }
+}
 
 class SearchViewModel: NSObject {
     // MARK: Variables
     var queryString = ""
     var searchCancelled = false
-    
+    var mode: SearchViewModelMode = .loading
+
     private var _request: NSFetchRequest<CMCard>?
     private var _title: String?
     private var _sectionIndexTitles: [String]?
@@ -23,11 +63,12 @@ class SearchViewModel: NSObject {
     // MARK: Settings
     private var _sortDescriptors: [NSSortDescriptor]?
     
-//    // MARK: Init
-    init(withRequest request: NSFetchRequest<CMCard>?, andTitle title: String?) {
+    // MARK: Init
+    init(withRequest request: NSFetchRequest<CMCard>?, andTitle title: String?, andMode mode: SearchViewModelMode) {
         super.init()
         _request = request
         _title = title
+        self.mode = mode
     }
     
     // MARK: Presentation methods
@@ -237,16 +278,19 @@ class SearchViewModel: NSObject {
     
     func isEmpty() -> Bool {
         guard let objects = allObjects() else {
-            return false
+            return true
         }
         return objects.count == 0
     }
 
-    func fetchData() {
-        let newRequest = SearchRequestGenerator().createSearchRequest(query: queryString, oldRequest: _request)
-        
-        _fetchedResultsController = getFetchedResultsController(with: newRequest)
-        updateSections()
+    func fetchData() -> Promise<Void> {
+        return Promise { seal  in
+            let newRequest = SearchRequestGenerator().createSearchRequest(query: queryString, oldRequest: _request)
+            _fetchedResultsController = getFetchedResultsController(with: newRequest)
+            updateSections()
+            
+            seal.fulfill(())
+        }
     }
     
     // MARK: Private methods
@@ -260,6 +304,7 @@ class SearchViewModel: NSObject {
         } else {
             // create a default fetchRequest
             request = CMCard.fetchRequest()
+            request!.predicate = NSPredicate(format: "language.code = %@", "en")
             request!.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
                                         NSSortDescriptor(key: "collectorNumber", ascending: true)]
         }
@@ -289,7 +334,7 @@ class SearchViewModel: NSObject {
         guard let fetchedResultsController = _fetchedResultsController,
             let cards = fetchedResultsController.fetchedObjects,
             let sections = fetchedResultsController.sections else {
-                return
+            return
         }
         
         let searchGenerator = SearchRequestGenerator()

@@ -23,7 +23,7 @@ class CardTypeTableViewCell: UITableViewCell {
             }
             
             typeImage.image = ManaKit.sharedInstance.typeImage(ofCard: card)
-            typeLabel.text = ManaKit.sharedInstance.typeText(ofCard: card)
+            typeLabel.text = ManaKit.sharedInstance.typeText(ofCard: card, includePower: false)
         }
     }
 

@@ -48,7 +48,9 @@ class MoreViewController: BaseViewController {
                 return
             }
             
-            dest.viewModel = SearchViewModel(withRequest: request, andTitle: dict["title"] as? String)
+            dest.viewModel = SearchViewModel(withRequest: request,
+                                             andTitle: dict["title"] as? String,
+                                             andMode: .loading)
         }
     }
 

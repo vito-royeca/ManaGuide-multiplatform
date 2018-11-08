@@ -16,17 +16,17 @@ class MainViewController: UITabBarController {
 
         // Do any additional setup after loading the view.
         // setup the ViewModels
-        if let viewControllers = viewControllers {
-            for vc in viewControllers {
-                if let nvc = vc as? UINavigationController {
-                    for child in nvc.viewControllers {
-                        if let searchVC = child as? SearchViewController {
-                            searchVC.viewModel = SearchViewModel(withRequest: nil, andTitle: "Search")
-                        }
-                    }
-                }
-            }
-        }
+//        if let viewControllers = viewControllers {
+//            for vc in viewControllers {
+//                if let nvc = vc as? UINavigationController {
+//                    for child in nvc.viewControllers {
+//                        if let searchVC = child as? SearchViewController {
+//                            searchVC.viewModel = SearchViewModel(withRequest: nil, andTitle: "Search")
+//                        }
+//                    }
+//                }
+//            }
+//        }
         
         guard let items = tabBar.items else {
             return

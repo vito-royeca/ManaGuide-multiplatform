@@ -116,12 +116,6 @@ class FeaturedViewController: BaseViewController {
             
             dest.viewModel = SetViewModel(withSet: set, languageCode: "en")
 
-        } else if segue.identifier == "showSets" {
-            guard let dest = segue.destination as? SetsViewController else {
-                return
-            }
-            
-            dest.title = "Sets"
         }
     }
 
@@ -187,7 +181,7 @@ extension FeaturedViewController : UITableViewDataSource {
             guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell"),
                 let titleLabel = c.viewWithTag(100) as? UILabel,
                 let showAllButton = c.viewWithTag(200) as? UIButton else {
-                return UITableViewCell(frame: CGRect.zero)
+                fatalError("SliderCell not found")
             }
             
             titleLabel.text = FeaturedSection.latestSets.description

@@ -38,9 +38,9 @@ class CardGridTableViewCell: UITableViewCell {
         collectionView.register(UICollectionReusableView.self,
                                 forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                                 withReuseIdentifier: "HeaderEmpty")
-        collectionView.register(UINib(nibName: "EmptyCollectionViewCell",
+        collectionView.register(UINib(nibName: "SearchModeCollectionViewCell",
                                       bundle: nil),
-                                forCellWithReuseIdentifier: EmptyCollectionViewCell.reuseIdentifier)
+                                forCellWithReuseIdentifier: SearchModeCollectionViewCell.reuseIdentifier)
         collectionView.register(UINib(nibName: "CardImageCollectionViewCell",
                                       bundle: nil),
                                 forCellWithReuseIdentifier: CardImageCollectionViewCell.reuseIdentifier)
@@ -86,15 +86,8 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: UICollectionViewCell?
         
-        if viewModel.isEmpty() {
-            guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: EmptyCollectionViewCell.reuseIdentifier, for: indexPath) as? EmptyCollectionViewCell else {
-                fatalError("\(EmptyCollectionViewCell.reuseIdentifier) is nil")
-            }
-            if imageType == .artCrop {
-                c.noDataLabel.font = UIFont(name: "Beleren", size: 15.0)
-            }
-            cell = c
-        } else {
+        switch viewModel.mode {
+        case .resultsFound:
             guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: CardImageCollectionViewCell.reuseIdentifier, for: indexPath) as? CardImageCollectionViewCell else {
                 fatalError("\(CardImageCollectionViewCell.reuseIdentifier) is nil")
             }
@@ -103,6 +96,17 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
             c.imageType = imageType
             c.animationOptions = animationOptions
             c.card = card
+            cell = c
+            
+        default:
+            guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: SearchModeCollectionViewCell.reuseIdentifier,
+                                                             for: indexPath) as? SearchModeCollectionViewCell else {
+                                                                fatalError("\(SearchModeCollectionViewCell.reuseIdentifier) is nil")
+            }
+            if imageType == .artCrop {
+                c.messageLabel.font = UIFont(name: "Beleren", size: 15.0)
+            }
+            c.mode = viewModel.mode
             cell = c
         }
         

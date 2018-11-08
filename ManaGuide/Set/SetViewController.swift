@@ -78,9 +78,9 @@ class SetViewController: BaseViewController {
                                                         size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
         
-        tableView.register(UINib(nibName: "EmptyTableViewCell",
+        tableView.register(UINib(nibName: "SearchModeTableViewCell",
                                  bundle: nil),
-                           forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
+                           forCellReuseIdentifier: SearchModeTableViewCell.reuseIdentifier)
         tableView.register(UINib(nibName: "CardGridTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: CardGridTableViewCell.reuseIdentifier)
@@ -135,7 +135,9 @@ class SetViewController: BaseViewController {
                 return
             }
             
-            dest.viewModel = SearchViewModel(withRequest: request, andTitle: "Search Results")
+            dest.viewModel = SearchViewModel(withRequest: request,
+                                             andTitle: "Search Results",
+                                             andMode: .loading)
         }
     }
     
@@ -228,9 +230,10 @@ extension SetViewController : UITableViewDataSource {
             switch displayBy {
             case "list":
                 if viewModel.isEmpty() {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.reuseIdentifier) as? EmptyTableViewCell else {
-                        fatalError("\(EmptyTableViewCell.reuseIdentifier) is nil")
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
+                        fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
                     }
+                    c.mode = .noResultsFound
                     cell = c
                     
                 } else {
@@ -442,7 +445,9 @@ extension SetViewController : UIWebViewDelegate {
                 } else if results.count > 1 {
                     performSegue(withIdentifier: "showSearch", sender: request)
                 } else {
-                    let alertVC = UIAlertController(title: "Card Not found", message: "The card: \(cardName) was not found in the database", preferredStyle: .alert)
+                    let alertVC = UIAlertController(title: "Card Not found",
+                                                    message: "The card: \(cardName) was not found in the database",
+                                                    preferredStyle: .alert)
                     let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
                     alertVC.addAction(okAction)
                     present(alertVC, animated: true, completion: nil)

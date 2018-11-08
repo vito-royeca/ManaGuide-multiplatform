@@ -12,6 +12,9 @@ import ManaKit
 class CardNameTableViewCell: UITableViewCell {
 
     static let reuseIdentifier = "CardNameCell"
+    let preEightEdition      = UIFont(name: "Magic:the Gathering", size: 20.0)
+    let eightEdition         = UIFont(name: "Matrix-Bold", size: 20.0)
+    let magic2015            = UIFont(name: "Beleren", size: 20.0)
     
     // MARK: Variables
     var card: CMCard? {
@@ -31,24 +34,12 @@ class CardNameTableViewCell: UITableViewCell {
                 if let m15Date = formatter.date(from: "2014-07-18"),
                     let setReleaseDate = formatter.date(from: releaseDate) {
                     
-                    var shadowColor:UIColor?
-                    var shadowOffset = CGSize(width: 0, height: -1)
-                    
                     if setReleaseDate.compare(m15Date) == .orderedSame ||
                         setReleaseDate.compare(m15Date) == .orderedDescending {
-                        nameLabel.font = ManaKit.Fonts.magic2015
-                        
+                        nameLabel.font = magic2015
                     } else {
-                        nameLabel.font = isModern ? ManaKit.Fonts.eightEdition : ManaKit.Fonts.preEightEdition
-                        
-                        if !isModern {
-                            shadowColor = UIColor.darkGray
-                            shadowOffset = CGSize(width: 1, height: 1)
-                        }
+                        nameLabel.font = isModern ? eightEdition : preEightEdition
                     }
-                    
-                    nameLabel.shadowColor = shadowColor
-                    nameLabel.shadowOffset = shadowOffset
                 }
             }
             

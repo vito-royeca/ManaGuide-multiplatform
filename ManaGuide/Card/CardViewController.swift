@@ -113,14 +113,14 @@ class CardViewController: BaseViewController {
         tableView.register(UINib(nibName: "CardGridTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: CardGridTableViewCell.reuseIdentifier)
-        tableView.register(UINib(nibName: "EmptyTableViewCell",
+        tableView.register(UINib(nibName: "SearchModeTableViewCell",
                                  bundle: nil),
-                           forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
+                           forCellReuseIdentifier: SearchModeTableViewCell.reuseIdentifier)
         tableView.register(UINib(nibName: "StoreTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: StoreTableViewCell.reuseIdentifier)
 
-        title = "Image"
+        title = viewModel.content.description
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -202,7 +202,9 @@ class CardViewController: BaseViewController {
                 return
             }
             
-            dest.viewModel = SearchViewModel(withRequest: request, andTitle: dict["title"] as? String)
+            dest.viewModel = SearchViewModel(withRequest: request,
+                                             andTitle: dict["title"] as? String,
+                                             andMode: .loading)
             
         } else if segue.identifier == "showLogin" {
             guard let dest = segue.destination as? UINavigationController,
@@ -397,7 +399,9 @@ class CardViewController: BaseViewController {
     }
     
     func setupCardGridCell(cell: CardGridTableViewCell, withRequest request: NSFetchRequest<CMCard>) {
-        let vm = SearchViewModel(withRequest: request, andTitle: nil)
+        let vm = SearchViewModel(withRequest: request,
+                                 andTitle: nil,
+                                 andMode: .loading)
         let width = CGFloat(138)
         let height = CGFloat(100)
         
@@ -457,6 +461,7 @@ class CardViewController: BaseViewController {
                 }
             }
             c.textLabel?.textAlignment = .right
+            c.textLabel?.font = UIFont.boldSystemFont(ofSize: 17)
             c.selectionStyle = .none
             c.accessoryType = .none
             return c
@@ -687,9 +692,10 @@ extension CardViewController : UITableViewDataSource {
                     c.accessoryType = .none
                     cell = c
                 } else {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.reuseIdentifier) as? EmptyTableViewCell else {
-                        fatalError("\(EmptyTableViewCell.reuseIdentifier) is nil")
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
+                        fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
                     }
+                    c.mode = .noResultsFound
                     cell = c
                 }
                 

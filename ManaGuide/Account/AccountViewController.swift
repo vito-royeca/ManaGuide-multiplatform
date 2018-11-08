@@ -72,7 +72,8 @@ class AccountViewController: BaseViewController {
             }
             
             dest.viewModel = SearchViewModel(withRequest: request,
-                                             andTitle: dict["title"] as? String)
+                                             andTitle: dict["title"] as? String,
+                                             andMode: .loading)
             dest.delegate = self
         } else if segue.identifier == "showDecks" {
             guard let dest = segue.destination as? DecksViewController else {
@@ -299,13 +300,16 @@ extension AccountViewController: SearchViewControllerDelegate {
         switch viewModel.accountSection {
         case .favorites:
             return SearchViewModel(withRequest: favoritesRequest(),
-                                   andTitle: "Favorites")
+                                   andTitle: "Favorites",
+                                   andMode: .loading)
         case .ratedCards:
             return SearchViewModel(withRequest: ratedCardsRequest(),
-                                   andTitle: "Rated Cards")
+                                   andTitle: "Rated Cards",
+                                   andMode: .loading)
         default:
             return SearchViewModel(withRequest: favoritesRequest(),
-                                   andTitle: "Favorites")
+                                   andTitle: "Favorites",
+                                   andMode: .loading)
         }
     }
 }

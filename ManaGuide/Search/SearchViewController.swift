@@ -20,7 +20,9 @@ protocol SearchViewControllerDelegate: NSObjectProtocol {
 
 class SearchViewController: BaseViewController {
     // MARK: Variables
-    var viewModel: SearchViewModel!
+    var viewModel = SearchViewModel(withRequest: nil,
+                                    andTitle: "Search",
+                                    andMode: .standBy)
     var delegate: SearchViewControllerDelegate?
     let searchController = UISearchController(searchResultsController: nil)
     
@@ -57,9 +59,9 @@ class SearchViewController: BaseViewController {
             tableView.tableHeaderView = searchController.searchBar
         }
         
-        tableView.register(UINib(nibName: "EmptyTableViewCell",
+        tableView.register(UINib(nibName: "SearchModeTableViewCell",
                                  bundle: nil),
-                           forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
+                           forCellReuseIdentifier: SearchModeTableViewCell.reuseIdentifier)
         tableView.register(UINib(nibName: "CardGridTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: CardGridTableViewCell.reuseIdentifier)
@@ -68,7 +70,6 @@ class SearchViewController: BaseViewController {
         tableView.keyboardDismissMode = .onDrag
         
         title = viewModel.getSearchTitle()
-        viewModel.fetchData()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -157,19 +158,13 @@ class SearchViewController: BaseViewController {
     @objc func updateSettings(_ notification: Notification) {
         let searchGenerator = SearchRequestGenerator()
         searchGenerator.syncValues(notification)
-        
-        DispatchQueue.main.async {
-            self.updateDataDisplay()
-        }
+        updateDataDisplay()
     }
     
     @objc func updateData(_ notification: Notification) {
         if let delegate = delegate {
             viewModel = delegate.reloadViewModel()
-            
-            DispatchQueue.main.async {
-                self.updateDataDisplay()
-            }
+            updateDataDisplay()
         }
     }
     
@@ -182,19 +177,38 @@ class SearchViewController: BaseViewController {
             tableView?.tableHeaderView = searchController.searchBar
         }
         
-        viewModel.fetchData()
-        tableView?.reloadData()
-        
-        guard let cell = tableView?.cellForRow(at: IndexPath(row: 0, section: 0)) as? CardGridTableViewCell else {
-            return
+        if viewModel.mode == .loading {
+            firstly {
+                viewModel.fetchData()
+            }.done {
+                self.viewModel.mode = self.viewModel.isEmpty() ? .noResultsFound : .resultsFound
+                self.reloadTable()
+            }.catch { error in
+                self.viewModel.mode = .error
+                self.reloadTable()
+            }
+        } else {
+            reloadTable()
         }
-        cell.collectionView.reloadData()
     }
     
     @objc func doSearch() {
         viewModel.queryString = searchController.searchBar.text ?? ""
-        viewModel.fetchData()
+        viewModel.mode = .loading
+        reloadTable()
         
+        firstly {
+            viewModel.fetchData()
+        }.done {
+            self.viewModel.mode = self.viewModel.isEmpty() ? (self.viewModel.queryString.isEmpty ? .standBy : .noResultsFound) : .resultsFound
+            self.reloadTable()
+        }.catch { error in
+            self.viewModel.mode = .error
+            self.reloadTable()
+        }
+    }
+    
+    private func reloadTable() {
         let searchGenerator = SearchRequestGenerator()
         guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
             return
@@ -213,18 +227,18 @@ class SearchViewController: BaseViewController {
 // MARK: UITableViewDataSource
 extension SearchViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if viewModel.isEmpty() {
-            return 1
-        } else {
+        if viewModel.mode == .resultsFound {
             return viewModel.numberOfRows(inSection: section)
+        } else {
+            return 1
         }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if viewModel.isEmpty() {
-            return 1
-        } else {
+        if viewModel.mode == .resultsFound {
             return viewModel.numberOfSections()
+        } else {
+            return 1
         }
     }
 
@@ -236,18 +250,19 @@ extension SearchViewController : UITableViewDataSource {
         
         switch displayBy {
         case "list":
-            if viewModel.isEmpty() {
-                guard let c = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.reuseIdentifier) as? EmptyTableViewCell else {
-                    fatalError("\(EmptyTableViewCell.reuseIdentifier) is nil")
-                }
-                cell = c
-                
-            } else {
+            switch viewModel.mode {
+            case .resultsFound:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell else {
                     fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
                 }
-                let card = viewModel!.object(forRowAt: indexPath)
+                let card = viewModel.object(forRowAt: indexPath)
                 c.card = card
+                cell = c
+            default:
+                guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
+                    fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
+                }
+                c.mode = viewModel.mode
                 cell = c
             }
             
@@ -283,26 +298,26 @@ extension SearchViewController : UITableViewDataSource {
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        if viewModel.isEmpty() {
-            return nil
-        } else {
+        if viewModel.mode == .resultsFound {
             return viewModel.sectionIndexTitles()
+        } else {
+            return nil
         }
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        if viewModel.isEmpty() {
-            return 0
-        } else {
+        if viewModel.mode == .resultsFound {
             return viewModel.sectionForSectionIndexTitle(title: title, at: index)
+        } else {
+            return 0
         }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if viewModel.isEmpty() {
-            return nil
-        } else {
+        if viewModel.mode == .resultsFound {
             return viewModel.titleForHeaderInSection(section: section)
+        } else {
+            return nil
         }
     }
 }
@@ -319,10 +334,10 @@ extension SearchViewController : UITableViewDelegate {
         
         switch displayBy {
         case "list":
-            if viewModel.isEmpty() {
-                height = tableView.frame.size.height / 3
-            } else {
+            if viewModel.mode == .resultsFound {
                 height = CardTableViewCell.cellHeight
+            } else {
+                height = tableView.frame.size.height / 3
             }
         case "grid":
             height = tableView.frame.size.height
@@ -347,10 +362,10 @@ extension SearchViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if viewModel.isEmpty() {
-            return nil
-        } else {
+        if viewModel.mode == .resultsFound {
             return indexPath
+        } else {
+            return nil
         }
     }
 }
@@ -363,7 +378,7 @@ extension SearchViewController : UISearchResultsUpdating {
     }
 }
 
-// MARK: UISearchResultsUpdating
+// MARK: UISearchBarDelegate
 extension SearchViewController : UISearchBarDelegate {
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         viewModel.searchCancelled = false

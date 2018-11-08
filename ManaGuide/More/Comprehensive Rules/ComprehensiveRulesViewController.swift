@@ -37,9 +37,9 @@ class ComprehensiveRulesViewController: BaseViewController {
         tableView.register(UINib(nibName: "DynamicHeightTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: DynamicHeightTableViewCell.reuseIdentifier)
-        tableView.register(UINib(nibName: "EmptyTableViewCell",
+        tableView.register(UINib(nibName: "SearchModeTableViewCell",
                                  bundle: nil),
-                           forCellReuseIdentifier: EmptyTableViewCell.reuseIdentifier)
+                           forCellReuseIdentifier: SearchModeTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
 
         viewModel.fetchData()
@@ -106,8 +106,8 @@ extension ComprehensiveRulesViewController : UITableViewDataSource {
         var cell: UITableViewCell?
         
         if viewModel.isEmpty() {
-            guard let c = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.reuseIdentifier) as? EmptyTableViewCell else {
-                fatalError("\(EmptyTableViewCell.reuseIdentifier) is nil")
+            guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
+                fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
             }
             cell = c
             
