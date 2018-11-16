@@ -399,21 +399,31 @@ class CardViewController: BaseViewController {
     }
     
     func setupCardGridCell(cell: CardGridTableViewCell, withRequest request: NSFetchRequest<CMCard>) {
-        let vm = SearchViewModel(withRequest: request,
-                                 andTitle: nil,
-                                 andMode: .loading)
+        
         let width = CGFloat(138)
         let height = CGFloat(100)
         
-        vm.fetchData()
-        cell.viewModel = vm
         cell.delegate = self
         cell.imageType = .artCrop
         cell.animationOptions = .transitionCrossDissolve
         cell.flowLayout.itemSize = CGSize(width: width, height: height)
         cell.flowLayout.minimumInteritemSpacing = CGFloat(10)
         cell.flowLayout.scrollDirection = .horizontal
-        cell.collectionView.reloadData()
+        
+        let vm = SearchViewModel(withRequest: request,
+                                 andTitle: nil,
+                                 andMode: .loading)
+        cell.viewModel = vm
+        
+        firstly {
+            vm.fetchData()
+        }.done {
+            vm.mode = vm.isEmpty() ? .noResultsFound : .resultsFound
+            cell.collectionView.reloadData()
+        }.catch { error in
+            vm.mode = .error
+            cell.collectionView.reloadData()
+        }
     }
     
     func createMainDataCell(forCard card: CMCard, inRow row: Int) -> UITableViewCell {
@@ -489,7 +499,8 @@ extension CardViewController : UITableViewDataSource {
             
             switch indexPath.section {
             case CardImageSection.pricing.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardPricingTableViewCell.reuseIdentifier, for: indexPath ) as? CardPricingTableViewCell else {
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardPricingTableViewCell.reuseIdentifier,
+                                                            for: indexPath ) as? CardPricingTableViewCell else {
                     fatalError("CardPricingTableViewCell not found")
                 }
                 
@@ -517,7 +528,8 @@ extension CardViewController : UITableViewDataSource {
                 cell = c
                 
             case CardImageSection.actions.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardActionsTableViewCell.reuseIdentifier, for: indexPath) as? CardActionsTableViewCell else {
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardActionsTableViewCell.reuseIdentifier,
+                                                            for: indexPath) as? CardActionsTableViewCell else {
                     fatalError("ActionsTableViewCell not found")
                 }
                 
@@ -528,7 +540,7 @@ extension CardViewController : UITableViewDataSource {
                                                                   style: viewModel.isCurrentCardFavorite() ? .solid : .regular,
                                                                   textColor: LookAndFeel.GlobalTintColor,
                                                                   size: CGSize(width: 30, height: 30)),
-                                          for: .normal)
+                                                                  for: .normal)
                 c.viewsLabel.text = "\u{f06e} \(card.firebaseViews)"
                 cell = c
                 
@@ -556,7 +568,8 @@ extension CardViewController : UITableViewDataSource {
                     }
 
             case CardDetailsSection.set.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardSetTableViewCell.reuseIdentifier) as? CardSetTableViewCell else {
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardSetTableViewCell.reuseIdentifier,
+                                                            for: indexPath) as? CardSetTableViewCell else {
                     fatalError("\(CardSetTableViewCell.reuseIdentifier) is nil")
                 }
                 c.card = card
@@ -579,22 +592,25 @@ extension CardViewController : UITableViewDataSource {
                 c.accessoryType = .disclosureIndicator
                 cell = c
             
+            case CardDetailsSection.parts.rawValue:
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
+                                                            for: indexPath) as? CardGridTableViewCell else {
+                                                                fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
+                }
+                setupCardGridCell(cell: c, withRequest: viewModel.requestForParts())
+                cell = c
+
             case CardDetailsSection.variations.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
+                                                            for: indexPath) as? CardGridTableViewCell else {
                     fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                 }
                 setupCardGridCell(cell: c, withRequest: viewModel.requestForVariations())
                 cell = c
                 
-            case CardDetailsSection.parts.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
-                    fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
-                }
-                setupCardGridCell(cell: c, withRequest: viewModel.requestForParts())
-                cell = c
-                
             case CardDetailsSection.otherPrintings.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
+                                                            for: indexPath) as? CardGridTableViewCell else {
                     fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                 }
                 setupCardGridCell(cell: c, withRequest: viewModel.requestForOtherPrintings())
@@ -602,7 +618,8 @@ extension CardViewController : UITableViewDataSource {
                 
             case CardDetailsSection.rulings.rawValue:
                 if viewModel.numberOfRulings() == 0 {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
+                                                                for: indexPath) as? CardGridTableViewCell else {
                         fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                     }
                     let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
@@ -610,7 +627,8 @@ extension CardViewController : UITableViewDataSource {
                     setupCardGridCell(cell: c, withRequest: request)
                     cell = c
                 } else {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell else {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier,
+                                                                for: indexPath) as? DynamicHeightTableViewCell else {
                         fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
                     }
                     c.dynamicLabel.attributedText = viewModel.rulingText(inRow: indexPath.row,
@@ -621,7 +639,8 @@ extension CardViewController : UITableViewDataSource {
                 }
             case CardDetailsSection.legalities.rawValue:
                 if viewModel.numberOfLegalities() == 0 {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
+                                                                for: indexPath) as? CardGridTableViewCell else {
                         fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                     }
                     let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
@@ -678,7 +697,8 @@ extension CardViewController : UITableViewDataSource {
             
             if count == 0 {
                 if storePricing.lastUpdate == nil {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell else {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier,
+                                                                for: indexPath) as? DynamicHeightTableViewCell else {
                         fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
                     }
                     c.dynamicLabel.attributedText = NSAttributedString(html: "<html><center>Loading...</center></html>")
@@ -692,7 +712,8 @@ extension CardViewController : UITableViewDataSource {
                     c.accessoryType = .none
                     cell = c
                 } else {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier,
+                                                                for: indexPath) as? SearchModeTableViewCell else {
                         fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
                     }
                     c.mode = .noResultsFound
@@ -716,7 +737,8 @@ extension CardViewController : UITableViewDataSource {
                     cell = c
                     
                 } else {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell,
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier,
+                                                                for: indexPath) as? DynamicHeightTableViewCell,
                         let storePricing = card.tcgplayerStorePricing,
                         let note = storePricing.notes else {
                         fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")

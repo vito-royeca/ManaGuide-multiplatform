@@ -68,45 +68,60 @@ class TopRatedViewModel: NSObject {
         return fetchedResultsController.object(at: indexPath)
     }
     
-    func fetchData() {
-        let ref = Database.database().reference().child("cards")
-        _firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Rating).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopRated)
-        
-        ref.keepSynced(true)
-        
-        // observe changes in Firebase
-        _firebaseQuery!.observe(.value, with: { snapshot in
-            for child in snapshot.children {
-                if let c = child as? DataSnapshot {
-                    let fcard = FCCard(snapshot: c)
+    func allObjects() -> [CMCard]? {
+        guard let fetchedResultsController = _fetchedResultsController else {
+            return nil
+        }
+        return fetchedResultsController.fetchedObjects
+    }
+    
+    func isEmpty() -> Bool {
+        guard let objects = allObjects() else {
+            return true
+        }
+        return objects.count == 0
+    }
+    
+    func fetchRemoteData() -> Promise<Void> {
+        return Promise { seal in
+            let ref = Database.database().reference().child("cards")
+            _firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Rating).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopRated)
             
-                    
-                    if let card = ManaKit.sharedInstance.findObject("CMCard",
-                                                                    objectFinder: ["firebaseID": c.key as AnyObject],
-                                                                    createIfNotFound: false) as? CMCard {
-                        card.firebaseRating = fcard.rating == nil ? 0 : fcard.rating!
-                        card.firebaseRatings = fcard.ratings == nil ? Int32(0) : Int32(fcard.ratings!.count)
+            ref.keepSynced(true)
+            
+            // observe changes in Firebase
+            _firebaseQuery!.observe(.value, with: { snapshot in
+                for child in snapshot.children {
+                    if let c = child as? DataSnapshot {
+                        let fcard = FCCard(snapshot: c)
+                
+                        
+                        if let card = ManaKit.sharedInstance.findObject("CMCard",
+                                                                        objectFinder: ["firebaseID": c.key as AnyObject],
+                                                                        createIfNotFound: false) as? CMCard {
+                            card.firebaseRating = fcard.rating == nil ? 0 : fcard.rating!
+                            card.firebaseRatings = fcard.ratings == nil ? Int32(0) : Int32(fcard.ratings!.count)
+                        }
                     }
                 }
-            }
-            
-            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                // save to Core Data
-                try! backgroundContext.save()
-            
-                // refresh data
-                let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-                request.predicate = NSPredicate(format: "firebaseRating > 0")
-                request.fetchLimit = 10
-                request.sortDescriptors = self.sortDescriptors
-                self._fetchedResultsController = self.getFetchedResultsController(with: request)
                 
-                // notify changes
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
-                                                object: nil,
-                                                userInfo: nil)
-            }
-        })
+                ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                    // save to Core Data
+                    try! backgroundContext.save()
+                    
+                    seal.fulfill(())
+                }
+            })
+        }
+    }
+    
+    func fetchData() {
+        // refresh data
+        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+        request.predicate = NSPredicate(format: "firebaseRating > 0")
+        request.fetchLimit = 10
+        request.sortDescriptors = self.sortDescriptors
+        self._fetchedResultsController = self.getFetchedResultsController(with: request)
     }
     
     func stopMonitoring() {

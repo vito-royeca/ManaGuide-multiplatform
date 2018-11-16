@@ -29,8 +29,6 @@ class FeaturedViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        latestSetsViewModel.fetchData()
-        
         NotificationCenter.default.removeObserver(self,
                                                   name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                   object: nil)
@@ -46,6 +44,10 @@ class FeaturedViewController: BaseViewController {
                                                selector: #selector(reloadTopViewed(_:)),
                                                name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
                                                object: nil)
+        
+        latestSetsViewModel.fetchData()
+        topRatedViewModel.fetchData()
+        topViewedViewModel.fetchData()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -56,8 +58,6 @@ class FeaturedViewController: BaseViewController {
         }
         
         cell.startSlideShow()
-        topRatedViewModel.fetchData()
-        topViewedViewModel.fetchData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -69,6 +69,7 @@ class FeaturedViewController: BaseViewController {
         
         cell.stopSlideShow()
         topRatedViewModel.stopMonitoring()
+        topViewedViewModel.stopMonitoring()
     }
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
@@ -153,6 +154,19 @@ class FeaturedViewController: BaseViewController {
     @objc func showAllSets(_ sender: UIButton) {
         performSegue(withIdentifier: "showSets", sender: nil)
     }
+    
+    func setup(collectionView: UICollectionView, itemSize: CGSize, tag: Int) {
+        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            flowLayout.itemSize = itemSize
+            flowLayout.scrollDirection = .horizontal
+            flowLayout.minimumInteritemSpacing = CGFloat(5)
+            flowLayout.sectionInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 0)
+        }
+        
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.tag = tag
+    }
 }
 
 // MARK: UITableViewDataSource
@@ -160,7 +174,6 @@ extension FeaturedViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return FeaturedSection.count
     }
-    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell:UITableViewCell?
@@ -196,19 +209,12 @@ extension FeaturedViewController : UITableViewDataSource {
             }
             
             if let collectionView = collectionView {
-                if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                    let divisor = CGFloat(UIDevice.current.userInterfaceIdiom == .phone ? 3 : 4)
-                    let width = (view.frame.size.width / divisor) - 20
-                    flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
-                    flowLayout.scrollDirection = .horizontal
-                    flowLayout.minimumInteritemSpacing = CGFloat(5)
-                    flowLayout.sectionInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 0)
-                }
-                
-                collectionView.dataSource = self
-                collectionView.delegate = self
-                collectionView.tag = FeaturedSection.latestSets.rawValue
-                collectionView.reloadData()
+                let divisor = CGFloat(UIDevice.current.userInterfaceIdiom == .phone ? 3 : 4)
+                let width = (view.frame.size.width / divisor) - 20
+                let itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
+                setup(collectionView: collectionView,
+                      itemSize: itemSize,
+                      tag: FeaturedSection.latestSets.rawValue)
             }
             
             cell = c
@@ -232,17 +238,21 @@ extension FeaturedViewController : UITableViewDataSource {
             }
             
             if let collectionView = collectionView {
-                if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                    let width = flowLayoutHeight + (flowLayoutHeight / 2)
-                    flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
-                    flowLayout.scrollDirection = .horizontal
-                    flowLayout.minimumInteritemSpacing = CGFloat(5)
-                    flowLayout.sectionInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 0)
-                }
+                let width = flowLayoutHeight + (flowLayoutHeight / 2)
+                let itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
+                setup(collectionView: collectionView,
+                      itemSize: itemSize,
+                      tag: FeaturedSection.topRated.rawValue)
                 
-                collectionView.dataSource = self
-                collectionView.delegate = self
-                collectionView.tag = FeaturedSection.topRated.rawValue
+                if topRatedViewModel.isEmpty() {
+                    firstly {
+                        topRatedViewModel.fetchRemoteData()
+                    }.done {
+                        collectionView.reloadData()
+                    }.catch { error in
+                        print("\(error)")
+                    }
+                }
             }
             cell = c
             
@@ -265,17 +275,21 @@ extension FeaturedViewController : UITableViewDataSource {
             }
             
             if let collectionView = collectionView {
-                if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                    let width = flowLayoutHeight + (flowLayoutHeight / 2)
-                    flowLayout.itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
-                    flowLayout.scrollDirection = .horizontal
-                    flowLayout.minimumInteritemSpacing = CGFloat(5)
-                    flowLayout.sectionInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 0)
-                }
+                let width = flowLayoutHeight + (flowLayoutHeight / 2)
+                let itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
+                setup(collectionView: collectionView,
+                      itemSize: itemSize,
+                      tag: FeaturedSection.topViewed.rawValue)
                 
-                collectionView.dataSource = self
-                collectionView.delegate = self
-                collectionView.tag = FeaturedSection.topViewed.rawValue
+                if topViewedViewModel.isEmpty() {
+                    firstly {
+                        topViewedViewModel.fetchRemoteData()
+                    }.done {
+                        collectionView.reloadData()
+                    }.catch { error in
+                        print("\(error)")
+                    }
+                }
             }
             cell = c
             

@@ -43,8 +43,8 @@ enum CardDetailsSection : Int {
     case mainData
     case set
     case artist
-    case variations
     case parts
+    case variations
     case otherPrintings
     case rulings
     case legalities
@@ -56,8 +56,8 @@ enum CardDetailsSection : Int {
         case .mainData: return "Main Data"
         case .set: return "Set"
         case .artist: return "Artist"
-        case .variations: return "Variations"
         case .parts: return "Faces, Tokens, & Other Parts"
+        case .variations: return "Variations"
         case .otherPrintings: return "Other Printings"
         case .rulings: return "Rulings"
         case .legalities: return "Legalities"
@@ -82,31 +82,31 @@ enum CardDetailsMainDataSection : Int {
 
 enum CardOtherDetailsSection : Int {
     case border
-    case colors
     case colorIdentity
+    case colors
+    case colorshifted
     case convertedManaCost
     case layout
-    case number
-    case rarity
     case releaseDate
     case reservedList
     case setOnlineOnly
-    case source
+    case storySpotlight
+    case timeshifted
     
     var description : String {
         switch self {
         // Use Internationalization, as appropriate.
         case .border: return "Border"
+        case .colorIdentity: return "Color Identity"
         case .colors: return "Colors"
-        case .colorIdentity: return "Color identity"
+        case .colorshifted: return "Colorshifted"
         case .convertedManaCost: return "Converted Mana Cost"
         case .layout: return "Layout"
-        case .number: return "Number"
-        case .rarity: return "Rarity"
         case .releaseDate: return "Release Date"
         case .reservedList: return "Reserved List"
         case .setOnlineOnly: return "Set Online Only"
-        case .source: return "Source"
+        case .storySpotlight: return "Story Spotlight"
+        case .timeshifted: return "Timeshifted"
         }
     }
     
@@ -173,12 +173,14 @@ class CardViewModel: NSObject {
                     }
                 }
             case CardDetailsSection.rulings.rawValue:
-                if let rulings_ = card.rulings {
-                    rows = rulings_.allObjects.count >= 1 ? rulings_.allObjects.count : 1
+                if let rulingsSet = card.cardRulings,
+                    let rulings = rulingsSet.allObjects as? [CMCardRuling] {
+                    rows = rulings.count >= 1 ? rulings.count : 1
                 }
             case CardDetailsSection.legalities.rawValue:
-                if let cardLegalities_ = card.cardLegalities {
-                    rows = cardLegalities_.allObjects.count >= 1 ? cardLegalities_.allObjects.count : 1
+                if let cardLegalitiesSet = card.cardLegalities,
+                    let cardLegalities = cardLegalitiesSet.allObjects as? [CMCardLegality] {
+                    rows = cardLegalities.count >= 1 ? cardLegalities.count : 1
                 }
             case CardDetailsSection.otherDetails.rawValue:
                 rows = CardOtherDetailsSection.count
@@ -241,7 +243,8 @@ class CardViewModel: NSObject {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         var count = 0
         
-        if let rulings = card.rulings {
+        if let rulingsSet = card.cardRulings,
+            let rulings = rulingsSet.allObjects as? [CMCardRuling] {
             count = rulings.count
         }
         return count
@@ -282,15 +285,15 @@ class CardViewModel: NSObject {
                 headerTitle = CardDetailsSection.set.description
             case CardDetailsSection.artist.rawValue:
                 headerTitle = CardDetailsSection.artist.description
-            case CardDetailsSection.variations.rawValue:
-                headerTitle = CardDetailsSection.variations.description
-                let count = numberOfVariations()
-                if count > 0 {
-                    headerTitle?.append(": \(count)")
-                }
             case CardDetailsSection.parts.rawValue:
                 headerTitle = CardDetailsSection.parts.description
                 let count = numberOfParts()
+                if count > 0 {
+                    headerTitle?.append(": \(count)")
+                }
+            case CardDetailsSection.variations.rawValue:
+                headerTitle = CardDetailsSection.variations.description
+                let count = numberOfVariations()
                 if count > 0 {
                     headerTitle?.append(": \(count)")
                 }
@@ -334,37 +337,35 @@ class CardViewModel: NSObject {
     
     func rulingText(inRow row: Int, pointSize: CGFloat) -> NSAttributedString? {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
-        guard let rulings_ = card.rulings else {
+        guard let rulingsSet = card.cardRulings ,
+            let rulings = rulingsSet.allObjects as? [CMCardRuling] else {
             return nil
         }
         
-        guard let array = rulings_.allObjects.sorted(by: {(first: Any, second: Any) -> Bool in
+        let sortedRulings = rulings.sorted(by: {(first: Any, second: Any) -> Bool in
             if let a = first as? CMCardRuling,
-                let b = second as? CMCardRuling {
-                if let aDate = a.date,
-                    let bDate = b.date {
+                let b = second as? CMCardRuling,
+                let aRuling = a.ruling,
+                let bRuling = b.ruling,
+                let aDate = aRuling.date,
+                let bDate = bRuling.date {
                     return aDate > bDate
-                }
             }
+            
             return false
-        }) as? [CMCardRuling] else {
-            return nil
-        }
+        })
         
-        if array.count > 0 {
-            let ruling = array[row]
+        if sortedRulings.count > 0 {
+            let cardRuling = sortedRulings[row]
             var contents = ""
             
-            if let date = ruling.date {
+            if let ruling = cardRuling.ruling,
+                let date = ruling.date,
+                let text = ruling.text {
                 contents.append(date)
-            }
-            if let text = ruling.text {
-                if contents.count > 0 {
-                    contents.append("\n\n")
-                }
+                contents.append("\n\n")
                 contents.append(text)
             }
-            
             return NSAttributedString(symbol: contents,
                                       pointSize: pointSize)
         } else {
@@ -430,15 +431,6 @@ class CardViewModel: NSObject {
                 let name = border.name {
                 text = name
             }
-        case .colors:
-            if let colors_ = card.colors,
-                let s = colors_.allObjects as? [CMCardColor] {
-                
-                let string = s.map({ $0.name! }).joined(separator: ", ")
-                if string.count > 0 {
-                    text = string
-                }
-            }
         case .colorIdentity:
             if let colorIdentities_ = card.colorIdentities {
                 if let s = colorIdentities_.allObjects as? [CMCardColor] {
@@ -449,20 +441,23 @@ class CardViewModel: NSObject {
                     }
                 }
             }
+        case .colors:
+            if let colors_ = card.colors,
+                let s = colors_.allObjects as? [CMCardColor] {
+                
+                let string = s.map({ $0.name! }).joined(separator: ", ")
+                if string.count > 0 {
+                    text = string
+                }
+            }
+        case .colorshifted:
+            text = card.isColorshifted ? "Yes" : "No"
         case .convertedManaCost:
             text = "\(String(format: card.convertedManaCost == floor(card.convertedManaCost) ? "%.0f" : "%.1f", card.convertedManaCost))"
         case .layout:
             if let layout = card.layout,
                 let name = layout.name {
                 text = name
-            }
-        case .number:
-            if let number = card.collectorNumber {
-                text = number
-            }
-        case .rarity:
-            if let rarity = card.rarity {
-                text = rarity.name!
             }
         case .releaseDate:
             if let releaseDate = card.releaseDate ?? card.set!.releaseDate {
@@ -474,37 +469,23 @@ class CardViewModel: NSObject {
             if let set = card.set {
                 text = set.isOnlineOnly ? "Yes" : "No"
             }
-        case .source:
-            if let source = card.source {
-                text = source
-            }
+        case .storySpotlight:
+            text = card.isStorySpotlight ? "Yes" : "No"
+        case .timeshifted:
+            text = card.isTimeshifted ? "Yes" : "No"
         }
-        
         return text
-    }
-    
-    func requestForOtherPrintings() -> NSFetchRequest<CMCard> {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
-        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        
-        if let printingsSet = card.otherPrintings,
-            let printings = printingsSet.allObjects as? [CMCard] {
-            
-            request.predicate = NSPredicate(format: "name = %@ AND set.code IN %@", card.name!, printings.map({ $0.set!.code! }))
-            request.sortDescriptors = _sortDescriptors
-        }
-        return request
     }
     
     func requestForVariations() -> NSFetchRequest<CMCard> {
         let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         
-        if let variationsSet = card.variations,
-            let variations = variationsSet.allObjects as? [CMCard] {
-            request.predicate = NSPredicate(format: "id IN %@", variations.map({$0.id}))
-            request.sortDescriptors = _sortDescriptors
-        }
+        request.predicate = NSPredicate(format: "set.code = %@ AND language.code = %@ AND id != %@ AND name = %@",
+                                        card.set!.code!,
+                                        card.language!.code!,
+                                        card.id!, card.name!)
+        request.sortDescriptors = _sortDescriptors
         return request
     }
     
@@ -517,6 +498,18 @@ class CardViewModel: NSObject {
             request.predicate = NSPredicate(format: "id IN %@", parts.map({$0.id}))
             request.sortDescriptors = _sortDescriptors
         }
+        return request
+    }
+
+    func requestForOtherPrintings() -> NSFetchRequest<CMCard> {
+        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+        
+        request.predicate = NSPredicate(format: "set.code != %@ AND language.code = %@ AND id != %@ AND name = %@",
+                                        card.set!.code!,
+                                        card.language!.code!,
+                                        card.id!, card.name!)
+        request.sortDescriptors = _sortDescriptors
         return request
     }
     

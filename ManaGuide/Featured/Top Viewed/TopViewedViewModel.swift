@@ -71,44 +71,59 @@ class TopViewedViewModel: NSObject {
         return fetchedResultsController.object(at: indexPath)
     }
     
-    func fetchData() {
-        let ref = Database.database().reference().child("cards")
-        _firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Views).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopViewed)
-        
-        ref.keepSynced(true)
-        
-        // observe changes in Firebase
-        _firebaseQuery!.observe(.value, with: { snapshot in
-            for child in snapshot.children {
-                if let c = child as? DataSnapshot {
-                    let fcard = FCCard(snapshot: c)
-                    
-                    
-                    if let card = ManaKit.sharedInstance.findObject("CMCard",
-                                                                    objectFinder: ["firebaseID": c.key as AnyObject],
-                                                                    createIfNotFound: false) as? CMCard {
-                        card.firebaseViews = Int64(fcard.views == nil ? 0 : fcard.views!)
+    func allObjects() -> [CMCard]? {
+        guard let fetchedResultsController = _fetchedResultsController else {
+            return nil
+        }
+        return fetchedResultsController.fetchedObjects
+    }
+    
+    func isEmpty() -> Bool {
+        guard let objects = allObjects() else {
+            return true
+        }
+        return objects.count == 0
+    }
+
+    func fetchRemoteData() -> Promise<Void> {
+        return Promise { seal in
+            let ref = Database.database().reference().child("cards")
+            _firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Views).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopViewed)
+            
+            ref.keepSynced(true)
+            
+            // observe changes in Firebase
+            _firebaseQuery!.observe(.value, with: { snapshot in
+                for child in snapshot.children {
+                    if let c = child as? DataSnapshot {
+                        let fcard = FCCard(snapshot: c)
+                        
+                        
+                        if let card = ManaKit.sharedInstance.findObject("CMCard",
+                                                                        objectFinder: ["firebaseID": c.key as AnyObject],
+                                                                        createIfNotFound: false) as? CMCard {
+                            card.firebaseViews = Int64(fcard.views == nil ? 0 : fcard.views!)
+                        }
                     }
                 }
-            }
-            
-            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                // save to Core Data
-                try! backgroundContext.save()
-            
-                // refresh data
-                let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-                request.predicate = NSPredicate(format: "firebaseViews > 0")
-                request.fetchLimit = 10
-                request.sortDescriptors = self.sortDescriptors
-                self._fetchedResultsController = self.getFetchedResultsController(with: request)
                 
-                // notify changes
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
-                                                object: nil,
-                                                userInfo: nil)
-            }
-        })
+                ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                    // save to Core Data
+                    try! backgroundContext.save()
+                
+                    seal.fulfill(())
+                }
+            })
+        }
+    }
+    
+    func fetchData() {
+        // refresh data
+        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+        request.predicate = NSPredicate(format: "firebaseViews > 0")
+        request.fetchLimit = 10
+        request.sortDescriptors = self.sortDescriptors
+        self._fetchedResultsController = self.getFetchedResultsController(with: request)
     }
     
     func stopMonitoring() {

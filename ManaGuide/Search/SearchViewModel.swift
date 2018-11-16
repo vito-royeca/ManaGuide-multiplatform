@@ -304,6 +304,7 @@ class SearchViewModel: NSObject {
         } else {
             // create a default fetchRequest
             request = CMCard.fetchRequest()
+            request?.fetchBatchSize = 20
             request!.predicate = NSPredicate(format: "language.code = %@", "en")
             request!.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
                                         NSSortDescriptor(key: "collectorNumber", ascending: true)]

@@ -139,6 +139,9 @@
 		1168F7522155AC6E0059C9E0 /* CardActionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1168F7512155AC6E0059C9E0 /* CardActionsTableViewCell.swift */; };
 		1168F7532155AC6E0059C9E0 /* CardActionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1168F7512155AC6E0059C9E0 /* CardActionsTableViewCell.swift */; };
 		1168F7542155AC6E0059C9E0 /* CardActionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1168F7512155AC6E0059C9E0 /* CardActionsTableViewCell.swift */; };
+		117CF2FD219E8BE500110C6A /* TopFeaturedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117CF2FC219E8BE500110C6A /* TopFeaturedTableViewCell.swift */; };
+		117CF2FE219E8BE500110C6A /* TopFeaturedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117CF2FC219E8BE500110C6A /* TopFeaturedTableViewCell.swift */; };
+		117CF2FF219E8BE500110C6A /* TopFeaturedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117CF2FC219E8BE500110C6A /* TopFeaturedTableViewCell.swift */; };
 		118281B120B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
 		118281B220B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
 		118281B320B67FA500865172 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118281B020B67FA500865172 /* AccountViewController.swift */; };
@@ -353,6 +356,7 @@
 		1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComprehensiveRulesViewController.swift; sourceTree = "<group>"; };
 		11663B132159C5AC00B095C2 /* SetsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetsTableViewCell.swift; sourceTree = "<group>"; };
 		1168F7512155AC6E0059C9E0 /* CardActionsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardActionsTableViewCell.swift; sourceTree = "<group>"; };
+		117CF2FC219E8BE500110C6A /* TopFeaturedTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopFeaturedTableViewCell.swift; sourceTree = "<group>"; };
 		118281B020B67FA500865172 /* AccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewController.swift; sourceTree = "<group>"; };
 		11853EB421669AD50055077B /* SearchModeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModeTableViewCell.swift; sourceTree = "<group>"; };
 		11853EB521669AD50055077B /* SearchModeTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchModeTableViewCell.xib; sourceTree = "<group>"; };
@@ -696,6 +700,7 @@
 				11A5444A21445B0A00B8C59F /* Top Viewed */,
 				110BB5291F20891D00086841 /* FeaturedViewController.swift */,
 				11A63E122142F536005AE024 /* FeaturedViewModel.swift */,
+				117CF2FC219E8BE500110C6A /* TopFeaturedTableViewCell.swift */,
 			);
 			path = Featured;
 			sourceTree = "<group>";
@@ -1383,6 +1388,7 @@
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
 				11A5444C214471EB00B8C59F /* CardViewModel.swift in Sources */,
 				11853EBE2166A85F0055077B /* SearchModeCollectionViewCell.swift in Sources */,
+				117CF2FD219E8BE500110C6A /* TopFeaturedTableViewCell.swift in Sources */,
 				115D4E2021894EE9006A94EE /* CardNameTableViewCell.swift in Sources */,
 				1150BCEE20B92E4700A36FCD /* LoginViewController.swift in Sources */,
 				1165CD761F377F58006CC433 /* BannedListViewController.swift in Sources */,
@@ -1464,6 +1470,7 @@
 				114FE3A52146A313009E3201 /* CardPricingTableViewCell.swift in Sources */,
 				11853EF02166D6160055077B /* ComprehensiveRulesViewController.swift in Sources */,
 				11853EE92166D5AA0055077B /* SetsViewController.swift in Sources */,
+				117CF2FE219E8BE500110C6A /* TopFeaturedTableViewCell.swift in Sources */,
 				115D4E2121894EE9006A94EE /* CardNameTableViewCell.swift in Sources */,
 				11BC2B77215AED3600045600 /* SetViewModel.swift in Sources */,
 				11F3BA3220D4141900511388 /* MGUtilities.swift in Sources */,
@@ -1567,6 +1574,7 @@
 				114C1D542161A13100825DD2 /* BannedListViewModel.swift in Sources */,
 				118281B320B67FA500865172 /* AccountViewController.swift in Sources */,
 				114FE3A62146A313009E3201 /* CardPricingTableViewCell.swift in Sources */,
+				117CF2FF219E8BE500110C6A /* TopFeaturedTableViewCell.swift in Sources */,
 				1138A3CF20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
 				11A63E212142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
 				11A63E3121430E60005AE024 /* TopViewedItemCell.swift in Sources */,

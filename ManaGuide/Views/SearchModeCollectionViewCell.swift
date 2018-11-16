@@ -30,6 +30,7 @@ class SearchModeCollectionViewCell: UICollectionViewCell {
             }
             
             messageLabel.text = self.mode.description
+            
             if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
                 backgroundImage.image = croppedImage
                 MGUtilities.updateColor(ofLabel: messageLabel, from: croppedImage)
