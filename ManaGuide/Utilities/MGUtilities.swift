@@ -91,14 +91,6 @@ class MGUtilities {
         }
         attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
-        text = "\nSource: "
-        if let source = card.source {
-            text.append(source)
-        } else {
-            text.append("\u{2014}")
-        }
-        attributedString.append(NSMutableAttributedString(string: text, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
-        
         text = "\nNumber: "
         if let number = card.collectorNumber {
             text.append(number)

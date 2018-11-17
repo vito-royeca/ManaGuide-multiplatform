@@ -119,7 +119,7 @@ PODS:
   - InAppSettingsKit (2.10)
   - Kanna (4.0.2)
   - leveldb-library (1.20)
-  - ManaKit (3.1.0):
+  - ManaKit (3.10.1):
     - Kanna (~> 4.0.0)
     - PromiseKit
     - SDWebImage
@@ -148,14 +148,14 @@ PODS:
   - NYAlertViewController (1.3.0)
   - OAuthSwift (1.2.2)
   - pop (1.0.12)
-  - PromiseKit (6.5.2):
-    - PromiseKit/CorePromise (= 6.5.2)
-    - PromiseKit/Foundation (= 6.5.2)
-    - PromiseKit/UIKit (= 6.5.2)
-  - PromiseKit/CorePromise (6.5.2)
-  - PromiseKit/Foundation (6.5.2):
+  - PromiseKit (6.5.3):
+    - PromiseKit/CorePromise (= 6.5.3)
+    - PromiseKit/Foundation (= 6.5.3)
+    - PromiseKit/UIKit (= 6.5.3)
+  - PromiseKit/CorePromise (6.5.3)
+  - PromiseKit/Foundation (6.5.3):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.5.2):
+  - PromiseKit/UIKit (6.5.3):
     - PromiseKit/CorePromise
   - SDWebImage (4.4.2):
     - SDWebImage/Core (= 4.4.2)
@@ -283,7 +283,7 @@ SPEC CHECKSUMS:
   InAppSettingsKit: d965e29be941eb19857271e4625de3fba6e23c9f
   Kanna: c60b61d72554bf04ed1ee074f9b379855cab4892
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
-  ManaKit: b25ba52332c04a9b80a1dfa36e0f1d638632dec2
+  ManaKit: 2ad9c03aa9c37f9c8ef5a56bf74438a8aa0949a2
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MMDrawerController: e3a54a5570388463ad3b36975251575b50c4e1a0
   "MMDrawerController+Storyboard": c98f86c0f32cdef1d466d19a7da3ad2fc6c6ac00
@@ -291,7 +291,7 @@ SPEC CHECKSUMS:
   NYAlertViewController: b93f82e2c1fc6d5e9485512ddbe7b481f463a074
   OAuthSwift: 27b34fe80b76b67cd8f45571e0be2432bc9f6de1
   pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
-  PromiseKit: 27c1601bfb73405871b805bcb8cf7e55c4dad3db
+  PromiseKit: c609029bdd801f792551a504c695c7d3098b42cd
   SDWebImage: 624d6e296c69b244bcede364c72ae0430ac14681
   SimulatorStatusMagic: 0c0e711acef6e70dd8a0710962347635a9cdef24
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322

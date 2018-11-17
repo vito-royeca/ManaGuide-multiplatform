@@ -26,8 +26,8 @@ enum SearchViewModelMode: Int {
             return ["setCode": "vma",
                     "name": "Frantic Search"]
         case .noResultsFound:
-            return ["setCode": "leg",
-                    "name": "Lost Soul"]
+            return ["setCode": "a25",
+                    "name": "Azusa, Lost but Seeking"]
         case .resultsFound:
             return nil
         case .error:

@@ -121,6 +121,10 @@ class CardViewModel: NSObject {
     var cardViewIncremented = false
     var content: CardContent = .card
     
+    var partsViewModel: SearchViewModel?
+    var variationsViewModel: SearchViewModel?
+    var otherPrintingsViewModel: SearchViewModel?
+    
     private var _fetchedResultsController: NSFetchedResultsController<CMCard>?
     private var _sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
                                     NSSortDescriptor(key: "name", ascending: true),
@@ -209,32 +213,32 @@ class CardViewModel: NSObject {
         return fetchedObjects.count
     }
 
-    func numberOfVariations() -> Int {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+    func numberOfParts() -> Int {
         var count = 0
         
-        if let variations = card.variations {
-            count = variations.count
+        if let model = partsViewModel,
+            let allObjects = model.allObjects() {
+            count = allObjects.count
         }
         return count
     }
     
-    func numberOfParts() -> Int {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+    func numberOfVariations() -> Int {
         var count = 0
         
-        if let parts = card.parts {
-            count = parts.count
+        if let model = variationsViewModel,
+            let allObjects = model.allObjects() {
+            count = allObjects.count
         }
         return count
     }
     
     func numberOfOtherPrintings() -> Int {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
         var count = 0
         
-        if let printings = card.otherPrintings {
-            count = printings.count
+        if let model = otherPrintingsViewModel,
+            let allObjects = model.allObjects() {
+            count = allObjects.count
         }
         return count
     }
@@ -559,6 +563,18 @@ class CardViewModel: NSObject {
         return "\(card.firebaseRatings) Rating\(card.firebaseRatings > 1 ? "s" : "")"
     }
     
+    func reloadRelatedCards() {
+        partsViewModel = SearchViewModel(withRequest: requestForParts(),
+                                         andTitle: nil,
+                                         andMode: .loading)
+        variationsViewModel = SearchViewModel(withRequest: requestForVariations(),
+                                              andTitle: nil,
+                                              andMode: .loading)
+        otherPrintingsViewModel = SearchViewModel(withRequest: requestForOtherPrintings(),
+                                                  andTitle: nil,
+                                                  andMode: .loading)
+    }
+
     // MARK: Firebase methods
     func toggleCardFavorite(firstAttempt: Bool) {
         let completion = { () -> Void in

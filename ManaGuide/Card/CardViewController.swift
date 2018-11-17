@@ -45,13 +45,13 @@ class CardViewController: BaseViewController {
             tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
             
         case .details:
+            tableView.reloadData()
+            tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+            
             if !viewModel.cardViewIncremented {
                 viewModel.cardViewIncremented = true
                 incrementCardViews()
             }
-            
-            tableView.reloadData()
-            tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
             
         case .store:
             MBProgressHUD.showAdded(to: tableView, animated: true)
@@ -121,6 +121,7 @@ class CardViewController: BaseViewController {
                            forCellReuseIdentifier: StoreTableViewCell.reuseIdentifier)
 
         title = viewModel.content.description
+        viewModel.reloadRelatedCards()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -363,6 +364,7 @@ class CardViewController: BaseViewController {
                                       IndexPath(row: 0, section: CardImageSection.actions.rawValue)], with: .automatic)
         }
         viewModel.loadCardData()
+        viewModel.reloadRelatedCards()
     }
     
     @objc func handleLink(_ tapGesture: UITapGestureRecognizer) {
@@ -398,7 +400,7 @@ class CardViewController: BaseViewController {
         }
     }
     
-    func setupCardGridCell(cell: CardGridTableViewCell, withRequest request: NSFetchRequest<CMCard>) {
+    func setupCardGridCell(cell: CardGridTableViewCell, withViewModel model: SearchViewModel) {
         
         let width = CGFloat(138)
         let height = CGFloat(100)
@@ -410,19 +412,18 @@ class CardViewController: BaseViewController {
         cell.flowLayout.minimumInteritemSpacing = CGFloat(10)
         cell.flowLayout.scrollDirection = .horizontal
         
-        let vm = SearchViewModel(withRequest: request,
-                                 andTitle: nil,
-                                 andMode: .loading)
-        cell.viewModel = vm
-        
-        firstly {
-            vm.fetchData()
-        }.done {
-            vm.mode = vm.isEmpty() ? .noResultsFound : .resultsFound
-            cell.collectionView.reloadData()
-        }.catch { error in
-            vm.mode = .error
-            cell.collectionView.reloadData()
+        cell.viewModel = model
+
+        if model.mode == .loading {
+            firstly {
+                model.fetchData()
+            }.done {
+                model.mode = model.isEmpty() ? .noResultsFound : .resultsFound
+                cell.collectionView.reloadData()
+            }.catch { error in
+                model.mode = .error
+                cell.collectionView.reloadData()
+            }
         }
     }
     
@@ -597,7 +598,7 @@ extension CardViewController : UITableViewDataSource {
                                                             for: indexPath) as? CardGridTableViewCell else {
                                                                 fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                 }
-                setupCardGridCell(cell: c, withRequest: viewModel.requestForParts())
+                setupCardGridCell(cell: c, withViewModel: viewModel.partsViewModel!)
                 cell = c
 
             case CardDetailsSection.variations.rawValue:
@@ -605,7 +606,7 @@ extension CardViewController : UITableViewDataSource {
                                                             for: indexPath) as? CardGridTableViewCell else {
                     fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                 }
-                setupCardGridCell(cell: c, withRequest: viewModel.requestForVariations())
+                setupCardGridCell(cell: c, withViewModel: viewModel.variationsViewModel!)
                 cell = c
                 
             case CardDetailsSection.otherPrintings.rawValue:
@@ -613,7 +614,7 @@ extension CardViewController : UITableViewDataSource {
                                                             for: indexPath) as? CardGridTableViewCell else {
                     fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                 }
-                setupCardGridCell(cell: c, withRequest: viewModel.requestForOtherPrintings())
+                setupCardGridCell(cell: c, withViewModel: viewModel.otherPrintingsViewModel!)
                 cell = c
                 
             case CardDetailsSection.rulings.rawValue:
@@ -624,7 +625,8 @@ extension CardViewController : UITableViewDataSource {
                     }
                     let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
                     request.predicate = NSPredicate(format: "name = nil")
-                    setupCardGridCell(cell: c, withRequest: request)
+                    setupCardGridCell(cell: c,
+                                      withViewModel: SearchViewModel(withRequest: nil, andTitle: nil, andMode: .noResultsFound))
                     cell = c
                 } else {
                     guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier,
@@ -645,7 +647,8 @@ extension CardViewController : UITableViewDataSource {
                     }
                     let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
                     request.predicate = NSPredicate(format: "name = nil")
-                    setupCardGridCell(cell: c, withRequest: request)
+                    setupCardGridCell(cell: c,
+                                      withViewModel: SearchViewModel(withRequest: nil, andTitle: nil, andMode: .noResultsFound))
                     cell = c
                 } else {
                     guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
