@@ -10,6 +10,7 @@ import UIKit
 import FontAwesome_swift
 import InAppSettingsKit
 import ManaKit
+import PromiseKit
 
 class SetsViewController: BaseViewController {
 
@@ -72,9 +73,8 @@ class SetsViewController: BaseViewController {
             navigationItem.hidesSearchBarWhenScrolling = true
         }
         
-        if viewModel.isEmpty() {
-            viewModel.fetchData()
-            tableView.reloadData()
+        if viewModel.mode == .loading {
+            fetchData()
         }
     }
     
@@ -98,53 +98,57 @@ class SetsViewController: BaseViewController {
         }
         
         viewModel.updateSorting(with: userInfo)
-        viewModel.fetchData()
-        tableView.reloadData()
+        fetchData()
     }
     
     @objc func doSearch() {
         viewModel.queryString = searchController.searchBar.text ?? ""
-        viewModel.fetchData()
+        viewModel.mode = .loading
         tableView.reloadData()
+        
+        fetchData()
+    }
+    
+    func fetchData() {
+        firstly {
+            viewModel.fetchData()
+        }.done {
+            self.viewModel.mode = self.viewModel.isEmpty() ? .noResultsFound : .resultsFound
+            self.tableView.reloadData()
+        }.catch { error in
+            self.viewModel.mode = .error
+            self.tableView.reloadData()
+        }
     }
 }
 
 // MARK: UITableViewDataSource
 extension SetsViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if viewModel.isEmpty() {
-            return 1
-        } else {
-            return viewModel.numberOfRows(inSection: section)
-        }
+        return viewModel.numberOfRows(inSection: section)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if viewModel.isEmpty() {
-            return 1
-        } else {
-            return viewModel.numberOfSections()
-        }
+        return viewModel.numberOfSections()
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: UITableViewCell?
         
-        if viewModel.isEmpty() {
-            guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
-                fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
-            }
-            c.mode = .noResultsFound
-            cell = c
-            
-        } else {
+        if viewModel.mode == .resultsFound {
             guard let c = tableView.dequeueReusableCell(withIdentifier: SetsTableViewCell.reuseIdentifier,
-                                                           for: indexPath) as? SetsTableViewCell else {
-                fatalError("Unexpected indexPath: \(indexPath)")
+                                                        for: indexPath) as? SetsTableViewCell else {
+                                                            fatalError("Unexpected indexPath: \(indexPath)")
             }
             
             c.set = viewModel.object(forRowAt: indexPath)
             c.delegate = self
+            cell = c
+        } else {
+            guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
+                fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
+            }
+            c.mode = viewModel.mode
             cell = c
         }
         
@@ -152,37 +156,25 @@ extension SetsViewController : UITableViewDataSource {
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        if viewModel.isEmpty() {
-            return nil
-        } else {
-            return viewModel.sectionIndexTitles()
-        }
+        return viewModel.sectionIndexTitles()
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        if viewModel.isEmpty() {
-            return 0
-        } else {
-            return viewModel.sectionForSectionIndexTitle(title: title, at: index)
-        }
+        return viewModel.sectionForSectionIndexTitle(title: title, at: index)
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if viewModel.isEmpty() {
-            return nil
-        } else {
-            return viewModel.titleForHeaderInSection(section: section)
-        }
+        return viewModel.titleForHeaderInSection(section: section)
     }
 }
 
 // MARK: UITableViewDelegate
 extension SetsViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if viewModel.isEmpty() {
-            return tableView.frame.size.height / 3
-        } else {
+        if viewModel.mode == .resultsFound {
             return SetsTableViewCell.cellHeight
+        } else {
+            return tableView.frame.size.height / 3
         }
     }
 }

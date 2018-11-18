@@ -14,7 +14,7 @@ class SearchModeCollectionViewCell: UICollectionViewCell {
     static let reuseIdentifier = "SearchModeCell"
     
     // MARK: Variables
-    var mode: SearchViewModelMode! {
+    var mode: ViewModelMode! {
         didSet {
             guard let cardArt = mode.cardArt else {
                 return

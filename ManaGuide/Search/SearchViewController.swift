@@ -176,70 +176,53 @@ class SearchViewController: BaseViewController {
         } else {
             tableView?.tableHeaderView = searchController.searchBar
         }
-        
-        if viewModel.mode == .loading {
-            firstly {
-                viewModel.fetchData()
-            }.done {
-                self.viewModel.mode = self.viewModel.isEmpty() ? .noResultsFound : .resultsFound
-                self.reloadTable()
-            }.catch { error in
-                self.viewModel.mode = .error
-                self.reloadTable()
-            }
-        } else {
-            reloadTable()
-        }
+        fetchData()
     }
     
     @objc func doSearch() {
         viewModel.queryString = searchController.searchBar.text ?? ""
         viewModel.mode = .loading
-        reloadTable()
+        tableView.reloadData()
         
+        fetchData()
+    }
+    
+    func fetchData() {
         firstly {
             viewModel.fetchData()
         }.done {
             self.viewModel.mode = self.viewModel.isEmpty() ? (self.viewModel.queryString.isEmpty ? .standBy : .noResultsFound) : .resultsFound
-            self.reloadTable()
+            self.tableView.reloadData()
         }.catch { error in
             self.viewModel.mode = .error
-            self.reloadTable()
+            self.tableView.reloadData()
         }
     }
     
-    private func reloadTable() {
-        let searchGenerator = SearchRequestGenerator()
-        guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
-            return
-        }
-        
-        tableView.reloadData()
-        if displayBy == "grid" {
-            guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? CardGridTableViewCell else {
-                return
-            }
-            cell.collectionView.reloadData()
-        }
-    }
+//    private func reloadTable() {
+//        let searchGenerator = SearchRequestGenerator()
+//        guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
+//            return
+//        }
+//
+//        tableView.reloadData()
+//        if displayBy == "grid" {
+//            guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? CardGridTableViewCell else {
+//                return
+//            }
+//            cell.collectionView.reloadData()
+//        }
+//    }
 }
 
 // MARK: UITableViewDataSource
 extension SearchViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if viewModel.mode == .resultsFound {
-            return viewModel.numberOfRows(inSection: section)
-        } else {
-            return 1
-        }
+        return viewModel.numberOfRows(inSection: section)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if viewModel.mode == .resultsFound {
-            return viewModel.numberOfSections()
-        } else {
-            return 1
-        }
+        return viewModel.numberOfSections()
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -275,12 +258,12 @@ extension SearchViewController : UITableViewDataSource {
             var height = tableView.frame.size.height
             var size = CGSize(width: 0, height: 0)
             
-            if viewModel.isEmpty() {
-                height /= 3
-                size = CGSize(width: width, height: height)
-            } else {
+            if viewModel.mode == .resultsFound {
                 height -= CardTableViewCell.cellHeight - CGFloat(44)
                 size = cardSize(inFrame: CGSize(width: width, height: height))
+            } else {
+                height /= 3
+                size = CGSize(width: width, height: height)
             }
             
             c.viewModel = viewModel
@@ -298,27 +281,15 @@ extension SearchViewController : UITableViewDataSource {
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        if viewModel.mode == .resultsFound {
-            return viewModel.sectionIndexTitles()
-        } else {
-            return nil
-        }
+        return viewModel.sectionIndexTitles()
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        if viewModel.mode == .resultsFound {
-            return viewModel.sectionForSectionIndexTitle(title: title, at: index)
-        } else {
-            return 0
-        }
+        return viewModel.sectionForSectionIndexTitle(title: title, at: index)
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if viewModel.mode == .resultsFound {
-            return viewModel.titleForHeaderInSection(section: section)
-        } else {
-            return nil
-        }
+        return viewModel.titleForHeaderInSection(section: section)
     }
 }
 

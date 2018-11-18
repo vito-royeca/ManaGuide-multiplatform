@@ -8,8 +8,9 @@
 
 import CoreData
 import ManaKit
+import PromiseKit
 
-class SetsViewModel: NSObject {
+class SetsViewModel: BaseViewModel {
     // MARK: Variables
     var queryString = ""
     var searchCancelled = false
@@ -24,56 +25,76 @@ class SetsViewModel: NSObject {
     
     // MARK: UITableView methods
     func numberOfRows(inSection section: Int) -> Int {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-            return 0
+        if mode == .resultsFound {
+            guard let fetchedResultsController = _fetchedResultsController,
+                let sections = fetchedResultsController.sections else {
+                return 1
+            }
+            
+            return sections[section].numberOfObjects
+        } else {
+            return 1
         }
-        
-        return sections[section].numberOfObjects
     }
     
     func numberOfSections() -> Int {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-            return 0
+        if mode == .resultsFound {
+            guard let fetchedResultsController = _fetchedResultsController,
+                let sections = fetchedResultsController.sections else {
+                return 1
+            }
+            
+            return sections.count
+        } else {
+            return 1
         }
-        
-        return sections.count
     }
     
     func sectionIndexTitles() -> [String]? {
-        return _sectionIndexTitles
+        if mode == .resultsFound {
+            return _sectionIndexTitles
+        } else {
+            return nil
+        }
     }
     
     func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
-        let defaults = defaultsValue()
-        var sectionIndex = 0
-        
-        guard let sectionTitles = _sectionTitles,
-            let setsOrderBy = defaults["setsOrderBy"] as? Bool else {
-            return sectionIndex
-        }
-
-        for i in 0...sectionTitles.count - 1 {
-            if sectionTitles[i].hasPrefix(title) {
-                if setsOrderBy {
-                    sectionIndex = i
-                } else {
-                    sectionIndex = (sectionTitles.count - 1) - i
-                }
-                break
+        if mode == .resultsFound {
+            let defaults = defaultsValue()
+            var sectionIndex = 0
+            
+            guard let sectionTitles = _sectionTitles,
+                let setsOrderBy = defaults["setsOrderBy"] as? Bool else {
+                return sectionIndex
             }
-        }
 
-        return sectionIndex
+            for i in 0...sectionTitles.count - 1 {
+                if sectionTitles[i].hasPrefix(title) {
+                    if setsOrderBy {
+                        sectionIndex = i
+                    } else {
+                        sectionIndex = (sectionTitles.count - 1) - i
+                    }
+                    break
+                }
+            }
+
+            return sectionIndex
+        } else {
+            return 0
+        }
     }
     
     func titleForHeaderInSection(section: Int) -> String? {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
+        if mode == .resultsFound {
+            guard let fetchedResultsController = _fetchedResultsController,
+                let sections = fetchedResultsController.sections else {
+                return nil
+            }
+            return sections[section].name
+        } else {
             return nil
         }
-        return sections[section].name
     }
     
     // MARK: Custom methods
@@ -98,22 +119,26 @@ class SetsViewModel: NSObject {
         return objects.count == 0
     }
     
-    func fetchData() {
-        let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
-        let count = queryString.count
-        
-        if count > 0 {
-            if count == 1 {
-                request.predicate = NSPredicate(format: "name BEGINSWITH[cd] %@ OR code BEGINSWITH[cd] %@", queryString, queryString)
-            } else {
-                request.predicate = NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@", queryString, queryString)
+    func fetchData() -> Promise<Void> {
+        return Promise { seal in
+            let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
+            let count = queryString.count
+            
+            if count > 0 {
+                if count == 1 {
+                    request.predicate = NSPredicate(format: "name BEGINSWITH[cd] %@ OR code BEGINSWITH[cd] %@", queryString, queryString)
+                } else {
+                    request.predicate = NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@", queryString, queryString)
+                }
             }
+            updateSorting(with: nil)
+            request.sortDescriptors = _sortDescriptors
+            
+            _fetchedResultsController = getFetchedResultsController(with: request)
+            updateSections()
+            
+            seal.fulfill(())
         }
-        updateSorting(with: nil)
-        request.sortDescriptors = _sortDescriptors
-        
-        _fetchedResultsController = getFetchedResultsController(with: request)
-        updateSections()
     }
     
     func updateSorting(with values: [String: Any]?) {

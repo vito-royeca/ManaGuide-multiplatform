@@ -15,7 +15,7 @@ protocol SetsTableViewCellDelegate: NSObjectProtocol {
 
 class SetsTableViewCell: UITableViewCell {
     static let reuseIdentifier = "SetsCell"
-    static let cellHeight = CGFloat(80)
+    static let cellHeight = CGFloat(110)
     
     // MARK: Outlets
     @IBOutlet weak var logoLabel: UILabel!

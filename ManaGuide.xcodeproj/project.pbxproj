@@ -139,6 +139,9 @@
 		1168F7522155AC6E0059C9E0 /* CardActionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1168F7512155AC6E0059C9E0 /* CardActionsTableViewCell.swift */; };
 		1168F7532155AC6E0059C9E0 /* CardActionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1168F7512155AC6E0059C9E0 /* CardActionsTableViewCell.swift */; };
 		1168F7542155AC6E0059C9E0 /* CardActionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1168F7512155AC6E0059C9E0 /* CardActionsTableViewCell.swift */; };
+		117A164F21A1F41500AFE571 /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117A164E21A1F41500AFE571 /* BaseViewModel.swift */; };
+		117A165021A1F41500AFE571 /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117A164E21A1F41500AFE571 /* BaseViewModel.swift */; };
+		117A165121A1F41500AFE571 /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117A164E21A1F41500AFE571 /* BaseViewModel.swift */; };
 		117CF2FD219E8BE500110C6A /* TopFeaturedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117CF2FC219E8BE500110C6A /* TopFeaturedTableViewCell.swift */; };
 		117CF2FE219E8BE500110C6A /* TopFeaturedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117CF2FC219E8BE500110C6A /* TopFeaturedTableViewCell.swift */; };
 		117CF2FF219E8BE500110C6A /* TopFeaturedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117CF2FC219E8BE500110C6A /* TopFeaturedTableViewCell.swift */; };
@@ -356,6 +359,7 @@
 		1165CD781F377F81006CC433 /* ComprehensiveRulesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComprehensiveRulesViewController.swift; sourceTree = "<group>"; };
 		11663B132159C5AC00B095C2 /* SetsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetsTableViewCell.swift; sourceTree = "<group>"; };
 		1168F7512155AC6E0059C9E0 /* CardActionsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardActionsTableViewCell.swift; sourceTree = "<group>"; };
+		117A164E21A1F41500AFE571 /* BaseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewModel.swift; sourceTree = "<group>"; };
 		117CF2FC219E8BE500110C6A /* TopFeaturedTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopFeaturedTableViewCell.swift; sourceTree = "<group>"; };
 		118281B020B67FA500865172 /* AccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewController.swift; sourceTree = "<group>"; };
 		11853EB421669AD50055077B /* SearchModeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModeTableViewCell.swift; sourceTree = "<group>"; };
@@ -488,6 +492,7 @@
 				11D55BCA21325414002F8F49 /* Card */,
 				11D55BCB2132543F002F8F49 /* Utilities */,
 				1147B7591F22379F004EF296 /* BaseViewController.swift */,
+				117A164E21A1F41500AFE571 /* BaseViewModel.swift */,
 				11448A6120CD3849008EFC40 /* Constants.swift */,
 				110FD66121778607006AB1A7 /* MainViewController.swift */,
 				1195B2F320D4F1720026EA99 /* ManaGuide-Bridging-Header.h */,
@@ -1400,6 +1405,7 @@
 				11663B142159C5AC00B095C2 /* SetsTableViewCell.swift in Sources */,
 				11A63E2721430B94005AE024 /* LatestSetItemCell.swift in Sources */,
 				11A63E1B2142F80E005AE024 /* LatestSetsViewModel.swift in Sources */,
+				117A164F21A1F41500AFE571 /* BaseViewModel.swift in Sources */,
 				114FE3A42146A313009E3201 /* CardPricingTableViewCell.swift in Sources */,
 				11853EE02166B0D40055077B /* CardGridTableViewCell.swift in Sources */,
 				115D4E28218955B9006A94EE /* CardSetTableViewCell.swift in Sources */,
@@ -1482,6 +1488,7 @@
 				11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				118281B220B67FA500865172 /* AccountViewController.swift in Sources */,
 				11853EE82166D5A20055077B /* FeaturedViewController.swift in Sources */,
+				117A165021A1F41500AFE571 /* BaseViewModel.swift in Sources */,
 				114C1D842161D8F600825DD2 /* ListsViewModel.swift in Sources */,
 				11853EC92166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */,
 				115D4E29218955B9006A94EE /* CardSetTableViewCell.swift in Sources */,
@@ -1576,6 +1583,7 @@
 				114FE3A62146A313009E3201 /* CardPricingTableViewCell.swift in Sources */,
 				117CF2FF219E8BE500110C6A /* TopFeaturedTableViewCell.swift in Sources */,
 				1138A3CF20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
+				117A165121A1F41500AFE571 /* BaseViewModel.swift in Sources */,
 				11A63E212142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
 				11A63E3121430E60005AE024 /* TopViewedItemCell.swift in Sources */,
 				114C1D462160849B00825DD2 /* SearchViewModel.swift in Sources */,

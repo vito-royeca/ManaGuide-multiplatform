@@ -10,49 +10,10 @@ import CoreData
 import ManaKit
 import PromiseKit
 
-enum SearchViewModelMode: Int {
-    case standBy
-    case loading
-    case noResultsFound
-    case resultsFound
-    case error
-    
-    var cardArt: [String: String]? {
-        switch self {
-        case .standBy:
-            return ["setCode": "leb",
-                    "name": "Library of Leng"]
-        case .loading:
-            return ["setCode": "vma",
-                    "name": "Frantic Search"]
-        case .noResultsFound:
-            return ["setCode": "a25",
-                    "name": "Azusa, Lost but Seeking"]
-        case .resultsFound:
-            return nil
-        case .error:
-            return ["setCode": "plc",
-                    "name": "Dismal Failure"]
-        }
-    }
-    
-    var description : String? {
-        switch self {
-        // Use Internationalization, as appropriate.
-        case .standBy: return "Ready"
-        case .loading: return "Loading..."
-        case .noResultsFound: return "No data found"
-        case .resultsFound: return nil
-        case .error: return "nil"
-        }
-    }
-}
-
-class SearchViewModel: NSObject {
+class SearchViewModel: BaseViewModel {
     // MARK: Variables
     var queryString = ""
     var searchCancelled = false
-    var mode: SearchViewModelMode = .loading
 
     private var _request: NSFetchRequest<CMCard>?
     private var _title: String?
@@ -64,7 +25,7 @@ class SearchViewModel: NSObject {
     private var _sortDescriptors: [NSSortDescriptor]?
     
     // MARK: Init
-    init(withRequest request: NSFetchRequest<CMCard>?, andTitle title: String?, andMode mode: SearchViewModelMode) {
+    init(withRequest request: NSFetchRequest<CMCard>?, andTitle title: String?, andMode mode: ViewModelMode) {
         super.init()
         _request = request
         _title = title
@@ -78,129 +39,149 @@ class SearchViewModel: NSObject {
 
     // MARK: UITableView methods
     func numberOfRows(inSection section: Int) -> Int {
-        let searchGenerator = SearchRequestGenerator()
-        var rows = 0
+        if mode == .resultsFound {
+            let searchGenerator = SearchRequestGenerator()
+            var rows = 0
 
-        guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
-            return rows
-        }
-        
-        switch displayBy {
-        case "list":
-            guard let fetchedResultsController = _fetchedResultsController,
-                let sections = fetchedResultsController.sections else {
+            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
                 return rows
             }
-            rows = sections[section].numberOfObjects
             
-        case "grid":
-            rows = 1
-        default:
-            ()
+            switch displayBy {
+            case "list":
+                guard let fetchedResultsController = _fetchedResultsController,
+                    let sections = fetchedResultsController.sections else {
+                    return rows
+                }
+                rows = sections[section].numberOfObjects
+                
+            case "grid":
+                rows = 1
+            default:
+                ()
+            }
+            
+            return rows
+        } else {
+            return 1
         }
-        
-        return rows
     }
     
     func numberOfSections() -> Int {
-        let searchGenerator = SearchRequestGenerator()
-        var number = 0
-        
-        guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
-            return number
-        }
-        
-        switch displayBy {
-        case "list":
-            guard let fetchedResultsController = _fetchedResultsController,
-                let sections = fetchedResultsController.sections else {
+        if mode == .resultsFound {
+            let searchGenerator = SearchRequestGenerator()
+            var number = 0
+            
+            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
                 return number
             }
-            number = sections.count
             
-        case "grid":
-            number = 1
+            switch displayBy {
+            case "list":
+                guard let fetchedResultsController = _fetchedResultsController,
+                    let sections = fetchedResultsController.sections else {
+                    return number
+                }
+                number = sections.count
+                
+            case "grid":
+                number = 1
+                
+            default:
+                ()
+            }
             
-        default:
-            ()
+            return number
+        } else {
+            return 1
         }
-        
-        return number
     }
     
     func sectionIndexTitles() -> [String]? {
-        let searchGenerator = SearchRequestGenerator()
-        var titles: [String]?
-        
-        guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
+        if mode == .resultsFound {
+            let searchGenerator = SearchRequestGenerator()
+            var titles: [String]?
+            
+            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
+                return titles
+            }
+            
+            switch displayBy {
+            case "list":
+                titles = _sectionIndexTitles
+            case "grid":
+                ()
+            default:
+                ()
+            }
+            
             return titles
+        } else {
+            return nil
         }
-        
-        switch displayBy {
-        case "list":
-            titles = _sectionIndexTitles
-        case "grid":
-            ()
-        default:
-            ()
-        }
-        
-        return titles
     }
     
     func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
-        let searchGenerator = SearchRequestGenerator()
-        var sectionIndex = 0
-        
-        guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String,
-            let orderBy = searchGenerator.displayValue(for: .orderBy) as? Bool,
-            let sectionTitles = _sectionTitles else {
-                return sectionIndex
-        }
-        
-        switch displayBy {
-        case "list":
-            for i in 0...sectionTitles.count - 1 {
-                if sectionTitles[i].hasPrefix(title) {
-                    if orderBy {
-                        sectionIndex = i
-                    } else {
-                        sectionIndex = (sectionTitles.count - 1) - i
-                    }
-                    break
-                }
+        if mode == .resultsFound {
+            let searchGenerator = SearchRequestGenerator()
+            var sectionIndex = 0
+            
+            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String,
+                let orderBy = searchGenerator.displayValue(for: .orderBy) as? Bool,
+                let sectionTitles = _sectionTitles else {
+                    return sectionIndex
             }
-        case "grid":
-            ()
-        default:
-            ()
+            
+            switch displayBy {
+            case "list":
+                for i in 0...sectionTitles.count - 1 {
+                    if sectionTitles[i].hasPrefix(title) {
+                        if orderBy {
+                            sectionIndex = i
+                        } else {
+                            sectionIndex = (sectionTitles.count - 1) - i
+                        }
+                        break
+                    }
+                }
+            case "grid":
+                ()
+            default:
+                ()
+            }
+            return sectionIndex
+
+        } else {
+            return 0
         }
-        
-        return sectionIndex
     }
     
     func titleForHeaderInSection(section: Int) -> String? {
-        let searchGenerator = SearchRequestGenerator()
-        var titleHeader: String?
-        
-        guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
-            return titleHeader
-        }
-        
-        switch displayBy {
-        case "list":
-            guard let fetchedResultsController = _fetchedResultsController,
-                let sections = fetchedResultsController.sections else {
+        if mode == .resultsFound {
+            let searchGenerator = SearchRequestGenerator()
+            var titleHeader: String?
+            
+            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
                 return titleHeader
             }
-            titleHeader = sections[section].name
-        case "grid":
-            ()
-        default:
-            ()
+            
+            switch displayBy {
+            case "list":
+                guard let fetchedResultsController = _fetchedResultsController,
+                    let sections = fetchedResultsController.sections else {
+                    return titleHeader
+                }
+                titleHeader = sections[section].name
+            case "grid":
+                ()
+            default:
+                ()
+            }
+            
+            return titleHeader
+        } else {
+            return nil
         }
-        
-        return titleHeader
     }
     
     // MARK: UICollectionView methods
@@ -304,7 +285,7 @@ class SearchViewModel: NSObject {
         } else {
             // create a default fetchRequest
             request = CMCard.fetchRequest()
-            request?.fetchBatchSize = 20
+            request!.fetchBatchSize = 20
             request!.predicate = NSPredicate(format: "language.code = %@", "en")
             request!.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
                                         NSSortDescriptor(key: "collectorNumber", ascending: true)]

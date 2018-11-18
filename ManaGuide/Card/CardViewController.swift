@@ -511,7 +511,7 @@ extension CardViewController : UITableViewDataSource {
             case CardImageSection.image.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "CardImageCell"),
                     let carouselView = c.viewWithTag(100) as? iCarousel else {
-                    return UITableViewCell(frame: CGRect.zero)
+                    fatalError("CardImageCell not found")
                 }
                 
                 carouselView.dataSource = self

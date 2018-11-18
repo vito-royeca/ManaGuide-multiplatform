@@ -8,6 +8,7 @@
 
 import CoreData
 import ManaKit
+import PromiseKit
 
 enum SetContent: Int {
     case cards
@@ -26,7 +27,7 @@ enum SetContent: Int {
     }
 }
 
-class SetViewModel: NSObject {
+class SetViewModel: BaseViewModel {
     // MARK: Variables
     var queryString = ""
     var searchCancelled = false
@@ -38,77 +39,100 @@ class SetViewModel: NSObject {
     // MARK: Init
     init(withSet set: CMSet, languageCode: String) {
         super.init()
+        _set = set
+        
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         request.predicate = NSPredicate(format: "set.code = %@ AND language.code = %@", set.code!, languageCode)
-        
-        _set = set
-        _searchViewModel = SearchViewModel(withRequest: request, andTitle: set.name, andMode: .loading)
+        _searchViewModel = SearchViewModel(withRequest: request,
+                                           andTitle: set.name,
+                                           andMode: .loading)
     }
     
     // MARK: UITableView methods
     func numberOfRows(inSection section: Int) -> Int {
-        var rows = 0
-        
-        switch setContent {
-        case .cards:
-            rows = _searchViewModel!.numberOfRows(inSection: section)
-        case .wiki:
-            rows = 2
+        if mode == .resultsFound {
+            var rows = 0
+            
+            switch setContent {
+            case .cards:
+                rows = _searchViewModel!.numberOfRows(inSection: section)
+            case .wiki:
+                rows = 2
+            }
+            
+            return rows
+        } else {
+            return 1
         }
-        
-        return rows
     }
     
     func numberOfSections() -> Int {
-        var number = 0
-        
-        switch setContent {
-        case .cards:
-            number = _searchViewModel!.numberOfSections()
-        case .wiki:
-            number = 1
+        if mode == .resultsFound {
+            var number = 0
+            
+            switch setContent {
+            case .cards:
+                number = _searchViewModel!.numberOfSections()
+            case .wiki:
+                number = 1
+            }
+            
+            return number
+        } else {
+            return 1
         }
-        
-        return number
     }
     
     func sectionIndexTitles() -> [String]? {
-        var titles: [String]?
-        
-        switch setContent {
-        case .cards:
-            titles = _searchViewModel!.sectionIndexTitles()
-        case .wiki:
-            ()
+        if mode == .resultsFound {
+            var titles: [String]?
+            
+            switch setContent {
+            case .cards:
+                titles = _searchViewModel!.sectionIndexTitles()
+            case .wiki:
+                ()
+            }
+            return titles
+
+        } else {
+            return nil
         }
-        
-        return titles
     }
     
     func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
-        var sectionIndex = 0
-        
-        switch setContent {
-        case .cards:
-            sectionIndex = _searchViewModel!.sectionForSectionIndexTitle(title: title, at: index)
-        case .wiki:
-            ()
+        if mode == .resultsFound {
+            var sectionIndex = 0
+            
+            switch setContent {
+            case .cards:
+                sectionIndex = _searchViewModel!.sectionForSectionIndexTitle(title: title, at: index)
+            case .wiki:
+                ()
+            }
+            return sectionIndex
+
+        } else {
+            return 0
         }
-        
-        return sectionIndex
     }
     
     func titleForHeaderInSection(section: Int) -> String? {
-        var titleHeader: String?
-        
-        switch setContent {
-        case .cards:
-            titleHeader = _searchViewModel!.titleForHeaderInSection(section: section)
-        case .wiki:
-            ()
+        if mode == .resultsFound {
+            var titleHeader: String?
+            
+            switch setContent {
+            case .cards:
+                titleHeader = _searchViewModel!.titleForHeaderInSection(section: section)
+            case .wiki:
+                ()
+            }
+            
+            return titleHeader
+
+        } else {
+            return nil
         }
-        
-        return titleHeader
     }
     
     // MARK: Custom methods
@@ -127,9 +151,23 @@ class SetViewModel: NSObject {
         return objects.count == 0
     }
 
-    func fetchData() {
-        _searchViewModel!.queryString = queryString
-        _searchViewModel!.fetchData()
+    func fetchData() -> Promise<Void> {
+        return Promise { seal in
+        
+            _searchViewModel!.queryString = queryString
+            
+            firstly {
+                _searchViewModel!.fetchData()
+            }.done {
+                self._searchViewModel!.mode = self._searchViewModel!.isEmpty() ? (self._searchViewModel!.queryString.isEmpty ? .standBy : .noResultsFound) : .resultsFound
+                self.mode = self._searchViewModel!.mode
+                seal.fulfill(())
+                
+            }.catch { error in
+                self.mode = .error
+                seal.reject(error)
+            }
+        }
     }
     
     // MARK: Presentation methods
