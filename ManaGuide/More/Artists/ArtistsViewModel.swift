@@ -8,8 +8,9 @@
 
 import CoreData
 import ManaKit
+import PromiseKit
 
-class ArtistsViewModel: NSObject {
+class ArtistsViewModel: BaseViewModel {
     // MARK: Variables
     var queryString = ""
     var searchCancelled = false
@@ -24,61 +25,81 @@ class ArtistsViewModel: NSObject {
     
     // MARK: UITableView methods
     func numberOfRows(inSection section: Int) -> Int {
-        var rows = 0
-        
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-                return rows
+        if mode == .resultsFound {
+            var rows = 0
+            
+            guard let fetchedResultsController = _fetchedResultsController,
+                let sections = fetchedResultsController.sections else {
+                    return rows
+            }
+            rows = sections[section].numberOfObjects
+            return rows
+            
+        } else {
+            return 1
         }
-        rows = sections[section].numberOfObjects
-        
-        return rows
     }
     
     func numberOfSections() -> Int {
-        var number = 0
-        
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-                return number
+        if mode == .resultsFound {
+            var number = 0
+            
+            guard let fetchedResultsController = _fetchedResultsController,
+                let sections = fetchedResultsController.sections else {
+                    return number
+            }
+            
+            number = sections.count
+            return number
+            
+        } else {
+            return 1
         }
-        
-        number = sections.count
-        
-        return number
     }
     
     func sectionIndexTitles() -> [String]? {
-        return _sectionIndexTitles
+        if mode == .resultsFound {
+            return _sectionIndexTitles
+        } else {
+            return nil
+        }
     }
     
     func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
-        var sectionIndex = 0
-        
-        guard let sectionTitles = _sectionTitles else {
-            return sectionIndex
-        }
-        
-        for i in 0...sectionTitles.count - 1 {
-            if sectionTitles[i].hasPrefix(title) {
-                sectionIndex = i
-                break
+        if mode == .resultsFound {
+            var sectionIndex = 0
+            
+            guard let sectionTitles = _sectionTitles else {
+                return sectionIndex
             }
+            
+            for i in 0...sectionTitles.count - 1 {
+                if sectionTitles[i].hasPrefix(title) {
+                    sectionIndex = i
+                    break
+                }
+            }
+            return sectionIndex
+            
+        } else {
+            return 0
         }
-        
-        return sectionIndex
     }
     
     func titleForHeaderInSection(section: Int) -> String? {
-        var titleHeader: String?
-        
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
+        if mode == .resultsFound {
+            var titleHeader: String?
+            
+            guard let fetchedResultsController = _fetchedResultsController,
+                let sections = fetchedResultsController.sections else {
+                return titleHeader
+            }
+            titleHeader = sections[section].name
             return titleHeader
+            
+        } else {
+            return nil
         }
-        titleHeader = sections[section].name
-        
-        return titleHeader
     }
     
     // MARK: Custom methods
@@ -103,21 +124,25 @@ class ArtistsViewModel: NSObject {
         return objects.count == 0
     }
 
-    func fetchData() {
-        let request: NSFetchRequest<CMCardArtist> = CMCardArtist.fetchRequest()
-        let count = queryString.count
-        
-        if count > 0 {
-            if count == 1 {
-                request.predicate = NSPredicate(format: "lastName BEGINSWITH[cd] %@ OR firstName BEGINSWITH[cd] %@", queryString, queryString)
-            } else {
-                request.predicate = NSPredicate(format: "lastName CONTAINS[cd] %@ OR firstName CONTAINS[cd] %@", queryString, queryString)
+    func fetchData() -> Promise<Void> {
+        return Promise { seal in
+            let request: NSFetchRequest<CMCardArtist> = CMCardArtist.fetchRequest()
+            let count = queryString.count
+            
+            if count > 0 {
+                if count == 1 {
+                    request.predicate = NSPredicate(format: "lastName BEGINSWITH[cd] %@ OR firstName BEGINSWITH[cd] %@", queryString, queryString)
+                } else {
+                    request.predicate = NSPredicate(format: "lastName CONTAINS[cd] %@ OR firstName CONTAINS[cd] %@", queryString, queryString)
+                }
             }
+            request.sortDescriptors = _sortDescriptors
+
+            _fetchedResultsController = getFetchedResultsController(with: request)
+            updateSections()
+            
+            seal.fulfill(())
         }
-        request.sortDescriptors = _sortDescriptors
-        
-        _fetchedResultsController = getFetchedResultsController(with: request)
-        updateSections()
     }
     
     // MARK: Private methods

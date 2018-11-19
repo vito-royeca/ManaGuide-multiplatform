@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import ManaKit
+import PromiseKit
 
 class ArtistsViewController: BaseViewController {
 
@@ -41,8 +42,6 @@ class ArtistsViewController: BaseViewController {
                                  bundle: nil),
                            forCellReuseIdentifier: SearchModeTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
-        
-        viewModel.fetchData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -50,6 +49,10 @@ class ArtistsViewController: BaseViewController {
         
         if #available(iOS 11.0, *) {
             navigationItem.hidesSearchBarWhenScrolling = true
+        }
+        
+        if viewModel.mode == .loading {
+            fetchData()
         }
     }
 
@@ -70,41 +73,39 @@ class ArtistsViewController: BaseViewController {
     // MARK: Custom methods
     @objc func doSearch() {
         viewModel.queryString = searchController.searchBar.text ?? ""
-        viewModel.fetchData()
+        viewModel.mode = .loading
         tableView.reloadData()
+        fetchData()
+    }
+    
+    func fetchData() {
+        firstly {
+            viewModel.fetchData()
+        }.done {
+            self.viewModel.mode = self.viewModel.isEmpty() ? .noResultsFound : .resultsFound
+            self.tableView.reloadData()
+        }.catch { error in
+            self.viewModel.mode = .error
+            self.tableView.reloadData()
+        }
     }
 }
 
 // MARK: UITableViewDataSource
 extension ArtistsViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if viewModel.isEmpty() {
-            return 1
-        } else {
-            return viewModel.numberOfRows(inSection: section)
-        }
+        return viewModel.numberOfRows(inSection: section)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if viewModel.isEmpty() {
-            return 1
-        } else {
-            return viewModel.numberOfSections()
-        }
+        return viewModel.numberOfSections()
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: UITableViewCell?
         
         
-        if viewModel.isEmpty() {
-            guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
-                fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
-            }
-            c.mode = .noResultsFound
-            cell = c
-            
-        } else {
+        if viewModel.mode == .resultsFound {
             let c = tableView.dequeueReusableCell(withIdentifier: "ArtistCell",
                                                   for: indexPath)
             // Configure Cell
@@ -113,50 +114,45 @@ extension ArtistsViewController : UITableViewDataSource {
             }
             label.text = viewModel.object(forRowAt: indexPath).name
             cell = c
+            
+        } else {
+            guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
+                fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
+            }
+            c.mode = .noResultsFound
+            cell = c
         }
         
         return cell!
     }
     
     func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        if viewModel.isEmpty() {
-            return nil
-        } else {
-            return viewModel.sectionIndexTitles()
-        }
+        return viewModel.sectionIndexTitles()
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        if viewModel.isEmpty() {
-            return 0
-        } else {
-            return viewModel.sectionForSectionIndexTitle(title: title, at: index)
-        }
+        return viewModel.sectionForSectionIndexTitle(title: title, at: index)
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if viewModel.isEmpty() {
-            return nil
-        } else {
-            return viewModel.titleForHeaderInSection(section: section)
-        }
+        return viewModel.titleForHeaderInSection(section: section)
     }
 }
 
 // MARK: UITableViewDelegate
 extension ArtistsViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if viewModel.isEmpty() {
-            return tableView.frame.size.height / 3
-        } else {
+        if viewModel.mode == .resultsFound {
             return UITableView.automaticDimension
+        } else {
+            return tableView.frame.size.height / 3
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let artist = viewModel.object(forRowAt: indexPath)
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        request.predicate = NSPredicate(format: "artist.name = %@", artist.name!)
+        request.predicate = NSPredicate(format: "artist.name = %@ AND language.code = %@", artist.name!, "en")
         
         performSegue(withIdentifier: "showSearch", sender: ["request": request,
                                                             "title": artist.name!])

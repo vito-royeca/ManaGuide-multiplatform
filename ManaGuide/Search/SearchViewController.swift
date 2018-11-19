@@ -198,21 +198,6 @@ class SearchViewController: BaseViewController {
             self.tableView.reloadData()
         }
     }
-    
-//    private func reloadTable() {
-//        let searchGenerator = SearchRequestGenerator()
-//        guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
-//            return
-//        }
-//
-//        tableView.reloadData()
-//        if displayBy == "grid" {
-//            guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? CardGridTableViewCell else {
-//                return
-//            }
-//            cell.collectionView.reloadData()
-//        }
-//    }
 }
 
 // MARK: UITableViewDataSource

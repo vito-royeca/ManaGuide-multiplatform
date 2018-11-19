@@ -184,7 +184,6 @@ class SetViewController: BaseViewController {
         viewModel.queryString = searchController.searchBar.text ?? ""
         viewModel.mode = .loading
         tableView.reloadData()
-
         fetchData()
     }
     

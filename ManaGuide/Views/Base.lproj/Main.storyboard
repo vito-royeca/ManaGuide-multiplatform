@@ -1286,7 +1286,7 @@
                                                         <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sIN-yw-KV8">
                                                             <rect key="frame" x="277.66666666666669" y="0.0" width="52.333333333333314" height="27"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                            <state key="normal" title="XX">
+                                                            <state key="normal" title=" ">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
                                                             <connections>
@@ -1317,6 +1317,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="blankButton" destination="sIN-yw-KV8" id="SAF-Ba-d6m"/>
                                             <outlet property="codeLabel" destination="Fmy-la-Xxl" id="z7w-1q-poa"/>
                                             <outlet property="deButton" destination="txp-UC-1Fi" id="u0p-ZQ-Uh9"/>
                                             <outlet property="enButton" destination="1Mp-iU-oT3" id="LcC-Mt-qRC"/>

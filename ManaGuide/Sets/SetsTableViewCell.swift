@@ -34,7 +34,8 @@ class SetsTableViewCell: UITableViewCell {
     @IBOutlet weak var ruButton: UIButton!
     @IBOutlet weak var zhsButton: UIButton!
     @IBOutlet weak var zhtButton: UIButton!
-
+    @IBOutlet weak var blankButton: UIButton!
+    
     // MARK: Actions
     @IBAction func languageAction(_ sender: UIButton) {
         var code = ""
@@ -156,6 +157,8 @@ class SetsTableViewCell: UITableViewCell {
         
         zhtButton.setBackgroundColor(LookAndFeel.GlobalTintColor, for: .normal)
         zhtButton.setBackgroundColor(UIColor.lightGray, for: .disabled)
+        
+        blankButton.setBackgroundColor(UIColor.lightGray, for: .disabled)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
