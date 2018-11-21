@@ -9,42 +9,22 @@
 import UIKit
 import CoreData
 import ManaKit
+import PromiseKit
 
-class BannedListViewController: BaseViewController {
+class BannedListViewController: BaseSearchViewController {
 
-    // MARK: Variables
-    let searchController = UISearchController(searchResultsController: nil)
-    var viewModel = BannedListViewModel()
-
-    // MARK: Outlets
-    @IBOutlet weak var tableView: UITableView!
-    
     // MARK: Overrides
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchResultsUpdater = self
-        searchController.searchBar.delegate = self
-        searchController.searchBar.placeholder = "Filter"
-        definesPresentationContext = true
-        
-        if #available(iOS 11.0, *) {
-            navigationItem.searchController = searchController
-            navigationItem.hidesSearchBarWhenScrolling = false
-        } else {
-            tableView.tableHeaderView = searchController.searchBar
-        }
-        
         tableView.register(UINib(nibName: "SearchModeTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: SearchModeTableViewCell.reuseIdentifier)
-        tableView.keyboardDismissMode = .onDrag
         
-        viewModel.fetchData()
+        viewModel = BannedListViewModel()
     }
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showBanned" {
             guard let dest = segue.destination as? BannedViewController,
@@ -57,88 +37,39 @@ class BannedListViewController: BaseViewController {
         }
     }
     
-    // MARK: Custom methods
-    @objc func doSearch() {
-        viewModel.queryString = searchController.searchBar.text ?? ""
-        viewModel.fetchData()
-        tableView.reloadData()
-    }
-}
-
-// MARK: UITableViewDataSource
-extension BannedListViewController : UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if viewModel.isEmpty() {
-            return 1
-        } else {
-            return viewModel.numberOfRows(inSection: section)
-        }
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        if viewModel.isEmpty() {
-            return 1
-        } else {
-            return viewModel.numberOfSections()
-        }
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: UITableViewCell?
         
-        if viewModel.isEmpty() {
-            guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
-                fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
-            }
-            c.mode = .noResultsFound
-            cell = c
-            
-        } else {
+        if viewModel.mode == .resultsFound {
             let c = tableView.dequeueReusableCell(withIdentifier: "BannedCell",
                                                   for: indexPath)
             
-            guard let label = c.textLabel else {
-                fatalError("UILabel not found")
+            guard let label = c.textLabel,
+                let cardFormat = viewModel.object(forRowAt: indexPath) as? CMCardFormat else {
+                    fatalError("UILabel not found")
             }
-            label.text = viewModel.object(forRowAt: indexPath).name
+            label.text = cardFormat.name
+            cell = c
+            
+        } else {
+            guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
+                fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
+            }
+            c.mode = viewModel.mode
             cell = c
         }
         
         return cell!
-    }
-    
-    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        if viewModel.isEmpty() {
-            return nil
-        } else {
-            return viewModel.sectionIndexTitles()
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        if viewModel.isEmpty() {
-            return 0
-        } else {
-            return viewModel.sectionForSectionIndexTitle(title: title, at: index)
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if viewModel.isEmpty() {
-            return nil
-        } else {
-            return viewModel.titleForHeaderInSection(section: section)
-        }
     }
 }
 
 // MARK: UITableViewDelegate
 extension BannedListViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if viewModel.isEmpty() {
-            return tableView.frame.size.height / 3
-        } else {
+        if viewModel.mode == .resultsFound {
             return UITableView.automaticDimension
+        } else {
+            return tableView.frame.size.height / 3
         }
     }
     
@@ -148,37 +79,11 @@ extension BannedListViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if viewModel.isEmpty() {
-            return nil
-        } else {
+        if viewModel.mode == .resultsFound {
             return indexPath
-        }
-    }
-}
-
-// MARK: UISearchResultsUpdating
-extension BannedListViewController : UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
-        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
-    }
-}
-
-// MARK: UISearchResultsUpdating
-extension BannedListViewController : UISearchBarDelegate {
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        viewModel.searchCancelled = false
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.searchCancelled = true
-    }
-    
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        if viewModel.searchCancelled {
-            searchBar.text = viewModel.queryString
         } else {
-            viewModel.queryString = searchBar.text ?? ""
+            return nil
         }
     }
 }
+

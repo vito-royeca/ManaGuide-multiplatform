@@ -18,17 +18,12 @@ protocol SearchViewControllerDelegate: NSObjectProtocol {
     func reloadViewModel() -> SearchViewModel
 }
 
-class SearchViewController: BaseViewController {
+class SearchViewController: BaseSearchViewController {
     // MARK: Variables
-    var viewModel = SearchViewModel(withRequest: nil,
-                                    andTitle: "Search",
-                                    andMode: .standBy)
     var delegate: SearchViewControllerDelegate?
-    let searchController = UISearchController(searchResultsController: nil)
     
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
-    @IBOutlet weak var tableView: UITableView!
     
     // MARK: Actions
     @IBAction func rightMenuAction(_ sender: UIBarButtonItem) {
@@ -40,25 +35,12 @@ class SearchViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchResultsUpdater = self
-        searchController.searchBar.delegate = self
-        searchController.searchBar.placeholder = "Filter"
-        definesPresentationContext = true
-
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars,
                                                         style: .solid,
                                                         textColor: LookAndFeel.GlobalTintColor,
                                                         size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
 
-        if #available(iOS 11.0, *) {
-            navigationItem.searchController = searchController
-            navigationItem.hidesSearchBarWhenScrolling = false
-        } else {
-            tableView.tableHeaderView = searchController.searchBar
-        }
-        
         tableView.register(UINib(nibName: "SearchModeTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: SearchModeTableViewCell.reuseIdentifier)
@@ -67,9 +49,11 @@ class SearchViewController: BaseViewController {
                            forCellReuseIdentifier: CardGridTableViewCell.reuseIdentifier)
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"),
                            forCellReuseIdentifier: CardTableViewCell.reuseIdentifier)
-        tableView.keyboardDismissMode = .onDrag
         
-        title = viewModel.getSearchTitle()
+        viewModel = SearchViewModel(withRequest: nil,
+                                    andTitle: "Search",
+                                    andMode: .standBy)
+        title = viewModel.title
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -90,10 +74,6 @@ class SearchViewController: BaseViewController {
                                                selector: #selector(self.updateData(_:)),
                                                name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                object: nil)
-        
-        if #available(iOS 11.0, *) {
-            navigationItem.hidesSearchBarWhenScrolling = true
-        }
         
         if let delegate = delegate {
             viewModel = delegate.reloadViewModel()
@@ -154,63 +134,7 @@ class SearchViewController: BaseViewController {
         updateDataDisplay()
     }
 
-    // MARK: Notification handlers
-    @objc func updateSettings(_ notification: Notification) {
-        let searchGenerator = SearchRequestGenerator()
-        searchGenerator.syncValues(notification)
-        updateDataDisplay()
-    }
-    
-    @objc func updateData(_ notification: Notification) {
-        if let delegate = delegate {
-            viewModel = delegate.reloadViewModel()
-            updateDataDisplay()
-        }
-    }
-    
-    // MARK: Custom methods
-    func updateDataDisplay() {
-        if #available(iOS 11.0, *) {
-            navigationItem.searchController?.searchBar.isHidden = false
-            navigationItem.hidesSearchBarWhenScrolling = false
-        } else {
-            tableView?.tableHeaderView = searchController.searchBar
-        }
-        fetchData()
-    }
-    
-    @objc func doSearch() {
-        viewModel.queryString = searchController.searchBar.text ?? ""
-        viewModel.mode = .loading
-        tableView.reloadData()
-        
-        fetchData()
-    }
-    
-    func fetchData() {
-        firstly {
-            viewModel.fetchData()
-        }.done {
-            self.viewModel.mode = self.viewModel.isEmpty() ? (self.viewModel.queryString.isEmpty ? .standBy : .noResultsFound) : .resultsFound
-            self.tableView.reloadData()
-        }.catch { error in
-            self.viewModel.mode = .error
-            self.tableView.reloadData()
-        }
-    }
-}
-
-// MARK: UITableViewDataSource
-extension SearchViewController : UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRows(inSection: section)
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.numberOfSections()
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let searchGenerator = SearchRequestGenerator()
         let displayBy = searchGenerator.displayValue(for: .displayBy) as? String
         var cell: UITableViewCell?
@@ -220,10 +144,10 @@ extension SearchViewController : UITableViewDataSource {
         case "list":
             switch viewModel.mode {
             case .resultsFound:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell else {
-                    fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell,
+                    let card = viewModel.object(forRowAt: indexPath) as? CMCard else {
+                        fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
                 }
-                let card = viewModel.object(forRowAt: indexPath)
                 c.card = card
                 cell = c
             default:
@@ -235,7 +159,8 @@ extension SearchViewController : UITableViewDataSource {
             }
             
         case "grid":
-            guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
+            guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell,
+                let viewModel = viewModel as? SearchViewModel else {
                 fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
             }
             let sectionIndexWidth = viewModel.sectionIndexTitles() != nil ? CGFloat(44) : CGFloat(0)
@@ -264,17 +189,30 @@ extension SearchViewController : UITableViewDataSource {
         
         return cell!
     }
-    
-    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        return viewModel.sectionIndexTitles()
+
+    // MARK: Notification handlers
+    @objc func updateSettings(_ notification: Notification) {
+        let searchGenerator = SearchRequestGenerator()
+        searchGenerator.syncValues(notification)
+        updateDataDisplay()
     }
     
-    func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        return viewModel.sectionForSectionIndexTitle(title: title, at: index)
+    @objc func updateData(_ notification: Notification) {
+        if let delegate = delegate {
+            viewModel = delegate.reloadViewModel()
+            updateDataDisplay()
+        }
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return viewModel.titleForHeaderInSection(section: section)
+    // MARK: Custom methods
+    func updateDataDisplay() {
+        if #available(iOS 11.0, *) {
+            navigationItem.searchController?.searchBar.isHidden = false
+            navigationItem.hidesSearchBarWhenScrolling = false
+        } else {
+            tableView?.tableHeaderView = searchController.searchBar
+        }
+        fetchData()
     }
 }
 
@@ -305,11 +243,11 @@ extension SearchViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let cards = viewModel.allObjects() else {
+        guard let cards = viewModel.allObjects() as? [CMCard],
+            let card = viewModel.object(forRowAt: indexPath) as? CMCard else {
             return
         }
         
-        let card = viewModel.object(forRowAt: indexPath)
         let cardIndex = cards.index(of: card)
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": cardIndex as Any,
@@ -325,34 +263,6 @@ extension SearchViewController : UITableViewDelegate {
         }
     }
 }
-
-// MARK: UISearchResultsUpdating
-extension SearchViewController : UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
-        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
-    }
-}
-
-// MARK: UISearchBarDelegate
-extension SearchViewController : UISearchBarDelegate {
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        viewModel.searchCancelled = false
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.searchCancelled = true
-    }
-    
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        if viewModel.searchCancelled {
-            searchBar.text = viewModel.queryString
-        } else {
-            viewModel.queryString = searchBar.text ?? ""
-        }
-    }
-}
-
 
 // MARK: CardGridTableViewCellDelegate
 extension SearchViewController : CardGridTableViewCellDelegate {

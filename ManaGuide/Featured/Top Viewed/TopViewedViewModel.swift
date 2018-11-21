@@ -14,77 +14,30 @@ import PromiseKit
 
 let kMaxFetchTopViewed  = UInt(10)
 
-class TopViewedViewModel: NSObject {
+class TopViewedViewModel: BaseSearchViewModel {
     // MARK: Variables
-    let sortDescriptors = [NSSortDescriptor(key: "firebaseViews", ascending: false),
+    private var _firebaseQuery: DatabaseQuery?
+    
+    override init() {
+        super.init()
+
+        sortDescriptors = [NSSortDescriptor(key: "firebaseViews", ascending: false),
                            NSSortDescriptor(key: "name", ascending: true),
                            NSSortDescriptor(key: "set.releaseDate", ascending: true),
                            NSSortDescriptor(key: "collectorNumber", ascending: true)]
-    
-    private var _fetchedResultsController: NSFetchedResultsController<CMCard>?
-    private var _firebaseQuery: DatabaseQuery?
-    
-    // MARK: Settings
-    
-    
-    // MARK: Overrides
-    override init() {
-        super.init()
-    }
-    
-    // MARK: UITableView methods
-    func numberOfRows(inSection section: Int) -> Int {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-                return 0
-        }
-        
-        return sections[section].numberOfObjects
-    }
-    
-    func numberOfSections() -> Int {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-                return 0
-        }
-        
-        return sections.count
-    }
-    
-    func sectionIndexTitles() -> [String]? {
-        return nil
-    }
-    
-    func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
-        return 0
-    }
-    
-    func titleForHeaderInSection(section: Int) -> String? {
-        return nil
     }
     
     // MARK: Custom methods
-    func object(forRowAt indexPath: IndexPath) -> CMCard {
-        guard let fetchedResultsController = _fetchedResultsController else {
-            fatalError("fetchedResultsController is nil")
+    override func fetchData() -> Promise<Void> {
+        return Promise { seal in
+            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+            request.predicate = NSPredicate(format: "firebaseViews > 0")
+            request.fetchLimit = 10
+            request.sortDescriptors = sortDescriptors
+            fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
         }
-        return fetchedResultsController.object(at: indexPath)
     }
     
-    func allObjects() -> [CMCard]? {
-        guard let fetchedResultsController = _fetchedResultsController else {
-            return nil
-        }
-        return fetchedResultsController.fetchedObjects
-    }
-    
-    func isEmpty() -> Bool {
-        guard let objects = allObjects() else {
-            return true
-        }
-        return objects.count == 0
-    }
-
     func fetchRemoteData() -> Promise<Void> {
         return Promise { seal in
             let ref = Database.database().reference().child("cards")
@@ -117,15 +70,6 @@ class TopViewedViewModel: NSObject {
         }
     }
     
-    func fetchData() {
-        // refresh data
-        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        request.predicate = NSPredicate(format: "firebaseViews > 0")
-        request.fetchLimit = 10
-        request.sortDescriptors = self.sortDescriptors
-        self._fetchedResultsController = self.getFetchedResultsController(with: request)
-    }
-    
     func stopMonitoring() {
         let ref = Database.database().reference().child("cards")
         ref.keepSynced(false)
@@ -136,12 +80,12 @@ class TopViewedViewModel: NSObject {
         }
     }
     
-    private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMCard>?) -> NSFetchedResultsController<CMCard> {
+    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
         let context = ManaKit.sharedInstance.dataStack!.viewContext
         var request: NSFetchRequest<CMCard>?
         
         if let fetchRequest = fetchRequest {
-            request = fetchRequest
+            request = fetchRequest as? NSFetchRequest<CMCard>
         } else {
             // Create a default fetchRequest
             request = CMCard.fetchRequest()
@@ -166,11 +110,6 @@ class TopViewedViewModel: NSObject {
             print("\(fetchError), \(fetchError.localizedDescription)")
         }
         
-        return frc
+        return frc as! NSFetchedResultsController<NSManagedObject>
     }
-}
-
-// MARK: NSFetchedResultsControllerDelegate
-extension TopViewedViewModel : NSFetchedResultsControllerDelegate {
-    
 }

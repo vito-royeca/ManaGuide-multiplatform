@@ -49,7 +49,7 @@ class BannedViewModel: NSObject {
         }
         
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        request.predicate = NSPredicate(format: "id IN %@", cardLegalities.map { $0.card!.id })
+        request.predicate = NSPredicate(format: "id IN %@ AND language.code = %@", cardLegalities.map { $0.card!.id }, "en")
         
         let searchViewModel = SearchViewModel(withRequest: request,
                                               andTitle: formatName,

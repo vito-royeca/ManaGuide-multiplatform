@@ -18,9 +18,8 @@ class FeaturedViewController: BaseViewController {
     let latestSetsViewModel  = LatestSetsViewModel()
     let topRatedViewModel    = TopRatedViewModel()
     let topViewedViewModel   = TopViewedViewModel()
-    
     var flowLayoutHeight = CGFloat(0)
-    
+
     // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
 
@@ -45,29 +44,54 @@ class FeaturedViewController: BaseViewController {
                                                name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
                                                object: nil)
         
-        latestSetsViewModel.fetchData()
-        topRatedViewModel.fetchData()
-        topViewedViewModel.fetchData()
+        tableView.register(FeaturedTableViewCell.self,
+                           forCellReuseIdentifier: FeaturedTableViewCell.reuseIdentifier)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) as? LatestCardsTableViewCell else {
-            return
+        if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) as? LatestCardsTableViewCell {
+            cell.startSlideShow()
         }
         
-        cell.startSlideShow()
+        if latestSetsViewModel.isEmpty() {
+            firstly {
+                latestSetsViewModel.fetchData()
+            }.done {
+                self.tableView.reloadRows(at: [IndexPath(row: FeaturedSection.latestSets.rawValue, section: 0)], with: .automatic)
+            }.catch { error in
+                    
+            }
+        }
+        
+        if topRatedViewModel.isEmpty() {
+            firstly {
+                topRatedViewModel.fetchData()
+            }.done {
+                self.tableView.reloadRows(at: [IndexPath(row: FeaturedSection.topRated.rawValue, section: 0)], with: .automatic)
+            }.catch { error in
+                    
+            }
+        }
+        
+        if topViewedViewModel.isEmpty() {
+            firstly {
+                topViewedViewModel.fetchData()
+            }.done {
+                self.tableView.reloadRows(at: [IndexPath(row: FeaturedSection.topViewed.rawValue, section: 0)], with: .automatic)
+            }.catch { error in
+                    
+            }
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) as? LatestCardsTableViewCell else {
-            return
+        if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) as? LatestCardsTableViewCell {
+            cell.stopSlideShow()
         }
-        
-        cell.stopSlideShow()
         topRatedViewModel.stopMonitoring()
         topViewedViewModel.stopMonitoring()
     }
@@ -162,9 +186,6 @@ class FeaturedViewController: BaseViewController {
             flowLayout.minimumInteritemSpacing = CGFloat(5)
             flowLayout.sectionInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 0)
         }
-        
-        collectionView.dataSource = self
-        collectionView.delegate = self
         collectionView.tag = tag
     }
 }
@@ -317,103 +338,6 @@ extension FeaturedViewController : UITableViewDelegate {
         }
         
         return height
-    }
-}
-
-// MARK: UICollectionViewDataSource
-extension FeaturedViewController : UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var count = 0
-        
-        switch collectionView.tag {
-        case FeaturedSection.topRated.rawValue:
-            count = topRatedViewModel.numberOfRows(inSection: section)
-        case FeaturedSection.topViewed.rawValue:
-            count = topViewedViewModel.numberOfRows(inSection: section)
-        case FeaturedSection.latestSets.rawValue:
-            count = latestSetsViewModel.numberOfRows(inSection: section)
-        default:
-            ()
-        }
-        
-        return count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        var cell: UICollectionViewCell?
-        
-        switch collectionView.tag {
-        case FeaturedSection.latestSets.rawValue:
-            guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: LatestSetItemCell.reuseIdentifier,
-                                                            for: indexPath) as? LatestSetItemCell else {
-                fatalError("LatestSetItemCell not found")
-            }
-            c.set = latestSetsViewModel.object(forRowAt: indexPath)
-            cell = c
-            
-        case FeaturedSection.topRated.rawValue:
-            guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: TopRatedItemCell.reuseIdentifier,
-                                                                for: indexPath) as? TopRatedItemCell else {
-                fatalError("TopRatedItemCell not found")
-            }
-            c.card = topRatedViewModel.object(forRowAt: indexPath)
-            cell = c
-            
-        case FeaturedSection.topViewed.rawValue:
-            guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: TopViewedItemCell.reuseIdentifier,
-                                                             for: indexPath) as? TopViewedItemCell else {
-                fatalError("TopViewedItemCell not found")
-            }
-            c.card = topViewedViewModel.object(forRowAt: indexPath)
-            cell = c
-            
-        default:
-            ()
-        }
-        
-        if let cell = cell {
-            cell.setNeedsLayout()
-        }
-        return cell!
-    }
-}
-
-// MARK: UICollectionViewDelegate
-extension FeaturedViewController : UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        var identifier = ""
-        var sender: [String: Any]?
-        var cardIDs = [String]()
-        
-        switch collectionView.tag {
-        case FeaturedSection.latestSets.rawValue:
-            let set = latestSetsViewModel.object(forRowAt: indexPath)
-            identifier = "showSet"
-            sender = ["set": set]
-        case FeaturedSection.topRated.rawValue:
-            for i in 0...topRatedViewModel.numberOfRows(inSection: 0) - 1 {
-                cardIDs.append(topRatedViewModel.object(forRowAt: IndexPath(row: i, section: 0)).id!)
-            }
-            
-            identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-            sender = ["cardIndex": indexPath.row,
-                      "cardIDs": cardIDs,
-                      "sortDescriptors": topRatedViewModel.sortDescriptors]
-            
-        case FeaturedSection.topViewed.rawValue:
-            for i in 0...topViewedViewModel.numberOfRows(inSection: 0) - 1 {
-                cardIDs.append(topViewedViewModel.object(forRowAt: IndexPath(row: i, section: 0)).id!)
-            }
-            
-            identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-            sender = ["cardIndex": indexPath.row,
-                      "cardIDs": cardIDs,
-                      "sortDescriptors": topViewedViewModel.sortDescriptors]
-        default:
-            ()
-        }
-        
-        performSegue(withIdentifier: identifier, sender: sender)
     }
 }
 

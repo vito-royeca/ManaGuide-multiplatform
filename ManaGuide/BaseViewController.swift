@@ -8,6 +8,7 @@
 
 import UIKit
 import MMDrawerController
+import PromiseKit
 
 class BaseViewController: UIViewController {
 
@@ -122,3 +123,4 @@ extension BaseViewController : UIGestureRecognizerDelegate {
         return true
     }
 }
+

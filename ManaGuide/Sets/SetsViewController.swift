@@ -12,15 +12,10 @@ import InAppSettingsKit
 import ManaKit
 import PromiseKit
 
-class SetsViewController: BaseViewController {
+class SetsViewController: BaseSearchViewController {
 
-    // MARK: Variables
-    let searchController = UISearchController(searchResultsController: nil)
-    var viewModel = SetsViewModel()
-    
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
-    @IBOutlet weak var tableView: UITableView!
     
     // MARK: actions
     @IBAction func rightMenuAction(_ sender: UIBarButtonItem) {
@@ -40,19 +35,6 @@ class SetsViewController: BaseViewController {
                                                name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                object: nil)
         
-        searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchBar.delegate = self
-        searchController.searchBar.placeholder = "Filter"
-        searchController.searchResultsUpdater = self
-        definesPresentationContext = true
-        
-        if #available(iOS 11.0, *) {
-            navigationItem.searchController = searchController
-            navigationItem.hidesSearchBarWhenScrolling = false
-        } else {
-            tableView.tableHeaderView = searchController.searchBar
-        }
-        
         tableView.register(UINib(nibName: "SearchModeTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: SearchModeTableViewCell.reuseIdentifier)
@@ -64,18 +46,8 @@ class SetsViewController: BaseViewController {
                                                         size: CGSize(width: 30, height: 30)) //UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
         rightMenuButton.title = nil
         title = "Sets"
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         
-        if #available(iOS 11.0, *) {
-            navigationItem.hidesSearchBarWhenScrolling = true
-        }
-        
-        if viewModel.mode == .loading {
-            fetchData()
-        }
+        viewModel = SetsViewModel()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -87,52 +59,12 @@ class SetsViewController: BaseViewController {
                 return
             }
             
-            dest.viewModel = SetViewModel(withSet: set, languageCode: languageCode)
+            dest.viewModel = SetViewModel(withSet: set,
+                                          languageCode: languageCode)
         }
     }
 
-    // MARK: Custom methods
-    @objc func updateDataDisplay(_ notification: Notification) {
-        guard let userInfo = notification.userInfo as? [String: Any] else {
-            return
-        }
-        
-        viewModel.updateSorting(with: userInfo)
-        fetchData()
-    }
-    
-    @objc func doSearch() {
-        viewModel.queryString = searchController.searchBar.text ?? ""
-        viewModel.mode = .loading
-        tableView.reloadData()
-        
-        fetchData()
-    }
-    
-    func fetchData() {
-        firstly {
-            viewModel.fetchData()
-        }.done {
-            self.viewModel.mode = self.viewModel.isEmpty() ? .noResultsFound : .resultsFound
-            self.tableView.reloadData()
-        }.catch { error in
-            self.viewModel.mode = .error
-            self.tableView.reloadData()
-        }
-    }
-}
-
-// MARK: UITableViewDataSource
-extension SetsViewController : UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRows(inSection: section)
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.numberOfSections()
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: UITableViewCell?
         
         if viewModel.mode == .resultsFound {
@@ -141,7 +73,7 @@ extension SetsViewController : UITableViewDataSource {
                                                             fatalError("Unexpected indexPath: \(indexPath)")
             }
             
-            c.set = viewModel.object(forRowAt: indexPath)
+            c.set = viewModel.object(forRowAt: indexPath) as? CMSet
             c.delegate = self
             cell = c
         } else {
@@ -154,17 +86,16 @@ extension SetsViewController : UITableViewDataSource {
         
         return cell!
     }
-    
-    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        return viewModel.sectionIndexTitles()
-    }
-    
-    func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        return viewModel.sectionForSectionIndexTitle(title: title, at: index)
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return viewModel.titleForHeaderInSection(section: section)
+
+    // MARK: Custom methods
+    @objc func updateDataDisplay(_ notification: Notification) {
+        guard let userInfo = notification.userInfo as? [String: Any],
+            let viewModel = viewModel as? SetsViewModel else {
+            return
+        }
+        
+        viewModel.updateSorting(with: userInfo)
+        fetchData()
     }
 }
 
@@ -175,33 +106,6 @@ extension SetsViewController : UITableViewDelegate {
             return SetsTableViewCell.cellHeight
         } else {
             return tableView.frame.size.height / 3
-        }
-    }
-}
-
-// MARK: UISearchResultsUpdating
-extension SetsViewController : UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
-        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
-    }
-}
-
-// MARK: UISearchResultsUpdating
-extension SetsViewController : UISearchBarDelegate {
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        viewModel.searchCancelled = false
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.searchCancelled = true
-    }
-    
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        if viewModel.searchCancelled {
-            searchBar.text = viewModel.queryString
-        } else {
-            viewModel.queryString = searchBar.text ?? ""
         }
     }
 }

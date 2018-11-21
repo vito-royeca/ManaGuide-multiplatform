@@ -8,60 +8,39 @@
 
 import CoreData
 import ManaKit
+import PromiseKit
 
 let kMaxLatestSets = 10
 
-class LatestSetsViewModel: NSObject {
-    // MARK: Variables
-    private var _fetchedResultsController: NSFetchedResultsController<CMSet>?
-    private var _sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
-    
-    // MARK: UITableView methods
-    func numberOfRows(inSection section: Int) -> Int {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-                return 0
-        }
+class LatestSetsViewModel: BaseSearchViewModel {
+    override init() {
+        super.init()
         
-        return sections[section].numberOfObjects
-    }
-    
-    func numberOfSections() -> Int {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-                return 0
-        }
-        
-        return sections.count
+        sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
     }
     
     // MARK: Custom methods
-    func object(forRowAt indexPath: IndexPath) -> CMSet {
-        guard let fetchedResultsController = _fetchedResultsController else {
-            fatalError("fetchedResultsController is nil")
+    override func fetchData() -> Promise<Void> {
+        return Promise { seal in
+            let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
+            request.predicate = NSPredicate(format: "parent = nil")
+            request.sortDescriptors = sortDescriptors
+            request.fetchLimit = kMaxLatestSets
+            
+            fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
         }
-        return fetchedResultsController.object(at: indexPath)
     }
     
-    func fetchData() {
-        let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
-        request.predicate = NSPredicate(format: "parent = nil")
-        request.sortDescriptors = _sortDescriptors
-        request.fetchLimit = kMaxLatestSets
-        
-        _fetchedResultsController = getFetchedResultsController(with: request)
-    }
-    
-    private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMSet>?) -> NSFetchedResultsController<CMSet> {
+    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
         let context = ManaKit.sharedInstance.dataStack!.viewContext
         var request: NSFetchRequest<CMSet>?
         
         if let fetchRequest = fetchRequest {
-            request = fetchRequest
+            request = fetchRequest as? NSFetchRequest<CMSet>
         } else {
             // Create a default fetchRequest
             request = CMSet.fetchRequest()
-            request!.sortDescriptors = _sortDescriptors
+            request!.sortDescriptors = sortDescriptors
         }
         
         // Create Fetched Results Controller
@@ -82,12 +61,6 @@ class LatestSetsViewModel: NSObject {
             print("\(fetchError), \(fetchError.localizedDescription)")
         }
         
-        return frc
+        return frc as! NSFetchedResultsController<NSManagedObject>
     }
 }
-
-// MARK: NSFetchedResultsControllerDelegate
-extension LatestSetsViewModel : NSFetchedResultsControllerDelegate {
-    
-}
-

@@ -115,7 +115,7 @@ enum CardOtherDetailsSection : Int {
     }
 }
 
-class CardViewModel: NSObject {
+class CardViewModel: BaseSearchViewModel {
     // MARK: Variables
     var cardIndex = 0
     var cardViewIncremented = false
@@ -125,26 +125,26 @@ class CardViewModel: NSObject {
     var variationsViewModel: SearchViewModel?
     var otherPrintingsViewModel: SearchViewModel?
     
-    private var _fetchedResultsController: NSFetchedResultsController<CMCard>?
-    private var _sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                                    NSSortDescriptor(key: "name", ascending: true),
-                                    NSSortDescriptor(key: "collectorNumber", ascending: true)]
-
     init(withCardIndex cardIndex: Int,
          withCardIDs cardIDs: [String],
-         withSortDescriptors sortDescriptors: [NSSortDescriptor]?) {
+         withSortDescriptors sd: [NSSortDescriptor]?) {
         super.init()
         
         self.cardIndex = cardIndex
+        sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                           NSSortDescriptor(key: "name", ascending: true),
+                           NSSortDescriptor(key: "collectorNumber", ascending: true)]
+        
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         request.predicate = NSPredicate(format: "id IN %@", cardIDs)
-        request.sortDescriptors = sortDescriptors ?? _sortDescriptors
-        _fetchedResultsController = getFetchedResultsController(with: request)
+        request.sortDescriptors = sd ?? sortDescriptors
     }
     
     // MARK: UITableView methods
-    func numberOfRows(inSection section: Int) -> Int {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+    override func numberOfRows(inSection section: Int) -> Int {
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         var rows = 0
         
         switch content {
@@ -205,7 +205,7 @@ class CardViewModel: NSObject {
     }
     
     func numberOfCards() -> Int {
-        guard let fetchedResultsController = _fetchedResultsController,
+        guard let fetchedResultsController = fetchedResultsController,
             let fetchedObjects = fetchedResultsController.fetchedObjects else {
             return 0
         }
@@ -244,7 +244,9 @@ class CardViewModel: NSObject {
     }
     
     func numberOfRulings() -> Int {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         var count = 0
         
         if let rulingsSet = card.cardRulings,
@@ -255,7 +257,9 @@ class CardViewModel: NSObject {
     }
     
     func numberOfLegalities() -> Int {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         var count = 0
         
         if let cardLegalities = card.cardLegalities {
@@ -264,7 +268,7 @@ class CardViewModel: NSObject {
         return count
     }
     
-    func numberOfSections() -> Int {
+    override func numberOfSections() -> Int {
         var sections = 0
         
         switch content {
@@ -279,7 +283,7 @@ class CardViewModel: NSObject {
         return sections
     }
     
-    func titleForHeaderInSection(section: Int) -> String? {
+    override func titleForHeaderInSection(section: Int) -> String? {
         var headerTitle: String?
         
         switch content {
@@ -332,16 +336,9 @@ class CardViewModel: NSObject {
     }
     
     // MARK: Custom methods
-    func object(forRowAt indexPath: IndexPath) -> CMCard {
-        guard let fetchedResultsController = _fetchedResultsController else {
-            fatalError("fetchedResultsController is nil")
-        }
-        return fetchedResultsController.object(at: indexPath)
-    }
-    
     func rulingText(inRow row: Int, pointSize: CGFloat) -> NSAttributedString? {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
-        guard let rulingsSet = card.cardRulings ,
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard,
+            let rulingsSet = card.cardRulings ,
             let rulings = rulingsSet.allObjects as? [CMCardRuling] else {
             return nil
         }
@@ -378,7 +375,9 @@ class CardViewModel: NSObject {
     }
 
     func cardText(inRow row: Int, cardIndex index: Int, pointSize: CGFloat) -> NSAttributedString {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         var face: CMCard?
         let attributedString = NSMutableAttributedString()
         
@@ -426,7 +425,9 @@ class CardViewModel: NSObject {
     }
     
     func textOf(otherDetails: CardOtherDetailsSection) -> String {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         var text = "\u{2014}"
         
         switch otherDetails {
@@ -482,43 +483,51 @@ class CardViewModel: NSObject {
     }
     
     func requestForVariations() -> NSFetchRequest<CMCard> {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         
         request.predicate = NSPredicate(format: "set.code = %@ AND language.code = %@ AND id != %@ AND name = %@",
                                         card.set!.code!,
                                         card.language!.code!,
                                         card.id!, card.name!)
-        request.sortDescriptors = _sortDescriptors
+        request.sortDescriptors = sortDescriptors
         return request
     }
     
     func requestForParts() -> NSFetchRequest<CMCard> {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         
         if let partsSet = card.parts,
             let parts = partsSet.allObjects as? [CMCard] {
             request.predicate = NSPredicate(format: "id IN %@", parts.map({$0.id}))
-            request.sortDescriptors = _sortDescriptors
+            request.sortDescriptors = sortDescriptors
         }
         return request
     }
 
     func requestForOtherPrintings() -> NSFetchRequest<CMCard> {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         
         request.predicate = NSPredicate(format: "set.code != %@ AND language.code = %@ AND id != %@ AND name = %@",
                                         card.set!.code!,
                                         card.language!.code!,
                                         card.id!, card.name!)
-        request.sortDescriptors = _sortDescriptors
+        request.sortDescriptors = sortDescriptors
         return request
     }
     
     func userRatingForCurrentCard() -> Double {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         
         guard let fbUser = Auth.auth().currentUser,
             let user = ManaKit.sharedInstance.findObject("CMUser",
@@ -538,8 +547,9 @@ class CardViewModel: NSObject {
     }
     
     func isCurrentCardFavorite() -> Bool {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
-        
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         guard let fbUser = Auth.auth().currentUser,
             let user = ManaKit.sharedInstance.findObject("CMUser",
                                                          objectFinder: ["id": fbUser.uid as AnyObject],
@@ -558,7 +568,9 @@ class CardViewModel: NSObject {
     }
 
     func ratingStringForCard() -> String {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         
         return "\(card.firebaseRatings) Rating\(card.firebaseRatings > 1 ? "s" : "")"
     }
@@ -578,7 +590,9 @@ class CardViewModel: NSObject {
     // MARK: Firebase methods
     func toggleCardFavorite(firstAttempt: Bool) {
         let completion = { () -> Void in
-            let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0))
+            guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard else {
+                fatalError()
+            }
             
             guard let fbUser = Auth.auth().currentUser,
                 let user = ManaKit.sharedInstance.findObject("CMUser",
@@ -638,7 +652,9 @@ class CardViewModel: NSObject {
     
     func incrementCardViews(firstAttempt: Bool) {
         let completion = { () -> Void in
-            let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0))
+            guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard else {
+                fatalError()
+            }
             let ref = Database.database().reference().child("cards").child(card.firebaseID!)
             
             ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
@@ -688,7 +704,9 @@ class CardViewModel: NSObject {
 
     func updateCardRatings(rating: Double, firstAttempt: Bool) {
         let completion = { () -> Void in
-            let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0))
+            guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard else {
+                fatalError()
+            }
             
             guard let fbUser = Auth.auth().currentUser,
                 let user = ManaKit.sharedInstance.findObject("CMUser",
@@ -758,8 +776,9 @@ class CardViewModel: NSObject {
     }
     
     func updateUserRatings(rating: Double, firstAttempt: Bool) {
-        
-        let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0))
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         
         guard let fbUser = Auth.auth().currentUser,
             let user = ManaKit.sharedInstance.findObject("CMUser",
@@ -822,7 +841,9 @@ class CardViewModel: NSObject {
     }
 
     private func saveCardData(firstAttempt: Bool, completion: @escaping () -> Void) {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         let ref = Database.database().reference().child("cards").child(card.firebaseID!)
         
         ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
@@ -855,7 +876,9 @@ class CardViewModel: NSObject {
     }
     
     func loadCardData() {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         let ref = Database.database().reference().child("cards").child(card.firebaseID!)
         
         ref.observeSingleEvent(of: .value, with: { snapshot in
@@ -879,7 +902,9 @@ class CardViewModel: NSObject {
     }
     
     private func firebaseCardData() -> [String: Any] {
-        let card = object(forRowAt: IndexPath(row: cardIndex, section: 0))
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
         var dict = [String: Any]()
         
         dict["Name"] = card.name
@@ -923,16 +948,16 @@ class CardViewModel: NSObject {
         return dict
     }
     
-    private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMCard>?) -> NSFetchedResultsController<CMCard> {
+    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
         let context = ManaKit.sharedInstance.dataStack!.viewContext
         var request: NSFetchRequest<CMCard>?
         
         if let fetchRequest = fetchRequest {
-            request = fetchRequest
+            request = fetchRequest as? NSFetchRequest<CMCard>
         } else {
             // Create a default fetchRequest
             request = CMCard.fetchRequest()
-            request!.sortDescriptors = _sortDescriptors
+            request!.sortDescriptors = sortDescriptors
         }
         
         // Create Fetched Results Controller
@@ -953,12 +978,8 @@ class CardViewModel: NSObject {
             print("\(fetchError), \(fetchError.localizedDescription)")
         }
         
-        return frc
+        return frc as! NSFetchedResultsController<NSManagedObject>
     }
 }
 
-// MARK: NSFetchedResultsControllerDelegate
-extension CardViewModel : NSFetchedResultsControllerDelegate {
-    
-}
 

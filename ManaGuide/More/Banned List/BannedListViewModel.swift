@@ -8,136 +8,61 @@
 
 import CoreData
 import ManaKit
+import PromiseKit
 
-class BannedListViewModel: NSObject {
+class BannedListViewModel: BaseSearchViewModel {
     // MARK: Variables
-    var queryString = ""
-    var searchCancelled = false
-    
     private var _sectionIndexTitles: [String]?
     private var _sectionTitles: [String]?
-    private var _fetchedResultsController: NSFetchedResultsController<CMCardFormat>?
-    private let _sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-    private let _sectionName = "nameSection"
     
-    // MARK: UITableView methods
-    func numberOfRows(inSection section: Int) -> Int {
-        var rows = 0
+    override init() {
+        super.init()
         
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-            return rows
-        }
-        rows = sections[section].numberOfObjects
-        
-        return rows
-    }
-    
-    func numberOfSections() -> Int {
-        var number = 0
-        
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-                return number
-        }
-        
-        number = sections.count
-        
-        return number
-    }
-    
-    func sectionIndexTitles() -> [String]? {
-        return _sectionIndexTitles
-    }
-    
-    func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
-        var sectionIndex = 0
-        
-        guard let sectionTitles = _sectionTitles else {
-            return sectionIndex
-        }
-        
-        for i in 0...sectionTitles.count - 1 {
-            if sectionTitles[i].hasPrefix(title) {
-                sectionIndex = i
-                break
-            }
-        }
-        
-        return sectionIndex
-    }
-    
-    func titleForHeaderInSection(section: Int) -> String? {
-        var titleHeader: String?
-        
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-                return titleHeader
-        }
-        titleHeader = sections[section].name
-        
-        return titleHeader
+        sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        sectionName = "nameSection"
     }
     
     // MARK: Custom methods
-    func object(forRowAt indexPath: IndexPath) -> CMCardFormat {
-        guard let fetchedResultsController = _fetchedResultsController else {
-            fatalError("fetchedResultsController is nil")
-        }
-        return fetchedResultsController.object(at: indexPath)
-    }
-    
-    func allObjects() -> [CMCardFormat]? {
-        guard let fetchedResultsController = _fetchedResultsController else {
-            return nil
-        }
-        return fetchedResultsController.fetchedObjects
-    }
-    
-    func isEmpty() -> Bool {
-        guard let objects = allObjects() else {
-            return true
-        }
-        return objects.count == 0
-    }
-
-    func fetchData() {
-        let request: NSFetchRequest<CMCardFormat> = CMCardFormat.fetchRequest()
-        let count = queryString.count
-        var predicate = NSPredicate(format: "ANY cardLegalities.legality.name IN %@", ["Banned", "Restricted"])
-        
-        if count > 0 {
-            if count == 1 {
-                predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NSPredicate(format: "name BEGINSWITH[cd] %@", queryString)])
-            } else {
-                predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NSPredicate(format: "name CONTAINS[cd] %@", queryString)])
+    override func fetchData() -> Promise<Void> {
+        return Promise { seal in
+            let request: NSFetchRequest<CMCardFormat> = CMCardFormat.fetchRequest()
+            let count = queryString.count
+            var predicate = NSPredicate(format: "ANY cardLegalities.legality.name IN %@", ["Banned", "Restricted"])
+            
+            if count > 0 {
+                if count == 1 {
+                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NSPredicate(format: "name BEGINSWITH[cd] %@", queryString)])
+                } else {
+                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NSPredicate(format: "name CONTAINS[cd] %@", queryString)])
+                }
             }
+            request.predicate = predicate
+            request.sortDescriptors = sortDescriptors
+            
+            fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
+            updateSections()
+            
+            seal.fulfill(())
         }
-        request.predicate = predicate
-        request.sortDescriptors = _sortDescriptors
-        
-        _fetchedResultsController = getFetchedResultsController(with: request)
-        updateSections()
     }
     
-    // MARK: Private methods
-    private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMCardFormat>?) -> NSFetchedResultsController<CMCardFormat> {
+    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
         let context = ManaKit.sharedInstance.dataStack!.viewContext
         var request: NSFetchRequest<CMCardFormat>?
         
         if let fetchRequest = fetchRequest {
-            request = fetchRequest
+            request = fetchRequest as? NSFetchRequest<CMCardFormat>
         } else {
             // create a default fetchRequest
             request = CMCardFormat.fetchRequest()
             request!.predicate = NSPredicate(format: "ANY cardLegalities.legality.name IN %@", ["Banned", "Restricted"])
-            request!.sortDescriptors = _sortDescriptors
+            request!.sortDescriptors = sortDescriptors
         }
         
         // Create Fetched Results Controller
         let frc = NSFetchedResultsController(fetchRequest: request!,
                                              managedObjectContext: context,
-                                             sectionNameKeyPath: _sectionName,
+                                             sectionNameKeyPath: sectionName,
                                              cacheName: nil)
         
         // Configure Fetched Results Controller
@@ -152,12 +77,12 @@ class BannedListViewModel: NSObject {
             print("\(fetchError), \(fetchError.localizedDescription)")
         }
         
-        return frc
+        return frc as! NSFetchedResultsController<NSManagedObject>
     }
     
-    private func updateSections() {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let formats = fetchedResultsController.fetchedObjects,
+    override func updateSections() {
+        guard let fetchedResultsController = fetchedResultsController,
+            let formats = fetchedResultsController.fetchedObjects as? [CMCardFormat],
             let sections = fetchedResultsController.sections else {
                 return
         }
@@ -186,9 +111,4 @@ class BannedListViewModel: NSObject {
         _sectionIndexTitles!.sort()
         _sectionTitles!.sort()
     }
-}
-
-// MARK: NSFetchedResultsControllerDelegate
-extension BannedListViewModel : NSFetchedResultsControllerDelegate {
-    
 }

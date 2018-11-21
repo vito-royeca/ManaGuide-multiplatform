@@ -88,11 +88,11 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
         
         switch viewModel.mode {
         case .resultsFound:
-            guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: CardImageCollectionViewCell.reuseIdentifier, for: indexPath) as? CardImageCollectionViewCell else {
+            guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: CardImageCollectionViewCell.reuseIdentifier, for: indexPath) as? CardImageCollectionViewCell,
+                let card = viewModel.object(forRowAt: indexPath) as? CMCard else {
                 fatalError("\(CardImageCollectionViewCell.reuseIdentifier) is nil")
             }
             
-            let card = viewModel.object(forRowAt: indexPath)
             c.imageType = imageType
             c.animationOptions = animationOptions
             c.card = card
@@ -147,9 +147,8 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
 // MARK: UICollectionViewDelegate
 extension CardGridTableViewCell : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let card = viewModel.object(forRowAt: indexPath)
-        
-        guard let cards = viewModel.allObjects(),
+        guard let cards = viewModel.allObjects() as? [CMCard],
+            let card = viewModel.object(forRowAt: indexPath) as? CMCard,
             let cardIndex = cards.index(of: card) else {
             return
         }

@@ -10,55 +10,13 @@ import CoreData
 import ManaKit
 import PromiseKit
 
-class SetsViewModel: BaseViewModel {
+class SetsViewModel: BaseSearchViewModel {
     // MARK: Variables
-    var queryString = ""
-    var searchCancelled = false
-    
     private var _sectionIndexTitles: [String]?
     private var _sectionTitles: [String]?
-    private var _fetchedResultsController: NSFetchedResultsController<CMSet>?
-    
-    // MARK: Settings
-    private var _sortDescriptors: [NSSortDescriptor]?
-    private var _sectionName: String?
     
     // MARK: UITableView methods
-    func numberOfRows(inSection section: Int) -> Int {
-        if mode == .resultsFound {
-            guard let fetchedResultsController = _fetchedResultsController,
-                let sections = fetchedResultsController.sections else {
-                return 1
-            }
-            
-            return sections[section].numberOfObjects
-        } else {
-            return 1
-        }
-    }
-    
-    func numberOfSections() -> Int {
-        if mode == .resultsFound {
-            guard let fetchedResultsController = _fetchedResultsController,
-                let sections = fetchedResultsController.sections else {
-                return 1
-            }
-            
-            return sections.count
-        } else {
-            return 1
-        }
-    }
-    
-    func sectionIndexTitles() -> [String]? {
-        if mode == .resultsFound {
-            return _sectionIndexTitles
-        } else {
-            return nil
-        }
-    }
-    
-    func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
+    override func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
         if mode == .resultsFound {
             let defaults = defaultsValue()
             var sectionIndex = 0
@@ -85,41 +43,8 @@ class SetsViewModel: BaseViewModel {
         }
     }
     
-    func titleForHeaderInSection(section: Int) -> String? {
-        if mode == .resultsFound {
-            guard let fetchedResultsController = _fetchedResultsController,
-                let sections = fetchedResultsController.sections else {
-                return nil
-            }
-            return sections[section].name
-        } else {
-            return nil
-        }
-    }
-    
     // MARK: Custom methods
-    func object(forRowAt indexPath: IndexPath) -> CMSet {
-        guard let fetchedResultsController = _fetchedResultsController else {
-            fatalError("fetchedResultsController is nil")
-        }
-        return fetchedResultsController.object(at: indexPath)
-    }
-    
-    func allObjects() -> [CMSet]? {
-        guard let fetchedResultsController = _fetchedResultsController else {
-            return nil
-        }
-        return fetchedResultsController.fetchedObjects
-    }
-    
-    func isEmpty() -> Bool {
-        guard let objects = allObjects() else {
-            return true
-        }
-        return objects.count == 0
-    }
-    
-    func fetchData() -> Promise<Void> {
+    override func fetchData() -> Promise<Void> {
         return Promise { seal in
             let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
             let count = queryString.count
@@ -132,9 +57,9 @@ class SetsViewModel: BaseViewModel {
                 }
             }
             updateSorting(with: nil)
-            request.sortDescriptors = _sortDescriptors
+            request.sortDescriptors = sortDescriptors
             
-            _fetchedResultsController = getFetchedResultsController(with: request)
+            fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
             updateSections()
             
             seal.fulfill(())
@@ -145,7 +70,7 @@ class SetsViewModel: BaseViewModel {
         let defaults = defaultsValue()
         var setsSortBy = defaults["setsSortBy"] as! String
         var setsOrderBy = defaults["setsOrderBy"] as! Bool
-        _sectionName = defaults["setsSectionName"] as? String
+        sectionName = defaults["setsSectionName"] as! String
         
         if let values = values {
             if let value = values["setsOrderBy"] as? Bool {
@@ -157,42 +82,41 @@ class SetsViewModel: BaseViewModel {
                 
                 switch setsSortBy {
                 case "releaseDate":
-                    _sectionName = "myYearSection"
+                    sectionName = "myYearSection"
                 case "name":
-                    _sectionName = "myNameSection"
+                    sectionName = "myNameSection"
                 case "setType.name":
-                    _sectionName = "setType.name"
+                    sectionName = "setType.name"
                 default:
                     ()
                 }
             }
         }
         
-        UserDefaults.standard.set(_sectionName, forKey: "setsSectionName")
+        UserDefaults.standard.set(sectionName, forKey: "setsSectionName")
         UserDefaults.standard.set(setsSortBy, forKey: "setsSortBy")
         UserDefaults.standard.set(setsOrderBy, forKey: "setsOrderBy")
         UserDefaults.standard.synchronize()
         
-        _sortDescriptors = [NSSortDescriptor(key: setsSortBy, ascending: setsOrderBy)]
+        sortDescriptors = [NSSortDescriptor(key: setsSortBy, ascending: setsOrderBy)]
     }
     
-    // MARK: Private methods
-    private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMSet>?) -> NSFetchedResultsController<CMSet> {
+    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
         let context = ManaKit.sharedInstance.dataStack!.viewContext
         var request: NSFetchRequest<CMSet>?
         
         if let fetchRequest = fetchRequest {
-            request = fetchRequest
+            request = fetchRequest as? NSFetchRequest<CMSet>
         } else {
             // Create a default fetchRequest
             request = CMSet.fetchRequest()
-            request!.sortDescriptors = _sortDescriptors
+            request!.sortDescriptors = sortDescriptors
         }
         
         // Create Fetched Results Controller
         let frc = NSFetchedResultsController(fetchRequest: request!,
                                              managedObjectContext: context,
-                                             sectionNameKeyPath: _sectionName,
+                                             sectionNameKeyPath: sectionName,
                                              cacheName: nil)
         
         // Configure Fetched Results Controller
@@ -207,14 +131,13 @@ class SetsViewModel: BaseViewModel {
             print("\(fetchError), \(fetchError.localizedDescription)")
         }
         
-        return frc
+        return frc as! NSFetchedResultsController<NSManagedObject>
     }
     
-    private func updateSections() {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sets = fetchedResultsController.fetchedObjects,
-            let sections = fetchedResultsController.sections,
-            let sectionName = _sectionName else {
+    override func updateSections() {
+        guard let fetchedResultsController = fetchedResultsController,
+            let sets = fetchedResultsController.fetchedObjects as? [CMSet],
+            let sections = fetchedResultsController.sections else {
                 return
         }
 
@@ -284,9 +207,4 @@ class SetsViewModel: BaseViewModel {
         
         return values
     }
-}
-
-// MARK: NSFetchedResultsControllerDelegate
-extension SetsViewModel : NSFetchedResultsControllerDelegate {
-    
 }

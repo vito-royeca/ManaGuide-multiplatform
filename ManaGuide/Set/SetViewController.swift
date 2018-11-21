@@ -14,19 +14,17 @@ import ManaKit
 import MBProgressHUD
 import PromiseKit
 
-class SetViewController: BaseViewController {
-    // MARK: Variables
-    let searchController = UISearchController(searchResultsController: nil)
-    var viewModel: SetViewModel!
-    
+class SetViewController: BaseSearchViewController {
     // MARK: Outlets
     @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
-    @IBOutlet weak var tableView: UITableView!
     
     // MARK: Actions
-    
     @IBAction func contentAction(_ sender: UISegmentedControl) {
+        guard let viewModel = viewModel as? SetViewModel else {
+            fatalError()
+        }
+        
         viewModel.setContent = sender.selectedSegmentIndex == 0 ? .cards : .wiki
         updateDataDisplay()
     }
@@ -59,19 +57,6 @@ class SetViewController: BaseViewController {
                                                name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                object: nil)
         
-        searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchBar.delegate = self
-        searchController.searchResultsUpdater = self
-        searchController.searchBar.placeholder = "Filter"
-        definesPresentationContext = true
-        
-        if #available(iOS 11.0, *) {
-            navigationItem.searchController = searchController
-            navigationItem.hidesSearchBarWhenScrolling = false
-        } else {
-            tableView.tableHeaderView = searchController.searchBar
-        }
-
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars,
                                                         style: .solid,
                                                         textColor: LookAndFeel.GlobalTintColor,
@@ -88,21 +73,9 @@ class SetViewController: BaseViewController {
                            forCellReuseIdentifier: CardTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
         
-        title = viewModel.getSearchTitle()
+        title = viewModel.title
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        if #available(iOS 11.0, *) {
-            navigationItem.hidesSearchBarWhenScrolling = true
-        }
-        
-        if viewModel.mode == .loading {
-            fetchData()
-        }
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let searchGenerator = SearchRequestGenerator()
         let sortDescriptors = searchGenerator.createSortDescriptors()
@@ -148,68 +121,11 @@ class SetViewController: BaseViewController {
         updateDataDisplay()
     }
     
-    // MARK: Custom methods
-    @objc func updateData(_ notification: Notification) {
-        let searchGenerator = SearchRequestGenerator()
-        searchGenerator.syncValues(notification)
-        
-        updateDataDisplay()
-    }
-
-    func updateDataDisplay() {
-        switch viewModel.setContent {
-        case .cards:
-            if #available(iOS 11.0, *) {
-                navigationItem.searchController?.searchBar.isHidden = false
-                navigationItem.hidesSearchBarWhenScrolling = false
-            } else {
-                tableView.tableHeaderView = searchController.searchBar
-            }
-            
-        case .wiki:
-            if #available(iOS 11.0, *) {
-                navigationItem.searchController?.searchBar.isHidden = true
-                navigationItem.hidesSearchBarWhenScrolling = true
-            } else {
-                tableView.tableHeaderView = nil
-            }
-            
-            tableView.dataSource = self
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let viewModel = viewModel as? SetViewModel else {
+            fatalError()
         }
         
-        fetchData()
-    }
-    
-    @objc func doSearch() {
-        viewModel.queryString = searchController.searchBar.text ?? ""
-        viewModel.mode = .loading
-        tableView.reloadData()
-        fetchData()
-    }
-    
-    func fetchData() {
-        firstly {
-            viewModel.fetchData()
-        }.done {
-            self.tableView.reloadData()
-        }.catch { error in
-            self.viewModel.mode = .error
-            self.tableView.reloadData()
-        }
-    }
-}
-
-// MARK: UITableViewDataSource
-extension SetViewController : UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRows(inSection: section)
-    }
-
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.numberOfSections()
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let searchGenerator = SearchRequestGenerator()
         let displayBy = searchGenerator.displayValue(for: .displayBy) as? String
         var cell: UITableViewCell?
@@ -219,10 +135,10 @@ extension SetViewController : UITableViewDataSource {
             switch displayBy {
             case "list":
                 if viewModel.mode == .resultsFound {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell else {
-                        fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell,
+                        let card = viewModel.object(forRowAt: indexPath) as? CMCard else {
+                            fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
                     }
-                    let card = viewModel!.object(forRowAt: indexPath)
                     c.card = card
                     cell = c
                 } else {
@@ -232,7 +148,7 @@ extension SetViewController : UITableViewDataSource {
                     c.mode = viewModel.mode
                     cell = c
                 }
-
+                
             case "grid":
                 guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
                     fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
@@ -271,7 +187,7 @@ extension SetViewController : UITableViewDataSource {
             default:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: BrowserTableViewCell.reuseIdentifier) as? BrowserTableViewCell,
                     let url = viewModel.wikiURL() else {
-                    fatalError("BrowserTableViewCell is nil")
+                        fatalError("BrowserTableViewCell is nil")
                 }
                 
                 let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 10.0)
@@ -284,22 +200,50 @@ extension SetViewController : UITableViewDataSource {
         return cell!
     }
     
-    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        return viewModel.sectionIndexTitles()
+    // MARK: Custom methods
+    @objc func updateData(_ notification: Notification) {
+        let searchGenerator = SearchRequestGenerator()
+        searchGenerator.syncValues(notification)
+        
+        updateDataDisplay()
     }
-    
-    func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        return viewModel.sectionForSectionIndexTitle(title: title, at: index)
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return viewModel.titleForHeaderInSection(section: section)
+
+    func updateDataDisplay() {
+        guard let viewModel = viewModel as? SetViewModel else {
+            fatalError()
+        }
+        
+        switch viewModel.setContent {
+        case .cards:
+            if #available(iOS 11.0, *) {
+                navigationItem.searchController?.searchBar.isHidden = false
+                navigationItem.hidesSearchBarWhenScrolling = false
+            } else {
+                tableView.tableHeaderView = searchController.searchBar
+            }
+            
+        case .wiki:
+            if #available(iOS 11.0, *) {
+                navigationItem.searchController?.searchBar.isHidden = true
+                navigationItem.hidesSearchBarWhenScrolling = true
+            } else {
+                tableView.tableHeaderView = nil
+            }
+            
+            tableView.dataSource = self
+        }
+        
+        fetchData()
     }
 }
 
 // MARK: UITableViewDelegate
 extension SetViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard let viewModel = viewModel as? SetViewModel else {
+            fatalError()
+        }
+        
         var height = CGFloat(0)
 
         switch viewModel.setContent {
@@ -334,13 +278,17 @@ extension SetViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let viewModel = viewModel as? SetViewModel else {
+            fatalError()
+        }
+        
         switch viewModel.setContent {
         case .cards:
-            guard let cards = viewModel.allObjects() else {
+            guard let cards = viewModel.allObjects() as? [CMCard],
+                let card = viewModel.object(forRowAt: indexPath) as? CMCard else {
                 return
             }
 
-            let card = viewModel.object(forRowAt: indexPath)
             let cardIndex = cards.index(of: card)
             let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
             let sender = ["cardIndex": cardIndex as Any,
@@ -352,6 +300,10 @@ extension SetViewController : UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        guard let viewModel = viewModel as? SetViewModel else {
+            fatalError()
+        }
+        
         switch viewModel.setContent {
         case .cards:
             let searchGenerator = SearchRequestGenerator()
@@ -471,34 +423,6 @@ extension SetViewController : UIWebViewDelegate {
         navCell.setNeedsDisplay()
     }
 }
-
-// MARK: UISearchResultsUpdating
-extension SetViewController : UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(doSearch), object: nil)
-        perform(#selector(doSearch), with: nil, afterDelay: 0.5)
-    }
-}
-
-// MARK: UISearchResultsUpdating
-extension SetViewController : UISearchBarDelegate {
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        viewModel.searchCancelled = false
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.searchCancelled = true
-    }
-    
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        if viewModel.searchCancelled {
-            searchBar.text = viewModel.queryString
-        } else {
-            viewModel.queryString = searchBar.text ?? ""
-        }
-    }
-}
-
 
 // MARK: BrowserNavigatorTableViewCellDelegate
 extension SetViewController : BrowserNavigatorTableViewCellDelegate {

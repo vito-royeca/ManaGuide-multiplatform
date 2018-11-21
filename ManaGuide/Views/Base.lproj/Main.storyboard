@@ -442,7 +442,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="29d-SW-nqs">
-                                <rect key="frame" x="85" y="20" width="261" height="412.66666666666669"/>
+                                <rect key="frame" x="85" y="20" width="261" height="409.66666666666669"/>
                                 <subviews>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username or Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0RH-D1-MV7">
                                         <rect key="frame" x="30.666666666666686" y="0.0" width="200" height="30"/>
@@ -507,24 +507,24 @@
                                         </userDefinedRuntimeAttributes>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="84B-iP-v78">
-                                        <rect key="frame" x="55.666666666666657" y="380.66666666666663" width="150" height="32"/>
+                                        <rect key="frame" x="55.666666666666657" y="380.66666666666663" width="150" height="29"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LFk-cs-s3D">
-                                                <rect key="frame" x="0.0" y="0.0" width="30" height="32"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="30" height="29"/>
                                                 <fontDescription key="fontDescription" name="FontAwesome5BrandsRegular" family="Font Awesome 5 Brands" pointSize="17"/>
                                                 <connections>
                                                     <action selector="facebookAction:" destination="Scc-uM-cUd" eventType="touchUpInside" id="Fbs-iX-jAa"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D0K-YZ-sOM">
-                                                <rect key="frame" x="60" y="0.0" width="30" height="32"/>
+                                                <rect key="frame" x="60" y="0.0" width="30" height="29"/>
                                                 <fontDescription key="fontDescription" name="FontAwesome5BrandsRegular" family="Font Awesome 5 Brands" pointSize="17"/>
                                                 <connections>
                                                     <action selector="googleAction:" destination="Scc-uM-cUd" eventType="touchUpInside" id="GgZ-Rt-0bU"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wrc-cf-AzJ">
-                                                <rect key="frame" x="120.00000000000003" y="0.0" width="30" height="32"/>
+                                                <rect key="frame" x="120.00000000000003" y="0.0" width="30" height="29"/>
                                                 <fontDescription key="fontDescription" name="FontAwesome5BrandsRegular" family="Font Awesome 5 Brands" pointSize="17"/>
                                                 <connections>
                                                     <action selector="githubAction:" destination="Scc-uM-cUd" eventType="touchUpInside" id="hKM-wT-wTv"/>
@@ -825,7 +825,7 @@
                                             <outlet property="carousel" destination="9Z2-VE-S5e" id="Swz-yf-BPf"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SliderCell" rowHeight="140" id="gPO-pe-Wgd">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="FeaturedCell" rowHeight="140" id="gPO-pe-Wgd" customClass="FeaturedTableViewCell" customModule="ManaGuide" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="168" width="414" height="140"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gPO-pe-Wgd" id="cDw-O6-ZLh">
@@ -847,6 +847,9 @@
                                                         <constraint firstAttribute="width" constant="65" id="xgS-Vm-ZWT"/>
                                                     </constraints>
                                                     <state key="normal" title="See All"/>
+                                                    <connections>
+                                                        <action selector="seeAllAction:" destination="gPO-pe-Wgd" eventType="touchUpInside" id="QBv-No-BL2"/>
+                                                    </connections>
                                                 </button>
                                                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" tag="300" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="qb2-fe-jBg">
                                                     <rect key="frame" x="0.0" y="30.999999999999993" width="414" height="106.33333333333331"/>
@@ -1062,6 +1065,12 @@
                                                 <constraint firstItem="hQE-IC-owS" firstAttribute="top" secondItem="cDw-O6-ZLh" secondAttribute="topMargin" id="dA7-GH-Oly"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="collectionView" destination="qb2-fe-jBg" id="PFq-Y5-jmd"/>
+                                            <outlet property="flowLayout" destination="yZT-dU-Pd6" id="wnc-dt-two"/>
+                                            <outlet property="seeAllButton" destination="0cl-ZY-PdD" id="qjy-cZ-078"/>
+                                            <outlet property="titleLabel" destination="hQE-IC-owS" id="iS6-2G-vNl"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -1385,7 +1394,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="uA5-1d-p4e">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="527"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BrowserNavigatorCell" id="ToY-iY-7LW" customClass="BrowserNavigatorTableViewCell" customModule="ManaGuide" customModuleProvider="target">
@@ -2319,7 +2328,7 @@
         <segue reference="Vbm-cg-ye0"/>
         <segue reference="jVZ-a8-OYH"/>
         <segue reference="lLZ-BR-fAo"/>
-        <segue reference="ISp-PC-gA3"/>
+        <segue reference="Mbq-CH-LY8"/>
         <segue reference="whl-Hr-bZH"/>
     </inferredMetricsTieBreakers>
 </document>

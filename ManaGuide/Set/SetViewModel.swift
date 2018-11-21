@@ -27,10 +27,8 @@ enum SetContent: Int {
     }
 }
 
-class SetViewModel: BaseViewModel {
+class SetViewModel: BaseSearchViewModel {
     // MARK: Variables
-    var queryString = ""
-    var searchCancelled = false
     var setContent: SetContent = .cards
 
     private var _set: CMSet?
@@ -46,135 +44,10 @@ class SetViewModel: BaseViewModel {
         _searchViewModel = SearchViewModel(withRequest: request,
                                            andTitle: set.name,
                                            andMode: .loading)
-    }
-    
-    // MARK: UITableView methods
-    func numberOfRows(inSection section: Int) -> Int {
-        if mode == .resultsFound {
-            var rows = 0
-            
-            switch setContent {
-            case .cards:
-                rows = _searchViewModel!.numberOfRows(inSection: section)
-            case .wiki:
-                rows = 2
-            }
-            
-            return rows
-        } else {
-            return 1
-        }
-    }
-    
-    func numberOfSections() -> Int {
-        if mode == .resultsFound {
-            var number = 0
-            
-            switch setContent {
-            case .cards:
-                number = _searchViewModel!.numberOfSections()
-            case .wiki:
-                number = 1
-            }
-            
-            return number
-        } else {
-            return 1
-        }
-    }
-    
-    func sectionIndexTitles() -> [String]? {
-        if mode == .resultsFound {
-            var titles: [String]?
-            
-            switch setContent {
-            case .cards:
-                titles = _searchViewModel!.sectionIndexTitles()
-            case .wiki:
-                ()
-            }
-            return titles
-
-        } else {
-            return nil
-        }
-    }
-    
-    func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
-        if mode == .resultsFound {
-            var sectionIndex = 0
-            
-            switch setContent {
-            case .cards:
-                sectionIndex = _searchViewModel!.sectionForSectionIndexTitle(title: title, at: index)
-            case .wiki:
-                ()
-            }
-            return sectionIndex
-
-        } else {
-            return 0
-        }
-    }
-    
-    func titleForHeaderInSection(section: Int) -> String? {
-        if mode == .resultsFound {
-            var titleHeader: String?
-            
-            switch setContent {
-            case .cards:
-                titleHeader = _searchViewModel!.titleForHeaderInSection(section: section)
-            case .wiki:
-                ()
-            }
-            
-            return titleHeader
-
-        } else {
-            return nil
-        }
-    }
-    
-    // MARK: Custom methods
-    func object(forRowAt indexPath: IndexPath) -> CMCard {
-        return _searchViewModel!.object(forRowAt: indexPath)
-    }
-    
-    func allObjects() -> [CMCard]? {
-        return _searchViewModel!.allObjects()
-    }
-    
-    func isEmpty() -> Bool {
-        guard let objects = allObjects() else {
-            return true
-        }
-        return objects.count == 0
-    }
-
-    func fetchData() -> Promise<Void> {
-        return Promise { seal in
-        
-            _searchViewModel!.queryString = queryString
-            
-            firstly {
-                _searchViewModel!.fetchData()
-            }.done {
-                self._searchViewModel!.mode = self._searchViewModel!.isEmpty() ? (self._searchViewModel!.queryString.isEmpty ? .standBy : .noResultsFound) : .resultsFound
-                self.mode = self._searchViewModel!.mode
-                seal.fulfill(())
-                
-            }.catch { error in
-                self.mode = .error
-                seal.reject(error)
-            }
-        }
+        title = _searchViewModel!.title
     }
     
     // MARK: Presentation methods
-    func getSearchTitle() -> String? {
-        return _searchViewModel!.getSearchTitle()
-    }
-    
     func getSearchViewModel() -> SearchViewModel {
         guard let searchViewModel = _searchViewModel else {
             fatalError("")

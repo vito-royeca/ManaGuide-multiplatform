@@ -8,21 +8,14 @@
 
 import CoreData
 import ManaKit
+import PromiseKit
 
-class ComprehensiveRulesViewModel: NSObject {
+class ComprehensiveRulesViewModel: BaseSearchViewModel {
     // MARK: Variables
-    var queryString = ""
-    var searchCancelled = false
-
     private var _sectionName: String?
     private var _sectionIndexTitles = [String]()
     private var _sectionTitles = [String]()
-    private var _fetchedResultsController: NSFetchedResultsController<CMRule>?
     private var _rule: CMRule?
-    
-    // MARK: Settings
-    private let sortDescriptors = [NSSortDescriptor(key: "termSection", ascending: true),
-                                   NSSortDescriptor(key: "term", ascending: true)]
     
     // MARK: Overrides
     init(withRule rule: CMRule?) {
@@ -35,109 +28,48 @@ class ComprehensiveRulesViewModel: NSObject {
         if rule.term == "Glossary" {
             _sectionName = "termSection"
         }
-    }
-    
-    // MARK: UITableView methods
-    func numberOfRows(inSection section: Int) -> Int {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-            return 0
-        }
         
-        return sections[section].numberOfObjects
-    }
-    
-    func numberOfSections() -> Int {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-            return 0
-        }
-        
-        return sections.count
-    }
-    
-    func sectionIndexTitles() -> [String]? {
-        return _sectionIndexTitles
-    }
-    
-    func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
-        var sectionIndex = 0
-        
-        for i in 0..._sectionTitles.count - 1 {
-            if _sectionTitles[i].hasPrefix(title) {
-                sectionIndex = i
-                break
-            }
-        }
-        
-        return sectionIndex
-    }
-    
-    func titleForHeaderInSection(section: Int) -> String? {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-                return nil
-        }
-        
-        return sections[section].name
+        sortDescriptors = [NSSortDescriptor(key: "termSection", ascending: true),
+                           NSSortDescriptor(key: "term", ascending: true)]
     }
     
     // MARK: Custom methods
-    func object(forRowAt indexPath: IndexPath) -> CMRule {
-        guard let fetchedResultsController = _fetchedResultsController else {
-            fatalError("fetchedResultsController is nil")
-        }
-        return fetchedResultsController.object(at: indexPath)
-    }
-    
-    func allObjects() -> [CMRule]? {
-        guard let fetchedResultsController = _fetchedResultsController else {
-            return nil
-        }
-        return fetchedResultsController.fetchedObjects
-    }
-    
-    func isEmpty() -> Bool {
-        guard let objects = allObjects() else {
-            return true
-        }
-        return objects.count == 0
-    }
-    
-    func fetchData() {
-        let request: NSFetchRequest<CMRule>?
-        let count = queryString.count
-        
-        if count > 0 {
-            request = CMRule.fetchRequest()
-            request!.sortDescriptors = [NSSortDescriptor(key: "termSection", ascending: true),
-                                        NSSortDescriptor(key: "term", ascending: true)]
+    override func fetchData() -> Promise<Void> {
+        return Promise { seal in
+            let request: NSFetchRequest<CMRule>?
+            let count = queryString.count
             
-            if count == 1 {
-                request!.predicate = NSPredicate(format: "term BEGINSWITH[cd] %@", queryString)
-            } else if count > 1 {
-                let predicates = [NSPredicate(format: "term CONTAINS[cd] %@", queryString),
-                                  NSPredicate(format: "definition CONTAINS[cd] %@", queryString)]
-                request!.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+            if count > 0 {
+                request = CMRule.fetchRequest()
+                request!.sortDescriptors = [NSSortDescriptor(key: "termSection", ascending: true),
+                                            NSSortDescriptor(key: "term", ascending: true)]
+                
+                if count == 1 {
+                    request!.predicate = NSPredicate(format: "term BEGINSWITH[cd] %@", queryString)
+                } else if count > 1 {
+                    let predicates = [NSPredicate(format: "term CONTAINS[cd] %@", queryString),
+                                      NSPredicate(format: "definition CONTAINS[cd] %@", queryString)]
+                    request!.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+                }
+                fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
+            } else {
+                fetchedResultsController = getFetchedResultsController(with: nil)
             }
-            _fetchedResultsController = getFetchedResultsController(with: request)
-        } else {
-            _fetchedResultsController = getFetchedResultsController(with: nil)
-        }
-        
-        if let rule = _rule {
-            if rule.term == "Glossary" {
-                updateSections()
+            
+            if let rule = _rule {
+                if rule.term == "Glossary" {
+                    updateSections()
+                }
             }
         }
     }
     
-    private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMRule>?) -> NSFetchedResultsController<CMRule> {
+    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
         let context = ManaKit.sharedInstance.dataStack!.viewContext
         var request: NSFetchRequest<CMRule>?
         
         if let fetchRequest = fetchRequest {
-            request = fetchRequest
+            request = fetchRequest as? NSFetchRequest<CMRule>
         } else {
             // Create a default fetchRequest
             request = CMRule.fetchRequest()
@@ -168,11 +100,11 @@ class ComprehensiveRulesViewModel: NSObject {
             print("\(fetchError), \(fetchError.localizedDescription)")
         }
         
-        return frc
+        return frc as! NSFetchedResultsController<NSManagedObject>
     }
     
-    private func updateSections() {
-        guard let fetchedResultsController = _fetchedResultsController,
+    override func updateSections() {
+        guard let fetchedResultsController = fetchedResultsController,
             let sections = fetchedResultsController.sections,
             let rule = _rule else {
             return
@@ -316,11 +248,6 @@ class ComprehensiveRulesViewModel: NSObject {
             }
         }
     }
-}
-
-// MARK: NSFetchedResultsControllerDelegate
-extension ComprehensiveRulesViewModel : NSFetchedResultsControllerDelegate {
-    
 }
 
 // Helper function inserted by Swift 4.2 migrator.

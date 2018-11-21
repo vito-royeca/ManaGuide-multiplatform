@@ -16,7 +16,7 @@ class AccountViewController: BaseViewController {
 
     // MARK: Variables
     var viewModel = AccountViewModel()
-
+    
     // MARK Outlets
     @IBOutlet weak var loginButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
@@ -107,7 +107,7 @@ class AccountViewController: BaseViewController {
     
     func favoritesRequest() -> NSFetchRequest<CMCard> {
         guard let user = viewModel.getLoggedInUser() else {
-            fatalError("No logged in User")
+            fatalError("AccountViewModel error")
         }
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         
@@ -124,7 +124,7 @@ class AccountViewController: BaseViewController {
     
     func ratedCardsRequest() -> NSFetchRequest<CMCard> {
         guard let user = viewModel.getLoggedInUser() else {
-            fatalError("No logged in User")
+            fatalError("AccountViewModel error")
         }
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         
@@ -176,7 +176,7 @@ extension AccountViewController : UITableViewDataSource {
             guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
                 let label = c.textLabel,
                 let imageView = c.imageView else {
-                    fatalError("BasicCell not found")
+                fatalError("BasicCell not found")
             }
             imageView.image = AccountSection.ratedCards.imageIcon
             label.text = AccountSection.ratedCards.description

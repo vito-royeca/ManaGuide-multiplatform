@@ -10,35 +10,22 @@ import CoreData
 import ManaKit
 import PromiseKit
 
-class SearchViewModel: BaseViewModel {
+class SearchViewModel: BaseSearchViewModel {
     // MARK: Variables
-    var queryString = ""
-    var searchCancelled = false
-
-    private var _request: NSFetchRequest<CMCard>?
-    private var _title: String?
     private var _sectionIndexTitles: [String]?
     private var _sectionTitles: [String]?
-    private var _fetchedResultsController: NSFetchedResultsController<CMCard>?
-    
-    // MARK: Settings
-    private var _sortDescriptors: [NSSortDescriptor]?
     
     // MARK: Init
     init(withRequest request: NSFetchRequest<CMCard>?, andTitle title: String?, andMode mode: ViewModelMode) {
         super.init()
-        _request = request
-        _title = title
+        
+        self.request = request as? NSFetchRequest<NSManagedObject>
+        self.title = title
         self.mode = mode
     }
     
-    // MARK: Presentation methods
-    func getSearchTitle() -> String? {
-        return _title
-    }
-
     // MARK: UITableView methods
-    func numberOfRows(inSection section: Int) -> Int {
+    override func numberOfRows(inSection section: Int) -> Int {
         if mode == .resultsFound {
             let searchGenerator = SearchRequestGenerator()
             var rows = 0
@@ -49,7 +36,7 @@ class SearchViewModel: BaseViewModel {
             
             switch displayBy {
             case "list":
-                guard let fetchedResultsController = _fetchedResultsController,
+                guard let fetchedResultsController = fetchedResultsController,
                     let sections = fetchedResultsController.sections else {
                     return rows
                 }
@@ -67,7 +54,7 @@ class SearchViewModel: BaseViewModel {
         }
     }
     
-    func numberOfSections() -> Int {
+    override func numberOfSections() -> Int {
         if mode == .resultsFound {
             let searchGenerator = SearchRequestGenerator()
             var number = 0
@@ -78,7 +65,7 @@ class SearchViewModel: BaseViewModel {
             
             switch displayBy {
             case "list":
-                guard let fetchedResultsController = _fetchedResultsController,
+                guard let fetchedResultsController = fetchedResultsController,
                     let sections = fetchedResultsController.sections else {
                     return number
                 }
@@ -97,7 +84,7 @@ class SearchViewModel: BaseViewModel {
         }
     }
     
-    func sectionIndexTitles() -> [String]? {
+    override func sectionIndexTitles() -> [String]? {
         if mode == .resultsFound {
             let searchGenerator = SearchRequestGenerator()
             var titles: [String]?
@@ -121,7 +108,7 @@ class SearchViewModel: BaseViewModel {
         }
     }
     
-    func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
+    override func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
         if mode == .resultsFound {
             let searchGenerator = SearchRequestGenerator()
             var sectionIndex = 0
@@ -156,7 +143,7 @@ class SearchViewModel: BaseViewModel {
         }
     }
     
-    func titleForHeaderInSection(section: Int) -> String? {
+    override func titleForHeaderInSection(section: Int) -> String? {
         if mode == .resultsFound {
             let searchGenerator = SearchRequestGenerator()
             var titleHeader: String?
@@ -167,7 +154,7 @@ class SearchViewModel: BaseViewModel {
             
             switch displayBy {
             case "list":
-                guard let fetchedResultsController = _fetchedResultsController,
+                guard let fetchedResultsController = fetchedResultsController,
                     let sections = fetchedResultsController.sections else {
                     return titleHeader
                 }
@@ -184,90 +171,11 @@ class SearchViewModel: BaseViewModel {
         }
     }
     
-    // MARK: UICollectionView methods
-    func collectionNumberOfRows(inSection section: Int) -> Int {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-            return 0
-        }
-        
-        return sections[section].numberOfObjects
-    }
-    
-    func collectionNumberOfSections() -> Int {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-            return 0
-        }
-        
-        return sections.count
-    }
-    
-    func collectionSectionIndexTitles() -> [String]? {
-        return _sectionIndexTitles
-    }
-    
-    func collectionSectionForSectionIndexTitle(title: String, at index: Int) -> Int {
-        let searchGenerator = SearchRequestGenerator()
-        var sectionIndex = 0
-        
-        guard let orderBy = searchGenerator.displayValue(for: .orderBy) as? Bool,
-            let sectionTitles = _sectionTitles else {
-                return sectionIndex
-        }
-        
-        for i in 0...sectionTitles.count - 1 {
-            if sectionTitles[i].hasPrefix(title) {
-                if orderBy {
-                    sectionIndex = i
-                } else {
-                    sectionIndex = (sectionTitles.count - 1) - i
-                }
-                break
-            }
-        }
-        
-        return sectionIndex
-    }
-    
-    func collectionTitleForHeaderInSection(section: Int) -> String? {
-        var titleHeader: String?
-        
-        guard let fetchedResultsController = _fetchedResultsController,
-            let sections = fetchedResultsController.sections else {
-                return nil
-        }
-        titleHeader = sections[section].name
-        
-        return titleHeader
-    }
-    
     // MARK: Custom methods
-    func object(forRowAt indexPath: IndexPath) -> CMCard {
-        guard let fetchedResultsController = _fetchedResultsController else {
-            fatalError("fetchedResultsController is nil")
-        }
-        return fetchedResultsController.object(at: indexPath)
-    }
-    
-    func allObjects() -> [CMCard]? {
-        guard let fetchedResultsController = _fetchedResultsController else {
-            return nil
-        }
-        return fetchedResultsController.fetchedObjects
-    }
-    
-    func isEmpty() -> Bool {
-        guard let objects = allObjects() else {
-            return true
-        }
-        return objects.count == 0
-    }
-
-    func fetchData() -> Promise<Void> {
+    override func fetchData() -> Promise<Void> {
         return Promise { seal  in
-            let newRequest = SearchRequestGenerator().createSearchRequest(query: queryString, oldRequest: _request)
-            _fetchedResultsController = getFetchedResultsController(with: newRequest)
+            let newRequest = SearchRequestGenerator().createSearchRequest(query: queryString, oldRequest: request as? NSFetchRequest<CMCard>)
+            fetchedResultsController = getFetchedResultsController(with: newRequest as? NSFetchRequest<NSManagedObject>)
             updateSections()
             
             seal.fulfill(())
@@ -275,13 +183,13 @@ class SearchViewModel: BaseViewModel {
     }
     
     // MARK: Private methods
-    private func getFetchedResultsController(with fetchRequest: NSFetchRequest<CMCard>?) -> NSFetchedResultsController<CMCard> {
+    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
         let searchGenerator = SearchRequestGenerator()
         let context = ManaKit.sharedInstance.dataStack!.viewContext
         var request: NSFetchRequest<CMCard>?
-        
+
         if let fetchRequest = fetchRequest {
-            request = fetchRequest
+            request = fetchRequest as? NSFetchRequest<CMCard>
         } else {
             // create a default fetchRequest
             request = CMCard.fetchRequest()
@@ -290,16 +198,16 @@ class SearchViewModel: BaseViewModel {
             request!.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
                                         NSSortDescriptor(key: "collectorNumber", ascending: true)]
         }
-        
+
         // Create Fetched Results Controller
         let frc = NSFetchedResultsController(fetchRequest: request!,
                                              managedObjectContext: context,
                                              sectionNameKeyPath: searchGenerator.getSectionName(),
                                              cacheName: nil)
-        
+
         // Configure Fetched Results Controller
         frc.delegate = self
-        
+
         // perform fetch
         do {
             try frc.performFetch()
@@ -308,13 +216,13 @@ class SearchViewModel: BaseViewModel {
             print("Unable to Perform Fetch Request")
             print("\(fetchError), \(fetchError.localizedDescription)")
         }
-        
-        return frc
+
+        return frc as! NSFetchedResultsController<NSManagedObject>
     }
     
-    private func updateSections() {
-        guard let fetchedResultsController = _fetchedResultsController,
-            let cards = fetchedResultsController.fetchedObjects,
+    override func updateSections() {
+        guard let fetchedResultsController = fetchedResultsController,
+            let cards = fetchedResultsController.fetchedObjects as? [CMCard],
             let sections = fetchedResultsController.sections else {
             return
         }
@@ -372,7 +280,3 @@ class SearchViewModel: BaseViewModel {
     }
 }
 
-// MARK: NSFetchedResultsControllerDelegate
-extension SearchViewModel : NSFetchedResultsControllerDelegate {
-    
-}

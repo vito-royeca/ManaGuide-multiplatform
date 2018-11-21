@@ -21,8 +21,8 @@ protocol LoginViewControllerDelegate {
 class LoginViewController: BaseViewController {
 
     // MARK: Variables
-    let viewModel = LoginViewModel()
     var delegate: LoginViewControllerDelegate?
+    var viewModel = LoginViewModel()
     
     // MARK: Outlets
     @IBOutlet weak var usernameTextField: UITextField!
@@ -127,7 +127,9 @@ class LoginViewController: BaseViewController {
     }
     
     @IBAction func signupAction(_ sender: UIButton) {
-        let alertController = UIAlertController(title: "Sign Up", message: nil, preferredStyle: .alert)
+        let alertController = UIAlertController(title: "Sign Up",
+                                                message: nil,
+                                                preferredStyle: .alert)
         
         let confirmAction = UIAlertAction(title: "Submit", style: .default) { (_) in
             guard let fields = alertController.textFields else {
@@ -281,6 +283,8 @@ class LoginViewController: BaseViewController {
                               for: .normal)
         GIDSignIn.sharedInstance().delegate = self
         GIDSignIn.sharedInstance().uiDelegate = self
+        
+        viewModel = LoginViewModel()
     }
 
 
@@ -309,7 +313,7 @@ extension LoginViewController : GIDSignInDelegate {
                                                            accessToken: authentication.accessToken)
             
             firstly {
-                self.viewModel.authSignInAndRetrieveData(credential: credential)
+                viewModel.authSignInAndRetrieveData(credential: credential)
             }.then { (authResult: AuthDataResult?) in
                 self.viewModel.syncUser(email: authResult?.user.email,
                                         photoURL: authResult?.user.photoURL,
