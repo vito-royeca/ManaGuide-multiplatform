@@ -107,8 +107,7 @@ class FeaturedViewController: BaseViewController {
             
         } else if segue.identifier == "showSet" {
             guard let dest = segue.destination as? SetViewController,
-                let dict = sender as? [String: Any],
-                let set = dict["set"] as? CMSet else {
+                let set = sender as? CMSet else {
                 return
             }
             
@@ -300,11 +299,40 @@ extension FeaturedViewController : LatestCardsTableViewDelegate {
 
 // MARK: FeaturedTableViewCellDelegate
 extension FeaturedViewController: FeaturedTableViewCellDelegate {
-    func showItem(section: FeaturedSection, index: Int, objectIDs: [String]?, sorters: [NSSortDescriptor]?) {
-        
+    func showItem(section: FeaturedSection, index: Int, objects: [NSManagedObject], sorters: [NSSortDescriptor]?) {
+        switch section {
+        case .latestCards:
+            ()
+        case .latestSets:
+            performSegue(withIdentifier: "showSet", sender: objects[0])
+        case .topRated,
+             .topViewed:
+            let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
+            var sender = ["cardIndex": index] as [String : Any]
+            var cardIDs = [String]()
+            
+            for mo in objects {
+                if let card = mo as? CMCard {
+                    cardIDs.append(card.id!)
+                }
+            }
+            sender["cardIDs"] = cardIDs
+            if let sorters = sorters {
+                sender["sortDescriptors"] = sorters
+            }
+            performSegue(withIdentifier: identifier, sender: sender)
+        }
     }
     
     func seeAllItems(section: FeaturedSection) {
-        
+        switch section {
+        case .latestCards:
+            ()
+        case .latestSets:
+            performSegue(withIdentifier: "showSets", sender: nil)
+        case .topRated,
+             .topViewed:
+            ()
+        }
     }
 }

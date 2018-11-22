@@ -12,7 +12,7 @@ import ManaKit
 import PromiseKit
 
 protocol FeaturedTableViewCellDelegate: NSObjectProtocol {
-    func showItem(section: FeaturedSection, index: Int, objectIDs: [String]?, sorters: [NSSortDescriptor]?)
+    func showItem(section: FeaturedSection, index: Int, objects: [NSManagedObject], sorters: [NSSortDescriptor]?)
     func seeAllItems(section: FeaturedSection)
 }
 
@@ -152,23 +152,19 @@ extension FeaturedTableViewCell: UICollectionViewDataSource {
 extension FeaturedTableViewCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         var index = 0
-        var ids = [String]()
+        var objects = [NSManagedObject]()
         var sorters: [NSSortDescriptor]?
 
         switch section {
         case .latestSets:
-            if let set = viewModel.object(forRowAt: indexPath) as? CMSet,
-                let code = set.code {
-                ids.append(code)
+            if let set = viewModel.object(forRowAt: indexPath) as? CMSet {
+                objects.append(set)
             }
         case .topRated,
              .topViewed:
             index = indexPath.item
-            for i in 0...viewModel.numberOfRows(inSection: 0) - 1 {
-                if let card = viewModel.object(forRowAt: IndexPath(row: i, section: 0)) as? CMCard,
-                    let id = card.id {
-                    ids.append(id)
-                }
+            if let allObjects = viewModel.allObjects() {
+                objects = allObjects
             }
             sorters = viewModel.sortDescriptors
             
@@ -182,7 +178,7 @@ extension FeaturedTableViewCell: UICollectionViewDelegate {
         }
         delegate?.showItem(section: section,
                            index: index,
-                           objectIDs: ids,
+                           objects: objects,
                            sorters: sorters)
     }
 }

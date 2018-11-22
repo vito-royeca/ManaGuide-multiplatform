@@ -121,15 +121,22 @@ class CardViewController: BaseSearchViewController {
                                  bundle: nil),
                            forCellReuseIdentifier: StoreTableViewCell.reuseIdentifier)
 
-        guard let viewModel = viewModel as? CardViewModel else {
-            fatalError()
+        if let viewModel = viewModel as? CardViewModel {
+            title = viewModel.content.description
+            
+            firstly {
+                viewModel.fetchData()
+            }.done {
+                viewModel.reloadRelatedCards()
+            }.catch { error in
+                    
+            }
+            
         }
-        title = viewModel.content.description
-        viewModel.reloadRelatedCards()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
         NotificationCenter.default.removeObserver(self,
                                                   name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
@@ -164,8 +171,8 @@ class CardViewController: BaseSearchViewController {
                                                object: nil)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         
         NotificationCenter.default.removeObserver(self,
                                                   name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
