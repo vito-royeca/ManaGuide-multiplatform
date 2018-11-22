@@ -51,9 +51,11 @@ class SetsViewModel: BaseSearchViewModel {
             
             if count > 0 {
                 if count == 1 {
-                    request.predicate = NSPredicate(format: "name BEGINSWITH[cd] %@ OR code BEGINSWITH[cd] %@", queryString, queryString)
+                    request.predicate = NSPredicate(format: "name BEGINSWITH[cd] %@ OR code BEGINSWITH[cd] %@",
+                                                    queryString, queryString)
                 } else {
-                    request.predicate = NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@", queryString, queryString)
+                    request.predicate = NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@",
+                                                    queryString, queryString)
                 }
             }
             updateSorting(with: nil)

@@ -167,15 +167,10 @@ extension FeaturedTableViewCell: UICollectionViewDelegate {
                 objects = allObjects
             }
             sorters = viewModel.sortDescriptors
-            
-//            identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-//            sender = ["cardIndex": indexPath.row,
-//                      "cardIDs": cardIDs,
-//                      "sortDescriptors": viewModel.sortDescriptors as Any]
-            
         default:
             ()
         }
+
         delegate?.showItem(section: section,
                            index: index,
                            objects: objects,

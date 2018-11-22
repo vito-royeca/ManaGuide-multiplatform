@@ -33,7 +33,8 @@ class LatestCardsViewModel: NSObject {
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         let sets = fetchLatestSets()
         
-        request.predicate = NSPredicate(format: "language.code = %@ AND imageURIs != nil AND set.code IN %@ AND id != nil", "en", sets.map( { $0.code} ))
+        request.predicate = NSPredicate(format: "language.code = %@ AND imageURIs != nil AND set.code IN %@ AND id != nil", "en",
+                                        sets.map( { $0.code} ))
         _cardMIDs = [NSManagedObjectID]()
         let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
         

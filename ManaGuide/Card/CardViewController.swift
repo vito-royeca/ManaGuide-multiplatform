@@ -897,7 +897,8 @@ extension CardViewController : UITableViewDelegate {
                 }
                 
                 let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-                let predicate = NSPredicate(format: "artist.name = %@", artist.name!)
+                let predicate = NSPredicate(format: "artist.name = %@",
+                                            artist.name!)
                 
                 request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
                                            NSSortDescriptor(key: "name", ascending: true),

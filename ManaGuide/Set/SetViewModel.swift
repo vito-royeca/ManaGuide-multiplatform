@@ -27,34 +27,49 @@ enum SetContent: Int {
     }
 }
 
-class SetViewModel: BaseSearchViewModel {
+class SetViewModel: SearchViewModel {
     // MARK: Variables
-    var setContent: SetContent = .cards
+    var content: SetContent = .cards
 
     private var _set: CMSet?
     private var _searchViewModel: SearchViewModel?
     
     // MARK: Init
     init(withSet set: CMSet, languageCode: String) {
-        super.init()
-        _set = set
+        super.init(withTitle: set.name,
+                   andMode: .loading)
         
-        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        request.predicate = NSPredicate(format: "set.code = %@ AND language.code = %@", set.code!, languageCode)
-        _searchViewModel = SearchViewModel(withRequest: request,
-                                           andTitle: set.name,
-                                           andMode: .loading)
-        title = _searchViewModel!.title
+        let newRequest: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+        newRequest.predicate = NSPredicate(format: "set.code = %@ AND language.code = %@",
+                                           set.code!, languageCode)
+        
+        request = newRequest as? NSFetchRequest<NSManagedObject>
+        _set = set
+    }
+    
+    // MARK: Overrides
+    override func numberOfRows(inSection section: Int) -> Int {
+        switch content {
+        case .cards:
+            if mode == .resultsFound {
+                var rows = 0
+                
+                guard let fetchedResultsController = fetchedResultsController,
+                    let sections = fetchedResultsController.sections else {
+                        return rows
+                }
+                rows = sections[section].numberOfObjects
+                return rows
+                
+            } else {
+                return 1
+            }
+        case .wiki:
+            return 2
+        }
     }
     
     // MARK: Presentation methods
-    func getSearchViewModel() -> SearchViewModel {
-        guard let searchViewModel = _searchViewModel else {
-            fatalError("")
-        }
-        return searchViewModel
-    }
-
     func wikiURL() -> URL? {
         guard let set = _set else {
             return nil

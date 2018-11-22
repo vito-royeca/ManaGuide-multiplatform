@@ -25,7 +25,7 @@ class SetViewController: BaseSearchViewController {
             fatalError()
         }
         
-        viewModel.setContent = sender.selectedSegmentIndex == 0 ? .cards : .wiki
+        viewModel.content = sender.selectedSegmentIndex == 0 ? .cards : .wiki
         updateDataDisplay()
     }
     
@@ -130,7 +130,7 @@ class SetViewController: BaseSearchViewController {
         let displayBy = searchGenerator.displayValue(for: .displayBy) as? String
         var cell: UITableViewCell?
         
-        switch viewModel.setContent {
+        switch viewModel.content {
         case .cards:
             switch displayBy {
             case "list":
@@ -166,7 +166,7 @@ class SetViewController: BaseSearchViewController {
                     size = CGSize(width: width, height: height)
                 }
                 
-                c.viewModel = viewModel.getSearchViewModel()
+                c.viewModel = viewModel
                 c.delegate = self
                 c.imageType = .normal
                 c.animationOptions = .transitionFlipFromLeft
@@ -187,7 +187,7 @@ class SetViewController: BaseSearchViewController {
             default:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: BrowserTableViewCell.reuseIdentifier) as? BrowserTableViewCell,
                     let url = viewModel.wikiURL() else {
-                        fatalError("BrowserTableViewCell is nil")
+                    fatalError("BrowserTableViewCell is nil")
                 }
                 
                 let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 10.0)
@@ -213,13 +213,19 @@ class SetViewController: BaseSearchViewController {
             fatalError()
         }
         
-        switch viewModel.setContent {
+        switch viewModel.content {
         case .cards:
             if #available(iOS 11.0, *) {
                 navigationItem.searchController?.searchBar.isHidden = false
                 navigationItem.hidesSearchBarWhenScrolling = false
             } else {
                 tableView.tableHeaderView = searchController.searchBar
+            }
+            
+            if viewModel.mode == .loading {
+                fetchData()
+            } else {
+                tableView.reloadData()
             }
             
         case .wiki:
@@ -231,9 +237,8 @@ class SetViewController: BaseSearchViewController {
             }
             
             tableView.dataSource = self
+            tableView.reloadData()
         }
-        
-        fetchData()
     }
 }
 
@@ -246,7 +251,7 @@ extension SetViewController : UITableViewDelegate {
         
         var height = CGFloat(0)
 
-        switch viewModel.setContent {
+        switch viewModel.content {
         case .cards:
             let searchGenerator = SearchRequestGenerator()
             guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
@@ -282,7 +287,7 @@ extension SetViewController : UITableViewDelegate {
             fatalError()
         }
         
-        switch viewModel.setContent {
+        switch viewModel.content {
         case .cards:
             guard let cards = viewModel.allObjects() as? [CMCard],
                 let card = viewModel.object(forRowAt: indexPath) as? CMCard else {
@@ -304,7 +309,7 @@ extension SetViewController : UITableViewDelegate {
             fatalError()
         }
         
-        switch viewModel.setContent {
+        switch viewModel.content {
         case .cards:
             let searchGenerator = SearchRequestGenerator()
             guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
@@ -355,7 +360,8 @@ extension SetViewController : UIWebViewDelegate {
                                .replacingOccurrences(of: "\"", with: "")
                 
                 let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-                request.predicate = NSPredicate(format: "name = %@", cardName)
+                request.predicate = NSPredicate(format: "name = %@",
+                                                cardName)
                 request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
                                             NSSortDescriptor(key: "name", ascending: true)]
                 

@@ -53,12 +53,13 @@ class BaseSearchViewController: BaseViewController {
     // MARK: Custom methods
     @objc func doSearch() {
         viewModel.queryString = searchController.searchBar.text ?? ""
-        viewModel.mode = .loading
-        tableView.reloadData()
         fetchData()
     }
     
     func fetchData() {
+        viewModel.mode = .loading
+        tableView.reloadData()
+
         firstly {
             viewModel.fetchData()
         }.done {

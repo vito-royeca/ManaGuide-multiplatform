@@ -136,7 +136,8 @@ class CardViewModel: BaseSearchViewModel {
                            NSSortDescriptor(key: "collectorNumber", ascending: true)]
         
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        request.predicate = NSPredicate(format: "id IN %@", cardIDs)
+        request.predicate = NSPredicate(format: "id IN %@",
+                                        cardIDs)
         request.sortDescriptors = sd ?? sortDescriptors
         fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
     }
@@ -492,7 +493,8 @@ class CardViewModel: BaseSearchViewModel {
         request.predicate = NSPredicate(format: "set.code = %@ AND language.code = %@ AND id != %@ AND name = %@",
                                         card.set!.code!,
                                         card.language!.code!,
-                                        card.id!, card.name!)
+                                        card.id!,
+                                        card.name!)
         request.sortDescriptors = sortDescriptors
         return request
     }
@@ -505,7 +507,8 @@ class CardViewModel: BaseSearchViewModel {
         
         if let partsSet = card.parts,
             let parts = partsSet.allObjects as? [CMCard] {
-            request.predicate = NSPredicate(format: "id IN %@", parts.map({$0.id}))
+            request.predicate = NSPredicate(format: "id IN %@",
+                                            parts.map({$0.id}))
             request.sortDescriptors = sortDescriptors
         }
         return request
@@ -520,7 +523,8 @@ class CardViewModel: BaseSearchViewModel {
         request.predicate = NSPredicate(format: "set.code != %@ AND language.code = %@ AND id != %@ AND name = %@",
                                         card.set!.code!,
                                         card.language!.code!,
-                                        card.id!, card.name!)
+                                        card.id!,
+                                        card.name!)
         request.sortDescriptors = sortDescriptors
         return request
     }

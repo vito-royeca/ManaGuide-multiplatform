@@ -16,6 +16,13 @@ class SearchViewModel: BaseSearchViewModel {
     private var _sectionTitles: [String]?
     
     // MARK: Init
+    init(withTitle title: String?, andMode mode: ViewModelMode) {
+        super.init()
+        
+        self.title = title
+        self.mode = mode
+    }
+
     init(withRequest request: NSFetchRequest<CMCard>?, andTitle title: String?, andMode mode: ViewModelMode) {
         super.init()
         
