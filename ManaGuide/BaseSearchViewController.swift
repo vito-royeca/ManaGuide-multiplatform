@@ -14,7 +14,8 @@ class BaseSearchViewController: BaseViewController {
     // MARK: Variables
     let searchController = UISearchController(searchResultsController: nil)
     var viewModel = BaseSearchViewModel()
-    
+    var showSearchController = true
+
     // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
 
@@ -23,17 +24,19 @@ class BaseSearchViewController: BaseViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchResultsUpdater = self
-        searchController.searchBar.delegate = self
-        searchController.searchBar.placeholder = "Filter"
-        definesPresentationContext = true
-        
-        if #available(iOS 11.0, *) {
-            navigationItem.searchController = searchController
-            navigationItem.hidesSearchBarWhenScrolling = false
-        } else {
-            tableView.tableHeaderView = searchController.searchBar
+        if showSearchController {
+            searchController.dimsBackgroundDuringPresentation = false
+            searchController.searchResultsUpdater = self
+            searchController.searchBar.delegate = self
+            searchController.searchBar.placeholder = "Filter"
+            definesPresentationContext = true
+            
+            if #available(iOS 11.0, *) {
+                navigationItem.searchController = searchController
+                navigationItem.hidesSearchBarWhenScrolling = false
+            } else {
+                tableView.tableHeaderView = searchController.searchBar
+            }
         }
         tableView.keyboardDismissMode = .onDrag
     }
@@ -41,8 +44,10 @@ class BaseSearchViewController: BaseViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if #available(iOS 11.0, *) {
-            navigationItem.hidesSearchBarWhenScrolling = true
+        if showSearchController {
+            if #available(iOS 11.0, *) {
+                navigationItem.hidesSearchBarWhenScrolling = true
+            }
         }
         
         if viewModel.mode == .loading {

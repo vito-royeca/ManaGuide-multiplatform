@@ -89,6 +89,8 @@ class CardViewController: BaseSearchViewController {
     
     // MARK: Overrides
     override func viewDidLoad() {
+        showSearchController = false
+        
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
