@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import ManaKit
+import PromiseKit
 
 protocol FeaturedTableViewCellDelegate: NSObjectProtocol {
     func showItem(section: FeaturedSection, index: Int, objectIDs: [String]?, sorters: [NSSortDescriptor]?)
@@ -52,6 +53,27 @@ class FeaturedTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
+    // MARK: Custom methods
+    func setupCollectionView(itemSize: CGSize) {
+        if let flowLayout = flowLayout {
+            flowLayout.itemSize = itemSize
+            flowLayout.scrollDirection = .horizontal
+            flowLayout.minimumInteritemSpacing = CGFloat(5)
+            flowLayout.sectionInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 0)
+        }
+    }
+    
+    func fetchData() {
+        firstly {
+            viewModel.fetchData()
+        }.done {
+            self.viewModel.mode = self.viewModel.isEmpty() ? .noResultsFound : .resultsFound
+            self.collectionView.reloadData()
+        }.catch { error in
+            self.viewModel.mode = .error
+            self.collectionView.reloadData()
+        }
+    }
 }
 
 // MARK: UICollectionViewDataSource
@@ -77,6 +99,7 @@ extension FeaturedTableViewCell: UICollectionViewDataSource {
                                                                  for: indexPath) as? SearchModeCollectionViewCell else {
                                                                     fatalError("\(SearchModeCollectionViewCell.reuseIdentifier) is nil")
                 }
+                c.mode = viewModel.mode
                 cell = c
             }
             
@@ -93,6 +116,7 @@ extension FeaturedTableViewCell: UICollectionViewDataSource {
                                                                  for: indexPath) as? SearchModeCollectionViewCell else {
                                                                     fatalError("\(SearchModeCollectionViewCell.reuseIdentifier) is nil")
                 }
+                c.mode = viewModel.mode
                 cell = c
             }
 
@@ -109,6 +133,7 @@ extension FeaturedTableViewCell: UICollectionViewDataSource {
                                                                  for: indexPath) as? SearchModeCollectionViewCell else {
                     fatalError("\(SearchModeCollectionViewCell.reuseIdentifier) is nil")
                 }
+                c.mode = viewModel.mode
                 cell = c
             }
             

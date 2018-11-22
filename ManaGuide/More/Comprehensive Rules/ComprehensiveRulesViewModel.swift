@@ -61,6 +61,7 @@ class ComprehensiveRulesViewModel: BaseSearchViewModel {
                     updateSections()
                 }
             }
+            seal.fulfill(())
         }
     }
     

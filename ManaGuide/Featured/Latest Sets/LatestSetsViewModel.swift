@@ -26,8 +26,8 @@ class LatestSetsViewModel: BaseSearchViewModel {
             request.predicate = NSPredicate(format: "parent = nil")
             request.sortDescriptors = sortDescriptors
             request.fetchLimit = kMaxLatestSets
-            
             fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
+            seal.fulfill(())
         }
     }
     

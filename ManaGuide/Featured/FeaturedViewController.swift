@@ -43,53 +43,25 @@ class FeaturedViewController: BaseViewController {
                                                selector: #selector(reloadTopViewed(_:)),
                                                name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
                                                object: nil)
-        
-        tableView.register(FeaturedTableViewCell.self,
-                           forCellReuseIdentifier: FeaturedTableViewCell.reuseIdentifier)
+        latestSetsViewModel.mode = .loading
+        topRatedViewModel.mode = .loading
+        topViewedViewModel.mode = .loading
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) as? LatestCardsTableViewCell {
+        if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue,
+                                                         section: 0)) as? LatestCardsTableViewCell {
             cell.startSlideShow()
-        }
-        
-        if latestSetsViewModel.isEmpty() {
-            firstly {
-                latestSetsViewModel.fetchData()
-            }.done {
-                self.tableView.reloadRows(at: [IndexPath(row: FeaturedSection.latestSets.rawValue, section: 0)], with: .automatic)
-            }.catch { error in
-                    
-            }
-        }
-        
-        if topRatedViewModel.isEmpty() {
-            firstly {
-                topRatedViewModel.fetchData()
-            }.done {
-                self.tableView.reloadRows(at: [IndexPath(row: FeaturedSection.topRated.rawValue, section: 0)], with: .automatic)
-            }.catch { error in
-                    
-            }
-        }
-        
-        if topViewedViewModel.isEmpty() {
-            firstly {
-                topViewedViewModel.fetchData()
-            }.done {
-                self.tableView.reloadRows(at: [IndexPath(row: FeaturedSection.topViewed.rawValue, section: 0)], with: .automatic)
-            }.catch { error in
-                    
-            }
         }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) as? LatestCardsTableViewCell {
+        if let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue,
+                                                         section: 0)) as? LatestCardsTableViewCell {
             cell.stopSlideShow()
         }
         topRatedViewModel.stopMonitoring()
@@ -100,7 +72,8 @@ class FeaturedViewController: BaseViewController {
         flowLayoutHeight = (view.frame.size.height / 3) - 50
         tableView.reloadData()
         
-        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue, section: 0)) as? LatestCardsTableViewCell else {
+        guard let cell = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestCards.rawValue,
+                                                            section: 0)) as? LatestCardsTableViewCell else {
             return
         }
         cell.carousel.reloadData()
@@ -202,7 +175,7 @@ extension FeaturedViewController : UITableViewDataSource {
         if flowLayoutHeight == 0 {
             flowLayoutHeight = (view.frame.size.height / 3) - 50
         }
-
+        
         switch indexPath.row {
         case FeaturedSection.latestCards.rawValue:
             guard let c = tableView.dequeueReusableCell(withIdentifier: LatestCardsTableViewCell.reuseIdentifier, for: indexPath) as? LatestCardsTableViewCell else {
@@ -212,104 +185,78 @@ extension FeaturedViewController : UITableViewDataSource {
             cell = c
             
         case FeaturedSection.latestSets.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell"),
-                let titleLabel = c.viewWithTag(100) as? UILabel,
-                let showAllButton = c.viewWithTag(200) as? UIButton else {
-                fatalError("SliderCell not found")
+            guard let c = tableView.dequeueReusableCell(withIdentifier: FeaturedTableViewCell.reuseIdentifier,
+                                                        for: indexPath) as? FeaturedTableViewCell else {
+                fatalError("\(FeaturedTableViewCell.reuseIdentifier) not found")
             }
             
-            titleLabel.text = FeaturedSection.latestSets.description
-            showAllButton.addTarget(self, action: #selector(self.showAllSets(_:)), for: .touchUpInside)
+            let divisor = CGFloat(UIDevice.current.userInterfaceIdiom == .phone ? 3 : 4)
+            let width = (view.frame.size.width / divisor) - 20
+            let itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
+            c.setupCollectionView(itemSize: itemSize)
+            c.titleLabel.text = FeaturedSection.latestSets.description
+            c.section = .latestSets
+            c.viewModel = latestSetsViewModel
+            c.delegate = self
             
-            var collectionView: UICollectionView?
-            for v in c.contentView.subviews {
-                if let cv = v as? UICollectionView {
-                    collectionView = cv
-                    break
-                }
+            if latestSetsViewModel.isEmpty() {
+                c.fetchData()
             }
-            
-            if let collectionView = collectionView {
-                let divisor = CGFloat(UIDevice.current.userInterfaceIdiom == .phone ? 3 : 4)
-                let width = (view.frame.size.width / divisor) - 20
-                let itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
-                setup(collectionView: collectionView,
-                      itemSize: itemSize,
-                      tag: FeaturedSection.latestSets.rawValue)
-            }
-            
             cell = c
             
         case FeaturedSection.topRated.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell"),
-                let titleLabel = c.viewWithTag(100) as? UILabel,
-                let showAllButton = c.viewWithTag(200) as? UIButton else {
-                return UITableViewCell(frame: CGRect.zero)
+            guard let c = tableView.dequeueReusableCell(withIdentifier: FeaturedTableViewCell.reuseIdentifier,
+                                                        for: indexPath) as? FeaturedTableViewCell else {
+                fatalError("\(FeaturedTableViewCell.reuseIdentifier) not found")
             }
             
-            titleLabel.text = FeaturedSection.topRated.description
-            showAllButton.isHidden = true
-            
-            var collectionView: UICollectionView?
-            for v in c.contentView.subviews {
-                if let cv = v as? UICollectionView {
-                    collectionView = cv
-                    break
+            let width = flowLayoutHeight + (flowLayoutHeight / 2)
+            let itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
+            c.setupCollectionView(itemSize: itemSize)
+            c.titleLabel.text = FeaturedSection.topRated.description
+            c.seeAllButton.isHidden = true
+            c.section = .topRated
+            c.viewModel = topRatedViewModel
+            c.delegate = self
+            if topRatedViewModel.isEmpty() {
+                firstly {
+                    topRatedViewModel.fetchRemoteData()
+                }.done {
+                    c.fetchData()
+                }.catch { error in
+                    self.topRatedViewModel.mode = .error
+                    self.tableView.reloadRows(at: [IndexPath(row: FeaturedSection.topRated.rawValue,
+                                                             section: 0)],
+                                              with: .automatic)
                 }
             }
             
-            if let collectionView = collectionView {
-                let width = flowLayoutHeight + (flowLayoutHeight / 2)
-                let itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
-                setup(collectionView: collectionView,
-                      itemSize: itemSize,
-                      tag: FeaturedSection.topRated.rawValue)
-                
-                if topRatedViewModel.isEmpty() {
-                    firstly {
-                        topRatedViewModel.fetchRemoteData()
-                    }.done {
-                        collectionView.reloadData()
-                    }.catch { error in
-                        print("\(error)")
-                    }
-                }
-            }
             cell = c
             
         case FeaturedSection.topViewed.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "SliderCell"),
-                let titleLabel = c.viewWithTag(100) as? UILabel,
-                let showAllButton = c.viewWithTag(200) as? UIButton else {
-                return UITableViewCell(frame: CGRect.zero)
+            guard let c = tableView.dequeueReusableCell(withIdentifier: FeaturedTableViewCell.reuseIdentifier,
+                                                        for: indexPath) as? FeaturedTableViewCell else {
+                                                            fatalError("\(FeaturedTableViewCell.reuseIdentifier) not found")
             }
             
-            titleLabel.text = FeaturedSection.topViewed.description
-            showAllButton.isHidden = true
-            
-            var collectionView: UICollectionView?
-            for v in c.contentView.subviews {
-                if let cv = v as? UICollectionView {
-                    collectionView = cv
-                    break
-                }
-            }
-            
-            if let collectionView = collectionView {
-                let width = flowLayoutHeight + (flowLayoutHeight / 2)
-                let itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
-                setup(collectionView: collectionView,
-                      itemSize: itemSize,
-                      tag: FeaturedSection.topViewed.rawValue)
-                
-                if topViewedViewModel.isEmpty() {
-                    firstly {
-                        topViewedViewModel.fetchRemoteData()
-                    }.done {
-                        collectionView.reloadData()
-                    }.catch { error in
-                        print("\(error)")
-                    }
+            let width = flowLayoutHeight + (flowLayoutHeight / 2)
+            let itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
+            c.setupCollectionView(itemSize: itemSize)
+            c.titleLabel.text = FeaturedSection.topViewed.description
+            c.seeAllButton.isHidden = true
+            c.section = .topViewed
+            c.viewModel = topViewedViewModel
+            c.delegate = self
+            if topViewedViewModel.isEmpty() {
+                firstly {
+                    topViewedViewModel.fetchRemoteData()
+                }.done {
+                    c.fetchData()
+                }.catch { error in
+                    self.topViewedViewModel.mode = .error
+                    self.tableView.reloadRows(at: [IndexPath(row: FeaturedSection.topViewed.rawValue,
+                                                             section: 0)],
+                                              with: .automatic)
                 }
             }
             cell = c
@@ -351,3 +298,13 @@ extension FeaturedViewController : LatestCardsTableViewDelegate {
     }
 }
 
+// MARK: FeaturedTableViewCellDelegate
+extension FeaturedViewController: FeaturedTableViewCellDelegate {
+    func showItem(section: FeaturedSection, index: Int, objectIDs: [String]?, sorters: [NSSortDescriptor]?) {
+        
+    }
+    
+    func seeAllItems(section: FeaturedSection) {
+        
+    }
+}

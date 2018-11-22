@@ -27,7 +27,7 @@ class TopViewedViewModel: BaseSearchViewModel {
                            NSSortDescriptor(key: "collectorNumber", ascending: true)]
     }
     
-    // MARK: Custom methods
+    // MARK: Overrides
     override func fetchData() -> Promise<Void> {
         return Promise { seal in
             let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
@@ -35,9 +35,44 @@ class TopViewedViewModel: BaseSearchViewModel {
             request.fetchLimit = 10
             request.sortDescriptors = sortDescriptors
             fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
+            seal.fulfill(())
         }
     }
     
+    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
+        let context = ManaKit.sharedInstance.dataStack!.viewContext
+        var request: NSFetchRequest<CMCard>?
+        
+        if let fetchRequest = fetchRequest {
+            request = fetchRequest as? NSFetchRequest<CMCard>
+        } else {
+            // Create a default fetchRequest
+            request = CMCard.fetchRequest()
+            request!.sortDescriptors = sortDescriptors
+        }
+        
+        // Create Fetched Results Controller
+        let frc = NSFetchedResultsController(fetchRequest: request!,
+                                             managedObjectContext: context,
+                                             sectionNameKeyPath: nil,
+                                             cacheName: nil)
+        
+        // Configure Fetched Results Controller
+        frc.delegate = self
+        
+        // perform fetch
+        do {
+            try frc.performFetch()
+        } catch {
+            let fetchError = error as NSError
+            print("Unable to Perform Fetch Request")
+            print("\(fetchError), \(fetchError.localizedDescription)")
+        }
+        
+        return frc as! NSFetchedResultsController<NSManagedObject>
+    }
+
+    // MARK: Custom methods
     func fetchRemoteData() -> Promise<Void> {
         return Promise { seal in
             let ref = Database.database().reference().child("cards")
@@ -78,38 +113,5 @@ class TopViewedViewModel: BaseSearchViewModel {
             _firebaseQuery!.removeAllObservers()
             _firebaseQuery = nil
         }
-    }
-    
-    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
-        let context = ManaKit.sharedInstance.dataStack!.viewContext
-        var request: NSFetchRequest<CMCard>?
-        
-        if let fetchRequest = fetchRequest {
-            request = fetchRequest as? NSFetchRequest<CMCard>
-        } else {
-            // Create a default fetchRequest
-            request = CMCard.fetchRequest()
-            request!.sortDescriptors = sortDescriptors
-        }
-        
-        // Create Fetched Results Controller
-        let frc = NSFetchedResultsController(fetchRequest: request!,
-                                             managedObjectContext: context,
-                                             sectionNameKeyPath: nil,
-                                             cacheName: nil)
-        
-        // Configure Fetched Results Controller
-        frc.delegate = self
-        
-        // perform fetch
-        do {
-            try frc.performFetch()
-        } catch {
-            let fetchError = error as NSError
-            print("Unable to Perform Fetch Request")
-            print("\(fetchError), \(fetchError.localizedDescription)")
-        }
-        
-        return frc as! NSFetchedResultsController<NSManagedObject>
     }
 }

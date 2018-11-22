@@ -40,7 +40,6 @@ class ArtistsViewModel: BaseSearchViewModel {
 
             fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
             updateSections()
-            
             seal.fulfill(())
         }
     }

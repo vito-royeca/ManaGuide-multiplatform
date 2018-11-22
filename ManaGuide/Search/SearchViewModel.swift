@@ -177,7 +177,6 @@ class SearchViewModel: BaseSearchViewModel {
             let newRequest = SearchRequestGenerator().createSearchRequest(query: queryString, oldRequest: request as? NSFetchRequest<CMCard>)
             fetchedResultsController = getFetchedResultsController(with: newRequest as? NSFetchRequest<NSManagedObject>)
             updateSections()
-            
             seal.fulfill(())
         }
     }
