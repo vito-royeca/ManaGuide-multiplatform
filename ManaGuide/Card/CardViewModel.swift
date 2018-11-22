@@ -138,6 +138,7 @@ class CardViewModel: BaseSearchViewModel {
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         request.predicate = NSPredicate(format: "id IN %@", cardIDs)
         request.sortDescriptors = sd ?? sortDescriptors
+        fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
     }
     
     // MARK: UITableView methods
