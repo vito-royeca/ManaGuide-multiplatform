@@ -155,12 +155,15 @@ class FeaturedViewController: BaseViewController {
         firstly {
             viewModel.fetchData()
         }.done {
-            viewModel.mode = viewModel.isEmpty() ? .noResultsFound : .resultsFound
-            cell.setupCollectionView(itemSize: itemSize)
+            if viewModel.isEmpty() {
+                viewModel.mode = .noResultsFound
+            } else {
+                viewModel.mode = .resultsFound
+                cell.setupCollectionView(itemSize: itemSize)
+            }
             cell.collectionView.reloadData()
         }.catch { error in
             viewModel.mode = .error
-            cell.setupCollectionView(itemSize: itemSize)
             cell.collectionView.reloadData()
         }
     }

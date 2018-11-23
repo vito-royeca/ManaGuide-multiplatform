@@ -147,6 +147,10 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
 // MARK: UICollectionViewDelegate
 extension CardGridTableViewCell : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if viewModel.isEmpty() {
+            return
+        }
+        
         guard let cards = viewModel.allObjects() as? [CMCard],
             let card = viewModel.object(forRowAt: indexPath) as? CMCard,
             let cardIndex = cards.index(of: card) else {
@@ -157,13 +161,5 @@ extension CardGridTableViewCell : UICollectionViewDelegate {
         delegate?.showCard(identifier: identifier,
                            cardIndex: cardIndex,
                            cardIDs: cards.map({ $0.id! }))
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        if viewModel.collectionNumberOfSections() == 0 {
-            return false
-        } else {
-            return true
-        }
     }
 }

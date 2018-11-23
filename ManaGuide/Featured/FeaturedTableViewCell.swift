@@ -139,6 +139,10 @@ extension FeaturedTableViewCell: UICollectionViewDataSource {
 // MARK: UICollectionViewDelegate
 extension FeaturedTableViewCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if viewModel.isEmpty() {
+            return
+        }
+
         var index = 0
         var objects = [NSManagedObject]()
         var sorters: [NSSortDescriptor]?
