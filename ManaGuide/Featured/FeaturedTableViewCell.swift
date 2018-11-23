@@ -62,18 +62,6 @@ class FeaturedTableViewCell: UITableViewCell {
             flowLayout.sectionInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 0)
         }
     }
-    
-    func fetchData() {
-        firstly {
-            viewModel.fetchData()
-        }.done {
-            self.viewModel.mode = self.viewModel.isEmpty() ? .noResultsFound : .resultsFound
-            self.collectionView.reloadData()
-        }.catch { error in
-            self.viewModel.mode = .error
-            self.collectionView.reloadData()
-        }
-    }
 }
 
 // MARK: UICollectionViewDataSource

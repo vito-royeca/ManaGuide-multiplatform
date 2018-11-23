@@ -151,14 +151,18 @@ class FeaturedViewController: BaseViewController {
         performSegue(withIdentifier: "showSets", sender: nil)
     }
     
-    func setup(collectionView: UICollectionView, itemSize: CGSize, tag: Int) {
-        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            flowLayout.itemSize = itemSize
-            flowLayout.scrollDirection = .horizontal
-            flowLayout.minimumInteritemSpacing = CGFloat(5)
-            flowLayout.sectionInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 0)
+    func fetchData(viewModel: BaseSearchViewModel, cell: FeaturedTableViewCell, itemSize: CGSize) {
+        firstly {
+            viewModel.fetchData()
+        }.done {
+            viewModel.mode = viewModel.isEmpty() ? .noResultsFound : .resultsFound
+            cell.setupCollectionView(itemSize: itemSize)
+            cell.collectionView.reloadData()
+        }.catch { error in
+            viewModel.mode = .error
+            cell.setupCollectionView(itemSize: itemSize)
+            cell.collectionView.reloadData()
         }
-        collectionView.tag = tag
     }
 }
 
@@ -170,6 +174,8 @@ extension FeaturedViewController : UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell:UITableViewCell?
+        var width = self.flowLayoutHeight + (self.flowLayoutHeight / 2)
+        var itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
         
         if flowLayoutHeight == 0 {
             flowLayoutHeight = (view.frame.size.height / 3) - 50
@@ -188,18 +194,18 @@ extension FeaturedViewController : UITableViewDataSource {
                                                         for: indexPath) as? FeaturedTableViewCell else {
                 fatalError("\(FeaturedTableViewCell.reuseIdentifier) not found")
             }
-            
-            let divisor = CGFloat(UIDevice.current.userInterfaceIdiom == .phone ? 3 : 4)
-            let width = (view.frame.size.width / divisor) - 20
-            let itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
+
             c.setupCollectionView(itemSize: itemSize)
             c.titleLabel.text = FeaturedSection.latestSets.description
             c.section = .latestSets
             c.viewModel = latestSetsViewModel
             c.delegate = self
             
-            if latestSetsViewModel.isEmpty() {
-                c.fetchData()
+            if latestSetsViewModel.mode == .loading {
+                let divisor = CGFloat(UIDevice.current.userInterfaceIdiom == .phone ? 3 : 4)
+                width = (view.frame.size.width / divisor) - 20
+                itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
+                fetchData(viewModel: latestSetsViewModel, cell: c, itemSize: itemSize)
             }
             cell = c
             
@@ -209,24 +215,20 @@ extension FeaturedViewController : UITableViewDataSource {
                 fatalError("\(FeaturedTableViewCell.reuseIdentifier) not found")
             }
             
-            let width = flowLayoutHeight + (flowLayoutHeight / 2)
-            let itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
             c.setupCollectionView(itemSize: itemSize)
             c.titleLabel.text = FeaturedSection.topRated.description
             c.seeAllButton.isHidden = true
             c.section = .topRated
             c.viewModel = topRatedViewModel
             c.delegate = self
-            if topRatedViewModel.isEmpty() {
+            if topRatedViewModel.mode == .loading {
                 firstly {
                     topRatedViewModel.fetchRemoteData()
                 }.done {
-                    c.fetchData()
+                    self.fetchData(viewModel: self.topRatedViewModel, cell: c, itemSize: itemSize)
                 }.catch { error in
                     self.topRatedViewModel.mode = .error
-                    self.tableView.reloadRows(at: [IndexPath(row: FeaturedSection.topRated.rawValue,
-                                                             section: 0)],
-                                              with: .automatic)
+                    c.collectionView.reloadData()
                 }
             }
             
@@ -238,24 +240,20 @@ extension FeaturedViewController : UITableViewDataSource {
                                                             fatalError("\(FeaturedTableViewCell.reuseIdentifier) not found")
             }
             
-            let width = flowLayoutHeight + (flowLayoutHeight / 2)
-            let itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
             c.setupCollectionView(itemSize: itemSize)
             c.titleLabel.text = FeaturedSection.topViewed.description
             c.seeAllButton.isHidden = true
             c.section = .topViewed
             c.viewModel = topViewedViewModel
             c.delegate = self
-            if topViewedViewModel.isEmpty() {
+            if topViewedViewModel.mode == .loading {
                 firstly {
                     topViewedViewModel.fetchRemoteData()
                 }.done {
-                    c.fetchData()
+                    self.fetchData(viewModel: self.topViewedViewModel, cell: c, itemSize: itemSize)
                 }.catch { error in
                     self.topViewedViewModel.mode = .error
-                    self.tableView.reloadRows(at: [IndexPath(row: FeaturedSection.topViewed.rawValue,
-                                                             section: 0)],
-                                              with: .automatic)
+                    c.collectionView.reloadData()
                 }
             }
             cell = c
