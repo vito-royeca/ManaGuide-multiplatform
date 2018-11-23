@@ -82,6 +82,7 @@ class ComprehensiveRulesViewController: BaseSearchViewController {
             guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
                 fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
             }
+            c.mode = viewModel.mode
             cell = c
         }
         
