@@ -41,7 +41,6 @@ class ArtistsViewController: BaseSearchViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: UITableViewCell?
         
-        
         if viewModel.mode == .resultsFound {
             let c = tableView.dequeueReusableCell(withIdentifier: "ArtistCell",
                                                   for: indexPath)

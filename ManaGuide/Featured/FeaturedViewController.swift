@@ -150,23 +150,6 @@ class FeaturedViewController: BaseViewController {
     @objc func showAllSets(_ sender: UIButton) {
         performSegue(withIdentifier: "showSets", sender: nil)
     }
-    
-    func fetchData(viewModel: BaseSearchViewModel, cell: FeaturedTableViewCell, itemSize: CGSize) {
-        firstly {
-            viewModel.fetchData()
-        }.done {
-            if viewModel.isEmpty() {
-                viewModel.mode = .noResultsFound
-            } else {
-                viewModel.mode = .resultsFound
-                cell.setupCollectionView(itemSize: itemSize)
-            }
-            cell.collectionView.reloadData()
-        }.catch { error in
-            viewModel.mode = .error
-            cell.collectionView.reloadData()
-        }
-    }
 }
 
 // MARK: UITableViewDataSource
@@ -205,10 +188,20 @@ extension FeaturedViewController : UITableViewDataSource {
             c.delegate = self
             
             if latestSetsViewModel.mode == .loading {
-                let divisor = CGFloat(UIDevice.current.userInterfaceIdiom == .phone ? 3 : 4)
-                width = (view.frame.size.width / divisor) - 20
-                itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
-                fetchData(viewModel: latestSetsViewModel, cell: c, itemSize: itemSize)
+                firstly {
+                    latestSetsViewModel.fetchData()
+                }.done {
+                    let divisor = CGFloat(UIDevice.current.userInterfaceIdiom == .phone ? 3 : 4)
+                    width = (self.view.frame.size.width / divisor) - 20
+                    itemSize = CGSize(width: width - 20, height: self.flowLayoutHeight - 5)
+                    
+                    self.latestSetsViewModel.mode = self.latestSetsViewModel.isEmpty() ? .noResultsFound : .resultsFound
+                    c.setupCollectionView(itemSize: itemSize)
+                    c.collectionView.reloadData()
+                }.catch { error in
+                    self.topRatedViewModel.mode = .error
+                    c.collectionView.reloadData()
+                }
             }
             cell = c
             
@@ -226,9 +219,11 @@ extension FeaturedViewController : UITableViewDataSource {
             c.delegate = self
             if topRatedViewModel.mode == .loading {
                 firstly {
-                    topRatedViewModel.fetchRemoteData()
+                    when(fulfilled: [topRatedViewModel.fetchRemoteData(),
+                                     topRatedViewModel.fetchData()])
                 }.done {
-                    self.fetchData(viewModel: self.topRatedViewModel, cell: c, itemSize: itemSize)
+                    self.topRatedViewModel.mode = self.topRatedViewModel.isEmpty() ? .noResultsFound : .resultsFound
+                    c.collectionView.reloadData()
                 }.catch { error in
                     self.topRatedViewModel.mode = .error
                     c.collectionView.reloadData()
@@ -251,9 +246,11 @@ extension FeaturedViewController : UITableViewDataSource {
             c.delegate = self
             if topViewedViewModel.mode == .loading {
                 firstly {
-                    topViewedViewModel.fetchRemoteData()
+                    when(fulfilled: [topViewedViewModel.fetchRemoteData(),
+                                     topViewedViewModel.fetchData()])
                 }.done {
-                    self.fetchData(viewModel: self.topViewedViewModel, cell: c, itemSize: itemSize)
+                    self.topViewedViewModel.mode = self.topViewedViewModel.isEmpty() ? .noResultsFound : .resultsFound
+                    c.collectionView.reloadData()
                 }.catch { error in
                     self.topViewedViewModel.mode = .error
                     c.collectionView.reloadData()

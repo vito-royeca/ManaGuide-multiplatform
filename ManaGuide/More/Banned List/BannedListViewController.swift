@@ -33,7 +33,7 @@ class BannedListViewController: BaseSearchViewController {
                 return
             }
             
-            dest.bannedViewModel = BannedViewModel(withFormat: format)
+            dest.viewModel = BannedViewModel(withFormat: format)
         }
     }
     

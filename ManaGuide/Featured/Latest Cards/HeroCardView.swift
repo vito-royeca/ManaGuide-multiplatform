@@ -35,17 +35,26 @@ class HeroCardView: UIView {
     
     // MARK: Custom methods
     func showImage() {
-        if let image = ManaKit.sharedInstance.cardImage(card, imageType: .artCrop) {
+        if let image = ManaKit.sharedInstance.cardImage(card,
+                                                        imageType: .artCrop,
+                                                        faceOrder: 0,
+                                                        roundCornered: false) {
             cropImage.image = image
             MGUtilities.updateColor(ofLabel: nameLabel, from: image)
         } else {
             cropImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
-            MGUtilities.updateColor(ofLabel: nameLabel, from: cropImage.image!)
+            MGUtilities.updateColor(ofLabel: nameLabel,
+                                    from: cropImage.image!)
             
             firstly {
-                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
+                ManaKit.sharedInstance.downloadImage(ofCard: card,
+                                                     imageType: .artCrop,
+                                                     faceOrder: 0)
             }.done {
-                guard let image = ManaKit.sharedInstance.cardImage(self.card, imageType: .artCrop) else {
+                guard let image = ManaKit.sharedInstance.cardImage(self.card,
+                                                                   imageType: .artCrop,
+                                                                   faceOrder: 0,
+                                                                   roundCornered: false) else {
                     return
                 }
                 

@@ -35,7 +35,10 @@ class CardImageCollectionViewCell: UICollectionViewCell {
                 cardImage.contentMode = .scaleAspectFit
             }
             
-            if let image = ManaKit.sharedInstance.cardImage(card, imageType: imageType) {
+            if let image = ManaKit.sharedInstance.cardImage(card,
+                                                            imageType: imageType,
+                                                            faceOrder: 0,
+                                                            roundCornered: imageType == .artCrop ? false : true) {
                 cardImage.image = image
             } else {
                 switch imageType {
@@ -46,9 +49,14 @@ class CardImageCollectionViewCell: UICollectionViewCell {
                 }
                 
                 firstly {
-                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: imageType)
+                    ManaKit.sharedInstance.downloadImage(ofCard: card,
+                                                         imageType: imageType,
+                                                         faceOrder: 0)
                 }.done {
-                    guard let image = ManaKit.sharedInstance.cardImage(card, imageType: self.imageType) else {
+                    guard let image = ManaKit.sharedInstance.cardImage(card,
+                                                                       imageType: self.imageType,
+                                                                       faceOrder: 0,
+                                                                       roundCornered: self.imageType == .artCrop ? false : true) else {
                         return
                     }
                     

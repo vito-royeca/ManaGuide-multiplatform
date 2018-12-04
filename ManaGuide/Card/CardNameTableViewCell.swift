@@ -25,7 +25,7 @@ class CardNameTableViewCell: UITableViewCell {
                 return
             }
             
-            nameLabel.text = ManaKit.sharedInstance.name(ofCard: card)
+            nameLabel.text = card.displayName
             if let releaseDate = card.set!.releaseDate {
                 let isModern = ManaKit.sharedInstance.isModern(card)
                 let formatter = DateFormatter()

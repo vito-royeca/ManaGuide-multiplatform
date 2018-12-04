@@ -71,16 +71,20 @@ class CardViewController: BaseSearchViewController {
             fatalError()
         }
         
-        if let _ = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
+        if let _ = ManaKit.sharedInstance.cardImage(card,
+                                                    imageType: .normal,
+                                                    faceOrder: viewModel.faceOrder,
+                                                    roundCornered: true) {
             showActivityViewController(sender, card: card)
         } else {
             MBProgressHUD.showAdded(to: view, animated: true)
             firstly {
-                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+                ManaKit.sharedInstance.downloadImage(ofCard: card,
+                                                     imageType: .normal,
+                                                     faceOrder: viewModel.faceOrder)
             }.done {
                 MBProgressHUD.hide(for: self.view, animated: true)
                 self.showActivityViewController(sender, card: card)
-                
             }.catch { error in
                 print("\(error)")
             }
@@ -300,11 +304,28 @@ class CardViewController: BaseSearchViewController {
                     let faces = facesSet.allObjects as? [CMCard] {
                     
                     if faces.count > 0 {
-                        let rows = viewModel.numberOfRows(inSection: indexPath.section)
-                        let rowsPerFace = rows/faces.count
-                        let row = indexPath.row % rowsPerFace
-                        let face = faces[indexPath.row / rowsPerFace]
-                        cell = createMainDataCell(forCard: face, inRow: row)
+                        let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
+                            return a.faceOrder < b.faceOrder
+                        })
+                        for face in orderedFaces {
+                            var rows = 3
+                            if let type = face.typeLine,
+                                let name = type.name {
+                                if name.contains("Creature") || name.contains("Planeswalker") {
+                                    rows += 1
+                                }
+                            }
+                            
+                            cell = createMainDataCell(forCard: face, inRow: indexPath.row)
+                        }
+                        
+                        
+                        
+//                        let rows = viewModel.numberOfRows(inSection: indexPath.section)
+//                        let rowsPerFace = rows/orderedFaces.count
+//                        let row = indexPath.row % rowsPerFace
+//                        let face = orderedFaces[indexPath.row / rowsPerFace]
+//                        cell = createMainDataCell(forCard: face, inRow: row)
                     } else {
                         cell = createMainDataCell(forCard: card, inRow: indexPath.row)
                     }
@@ -632,15 +653,27 @@ class CardViewController: BaseSearchViewController {
     }
     
     func showImage(ofCard card: CMCard, inImageView imageView: UIImageView) {
-        if let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) {
+        guard let viewModel = viewModel as? CardViewModel else {
+            fatalError()
+        }
+        
+        if let image = ManaKit.sharedInstance.cardImage(card,
+                                                        imageType: .normal,
+                                                        faceOrder: viewModel.faceOrder,
+                                                        roundCornered: true) {
             imageView.image = image
         } else {
             imageView.image = ManaKit.sharedInstance.cardBack(card)
             
             firstly {
-                ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .normal)
+                ManaKit.sharedInstance.downloadImage(ofCard: card,
+                                                     imageType: .normal,
+                                                     faceOrder: viewModel.faceOrder)
             }.done {
-                guard let image = ManaKit.sharedInstance.cardImage(card, imageType: .normal) else {
+                guard let image = ManaKit.sharedInstance.cardImage(card,
+                                                                   imageType: .normal,
+                                                                   faceOrder: viewModel.faceOrder,
+                                                                   roundCornered: true) else {
                     return
                 }
                 
@@ -665,7 +698,9 @@ class CardViewController: BaseSearchViewController {
         }
         viewModel.cardIndex = index
         viewModel.cardViewIncremented = false
-        
+        viewModel.faceOrder = 0
+        viewModel.faceAngle = 0
+
         if viewModel.content == .card {
             tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
                                       IndexPath(row: 0, section: CardImageSection.actions.rawValue)], with: .automatic)
@@ -764,8 +799,7 @@ class CardViewController: BaseSearchViewController {
             }
             c.selectionStyle = .none
             c.accessoryType = .none
-            c.dynamicLabel.attributedText = viewModel.cardText(inRow: row,
-                                                               cardIndex: 0,
+            c.dynamicLabel.attributedText = viewModel.cardText(index: row,
                                                                pointSize: c.dynamicLabel.font.pointSize)
             return c
             
@@ -942,11 +976,11 @@ extension CardViewController : iCarouselDataSource {
             imageView.contentMode = .scaleAspectFit
 
             // add drop shadow
-            imageView.layer.shadowColor = UIColor(red:0.00, green:0.00, blue:0.00, alpha:0.45).cgColor
-            imageView.layer.shadowOffset = CGSize(width: 1, height: 1)
-            imageView.layer.shadowOpacity = 1
-            imageView.layer.shadowRadius = 6.0
-            imageView.clipsToBounds = false
+//            imageView.layer.shadowColor = UIColor(red:0.00, green:0.00, blue:0.00, alpha:0.45).cgColor
+//            imageView.layer.shadowOffset = CGSize(width: 1, height: 1)
+//            imageView.layer.shadowOpacity = 1
+//            imageView.layer.shadowRadius = 6.0
+//            imageView.clipsToBounds = false
         }
         
         if let card = viewModel.object(forRowAt: IndexPath(row: index, section: 0)) as? CMCard {

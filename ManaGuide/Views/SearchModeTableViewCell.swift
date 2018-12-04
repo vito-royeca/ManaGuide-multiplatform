@@ -30,16 +30,24 @@ class SearchModeTableViewCell: UITableViewCell {
             }
             
             messageLabel.text = self.mode.description
-            if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
+            if let croppedImage = ManaKit.sharedInstance.cardImage(card,
+                                                                   imageType: .artCrop,
+                                                                   faceOrder: 0,
+                                                                   roundCornered: false) {
                 backgroundImage.image = croppedImage
                 MGUtilities.updateColor(ofLabel: messageLabel, from: croppedImage)
             } else {
                 backgroundImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
                 
                 firstly {
-                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
+                    ManaKit.sharedInstance.downloadImage(ofCard: card,
+                                                         imageType: .artCrop,
+                                                         faceOrder: 0)
                 }.done {
-                    guard let image = ManaKit.sharedInstance.croppedImage(card) else {
+                    guard let image = ManaKit.sharedInstance.cardImage(card,
+                                                                       imageType: .artCrop,
+                                                                       faceOrder: 0,
+                                                                       roundCornered: false) else {
                         return
                     }
                     

@@ -120,7 +120,9 @@ class CardViewModel: BaseSearchViewModel {
     var cardIndex = 0
     var cardViewIncremented = false
     var content: CardContent = .card
-    
+    var faceOrder = 0
+    var faceAngle = CGFloat(0)
+
     var partsViewModel: SearchViewModel?
     var variationsViewModel: SearchViewModel?
     var otherPrintingsViewModel: SearchViewModel?
@@ -158,8 +160,13 @@ class CardViewModel: BaseSearchViewModel {
             case CardDetailsSection.mainData.rawValue:
                 if let facesSet = card.faces,
                     let faces = facesSet.allObjects as? [CMCard] {
+                    
                     if faces.count > 0 {
-                        for face in faces {
+                        let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
+                            return a.faceOrder < b.faceOrder
+                        })
+                        
+                        for face in orderedFaces {
                             rows += 3
                             if let type = face.typeLine,
                                 let name = type.name {
@@ -376,7 +383,7 @@ class CardViewModel: BaseSearchViewModel {
         }
     }
 
-    func cardText(inRow row: Int, cardIndex index: Int, pointSize: CGFloat) -> NSAttributedString {
+    func cardText(index: Int, pointSize: CGFloat) -> NSAttributedString {
         guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
             fatalError()
         }
@@ -409,7 +416,16 @@ class CardViewModel: BaseSearchViewModel {
                         attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
                                                                    pointSize: pointSize))
                     }
+                
+                    // default to en oracleText
+                    if attributedString.string.count == 0 {
+                        if let oracleText = face.oracleText {
+                            attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
+                                pointSize: pointSize))
+                        }
+                    }
                 }
+                
                 
                 if let flavorText = face.flavorText {
                     if attributedString.string.count > 0 {
@@ -921,7 +937,11 @@ class CardViewModel: BaseSearchViewModel {
                 dict["image_uris"] = d
             }
         } else {
-            dict["image_uri"] = ManaKit.sharedInstance.imageURL(ofCard: card, imageType: .normal)
+            if let imageURL = ManaKit.sharedInstance.imageURL(ofCard: card,
+                                                              imageType: .normal,
+                                                              faceOrder: faceOrder) {
+                dict["image_uri"] = imageURL.absoluteString
+            }
         }
         dict["ImageURL"] = nil
         dict["CropURL"] = nil

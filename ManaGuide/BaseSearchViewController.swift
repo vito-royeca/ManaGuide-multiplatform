@@ -68,7 +68,8 @@ class BaseSearchViewController: BaseViewController {
         firstly {
             viewModel.fetchData()
         }.done {
-            self.viewModel.mode = self.viewModel.isEmpty() ? (self.viewModel.queryString.isEmpty ? .standBy : .noResultsFound) : .resultsFound
+//            self.viewModel.mode = self.viewModel.isEmpty() ? (self.viewModel.queryString.isEmpty ? .standBy : .noResultsFound) : .resultsFound
+            self.viewModel.mode = self.viewModel.isEmpty() ? .noResultsFound : .resultsFound
             self.tableView.reloadData()
         }.catch { error in
             self.viewModel.mode = .error

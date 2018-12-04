@@ -24,15 +24,23 @@ class TopRatedItemCell: UICollectionViewCell {
     var card: CMCard! {
         didSet {
             
-            if let croppedImage = ManaKit.sharedInstance.croppedImage(card) {
+            if let croppedImage = ManaKit.sharedInstance.cardImage(card,
+                                                                   imageType: .artCrop,
+                                                                   faceOrder: 0,
+                                                                   roundCornered: false) {
                 cardImage.image = croppedImage
             } else {
                 cardImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
                 
                 firstly {
-                    ManaKit.sharedInstance.downloadImage(ofCard: card, imageType: .artCrop)
+                    ManaKit.sharedInstance.downloadImage(ofCard: card,
+                                                         imageType: .artCrop,
+                                                         faceOrder: 0)
                 }.done {
-                    guard let image = ManaKit.sharedInstance.croppedImage(self.card) else {
+                    guard let image = ManaKit.sharedInstance.cardImage(self.card,
+                                                                       imageType: .artCrop,
+                                                                       faceOrder: 0,
+                                                                       roundCornered: false) else {
                         return
                     }
                         
@@ -53,7 +61,7 @@ class TopRatedItemCell: UICollectionViewCell {
 
             logoLabel.text = ManaKit.sharedInstance.keyruneUnicode(forSet: card.set!)
             logoLabel.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
-            nameLabel.text = card.name
+            nameLabel.text = card.displayName
             ratingView.rating = card.firebaseRating
         }
     }
