@@ -1670,7 +1670,7 @@
                                             <outlet property="midPriceLabel" destination="CBp-bG-WtZ" id="faW-g6-Fmb"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardImageCell" rowHeight="160" id="7FB-Kh-sIc">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardCarouselCell" rowHeight="160" id="7FB-Kh-sIc" customClass="CardCarouselTableViewCell" customModule="ManaGuide" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="72" width="414" height="160"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="7FB-Kh-sIc" id="T7L-zQ-RCy">
@@ -1689,6 +1689,9 @@
                                                 <constraint firstItem="SzC-cv-H0x" firstAttribute="leading" secondItem="T7L-zQ-RCy" secondAttribute="leading" id="bL6-9x-naN"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="carouselView" destination="SzC-cv-H0x" id="Pmb-d8-xQV"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardActionsCell" id="5vn-4Y-X1k" customClass="CardActionsTableViewCell" customModule="ManaGuide" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="232" width="414" height="44"/>
@@ -2325,10 +2328,10 @@
         <image name="forwardButton" width="32" height="32"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="raG-Jp-fAl"/>
+        <segue reference="Vbm-cg-ye0"/>
         <segue reference="zuQ-z5-rax"/>
         <segue reference="fNA-HR-HtU"/>
-        <segue reference="ISp-PC-gA3"/>
-        <segue reference="ad4-Pa-Oso"/>
+        <segue reference="xMx-O9-Y4N"/>
+        <segue reference="whl-Hr-bZH"/>
     </inferredMetricsTieBreakers>
 </document>

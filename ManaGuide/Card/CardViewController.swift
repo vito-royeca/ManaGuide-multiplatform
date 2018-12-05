@@ -248,28 +248,22 @@ class CardViewController: BaseSearchViewController {
             case CardImageSection.pricing.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: CardPricingTableViewCell.reuseIdentifier,
                                                             for: indexPath ) as? CardPricingTableViewCell else {
-                                                                fatalError("CardPricingTableViewCell not found")
+                                                                fatalError("\(CardPricingTableViewCell.reuseIdentifier) not found")
                 }
                 
                 c.card = card
                 cell = c
                 
             case CardImageSection.image.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "CardImageCell"),
-                    let carouselView = c.viewWithTag(100) as? iCarousel else {
-                        fatalError("CardImageCell not found")
+                guard let c = tableView.dequeueReusableCell(withIdentifier: CardCarouselTableViewCell.reuseIdentifier,
+                                                            for: indexPath) as? CardCarouselTableViewCell else {
+                        fatalError("\(CardCarouselTableViewCell.reuseIdentifier) not found")
                 }
-                
-                carouselView.dataSource = self
-                carouselView.delegate = self
-                carouselView.type = .coverFlow2
-                carouselView.isPagingEnabled = true
-                carouselView.currentItemIndex = viewModel.cardIndex
-                
-                if let imageView = carouselView.itemView(at: viewModel.cardIndex) as? UIImageView {
-                    showImage(ofCard: card, inImageView: imageView)
+                c.viewModel = viewModel
+                c.delegate = self
+                if let imageView = c.carouselView.itemView(at: viewModel.cardIndex) as? UIImageView {
+                    c.showImage(ofCard: card, inImageView: imageView)
                 }
-                
                 c.selectionStyle = .none
                 c.accessoryType = .none
                 cell = c
@@ -652,63 +646,6 @@ class CardViewController: BaseSearchViewController {
         viewModel.toggleCardFavorite(firstAttempt: true)
     }
     
-    func showImage(ofCard card: CMCard, inImageView imageView: UIImageView) {
-        guard let viewModel = viewModel as? CardViewModel else {
-            fatalError()
-        }
-        
-        if let image = ManaKit.sharedInstance.cardImage(card,
-                                                        imageType: .normal,
-                                                        faceOrder: viewModel.faceOrder,
-                                                        roundCornered: true) {
-            imageView.image = image
-        } else {
-            imageView.image = ManaKit.sharedInstance.cardBack(card)
-            
-            firstly {
-                ManaKit.sharedInstance.downloadImage(ofCard: card,
-                                                     imageType: .normal,
-                                                     faceOrder: viewModel.faceOrder)
-            }.done {
-                guard let image = ManaKit.sharedInstance.cardImage(card,
-                                                                   imageType: .normal,
-                                                                   faceOrder: viewModel.faceOrder,
-                                                                   roundCornered: true) else {
-                    return
-                }
-                
-                let animations = {
-                    imageView.image = image
-                }
-                UIView.transition(with: imageView,
-                                  duration: 1.0,
-                                  options: .transitionCrossDissolve,
-                                  animations: animations,
-                                  completion: nil)
-                
-            }.catch { error in
-                print("\(error)")
-            }
-        }
-    }
-    
-    func movePhotoTo(index: Int) {
-        guard let viewModel = viewModel as? CardViewModel else {
-            fatalError()
-        }
-        viewModel.cardIndex = index
-        viewModel.cardViewIncremented = false
-        viewModel.faceOrder = 0
-        viewModel.faceAngle = 0
-
-        if viewModel.content == .card {
-            tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
-                                      IndexPath(row: 0, section: CardImageSection.actions.rawValue)], with: .automatic)
-        }
-        viewModel.loadCardData()
-        viewModel.reloadRelatedCards()
-    }
-    
     @objc func handleLink(_ tapGesture: UITapGestureRecognizer) {
         guard let label = tapGesture.view as? UILabel else {
             return
@@ -953,91 +890,6 @@ extension CardViewController : UITableViewDelegate {
     }
 }
 
-// MARK: iCarouselDataSource
-extension CardViewController : iCarouselDataSource {
-    func numberOfItems(in carousel: iCarousel) -> Int {
-        guard let viewModel = viewModel as? CardViewModel else {
-            fatalError()
-        }
-        return viewModel.numberOfCards()
-    }
-    
-    func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
-        var imageView = UIImageView(frame: CGRect.zero)
-        
-        //reuse view if available, otherwise create a new view
-        if let v = view as? UIImageView {
-            imageView = v
-            
-        } else {
-            let height = tableView.frame.size.height - 88
-            let width = tableView.frame.size.width - 40
-            imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: width, height: height))
-            imageView.contentMode = .scaleAspectFit
-
-            // add drop shadow
-//            imageView.layer.shadowColor = UIColor(red:0.00, green:0.00, blue:0.00, alpha:0.45).cgColor
-//            imageView.layer.shadowOffset = CGSize(width: 1, height: 1)
-//            imageView.layer.shadowOpacity = 1
-//            imageView.layer.shadowRadius = 6.0
-//            imageView.clipsToBounds = false
-        }
-        
-        if let card = viewModel.object(forRowAt: IndexPath(row: index, section: 0)) as? CMCard {
-            showImage(ofCard: card, inImageView: imageView)
-        }
-        
-        return imageView
-    }
-}
-
-// MARK: iCarouselDelegate
-extension CardViewController : iCarouselDelegate {
-    func carouselCurrentItemIndexDidChange(_ carousel: iCarousel) {
-        movePhotoTo(index: carousel.currentItemIndex)
-    }
-    
-    func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
-        guard let viewModel = viewModel as? CardViewModel else {
-            fatalError()
-        }
-        
-        var photos = [ManaGuidePhoto]()
-        
-        for i in 0...viewModel.numberOfCards() - 1 {
-            if let card = viewModel.object(forRowAt: IndexPath(row: i, section: 0)) as? CMCard {
-                photos.append(ManaGuidePhoto(withCard: card))
-            }
-        }
-        
-        if let browser = IDMPhotoBrowser(photos: photos) {
-            browser.setInitialPageIndex(UInt(index))
-            browser.displayActionButton = false
-            browser.usePopAnimation = true
-            browser.forceHideStatusBar = true
-            browser.delegate = self
-
-            present(browser, animated: true, completion: nil)
-        }
-    }
-}
-
-// MARK: IDMPhotoBrowserDelegate
-extension CardViewController : IDMPhotoBrowserDelegate {
-    func photoBrowser(_ photoBrowser: IDMPhotoBrowser,  didShowPhotoAt index: UInt) {
-        guard let viewModel = viewModel as? CardViewModel else {
-            fatalError()
-        }
-        
-        let i = Int(index)
-        
-        if i != viewModel.cardIndex {
-            movePhotoTo(index: i)
-            tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.image.rawValue)], with: .none)
-        }
-    }
-}
-
 // MARK: StoreTableViewCellDelegate
 extension CardViewController : StoreTableViewCellDelegate {
     func open(_ link: URL) {
@@ -1087,6 +939,24 @@ extension CardViewController : CardGridTableViewCellDelegate {
         let sender = ["cardIndex": cardIndex as Any,
                       "cardIDs": cardIDs]
         performSegue(withIdentifier: identifier, sender: sender)
+    }
+}
+
+// MARK: CardCarouselTableViewCellDelegate
+extension CardViewController : CardCarouselTableViewCellDelegate {
+    func showPhotoBrowser(_ browser: IDMPhotoBrowser) {
+        present(browser, animated: true, completion: nil)
+    }
+    
+    func updatePricingAndActions() {
+        tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
+                                  IndexPath(row: 0, section: CardImageSection.actions.rawValue)],
+                             with: .automatic)
+    }
+    
+    func updateCardImage() {
+        tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.image.rawValue)],
+                             with: .automatic)
     }
 }
 
