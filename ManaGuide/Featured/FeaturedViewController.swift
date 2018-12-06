@@ -169,7 +169,8 @@ extension FeaturedViewController : UITableViewDataSource {
         
         switch indexPath.row {
         case FeaturedSection.latestCards.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: LatestCardsTableViewCell.reuseIdentifier, for: indexPath) as? LatestCardsTableViewCell else {
+            guard let c = tableView.dequeueReusableCell(withIdentifier: LatestCardsTableViewCell.reuseIdentifier,
+                                                        for: indexPath) as? LatestCardsTableViewCell else {
                 fatalError("LatestCardsTableViewCell not found")
             }
             c.delegate = self

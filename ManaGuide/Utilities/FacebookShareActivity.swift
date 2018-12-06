@@ -74,7 +74,7 @@ class FacebookShareActivity: UIActivity {
         if canPerform {
             do {
                 try shareDialog.validate()
-                canPerform = shareDialog.canShow()
+                canPerform = shareDialog.canShow
             } catch {
                 canPerform = false
             }

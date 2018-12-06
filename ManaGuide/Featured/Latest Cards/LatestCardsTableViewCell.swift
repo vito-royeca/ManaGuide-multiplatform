@@ -9,6 +9,7 @@
 import UIKit
 import iCarousel
 import ManaKit
+import PromiseKit
 
 protocol LatestCardsTableViewDelegate : NSObjectProtocol {
     func cardSelected(card: CMCard)
@@ -22,7 +23,7 @@ class LatestCardsTableViewCell: UITableViewCell {
 
     // MARK: Variables
     var delegate: LatestCardsTableViewDelegate?
-    let latestCardsViewModel = LatestCardsViewModel()
+    let viewModel = LatestCardsViewModel()
     
     private var _slideshowTimer: Timer?
     private var _latestCardsTimer: Timer?
@@ -35,7 +36,7 @@ class LatestCardsTableViewCell: UITableViewCell {
         carousel.type = .linear
         carousel.isPagingEnabled = true
         carousel.currentItemIndex = 3
-        latestCardsViewModel.fetchData()
+        fetchData()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -49,8 +50,8 @@ class LatestCardsTableViewCell: UITableViewCell {
         setupCarousel()
         
         _latestCardsTimer = Timer.scheduledTimer(timeInterval: 60 * 5,
-                                                 target: latestCardsViewModel,
-                                                 selector: #selector(latestCardsViewModel.fetchData),
+                                                 target: self,
+                                                 selector: #selector(fetchData),
                                                  userInfo: nil, repeats: true)
         
         _slideshowTimer = Timer.scheduledTimer(timeInterval: 5,
@@ -79,6 +80,17 @@ class LatestCardsTableViewCell: UITableViewCell {
         carousel.scrollToItem(at: index, animated: true)
     }
     
+    @objc private func fetchData() {
+        firstly {
+            viewModel.fetchData()
+        }.done {
+            self.viewModel.mode = self.viewModel.isEmpty() ? .noResultsFound : .resultsFound
+            self.carousel.reloadData()
+        }.catch { error in
+            self.viewModel.mode = .error
+            self.carousel.reloadData()
+        }
+    }
     private func setupCarousel() {
         carousel.dataSource = self
         carousel.delegate = self
@@ -88,7 +100,7 @@ class LatestCardsTableViewCell: UITableViewCell {
 // MARK: iCarouselDataSource
 extension LatestCardsTableViewCell : iCarouselDataSource {
     func numberOfItems(in carousel: iCarousel) -> Int {
-        return latestCardsViewModel.numberOfItems()
+        return viewModel.numberOfRows(inSection: 0)
     }
     
     func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {
@@ -111,7 +123,7 @@ extension LatestCardsTableViewCell : iCarouselDataSource {
             }
         }
         
-        rcv!.card = latestCardsViewModel.objectAt(index)
+        rcv!.card = viewModel.object(forRowAt: IndexPath(row: index, section: 0)) as? CMCard
         rcv!.hideNameAndSet()
         rcv!.showImage()
         return rcv!
@@ -137,7 +149,7 @@ extension LatestCardsTableViewCell : iCarouselDelegate {
     }
     
     func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
-        let card = latestCardsViewModel.objectAt(index)
+        let card = viewModel.object(forRowAt: IndexPath(row: index, section: 0)) as! CMCard
         delegate?.cardSelected(card: card)
     }
     
