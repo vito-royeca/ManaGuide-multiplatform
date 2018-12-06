@@ -262,7 +262,7 @@ class CardViewController: BaseSearchViewController {
                 c.viewModel = viewModel
                 c.delegate = self
                 if let imageView = c.carouselView.itemView(at: viewModel.cardIndex) as? UIImageView {
-                    c.showImage(ofCard: card, inImageView: imageView)
+                    c.showImage(ofCard: card, inImageView: imageView, animate: false)
                 }
                 c.selectionStyle = .none
                 c.accessoryType = .none
@@ -298,39 +298,6 @@ class CardViewController: BaseSearchViewController {
                 for (k,v) in cardMainDetails[indexPath.row] {
                     cell = createMainDataCell(forCard: v, inRow: k.rawValue)
                 }
-//                if let facesSet = card.faces,
-//                    let faces = facesSet.allObjects as? [CMCard] {
-//
-//                    if faces.count > 0 {
-//                        let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
-//                            return a.faceOrder < b.faceOrder
-//                        })
-//                        var index = 0
-//
-//                        for face in orderedFaces {
-//                            var rows = 3
-//
-//                            if let type = face.typeLine,
-//                                let name = type.name {
-//                                if name.contains("Creature") || name.contains("Planeswalker") {
-//                                    rows += 1
-//                                }
-//                            }
-//
-//                            cell = createMainDataCell(forCard: face, inRow: row)
-//                        }
-//
-//
-//
-////                        let rows = viewModel.numberOfRows(inSection: indexPath.section)
-////                        let rowsPerFace = rows/orderedFaces.count
-////                        let row = indexPath.row % rowsPerFace
-////                        let face = orderedFaces[indexPath.row / rowsPerFace]
-////                        cell = createMainDataCell(forCard: face, inRow: row)
-//                    } else {
-//                        cell = createMainDataCell(forCard: card, inRow: indexPath.row)
-//                    }
-//                }
                 
             case CardDetailsSection.set.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: CardSetTableViewCell.reuseIdentifier,

@@ -122,7 +122,7 @@ class CardViewModel: BaseSearchViewModel {
     var cardViewIncremented = false
     var content: CardContent = .card
     var faceOrder = 0
-    var faceAngle = CGFloat(0)
+    var flipAngle = CGFloat(0)
 
     var partsViewModel: SearchViewModel?
     var variationsViewModel: SearchViewModel?
@@ -414,55 +414,41 @@ class CardViewModel: BaseSearchViewModel {
 
     func text(ofCard card: CMCard, pointSize: CGFloat) -> NSAttributedString {
         let attributedString = NSMutableAttributedString()
-        
-//        if let facesSet = card.faces,
-//            let faces = facesSet.allObjects as? [CMCard] {
-//            if faces.count > 0 {
-//                let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
-//                    return a.faceOrder > b.faceOrder
-//                })
-//                face = orderedFaces[faceIndex]
-//            } else {
-//                face = card
-//            }
-//        }
-        
-//        if let face = face {
-            if let language = card.language,
-                let code = language.code {
-             
-                if code == "en" {
+
+        if let language = card.language,
+            let code = language.code {
+         
+            if code == "en" {
+                if let oracleText = card.oracleText {
+                    attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
+                                                               pointSize: pointSize))
+                }
+            } else {
+                if let oracleText = card.printedText {
+                    attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
+                                                               pointSize: pointSize))
+                }
+            
+                // default to en oracleText
+                if attributedString.string.count == 0 {
                     if let oracleText = card.oracleText {
                         attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
-                                                                   pointSize: pointSize))
+                            pointSize: pointSize))
                     }
-                } else {
-                    if let oracleText = card.printedText {
-                        attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
-                                                                   pointSize: pointSize))
-                    }
-                
-                    // default to en oracleText
-                    if attributedString.string.count == 0 {
-                        if let oracleText = card.oracleText {
-                            attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
-                                pointSize: pointSize))
-                        }
-                    }
-                }
-                
-                
-                if let flavorText = card.flavorText {
-                    if attributedString.string.count > 0 {
-                        attributedString.append(NSAttributedString(symbol: "\n",
-                                                                   pointSize: pointSize))
-                    }
-                    let attributes = [NSAttributedString.Key.font: UIFont(name: "TimesNewRomanPS-ItalicMT", size: pointSize)]
-                    attributedString.append(NSAttributedString(string: "\(flavorText)",
-                        attributes: attributes as [NSAttributedString.Key : Any]))
                 }
             }
-//        }
+            
+            
+            if let flavorText = card.flavorText {
+                if attributedString.string.count > 0 {
+                    attributedString.append(NSAttributedString(symbol: "\n",
+                                                               pointSize: pointSize))
+                }
+                let attributes = [NSAttributedString.Key.font: UIFont(name: "TimesNewRomanPS-ItalicMT", size: pointSize)]
+                attributedString.append(NSAttributedString(string: "\(flavorText)",
+                    attributes: attributes as [NSAttributedString.Key : Any]))
+            }
+        }
         return attributedString
     }
     
