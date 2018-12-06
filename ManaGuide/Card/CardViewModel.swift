@@ -74,9 +74,10 @@ enum CardDetailsMainDataSection : Int {
     case name
     case type
     case text
-    
+    case powerToughness
+
     static var count: Int {
-        return 3
+        return 4
     }
 }
 
@@ -158,33 +159,8 @@ class CardViewModel: BaseSearchViewModel {
         case .details:
             switch section {
             case CardDetailsSection.mainData.rawValue:
-                if let facesSet = card.faces,
-                    let faces = facesSet.allObjects as? [CMCard] {
-                    
-                    if faces.count > 0 {
-                        let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
-                            return a.faceOrder < b.faceOrder
-                        })
-                        
-                        for face in orderedFaces {
-                            rows += 3
-                            if let type = face.typeLine,
-                                let name = type.name {
-                                if name.contains("Creature") || name.contains("Planeswalker") {
-                                    rows += 1
-                                }
-                            }
-                        }
-                    } else {
-                        rows = 3
-                        if let type = card.typeLine,
-                            let name = type.name {
-                            if name.contains("Creature") || name.contains("Planeswalker") {
-                                rows += 1
-                            }
-                        }
-                    }
-                }
+                rows = cardMainDetails().count
+
             case CardDetailsSection.rulings.rawValue:
                 if let rulingsSet = card.cardRulings,
                     let rulings = rulingsSet.allObjects as? [CMCardRuling] {
@@ -345,6 +321,59 @@ class CardViewModel: BaseSearchViewModel {
     }
     
     // MARK: Custom methods
+    func cardMainDetails() -> [[CardDetailsMainDataSection: CMCard]] {
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
+        var details = [[CardDetailsMainDataSection: CMCard]]()
+        var array = [CMCard]()
+        var faceIndex = 0
+
+        if let facesSet = card.faces,
+            let faces = facesSet.allObjects as? [CMCard] {
+            if faces.count > 0 {
+                let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
+                    return a.faceOrder < b.faceOrder
+                })
+                array.append(contentsOf: orderedFaces)
+            } else {
+                array.append(card)
+            }
+        }
+        
+        for a in array {
+            // name
+            details.append([CardDetailsMainDataSection.name: a])
+            
+            // typeline
+            details.append([CardDetailsMainDataSection.type: a])
+            
+            // text
+            if text(ofCard: a, pointSize: 17).string.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
+                details.append([CardDetailsMainDataSection.text: a])
+            }
+            
+            // power / toughness
+            if let type = card.typeLine,
+                let name = type.name {
+                if name.contains("Creature") {
+                    if let _ = a.power,
+                        let _ = a.toughness {
+                        details.append([CardDetailsMainDataSection.powerToughness: a])
+                    }
+                } else if name.contains("Plainswalker") {
+                    if let _ = a.loyalty {
+                        details.append([CardDetailsMainDataSection.powerToughness: a])
+                    }
+                }
+            }
+            
+            faceIndex += 1
+        }
+        
+        return details
+    }
+    
     func rulingText(inRow row: Int, pointSize: CGFloat) -> NSAttributedString? {
         guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard,
             let rulingsSet = card.cardRulings ,
@@ -383,43 +412,39 @@ class CardViewModel: BaseSearchViewModel {
         }
     }
 
-    func cardText(index: Int, pointSize: CGFloat) -> NSAttributedString {
-        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
-            fatalError()
-        }
-        var face: CMCard?
+    func text(ofCard card: CMCard, pointSize: CGFloat) -> NSAttributedString {
         let attributedString = NSMutableAttributedString()
         
-        if let facesSet = card.faces,
-            let faces = facesSet.allObjects as? [CMCard] {
-            if faces.count > 0 {
-                let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
-                    return a.faceOrder > b.faceOrder
-                })
-                face = orderedFaces[index]
-            } else {
-                face = card
-            }
-        }
+//        if let facesSet = card.faces,
+//            let faces = facesSet.allObjects as? [CMCard] {
+//            if faces.count > 0 {
+//                let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
+//                    return a.faceOrder > b.faceOrder
+//                })
+//                face = orderedFaces[faceIndex]
+//            } else {
+//                face = card
+//            }
+//        }
         
-        if let face = face {
-            if let language = face.language,
+//        if let face = face {
+            if let language = card.language,
                 let code = language.code {
              
                 if code == "en" {
-                    if let oracleText = face.oracleText {
+                    if let oracleText = card.oracleText {
                         attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
                                                                    pointSize: pointSize))
                     }
                 } else {
-                    if let oracleText = face.printedText {
+                    if let oracleText = card.printedText {
                         attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
                                                                    pointSize: pointSize))
                     }
                 
                     // default to en oracleText
                     if attributedString.string.count == 0 {
-                        if let oracleText = face.oracleText {
+                        if let oracleText = card.oracleText {
                             attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
                                 pointSize: pointSize))
                         }
@@ -427,7 +452,7 @@ class CardViewModel: BaseSearchViewModel {
                 }
                 
                 
-                if let flavorText = face.flavorText {
+                if let flavorText = card.flavorText {
                     if attributedString.string.count > 0 {
                         attributedString.append(NSAttributedString(symbol: "\n",
                                                                    pointSize: pointSize))
@@ -437,8 +462,7 @@ class CardViewModel: BaseSearchViewModel {
                         attributes: attributes as [NSAttributedString.Key : Any]))
                 }
             }
-            
-        }
+//        }
         return attributedString
     }
     

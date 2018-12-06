@@ -294,36 +294,43 @@ class CardViewController: BaseSearchViewController {
             
             switch indexPath.section {
             case CardDetailsSection.mainData.rawValue:
-                if let facesSet = card.faces,
-                    let faces = facesSet.allObjects as? [CMCard] {
-                    
-                    if faces.count > 0 {
-                        let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
-                            return a.faceOrder < b.faceOrder
-                        })
-                        for face in orderedFaces {
-                            var rows = 3
-                            if let type = face.typeLine,
-                                let name = type.name {
-                                if name.contains("Creature") || name.contains("Planeswalker") {
-                                    rows += 1
-                                }
-                            }
-                            
-                            cell = createMainDataCell(forCard: face, inRow: indexPath.row)
-                        }
-                        
-                        
-                        
-//                        let rows = viewModel.numberOfRows(inSection: indexPath.section)
-//                        let rowsPerFace = rows/orderedFaces.count
-//                        let row = indexPath.row % rowsPerFace
-//                        let face = orderedFaces[indexPath.row / rowsPerFace]
-//                        cell = createMainDataCell(forCard: face, inRow: row)
-                    } else {
-                        cell = createMainDataCell(forCard: card, inRow: indexPath.row)
-                    }
+                let cardMainDetails = viewModel.cardMainDetails()
+                for (k,v) in cardMainDetails[indexPath.row] {
+                    cell = createMainDataCell(forCard: v, inRow: k.rawValue)
                 }
+//                if let facesSet = card.faces,
+//                    let faces = facesSet.allObjects as? [CMCard] {
+//
+//                    if faces.count > 0 {
+//                        let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
+//                            return a.faceOrder < b.faceOrder
+//                        })
+//                        var index = 0
+//
+//                        for face in orderedFaces {
+//                            var rows = 3
+//
+//                            if let type = face.typeLine,
+//                                let name = type.name {
+//                                if name.contains("Creature") || name.contains("Planeswalker") {
+//                                    rows += 1
+//                                }
+//                            }
+//
+//                            cell = createMainDataCell(forCard: face, inRow: row)
+//                        }
+//
+//
+//
+////                        let rows = viewModel.numberOfRows(inSection: indexPath.section)
+////                        let rowsPerFace = rows/orderedFaces.count
+////                        let row = indexPath.row % rowsPerFace
+////                        let face = orderedFaces[indexPath.row / rowsPerFace]
+////                        cell = createMainDataCell(forCard: face, inRow: row)
+//                    } else {
+//                        cell = createMainDataCell(forCard: card, inRow: indexPath.row)
+//                    }
+//                }
                 
             case CardDetailsSection.set.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: CardSetTableViewCell.reuseIdentifier,
@@ -736,25 +743,25 @@ class CardViewController: BaseSearchViewController {
             }
             c.selectionStyle = .none
             c.accessoryType = .none
-            c.dynamicLabel.attributedText = viewModel.cardText(index: row,
-                                                               pointSize: c.dynamicLabel.font.pointSize)
+            c.dynamicLabel.attributedText = viewModel.text(ofCard: card,
+                                                           pointSize: c.dynamicLabel.font.pointSize)
             return c
             
         default:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell") else {
-                fatalError("BasicCell is nil")
+            guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell") else {
+                fatalError("RightDetailCell is nil")
             }
             
             if let type = card.typeLine,
                 let name = type.name {
                 if name.contains("Creature") {
-                    c.textLabel?.text = "\(card.power!)/\(card.toughness!)"
+                    c.textLabel?.text = "Power/Toughness"
+                    c.detailTextLabel?.text = "\(card.power!)/\(card.toughness!)"
                 } else if name.contains("Plainswalker") {
-                    c.textLabel?.text = "Loyalty: \(card.loyalty!)"
+                    c.textLabel?.text = "Loyalty"
+                    c.detailTextLabel?.text = "\(card.loyalty!)"
                 }
             }
-            c.textLabel?.textAlignment = .right
-            c.textLabel?.font = UIFont.boldSystemFont(ofSize: 17)
             c.selectionStyle = .none
             c.accessoryType = .none
             return c
