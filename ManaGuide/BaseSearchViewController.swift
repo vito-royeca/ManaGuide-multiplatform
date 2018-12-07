@@ -58,7 +58,17 @@ class BaseSearchViewController: BaseViewController {
     // MARK: Custom methods
     @objc func doSearch() {
         viewModel.queryString = searchController.searchBar.text ?? ""
-        fetchData()
+        
+        if viewModel.queryString.isEmpty {
+            if viewModel.isStandBy {
+                viewModel.mode = .standBy
+                tableView.reloadData()
+            } else {
+                fetchData()
+            }
+        } else {
+            fetchData()
+        }
     }
     
     func fetchData() {
@@ -68,7 +78,6 @@ class BaseSearchViewController: BaseViewController {
         firstly {
             viewModel.fetchData()
         }.done {
-//            self.viewModel.mode = self.viewModel.isEmpty() ? (self.viewModel.queryString.isEmpty ? .standBy : .noResultsFound) : .resultsFound
             self.viewModel.mode = self.viewModel.isEmpty() ? .noResultsFound : .resultsFound
             self.tableView.reloadData()
         }.catch { error in

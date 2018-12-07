@@ -57,6 +57,7 @@ class BaseSearchViewModel: NSObject {
     var queryString = ""
     var searchCancelled = false
     var mode: ViewModelMode = .loading
+    var isStandBy = false
     var sortDescriptors: [NSSortDescriptor]?
     var request: NSFetchRequest<NSManagedObject>?
     var sectionName = "name"

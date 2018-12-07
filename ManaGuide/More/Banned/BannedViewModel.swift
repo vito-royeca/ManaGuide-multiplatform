@@ -37,16 +37,7 @@ class BannedViewModel: SearchViewModel {
         super.init(withTitle: format.name,
                    andMode: .loading)
         _format = format
-
-//        guard let format = _format,
-//            let formatName = format.name,
-//            let cardLegalities = findCardLegalities(formantName: formatName, legalityName: content.description) else {
-//            fatalError("CardLegalities is nil")
-//        }
-//
-//        let newRequest: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-//        newRequest.predicate = NSPredicate(format: "id IN %@ AND language.code = %@", cardLegalities.map { $0.card!.id }, "en")
-//        request = newRequest as? NSFetchRequest<NSManagedObject>
+        sortDescriptors = SearchRequestGenerator().createSortDescriptors()
     }
     
     // MARK: Overrides
@@ -58,9 +49,12 @@ class BannedViewModel: SearchViewModel {
                 fatalError("CardLegalities is nil")
             }
 
-            let newRequest: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-            newRequest.predicate = NSPredicate(format: "id IN %@ AND language.code = %@", cardLegalities.map { $0.card!.id }, "en")
-            fetchedResultsController = getFetchedResultsController(with: newRequest as? NSFetchRequest<NSManagedObject>)
+            let request1: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+            request1.predicate = NSPredicate(format: "id IN %@ AND language.code = %@", cardLegalities.map { $0.card!.id }, "en")
+            request1.sortDescriptors = sortDescriptors
+            let request2 = SearchRequestGenerator().createSearchRequest(query: queryString, oldRequest: request1 as? NSFetchRequest<CMCard>)
+            
+            fetchedResultsController = getFetchedResultsController(with: request2 as? NSFetchRequest<NSManagedObject>)
             updateSections()
             seal.fulfill(())
         }

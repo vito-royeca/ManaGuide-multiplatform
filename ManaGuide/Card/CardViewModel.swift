@@ -137,7 +137,7 @@ class CardViewModel: BaseSearchViewModel {
         sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
                            NSSortDescriptor(key: "name", ascending: true),
                            NSSortDescriptor(key: "collectorNumber", ascending: true)]
-        
+
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         request.predicate = NSPredicate(format: "id IN %@",
                                         cardIDs)

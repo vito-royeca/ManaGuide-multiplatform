@@ -50,9 +50,6 @@ class SearchViewController: BaseSearchViewController {
         tableView.register(ManaKit.sharedInstance.nibFromBundle("CardTableViewCell"),
                            forCellReuseIdentifier: CardTableViewCell.reuseIdentifier)
         
-        viewModel = SearchViewModel(withRequest: nil,
-                                    andTitle: "Search",
-                                    andMode: .standBy)
         title = viewModel.title
     }
 
@@ -194,12 +191,14 @@ class SearchViewController: BaseSearchViewController {
     @objc func updateSettings(_ notification: Notification) {
         let searchGenerator = SearchRequestGenerator()
         searchGenerator.syncValues(notification)
+        viewModel.mode = .loading
         updateDataDisplay()
     }
     
     @objc func updateData(_ notification: Notification) {
         if let delegate = delegate {
             viewModel = delegate.reloadViewModel()
+            viewModel.mode = .loading
             updateDataDisplay()
         }
     }
@@ -212,7 +211,10 @@ class SearchViewController: BaseSearchViewController {
         } else {
             tableView?.tableHeaderView = searchController.searchBar
         }
-        fetchData()
+        
+        if viewModel.mode == .loading {
+            fetchData()
+        }
     }
 }
 

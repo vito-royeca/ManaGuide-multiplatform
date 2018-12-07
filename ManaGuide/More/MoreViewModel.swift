@@ -73,7 +73,7 @@ enum MoreRuleRow: Int {
                                            textColor: LookAndFeel.GlobalTintColor,
                                            size: CGSize(width: 20, height: 20))
         case .comprehensive:
-            return UIImage.fontAwesomeIcon(name: .database,
+            return UIImage.fontAwesomeIcon(name: .book,
                                            style: .solid,
                                            textColor: LookAndFeel.GlobalTintColor,
                                            size: CGSize(width: 20, height: 20))

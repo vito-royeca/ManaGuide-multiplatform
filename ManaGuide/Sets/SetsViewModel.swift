@@ -11,6 +11,10 @@ import ManaKit
 import PromiseKit
 
 class SetsViewModel: BaseSearchViewModel {
+    override init() {
+        super.init()
+    }
+    
     // MARK: Variables
     private var _sectionIndexTitles: [String]?
     private var _sectionTitles: [String]?

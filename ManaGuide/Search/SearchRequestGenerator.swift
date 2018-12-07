@@ -118,7 +118,7 @@ class SearchRequestGenerator: NSObject {
         case "number":
             sectionName = nil
         case "type":
-            sectionName = "typeLine.nameSection"
+            sectionName = "typeLine.name"
         case "rarity":
             sectionName = "rarity.name"
         case "artist":
@@ -158,7 +158,7 @@ class SearchRequestGenerator: NSObject {
         
         newRequest.sortDescriptors = createSortDescriptors()
         
-        let idPredicate = NSPredicate(format: "id != nil")
+        let idPredicate = NSPredicate(format: "id != nil AND language.code = %@", "en")
         if let predicate = predicate {
             newRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
                                                                                        idPredicate])

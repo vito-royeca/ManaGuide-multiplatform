@@ -38,7 +38,7 @@ class SetViewController: BaseSearchViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        contentSegmentedControl.setImage(UIImage.fontAwesomeIcon(name: .database,
+        contentSegmentedControl.setImage(UIImage.fontAwesomeIcon(name: .images,
                                                                  style: .solid,
                                                                  textColor: LookAndFeel.GlobalTintColor,
                                                                  size: CGSize(width: 30, height: 30)),
