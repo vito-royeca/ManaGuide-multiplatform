@@ -24,13 +24,13 @@ enum ViewModelMode: Int {
     var cardArt: [String: String]? {
         switch self {
         case .standBy:
-            return ["setCode": "leb",
-                    "name": "Library of Leng"]
+            return ["setCode": "tmp",
+                    "name": "Scroll Rack"]
         case .loading:
-            return ["setCode": "vma",
-                    "name": "Frantic Search"]
+            return ["setCode": "chk",
+                    "name": "Azami, Lady of Scrolls"]
         case .noResultsFound:
-            return ["setCode": "a25",
+            return ["setCode": "chk",
                     "name": "Azusa, Lost but Seeking"]
         case .resultsFound:
             return nil

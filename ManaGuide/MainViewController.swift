@@ -21,9 +21,11 @@ class MainViewController: UITabBarController {
                 if let nvc = vc as? UINavigationController {
                     for child in nvc.viewControllers {
                         if let searchVC = child as? SearchViewController {
-                            searchVC.viewModel = SearchViewModel(withRequest: nil,
-                                                                 andTitle: "Search",
-                                                                 andMode: .standBy)
+                            let viewModel = SearchViewModel(withRequest: nil,
+                                                            andTitle: "Search",
+                                                            andMode: .standBy)
+                            viewModel.isStandBy = true
+                            searchVC.viewModel = viewModel
                         }
                     }
                 }
