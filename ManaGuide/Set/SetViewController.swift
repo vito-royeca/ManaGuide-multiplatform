@@ -14,10 +14,9 @@ import ManaKit
 import MBProgressHUD
 import PromiseKit
 
-class SetViewController: BaseSearchViewController {
+class SetViewController: SearchViewController {
     // MARK: Outlets
     @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
-    @IBOutlet weak var rightMenuButton: UIBarButtonItem!
     
     // MARK: Actions
     @IBAction func contentAction(_ sender: UISegmentedControl) {
@@ -201,14 +200,7 @@ class SetViewController: BaseSearchViewController {
     }
     
     // MARK: Custom methods
-    @objc func updateData(_ notification: Notification) {
-        let searchGenerator = SearchRequestGenerator()
-        searchGenerator.syncValues(notification)
-        
-        updateDataDisplay()
-    }
-
-    func updateDataDisplay() {
+    override func updateDataDisplay() {
         guard let viewModel = viewModel as? SetViewModel else {
             fatalError()
         }
@@ -240,11 +232,8 @@ class SetViewController: BaseSearchViewController {
             tableView.reloadData()
         }
     }
-}
-
-// MARK: UITableViewDelegate
-extension SetViewController : UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let viewModel = viewModel as? SetViewModel else {
             fatalError()
         }
@@ -282,7 +271,7 @@ extension SetViewController : UITableViewDelegate {
         return height
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let viewModel = viewModel as? SetViewModel else {
             fatalError()
         }
@@ -304,7 +293,7 @@ extension SetViewController : UITableViewDelegate {
         }
     }
     
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+    override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         guard let viewModel = viewModel as? SetViewModel else {
             fatalError()
         }
@@ -458,14 +447,5 @@ extension SetViewController : BrowserNavigatorTableViewCellDelegate {
         }
         
         cell.webView.reload()
-    }
-}
-
-// MARK: CardGridTableViewCellDelegate
-extension SetViewController : CardGridTableViewCellDelegate {
-    func showCard(identifier: String, cardIndex: Int, cardIDs: [String]) {
-        let sender = ["cardIndex": cardIndex as Any,
-                      "cardIDs": cardIDs]
-        performSegue(withIdentifier: identifier, sender: sender)
     }
 }

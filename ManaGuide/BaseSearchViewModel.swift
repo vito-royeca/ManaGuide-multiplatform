@@ -135,7 +135,7 @@ class BaseSearchViewModel: NSObject {
             
             guard let fetchedResultsController = fetchedResultsController,
                 let sections = fetchedResultsController.sections else {
-                    return titleHeader
+                return titleHeader
             }
             titleHeader = sections[section].name
             return titleHeader

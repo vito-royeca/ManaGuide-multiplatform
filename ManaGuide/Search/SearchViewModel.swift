@@ -250,7 +250,7 @@ class SearchViewModel: BaseSearchViewModel {
                 _sectionTitles = nil
                 return
             case "type":
-                if let type = card.typeLine {
+                if let type = card.myType {
                     prefix = type.nameSection
                 }
             case "rarity":

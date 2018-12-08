@@ -118,7 +118,7 @@ class SearchRequestGenerator: NSObject {
         case "number":
             sectionName = nil
         case "type":
-            sectionName = "typeLine.name"
+            sectionName = "myType.name"
         case "rarity":
             sectionName = "rarity.name"
         case "artist":

@@ -352,7 +352,7 @@
                         </segmentedControl>
                         <barButtonItem key="rightBarButtonItem" title="Item" id="Uvw-EH-SJi">
                             <connections>
-                                <action selector="showRightMenuAction:" destination="nQ2-F6-P6p" id="g8w-HA-Q73"/>
+                                <action selector="rightMenuAction:" destination="nQ2-F6-P6p" id="bWq-aK-RW1"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
