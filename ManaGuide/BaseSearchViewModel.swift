@@ -245,6 +245,13 @@ class BaseSearchViewModel: NSObject {
         return objects.count == 0
     }
     
+    func count() -> Int {
+        guard let objects = allObjects() else {
+            return 0
+        }
+        return objects.count
+    }
+
     func fetchData() -> Promise<Void> {
         return Promise { seal  in
             updateSections()

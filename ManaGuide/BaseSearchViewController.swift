@@ -18,6 +18,7 @@ class BaseSearchViewController: BaseViewController {
 
     // MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var countLabel: UILabel!
 
     // MARK: Overrides
     override func viewDidLoad() {
@@ -39,6 +40,9 @@ class BaseSearchViewController: BaseViewController {
             }
         }
         tableView.keyboardDismissMode = .onDrag
+        if let countLabel = countLabel {
+            countLabel.text = " "
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -63,6 +67,9 @@ class BaseSearchViewController: BaseViewController {
             if viewModel.isStandBy {
                 viewModel.mode = .standBy
                 tableView.reloadData()
+                if let countLabel = countLabel {
+                    countLabel.text = " "
+                }
             } else {
                 fetchData()
             }
@@ -74,15 +81,24 @@ class BaseSearchViewController: BaseViewController {
     func fetchData() {
         viewModel.mode = .loading
         tableView.reloadData()
+        if let countLabel = countLabel {
+            countLabel.text = " "
+        }
 
         firstly {
             viewModel.fetchData()
         }.done {
             self.viewModel.mode = self.viewModel.isEmpty() ? .noResultsFound : .resultsFound
             self.tableView.reloadData()
+            if let countLabel = self.countLabel {
+                countLabel.text = " \(self.viewModel.count()) results"
+            }
         }.catch { error in
             self.viewModel.mode = .error
             self.tableView.reloadData()
+            if let countLabel = self.countLabel {
+                countLabel.text = " "
+            }
         }
     }
 }

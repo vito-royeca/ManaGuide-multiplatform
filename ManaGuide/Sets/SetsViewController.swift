@@ -16,7 +16,7 @@ class SetsViewController: BaseSearchViewController {
 
     // MARK: Outlets
     @IBOutlet weak var rightMenuButton: UIBarButtonItem!
-    
+
     // MARK: actions
     @IBAction func rightMenuAction(_ sender: UIBarButtonItem) {
         showSettingsMenu(file: "Sets")
