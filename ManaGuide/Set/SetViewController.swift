@@ -116,65 +116,16 @@ class SetViewController: SearchViewController {
         }
     }
     
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        updateDataDisplay()
-    }
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let viewModel = viewModel as? SetViewModel else {
             fatalError()
         }
         
-        let searchGenerator = SearchRequestGenerator()
-        let displayBy = searchGenerator.displayValue(for: .displayBy) as? String
         var cell: UITableViewCell?
         
         switch viewModel.content {
         case .cards:
-            switch displayBy {
-            case "list":
-                if viewModel.mode == .resultsFound {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell,
-                        let card = viewModel.object(forRowAt: indexPath) as? CMCard else {
-                            fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
-                    }
-                    c.card = card
-                    cell = c
-                } else {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
-                        fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
-                    }
-                    c.mode = viewModel.mode
-                    cell = c
-                }
-                
-            case "grid":
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier) as? CardGridTableViewCell else {
-                    fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
-                }
-                let sectionIndexWidth = viewModel.sectionIndexTitles() != nil ? CGFloat(44) : CGFloat(0)
-                let width = tableView.frame.size.width - sectionIndexWidth
-                var height = tableView.frame.size.height
-                var size = CGSize(width: 0, height: 0)
-                
-                if viewModel.mode == .resultsFound  {
-                    height -= CardTableViewCell.cellHeight - CGFloat(44)
-                    size = cardSize(inFrame: CGSize(width: width, height: height))
-                } else {
-                    height /= 3
-                    size = CGSize(width: width, height: height)
-                }
-                
-                c.viewModel = viewModel
-                c.delegate = self
-                c.imageType = .normal
-                c.animationOptions = .transitionFlipFromLeft
-                c.updateItemSize(with: size)
-                cell = c
-                
-            default:
-                ()
-            }
+            cell = createCardCell(at: indexPath)
         case .wiki:
             switch indexPath.row {
             case 0:
@@ -242,23 +193,7 @@ class SetViewController: SearchViewController {
 
         switch viewModel.content {
         case .cards:
-            let searchGenerator = SearchRequestGenerator()
-            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
-                return height
-            }
-            
-            switch displayBy {
-            case "list":
-                if viewModel.mode == .resultsFound {
-                    height = CardTableViewCell.cellHeight
-                } else {
-                    height = tableView.frame.size.height / 3
-                }
-            case "grid":
-                height = tableView.frame.size.height
-            default:
-                ()
-            }
+            height = heightForCell()
         case .wiki:
             switch indexPath.row {
             case 0:
@@ -278,17 +213,8 @@ class SetViewController: SearchViewController {
         
         switch viewModel.content {
         case .cards:
-            guard let cards = viewModel.allObjects() as? [CMCard],
-                let card = viewModel.object(forRowAt: indexPath) as? CMCard else {
-                return
-            }
-
-            let cardIndex = cards.index(of: card)
-            let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-            let sender = ["cardIndex": cardIndex as Any,
-                          "cardIDs": cards.map({ $0.id })]
-            performSegue(withIdentifier: identifier, sender: sender)
-        default:
+            handleDidSelectRow(at: indexPath)
+        case .wiki:
             ()
         }
     }
@@ -300,22 +226,8 @@ class SetViewController: SearchViewController {
         
         switch viewModel.content {
         case .cards:
-            let searchGenerator = SearchRequestGenerator()
-            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
-                return nil
-            }
-            
-            switch displayBy {
-            case "list":
-                if viewModel.mode == .resultsFound {
-                    return indexPath
-                } else {
-                    return nil
-                }
-            default:
-                ()
-            }
-        default:
+            return handleWillSelectRow(at: indexPath)
+        case .wiki:
             ()
         }
         

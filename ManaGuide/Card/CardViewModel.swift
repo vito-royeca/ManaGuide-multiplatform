@@ -87,6 +87,7 @@ enum CardOtherDetailsSection : Int {
     case colors
     case colorshifted
     case convertedManaCost
+    case frameEffect
     case layout
     case releaseDate
     case reservedList
@@ -102,6 +103,7 @@ enum CardOtherDetailsSection : Int {
         case .colors: return "Colors"
         case .colorshifted: return "Colorshifted"
         case .convertedManaCost: return "Converted Mana Cost"
+        case .frameEffect: return "Frame Effect"
         case .layout: return "Layout"
         case .releaseDate: return "Release Date"
         case .reservedList: return "Reserved List"
@@ -112,7 +114,7 @@ enum CardOtherDetailsSection : Int {
     }
     
     static var count: Int {
-        return 11
+        return 12
     }
 }
 
@@ -486,6 +488,11 @@ class CardViewModel: BaseSearchViewModel {
             text = card.isColorshifted ? "Yes" : "No"
         case .convertedManaCost:
             text = "\(String(format: card.convertedManaCost == floor(card.convertedManaCost) ? "%.0f" : "%.1f", card.convertedManaCost))"
+        case .frameEffect:
+            if let frameEffect = card.frameEffect,
+                let name = frameEffect.name {
+                text = name
+            }
         case .layout:
             if let layout = card.layout,
                 let name = layout.name {
@@ -843,7 +850,7 @@ class CardViewModel: BaseSearchViewModel {
                     
                     for (k,v) in ratedCards {
                         if let c = ManaKit.sharedInstance.findObject("CMCard",
-                                                                  objectFinder: ["firebaseId": k as AnyObject],
+                                                                  objectFinder: ["firebaseID": k as AnyObject],
                                                                   createIfNotFound: false) as? CMCard,
                             let cardRating = ManaKit.sharedInstance.findObject("CMCardRating",
                                                                            objectFinder: ["user.id": user.id! as AnyObject,

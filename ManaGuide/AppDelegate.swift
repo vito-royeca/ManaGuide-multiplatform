@@ -11,6 +11,7 @@ import Fabric
 import Crashlytics
 import Firebase
 import FBSDKCoreKit
+import FBSDKLoginKit
 import GoogleSignIn
 import ManaKit
 import MMDrawerController
@@ -35,6 +36,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
         FBSDKApplicationDelegate.sharedInstance().application(application,
                                                               didFinishLaunchingWithOptions: launchOptions)
+        
+        // Facebook
+        FBSDKApplicationDelegate.sharedInstance()?.application(application,
+                                                               didFinishLaunchingWithOptions: launchOptions)
+        
         // ManaKit
         ManaKit.sharedInstance.setupResources()
         ManaKit.sharedInstance.configureTCGPlayer(partnerKey: TCGPlayerSettings.PartnerKey,

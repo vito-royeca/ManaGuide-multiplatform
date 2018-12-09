@@ -132,10 +132,43 @@ class SearchViewController: BaseSearchViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return createCardCell(at: indexPath)
+    }
+
+    // MARK: Notification handlers
+    @objc func updateSettings(_ notification: Notification) {
+        let searchGenerator = SearchRequestGenerator()
+        searchGenerator.syncValues(notification)
+        viewModel.mode = .loading
+        updateDataDisplay()
+    }
+    
+    @objc func updateData(_ notification: Notification) {
+        if let delegate = delegate {
+            viewModel = delegate.reloadViewModel()
+            viewModel.mode = .loading
+            updateDataDisplay()
+        }
+    }
+    
+    // MARK: Custom methods
+    func updateDataDisplay() {
+        if #available(iOS 11.0, *) {
+            navigationItem.searchController?.searchBar.isHidden = false
+            navigationItem.hidesSearchBarWhenScrolling = false
+        } else {
+            tableView?.tableHeaderView = searchController.searchBar
+        }
+        
+        if viewModel.mode == .loading {
+            fetchData()
+        }
+    }
+    
+    func createCardCell(at indexPath: IndexPath) -> UITableViewCell {
         let searchGenerator = SearchRequestGenerator()
         let displayBy = searchGenerator.displayValue(for: .displayBy) as? String
         var cell: UITableViewCell?
-        
         
         switch displayBy {
         case "list":
@@ -143,7 +176,7 @@ class SearchViewController: BaseSearchViewController {
             case .resultsFound:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: CardTableViewCell.reuseIdentifier) as? CardTableViewCell,
                     let card = viewModel.object(forRowAt: indexPath) as? CMCard else {
-                        fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
+                    fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
                 }
                 c.card = card
                 cell = c
@@ -186,41 +219,8 @@ class SearchViewController: BaseSearchViewController {
         
         return cell!
     }
-
-    // MARK: Notification handlers
-    @objc func updateSettings(_ notification: Notification) {
-        let searchGenerator = SearchRequestGenerator()
-        searchGenerator.syncValues(notification)
-        viewModel.mode = .loading
-        updateDataDisplay()
-    }
     
-    @objc func updateData(_ notification: Notification) {
-        if let delegate = delegate {
-            viewModel = delegate.reloadViewModel()
-            viewModel.mode = .loading
-            updateDataDisplay()
-        }
-    }
-    
-    // MARK: Custom methods
-    func updateDataDisplay() {
-        if #available(iOS 11.0, *) {
-            navigationItem.searchController?.searchBar.isHidden = false
-            navigationItem.hidesSearchBarWhenScrolling = false
-        } else {
-            tableView?.tableHeaderView = searchController.searchBar
-        }
-        
-        if viewModel.mode == .loading {
-            fetchData()
-        }
-    }
-}
-
-// MARK: UITableViewDelegate
-extension SearchViewController : UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func heightForCell() -> CGFloat {
         let searchGenerator = SearchRequestGenerator()
         var height = CGFloat(0)
         
@@ -244,7 +244,7 @@ extension SearchViewController : UITableViewDelegate {
         return height
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func handleDidSelectRow(at indexPath: IndexPath) {
         guard let cards = viewModel.allObjects() as? [CMCard],
             let card = viewModel.object(forRowAt: indexPath) as? CMCard else {
             return
@@ -257,12 +257,27 @@ extension SearchViewController : UITableViewDelegate {
         performSegue(withIdentifier: identifier, sender: sender)
     }
     
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+    func handleWillSelectRow(at indexPath: IndexPath) -> IndexPath? {
         if viewModel.mode == .resultsFound {
             return indexPath
         } else {
             return nil
         }
+    }
+}
+
+// MARK: UITableViewDelegate
+extension SearchViewController : UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightForCell()
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        handleDidSelectRow(at: indexPath)
+    }
+    
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        return handleWillSelectRow(at: indexPath)
     }
 }
 

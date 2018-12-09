@@ -17,7 +17,7 @@ class FacebookShareActivity: UIActivity {
         let dialog = FBSDKShareDialog()
         dialog.delegate = self
         dialog.fromViewController = self.parentViewController
-        dialog.mode = .native
+        dialog.mode = .automatic
         
         return dialog
     }()
@@ -74,7 +74,7 @@ class FacebookShareActivity: UIActivity {
         if canPerform {
             do {
                 try shareDialog.validate()
-                canPerform = shareDialog.canShow
+                canPerform = shareDialog.canShow()
             } catch {
                 canPerform = false
             }

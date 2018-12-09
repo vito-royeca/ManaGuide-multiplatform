@@ -14,12 +14,12 @@ PODS:
   - DACircularProgress (2.3.1)
   - Eureka (4.3.0)
   - Fabric (1.9.0)
-  - FBSDKCoreKit (4.39.0):
+  - FBSDKCoreKit (4.38.1):
     - Bolts (~> 1.9)
-  - FBSDKLoginKit (4.39.0):
+  - FBSDKLoginKit (4.38.1):
     - FBSDKCoreKit
   - FBSDKMessengerShareKit (1.3.2)
-  - FBSDKShareKit (4.39.0):
+  - FBSDKShareKit (4.38.1):
     - FBSDKCoreKit
   - Firebase/Auth (5.14.0):
     - Firebase/CoreOnly
@@ -164,10 +164,10 @@ DEPENDENCIES:
   - Crashlytics
   - Eureka
   - Fabric
-  - FBSDKCoreKit
-  - FBSDKLoginKit
+  - FBSDKCoreKit (~> 4.38.0)
+  - FBSDKLoginKit (~> 4.38.0)
   - FBSDKMessengerShareKit
-  - FBSDKShareKit
+  - FBSDKShareKit (~> 4.38.0)
   - Firebase/Auth
   - Firebase/Core
   - Firebase/Database
@@ -251,10 +251,10 @@ SPEC CHECKSUMS:
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
   Eureka: 6d711cb30ca333b4bc893110285a722ae3840114
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
-  FBSDKCoreKit: 1e3981faefab8c88edfaa9eecd94aab02d99a9bc
-  FBSDKLoginKit: 30ba5039a2c53d65a75103889bc2deebdacd5a1f
+  FBSDKCoreKit: 8d47857400e2f5bdea697a80daff882e91c84ef6
+  FBSDKLoginKit: 4621c690d9dd8628031a4791497062183ea34b0d
   FBSDKMessengerShareKit: bdd14265f5845e6d1c95a128ab33705a68ca1c21
-  FBSDKShareKit: 5a0021c30abb64df9eeba87351dd8a627874543b
+  FBSDKShareKit: 6ffe22f0a0618eb7424d4104ab0ef3ce9643d42a
   Firebase: 963d5685fae888a56d6d4d9cfce6b9c976958798
   FirebaseAnalytics: c06f9d70577d79074214700a71fd5d39de5550fb
   FirebaseAuth: 4a5cc5fc2d1721e509e24699b93ebc3d94b1e195
@@ -289,6 +289,6 @@ SPEC CHECKSUMS:
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Sync: 0412c2b068eb7cf1a04607e948ef92cbd6114d0f
 
-PODFILE CHECKSUM: cda91ea36756964f8e00f2f2bd7cd2309d396622
+PODFILE CHECKSUM: f771bb2807a925089c0c7eee60f218b231f48c8b
 
 COCOAPODS: 1.5.3

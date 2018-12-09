@@ -425,7 +425,7 @@ class CardViewController: BaseSearchViewController {
             guard let storePricing = card.tcgplayerStorePricing,
                 let suppliersSet = storePricing.suppliers,
                 let suppliers = suppliersSet.allObjects as? [CMStoreSupplier] else {
-                    return UITableViewCell(frame: CGRect.zero)
+                return UITableViewCell(frame: CGRect.zero)
             }
             let count = suppliers.count
             
