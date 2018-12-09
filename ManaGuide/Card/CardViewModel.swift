@@ -956,10 +956,10 @@ class CardViewModel: BaseSearchViewModel {
         dict["ImageURL"] = nil
         dict["CropURL"] = nil
         
-        if let type = card.typeLine {
+        if let type = card.myType {
             dict["Type"] = type.name
         } else {
-            dict["Type"] = ""
+            dict["Type"] = nil
         }
         
         if let rarity = card.rarity {

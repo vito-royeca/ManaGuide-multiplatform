@@ -43,7 +43,7 @@ class SetsViewController: BaseSearchViewController {
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars,
                                                         style: .solid,
                                                         textColor: LookAndFeel.GlobalTintColor,
-                                                        size: CGSize(width: 30, height: 30)) //UIImage.init(icon: .FABars, size: CGSize(width: 30, height: 30), textColor: .white, backgroundColor: .clear)
+                                                        size: CGSize(width: 30, height: 30))
         rightMenuButton.title = nil
         title = "Sets"
         

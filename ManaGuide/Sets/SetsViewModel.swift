@@ -47,6 +47,14 @@ class SetsViewModel: BaseSearchViewModel {
         }
     }
     
+    override func sectionIndexTitles() -> [String]? {
+        if mode == .resultsFound {
+            return _sectionIndexTitles
+        } else {
+            return nil
+        }
+    }
+
     // MARK: Custom methods
     override func fetchData() -> Promise<Void> {
         return Promise { seal in
@@ -76,6 +84,14 @@ class SetsViewModel: BaseSearchViewModel {
         var setsSortBy = defaults["setsSortBy"] as! String
         var setsOrderBy = defaults["setsOrderBy"] as! Bool
         sectionName = defaults["setsSectionName"] as! String
+        
+        // fix old setting
+        if sectionName == "yearSection" {
+           sectionName = "myYearSection"
+        }
+        if sectionName == "nameSection" {
+            sectionName = "myNameSection"
+        }
         
         if let values = values {
             if let value = values["setsOrderBy"] as? Bool {
@@ -143,7 +159,7 @@ class SetsViewModel: BaseSearchViewModel {
         guard let fetchedResultsController = fetchedResultsController,
             let sets = fetchedResultsController.fetchedObjects as? [CMSet],
             let sections = fetchedResultsController.sections else {
-                return
+            return
         }
 
         switch sectionName {
