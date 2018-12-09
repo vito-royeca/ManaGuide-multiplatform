@@ -419,19 +419,22 @@ class CardViewModel: BaseSearchViewModel {
             let code = language.code {
          
             if code == "en" {
-                if let oracleText = card.oracleText {
+                if let oracleText = card.oracleText,
+                    !oracleText.isEmpty {
                     attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
                                                                pointSize: pointSize))
                 }
             } else {
-                if let oracleText = card.printedText {
+                if let oracleText = card.printedText,
+                    !oracleText.isEmpty {
                     attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
                                                                pointSize: pointSize))
                 }
             
                 // default to en oracleText
-                if attributedString.string.count == 0 {
-                    if let oracleText = card.oracleText {
+                if attributedString.string.isEmpty {
+                    if let oracleText = card.oracleText,
+                        !oracleText.isEmpty {
                         attributedString.append(NSAttributedString(symbol: "\n\(oracleText)\n",
                             pointSize: pointSize))
                     }
@@ -440,12 +443,8 @@ class CardViewModel: BaseSearchViewModel {
             
             
             if let flavorText = card.flavorText {
-                if attributedString.string.count > 0 {
-                    attributedString.append(NSAttributedString(symbol: "\n",
-                                                               pointSize: pointSize))
-                }
                 let attributes = [NSAttributedString.Key.font: UIFont(name: "TimesNewRomanPS-ItalicMT", size: pointSize)]
-                attributedString.append(NSAttributedString(string: "\(flavorText)",
+                attributedString.append(NSAttributedString(string: "\n\(flavorText)\n",
                     attributes: attributes as [NSAttributedString.Key : Any]))
             }
         }
