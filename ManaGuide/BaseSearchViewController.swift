@@ -29,7 +29,6 @@ class BaseSearchViewController: BaseViewController {
             searchController.dimsBackgroundDuringPresentation = false
             searchController.searchResultsUpdater = self
             searchController.searchBar.delegate = self
-            searchController.searchBar.placeholder = "Filter"
             definesPresentationContext = true
             
             if #available(iOS 11.0, *) {

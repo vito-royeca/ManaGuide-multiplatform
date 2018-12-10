@@ -117,6 +117,8 @@
 	</dict>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This allows the app to save images in your device.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This allows the app to save images in your device.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen</string>
 	<key>UIMainStoryboardFile</key>
