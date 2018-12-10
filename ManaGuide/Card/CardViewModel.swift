@@ -658,7 +658,7 @@ class CardViewModel: BaseSearchViewModel {
                     if firstAttempt {
                         return TransactionResult.abort()
                     } else {
-                        userRef.setValue(["favorites": [id: favorite ? true : nil]])
+                        userRef.setValue([id: favorite ? true : nil])
                         return TransactionResult.success(withValue: currentData)
                     }
                 }
