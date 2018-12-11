@@ -70,7 +70,7 @@ class SetsViewController: BaseSearchViewController {
         if viewModel.mode == .resultsFound {
             guard let c = tableView.dequeueReusableCell(withIdentifier: SetsTableViewCell.reuseIdentifier,
                                                         for: indexPath) as? SetsTableViewCell else {
-                                                            fatalError("Unexpected indexPath: \(indexPath)")
+                fatalError("Unexpected indexPath: \(indexPath)")
             }
             
             c.set = viewModel.object(forRowAt: indexPath) as? CMSet

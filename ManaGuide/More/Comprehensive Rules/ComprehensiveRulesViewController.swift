@@ -54,7 +54,7 @@ class ComprehensiveRulesViewController: BaseSearchViewController {
             guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier) as? DynamicHeightTableViewCell,
                 let viewModel = viewModel as? ComprehensiveRulesViewModel,
                 let rule = viewModel.object(forRowAt: indexPath) as? CMRule else {
-                    fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
+                fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
             }
             
             // Configure Cell

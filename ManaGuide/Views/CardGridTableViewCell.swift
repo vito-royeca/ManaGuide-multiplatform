@@ -101,7 +101,7 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
         default:
             guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: SearchModeCollectionViewCell.reuseIdentifier,
                                                              for: indexPath) as? SearchModeCollectionViewCell else {
-                                                                fatalError("\(SearchModeCollectionViewCell.reuseIdentifier) is nil")
+                fatalError("\(SearchModeCollectionViewCell.reuseIdentifier) is nil")
             }
             if imageType == .artCrop {
                 c.messageLabel.font = UIFont(name: "Beleren", size: 15.0)
@@ -157,8 +157,7 @@ extension CardGridTableViewCell : UICollectionViewDelegate {
             return
         }
         
-        let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-        delegate?.showCard(identifier: identifier,
+        delegate?.showCard(identifier: "showCard",
                            cardIndex: cardIndex,
                            cardIDs: cards.map({ $0.id! }))
     }

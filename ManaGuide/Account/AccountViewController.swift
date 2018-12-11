@@ -187,7 +187,7 @@ extension AccountViewController : UITableViewDataSource {
             guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
                 let label = c.textLabel,
                 let imageView = c.imageView else {
-                    fatalError("BasicCell not found")
+                fatalError("BasicCell not found")
             }
             imageView.image = AccountSection.decks.imageIcon
             label.text = AccountSection.decks.description
@@ -198,7 +198,7 @@ extension AccountViewController : UITableViewDataSource {
             guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
                 let label = c.textLabel,
                 let imageView = c.imageView else {
-                    fatalError("BasicCell not found")
+                fatalError("BasicCell not found")
             }
             imageView.image = AccountSection.collections.imageIcon
             label.text = AccountSection.collections.description
@@ -209,7 +209,7 @@ extension AccountViewController : UITableViewDataSource {
             guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
                 let label = c.textLabel,
                 let imageView = c.imageView else {
-                    fatalError("BasicCell not found")
+                fatalError("BasicCell not found")
             }
             imageView.image = AccountSection.lists.imageIcon
             label.text = AccountSection.lists.description

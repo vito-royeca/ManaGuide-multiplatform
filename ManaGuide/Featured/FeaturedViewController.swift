@@ -112,7 +112,6 @@ class FeaturedViewController: BaseViewController {
             }
             
             dest.viewModel = SetViewModel(withSet: set, languageCode: "en")
-
         }
     }
 
@@ -236,7 +235,7 @@ extension FeaturedViewController : UITableViewDataSource {
         case FeaturedSection.topViewed.rawValue:
             guard let c = tableView.dequeueReusableCell(withIdentifier: FeaturedTableViewCell.reuseIdentifier,
                                                         for: indexPath) as? FeaturedTableViewCell else {
-                                                            fatalError("\(FeaturedTableViewCell.reuseIdentifier) not found")
+                fatalError("\(FeaturedTableViewCell.reuseIdentifier) not found")
             }
             
             c.setupCollectionView(itemSize: itemSize)
@@ -291,7 +290,8 @@ extension FeaturedViewController : LatestCardsTableViewDelegate {
     func cardSelected(card: CMCard) {
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": 0,
-                      "cardIDs": [card.id]] as [String : Any]
+                      "cardIDs": [card.id],
+                      "sortDescriptors": [NSSortDescriptor(key: "name", ascending: true)]] as [String : Any]
         performSegue(withIdentifier: identifier, sender: sender)
     }
 }

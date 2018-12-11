@@ -85,7 +85,7 @@ extension FeaturedTableViewCell: UICollectionViewDataSource {
             } else {
                 guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: SearchModeCollectionViewCell.reuseIdentifier,
                                                                  for: indexPath) as? SearchModeCollectionViewCell else {
-                                                                    fatalError("\(SearchModeCollectionViewCell.reuseIdentifier) is nil")
+                    fatalError("\(SearchModeCollectionViewCell.reuseIdentifier) is nil")
                 }
                 c.mode = viewModel.mode
                 cell = c
@@ -102,7 +102,7 @@ extension FeaturedTableViewCell: UICollectionViewDataSource {
             } else {
                 guard let c = collectionView.dequeueReusableCell(withReuseIdentifier: SearchModeCollectionViewCell.reuseIdentifier,
                                                                  for: indexPath) as? SearchModeCollectionViewCell else {
-                                                                    fatalError("\(SearchModeCollectionViewCell.reuseIdentifier) is nil")
+                    fatalError("\(SearchModeCollectionViewCell.reuseIdentifier) is nil")
                 }
                 c.mode = viewModel.mode
                 cell = c

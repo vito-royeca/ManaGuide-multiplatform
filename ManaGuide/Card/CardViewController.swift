@@ -133,11 +133,10 @@ class CardViewController: BaseSearchViewController {
             firstly {
                 viewModel.fetchData()
             }.done {
-                viewModel.reloadRelatedCards()
+
             }.catch { error in
-                    
+                print("\(error)")
             }
-            
         }
     }
     
@@ -207,11 +206,14 @@ class CardViewController: BaseSearchViewController {
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
                 let cardIDs = dict["cardIDs"] as? [String]else {
-                    return
+                return
             }
             
             dest.viewModel = CardViewModel(withCardIndex: cardIndex,
-                                           withCardIDs: cardIDs, withSortDescriptors: nil)
+                                           withCardIDs: cardIDs,
+                                           withSortDescriptors: [NSSortDescriptor(key: "name", ascending: true),
+                                                                 NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                                                 NSSortDescriptor(key: "collectorNumber", ascending: true)])
             
         } else if segue.identifier == "showSearch" {
             guard let dest = segue.destination as? SearchViewController,
@@ -248,7 +250,7 @@ class CardViewController: BaseSearchViewController {
             case CardImageSection.pricing.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: CardPricingTableViewCell.reuseIdentifier,
                                                             for: indexPath ) as? CardPricingTableViewCell else {
-                                                                fatalError("\(CardPricingTableViewCell.reuseIdentifier) not found")
+                    fatalError("\(CardPricingTableViewCell.reuseIdentifier) not found")
                 }
                 
                 c.card = card
@@ -257,7 +259,7 @@ class CardViewController: BaseSearchViewController {
             case CardImageSection.image.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: CardCarouselTableViewCell.reuseIdentifier,
                                                             for: indexPath) as? CardCarouselTableViewCell else {
-                        fatalError("\(CardCarouselTableViewCell.reuseIdentifier) not found")
+                    fatalError("\(CardCarouselTableViewCell.reuseIdentifier) not found")
                 }
                 c.viewModel = viewModel
                 c.delegate = self
@@ -271,7 +273,7 @@ class CardViewController: BaseSearchViewController {
             case CardImageSection.actions.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: CardActionsTableViewCell.reuseIdentifier,
                                                             for: indexPath) as? CardActionsTableViewCell else {
-                                                                fatalError("ActionsTableViewCell not found")
+                    fatalError("ActionsTableViewCell not found")
                 }
                 
                 c.delegate = self
@@ -302,7 +304,7 @@ class CardViewController: BaseSearchViewController {
             case CardDetailsSection.set.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: CardSetTableViewCell.reuseIdentifier,
                                                             for: indexPath) as? CardSetTableViewCell else {
-                                                                fatalError("\(CardSetTableViewCell.reuseIdentifier) is nil")
+                    fatalError("\(CardSetTableViewCell.reuseIdentifier) is nil")
                 }
                 c.card = card
                 cell = c
@@ -310,7 +312,7 @@ class CardViewController: BaseSearchViewController {
             case CardDetailsSection.artist.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
                     let label = c.textLabel else {
-                        fatalError("BasicCell is nil")
+                    fatalError("BasicCell is nil")
                 }
                 
                 if let artist = card.artist {
@@ -327,7 +329,7 @@ class CardViewController: BaseSearchViewController {
             case CardDetailsSection.parts.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
                                                             for: indexPath) as? CardGridTableViewCell else {
-                                                                fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
+                    fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                 }
                 setupCardGridCell(cell: c, withViewModel: viewModel.partsViewModel!)
                 cell = c
@@ -335,7 +337,7 @@ class CardViewController: BaseSearchViewController {
             case CardDetailsSection.variations.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
                                                             for: indexPath) as? CardGridTableViewCell else {
-                                                                fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
+                    fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                 }
                 setupCardGridCell(cell: c, withViewModel: viewModel.variationsViewModel!)
                 cell = c
@@ -343,7 +345,7 @@ class CardViewController: BaseSearchViewController {
             case CardDetailsSection.otherPrintings.rawValue:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
                                                             for: indexPath) as? CardGridTableViewCell else {
-                                                                fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
+                    fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                 }
                 setupCardGridCell(cell: c, withViewModel: viewModel.otherPrintingsViewModel!)
                 cell = c
@@ -352,17 +354,19 @@ class CardViewController: BaseSearchViewController {
                 if viewModel.numberOfRulings() == 0 {
                     guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
                                                                 for: indexPath) as? CardGridTableViewCell else {
-                                                                    fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
+                        fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                     }
                     let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
                     request.predicate = NSPredicate(format: "name = nil")
                     setupCardGridCell(cell: c,
-                                      withViewModel: SearchViewModel(withRequest: nil, andTitle: nil, andMode: .noResultsFound))
+                                      withViewModel: SearchViewModel(withRequest: nil,
+                                                                     andTitle: nil, andMode:
+                                        .noResultsFound))
                     cell = c
                 } else {
                     guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier,
                                                                 for: indexPath) as? DynamicHeightTableViewCell else {
-                                                                    fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
+                        fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
                     }
                     c.dynamicLabel.attributedText = viewModel.rulingText(inRow: indexPath.row,
                                                                          pointSize: c.dynamicLabel.font.pointSize)
@@ -374,12 +378,14 @@ class CardViewController: BaseSearchViewController {
                 if viewModel.numberOfLegalities() == 0 {
                     guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
                                                                 for: indexPath) as? CardGridTableViewCell else {
-                                                                    fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
+                        fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
                     }
                     let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
                     request.predicate = NSPredicate(format: "name = nil")
                     setupCardGridCell(cell: c,
-                                      withViewModel: SearchViewModel(withRequest: nil, andTitle: nil, andMode: .noResultsFound))
+                                      withViewModel: SearchViewModel(withRequest: nil,
+                                                                     andTitle: nil,
+                                                                     andMode: .noResultsFound))
                     cell = c
                 } else {
                     guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
@@ -387,7 +393,7 @@ class CardViewController: BaseSearchViewController {
                         let detailTextLabel = c.detailTextLabel,
                         let cardLegalitiesSet = card.cardLegalities,
                         let cardLegalities = cardLegalitiesSet.allObjects as? [CMCardLegality] else {
-                            fatalError("RightDetailCell is nil")
+                        fatalError("RightDetailCell is nil")
                     }
                     
                     if cardLegalities.count > 0 {
@@ -407,7 +413,7 @@ class CardViewController: BaseSearchViewController {
                     let label = c.textLabel,
                     let detailTextLabel = c.detailTextLabel,
                     let otherDetails = CardOtherDetailsSection(rawValue: indexPath.row) else {
-                        fatalError("RightDetailCell is nil")
+                    fatalError("RightDetailCell is nil")
                 }
                 label.text = otherDetails.description
                 detailTextLabel.adjustsFontSizeToFitWidth = true
@@ -433,7 +439,7 @@ class CardViewController: BaseSearchViewController {
                 if storePricing.lastUpdate == nil {
                     guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier,
                                                                 for: indexPath) as? DynamicHeightTableViewCell else {
-                                                                    fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
+                        fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
                     }
                     c.dynamicLabel.attributedText = NSAttributedString(html: "<html><center>Loading...</center></html>")
                     c.dynamicLabel.isUserInteractionEnabled = false
@@ -448,7 +454,7 @@ class CardViewController: BaseSearchViewController {
                 } else {
                     guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier,
                                                                 for: indexPath) as? SearchModeTableViewCell else {
-                                                                    fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
+                        fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
                     }
                     cell = c
                 }
@@ -459,7 +465,7 @@ class CardViewController: BaseSearchViewController {
                         let storePricing = card.tcgplayerStorePricing,
                         let suppliersSet = storePricing.suppliers,
                         let suppliers = suppliersSet.allObjects as? [CMStoreSupplier] else {
-                            return UITableViewCell(frame: CGRect.zero)
+                        return UITableViewCell(frame: CGRect.zero)
                     }
                     
                     c.delegate = self
@@ -474,7 +480,7 @@ class CardViewController: BaseSearchViewController {
                                                                 for: indexPath) as? DynamicHeightTableViewCell,
                         let storePricing = card.tcgplayerStorePricing,
                         let note = storePricing.notes else {
-                            fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
+                        fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
                     }
                     
                     c.dynamicLabel.attributedText = NSAttributedString(html: note)
@@ -847,9 +853,9 @@ extension CardViewController : UITableViewDelegate {
                 let predicate = NSPredicate(format: "artist.name = %@",
                                             artist.name!)
                 
-                request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                           NSSortDescriptor(key: "name", ascending: true),
-                                           NSSortDescriptor(key: "set.releaseDate", ascending: true)]
+                request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
+                                           NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                           NSSortDescriptor(key: "collectorNumber", ascending: true)]
                 request.predicate = predicate
                 
                 performSegue(withIdentifier: "showSearch", sender: ["request": request,

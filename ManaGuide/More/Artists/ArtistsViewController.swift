@@ -47,7 +47,7 @@ class ArtistsViewController: BaseSearchViewController {
             // Configure Cell
             guard let label = c.textLabel,
                 let artist = viewModel.object(forRowAt: indexPath) as? CMCardArtist else {
-                    fatalError("UILabel not found")
+                fatalError("UILabel not found")
             }
             label.text = artist.name
             cell = c

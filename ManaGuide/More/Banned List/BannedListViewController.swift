@@ -46,7 +46,7 @@ class BannedListViewController: BaseSearchViewController {
             
             guard let label = c.textLabel,
                 let cardFormat = viewModel.object(forRowAt: indexPath) as? CMCardFormat else {
-                    fatalError("UILabel not found")
+                fatalError("UILabel not found")
             }
             label.text = cardFormat.name
             cell = c

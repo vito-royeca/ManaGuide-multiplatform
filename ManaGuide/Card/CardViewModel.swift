@@ -136,15 +136,14 @@ class CardViewModel: BaseSearchViewModel {
         super.init()
         
         self.cardIndex = cardIndex
-        sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                           NSSortDescriptor(key: "name", ascending: true),
-                           NSSortDescriptor(key: "collectorNumber", ascending: true)]
-
+        self.sortDescriptors = sd
+        
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         request.predicate = NSPredicate(format: "id IN %@",
                                         cardIDs)
-        request.sortDescriptors = sd ?? sortDescriptors
+        request.sortDescriptors = sortDescriptors
         fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
+        reloadRelatedCards()
     }
     
     // MARK: UITableView methods
@@ -527,7 +526,9 @@ class CardViewModel: BaseSearchViewModel {
                                         card.language!.code!,
                                         card.id!,
                                         card.name!)
-        request.sortDescriptors = sortDescriptors
+        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
+                                   NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                   NSSortDescriptor(key: "collectorNumber", ascending: true)]
         return request
     }
     
@@ -541,7 +542,9 @@ class CardViewModel: BaseSearchViewModel {
             let parts = partsSet.allObjects as? [CMCard] {
             request.predicate = NSPredicate(format: "id IN %@",
                                             parts.map({$0.id}))
-            request.sortDescriptors = sortDescriptors
+            request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
+                                       NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                       NSSortDescriptor(key: "collectorNumber", ascending: true)]
         }
         return request
     }
@@ -557,7 +560,9 @@ class CardViewModel: BaseSearchViewModel {
                                         card.language!.code!,
                                         card.id!,
                                         card.name!)
-        request.sortDescriptors = sortDescriptors
+        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
+                                   NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                   NSSortDescriptor(key: "collectorNumber", ascending: true)]
         return request
     }
     

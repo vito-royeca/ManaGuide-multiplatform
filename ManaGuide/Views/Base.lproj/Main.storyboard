@@ -54,7 +54,7 @@
                                 </connections>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" 100 results" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YWU-Ma-Wde">
-                                <rect key="frame" x="0.0" y="541" width="414" height="30"/>
+                                <rect key="frame" x="0.0" y="497" width="414" height="30"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="uhO-1q-TLd"/>
@@ -2401,7 +2401,7 @@
         <segue reference="Vbm-cg-ye0"/>
         <segue reference="zuQ-z5-rax"/>
         <segue reference="fNA-HR-HtU"/>
-        <segue reference="ISp-PC-gA3"/>
-        <segue reference="PW5-em-XGg"/>
+        <segue reference="xMx-O9-Y4N"/>
+        <segue reference="whl-Hr-bZH"/>
     </inferredMetricsTieBreakers>
 </document>
