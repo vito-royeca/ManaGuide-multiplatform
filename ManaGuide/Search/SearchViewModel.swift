@@ -201,7 +201,8 @@ class SearchViewModel: BaseSearchViewModel {
             request = CMCard.fetchRequest()
             request!.fetchBatchSize = 20
             request!.predicate = NSPredicate(format: "language.code = %@", "en")
-            request!.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
+            request!.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
+                                        NSSortDescriptor(key: "name", ascending: true),
                                         NSSortDescriptor(key: "collectorNumber", ascending: true)]
         }
 

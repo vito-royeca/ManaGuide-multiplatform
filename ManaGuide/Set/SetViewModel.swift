@@ -69,6 +69,22 @@ class SetViewModel: SearchViewModel {
         }
     }
     
+    override func sectionIndexTitles() -> [String]? {
+        if content == .cards {
+            return super.sectionIndexTitles()
+        } else {
+            return nil
+        }
+    }
+    
+    override func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
+        if content == .cards {
+            return super.sectionForSectionIndexTitle(title: title, at: index)
+        } else {
+            return 0
+        }
+    }
+    
     // MARK: Presentation methods
     func wikiURL() -> URL? {
         guard let set = _set else {

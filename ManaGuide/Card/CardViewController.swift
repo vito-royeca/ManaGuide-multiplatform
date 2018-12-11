@@ -211,8 +211,23 @@ class CardViewController: BaseSearchViewController {
             
             dest.viewModel = CardViewModel(withCardIndex: cardIndex,
                                            withCardIDs: cardIDs,
-                                           withSortDescriptors: [NSSortDescriptor(key: "name", ascending: true),
-                                                                 NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                                           withSortDescriptors: [NSSortDescriptor(key: "set.releaseDate", ascending: false),
+                                                                 NSSortDescriptor(key: "name", ascending: true),
+                                                                 NSSortDescriptor(key: "collectorNumber", ascending: true)])
+            
+        } else if segue.identifier == "showCardModal" {
+            guard let nav = segue.destination as? UINavigationController,
+                let dest = nav.children.first as? CardViewController,
+                let dict = sender as? [String: Any],
+                let cardIndex = dict["cardIndex"] as? Int,
+                let cardIDs = dict["cardIDs"] as? [String] else {
+                return
+            }
+            
+            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
+                                           withCardIDs: cardIDs,
+                                           withSortDescriptors: [NSSortDescriptor(key: "set.releaseDate", ascending: false),
+                                                                 NSSortDescriptor(key: "name", ascending: true),
                                                                  NSSortDescriptor(key: "collectorNumber", ascending: true)])
             
         } else if segue.identifier == "showSearch" {
@@ -672,18 +687,41 @@ class CardViewController: BaseSearchViewController {
         cell.flowLayout.scrollDirection = .horizontal
         
         cell.viewModel = model
-
-        if model.mode == .loading {
-            firstly {
-                model.fetchData()
-            }.done {
-                model.mode = model.isEmpty() ? .noResultsFound : .resultsFound
-                cell.collectionView.reloadData()
-            }.catch { error in
-                model.mode = .error
-                cell.collectionView.reloadData()
+        
+        if let viewModel = viewModel as? CardViewModel {
+            var models = [SearchViewModel]()
+            
+            if let v = viewModel.partsViewModel,
+                v.mode == .loading {
+                models.append(v)
+            }
+            if let v = viewModel.variationsViewModel,
+                v.mode == .loading {
+                models.append(v)
+            }
+            if let v = viewModel.otherPrintingsViewModel,
+                v.mode == .loading {
+                models.append(v)
+            }
+            
+            if !models.isEmpty {
+                firstly {
+                    when(fulfilled: models.map { $0.fetchData() })
+                }.done {
+                    for v in models {
+                        v.mode = v.isEmpty() ? .noResultsFound : .resultsFound
+                    }
+                    cell.collectionView.reloadData()
+                }.catch { error in
+                    for v in models {
+                        v.mode = .error
+                    }
+                    cell.collectionView.reloadData()
+                }
             }
         }
+        
+        cell.collectionView.reloadData()
     }
     
     func createMainDataCell(forCard card: CMCard, inRow row: Int) -> UITableViewCell {
@@ -853,8 +891,8 @@ extension CardViewController : UITableViewDelegate {
                 let predicate = NSPredicate(format: "artist.name = %@",
                                             artist.name!)
                 
-                request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
-                                           NSSortDescriptor(key: "set.releaseDate", ascending: true),
+                request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
+                                           NSSortDescriptor(key: "name", ascending: true),
                                            NSSortDescriptor(key: "collectorNumber", ascending: true)]
                 request.predicate = predicate
                 

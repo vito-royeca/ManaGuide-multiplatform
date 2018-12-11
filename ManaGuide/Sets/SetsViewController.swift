@@ -31,7 +31,7 @@ class SetsViewController: BaseSearchViewController {
                                                   name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                   object:nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.updateDataDisplay(_:)),
+                                               selector: #selector(updateDataDisplay(_:)),
                                                name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                object: nil)
         

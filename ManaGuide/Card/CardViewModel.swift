@@ -526,8 +526,8 @@ class CardViewModel: BaseSearchViewModel {
                                         card.language!.code!,
                                         card.id!,
                                         card.name!)
-        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
-                                   NSSortDescriptor(key: "set.releaseDate", ascending: true),
+        request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
+                                   NSSortDescriptor(key: "name", ascending: true),
                                    NSSortDescriptor(key: "collectorNumber", ascending: true)]
         return request
     }
@@ -542,8 +542,8 @@ class CardViewModel: BaseSearchViewModel {
             let parts = partsSet.allObjects as? [CMCard] {
             request.predicate = NSPredicate(format: "id IN %@",
                                             parts.map({$0.id}))
-            request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
-                                       NSSortDescriptor(key: "set.releaseDate", ascending: true),
+            request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
+                                       NSSortDescriptor(key: "name", ascending: true),
                                        NSSortDescriptor(key: "collectorNumber", ascending: true)]
         }
         return request
@@ -560,8 +560,8 @@ class CardViewModel: BaseSearchViewModel {
                                         card.language!.code!,
                                         card.id!,
                                         card.name!)
-        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
-                                   NSSortDescriptor(key: "set.releaseDate", ascending: true),
+        request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
+                                   NSSortDescriptor(key: "name", ascending: true),
                                    NSSortDescriptor(key: "collectorNumber", ascending: true)]
         return request
     }

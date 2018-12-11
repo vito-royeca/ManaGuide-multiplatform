@@ -58,17 +58,17 @@ class SearchViewController: BaseSearchViewController {
         
         // Settings
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.updateSettings(_:)),
+                                               selector: #selector(updateSettings(_:)),
                                                name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                object: nil)
         // Favorites
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.updateData(_:)),
+                                               selector: #selector(updateData(_:)),
                                                name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                                object: nil)
         // Ratings
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.updateData(_:)),
+                                               selector: #selector(updateData(_:)),
                                                name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                object: nil)
         

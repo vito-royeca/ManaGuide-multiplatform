@@ -157,7 +157,8 @@ extension CardGridTableViewCell : UICollectionViewDelegate {
             return
         }
         
-        delegate?.showCard(identifier: "showCard",
+        let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
+        delegate?.showCard(identifier: identifier,
                            cardIndex: cardIndex,
                            cardIDs: cards.map({ $0.id! }))
     }

@@ -17,7 +17,7 @@ import PromiseKit
 class SetViewController: SearchViewController {
     // MARK: Outlets
     @IBOutlet weak var contentSegmentedControl: UISegmentedControl!
-    
+
     // MARK: Actions
     @IBAction func contentAction(_ sender: UISegmentedControl) {
         guard let viewModel = viewModel as? SetViewModel else {
@@ -25,6 +25,7 @@ class SetViewController: SearchViewController {
         }
         
         viewModel.content = sender.selectedSegmentIndex == 0 ? .cards : .wiki
+        countLabel.isHidden = sender.selectedSegmentIndex == 0 ? false : true
         updateDataDisplay()
     }
     
@@ -52,7 +53,7 @@ class SetViewController: SearchViewController {
                                                   name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                   object:nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.updateData(_:)),
+                                               selector: #selector(updateData(_:)),
                                                name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                object: nil)
         
@@ -75,6 +76,34 @@ class SetViewController: SearchViewController {
         title = viewModel.title
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        guard let viewModel = viewModel as? SetViewModel else {
+            fatalError()
+        }
+
+        switch viewModel.content {
+        case .cards:
+            super.viewDidAppear(animated)
+        case .wiki:
+            // Settings
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(updateSettings(_:)),
+                                                   name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
+                                                   object: nil)
+            // Favorites
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(updateData(_:)),
+                                                   name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
+                                                   object: nil)
+            // Ratings
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(updateData(_:)),
+                                                   name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
+                                                   object: nil)
+        }
+        
+        
+    }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let searchGenerator = SearchRequestGenerator()
         let sortDescriptors = searchGenerator.createSortDescriptors()
@@ -256,15 +285,25 @@ extension SetViewController : UIWebViewDelegate {
             let q = queryItems?.filter({$0.name == "q"}).first
             
             if let value = q?.value {
-                let r = value.index(value.startIndex, offsetBy: 1)
-                let cardName = value.substring(from: r).replacingOccurrences(of: "+", with: " ")
-                               .replacingOccurrences(of: "\"", with: "")
+                var cardName = ""
+                var setCode = ""
+                
+                for component in value.components(separatedBy: "\"") {
+                    if component.hasPrefix("+set:") {
+                        setCode = component.replacingOccurrences(of: "+set:", with: "").lowercased()
+                    } else if component.hasPrefix("!") {
+                        continue
+                    } else {
+                        cardName = component.replacingOccurrences(of: "+", with: " ")
+                            .replacingOccurrences(of: "\"", with: "")
+                    }
+                }
                 
                 let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-                request.predicate = NSPredicate(format: "name = %@",
-                                                cardName)
-                request.sortDescriptors = [NSSortDescriptor(key: "nameSection", ascending: true),
-                                            NSSortDescriptor(key: "name", ascending: true)]
+                request.predicate = NSPredicate(format: "name = %@ AND set.code = %@ AND language.code = %@", cardName, setCode, "en")
+                request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
+                                           NSSortDescriptor(key: "name", ascending: true),
+                                           NSSortDescriptor(key: "collectorNumber", ascending: true)]
                 
                 let results = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
                 if results.count == 1 {

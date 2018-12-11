@@ -22,8 +22,8 @@ class TopViewedViewModel: BaseSearchViewModel {
         super.init()
 
         sortDescriptors = [NSSortDescriptor(key: "firebaseViews", ascending: false),
+                           NSSortDescriptor(key: "set.releaseDate", ascending: false),
                            NSSortDescriptor(key: "name", ascending: true),
-                           NSSortDescriptor(key: "set.releaseDate", ascending: true),
                            NSSortDescriptor(key: "collectorNumber", ascending: true)]
     }
     
