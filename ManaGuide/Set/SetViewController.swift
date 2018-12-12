@@ -303,7 +303,7 @@ extension SetViewController : UIWebViewDelegate {
                 request.predicate = NSPredicate(format: "name = %@ AND set.code = %@ AND language.code = %@", cardName, setCode, "en")
                 request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
                                            NSSortDescriptor(key: "name", ascending: true),
-                                           NSSortDescriptor(key: "collectorNumber", ascending: true)]
+                                           NSSortDescriptor(key: "myNumberOrder", ascending: true)]
                 
                 let results = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
                 if results.count == 1 {

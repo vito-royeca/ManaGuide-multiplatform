@@ -22,9 +22,9 @@ class TopRatedViewModel: BaseSearchViewModel {
         super.init()
         
         sortDescriptors = [NSSortDescriptor(key: "firebaseRating", ascending: false),
-                           NSSortDescriptor(key: "set.releaseDate", ascending: false),
+                           NSSortDescriptor(key: "set.releaseDate", ascending: true),
                            NSSortDescriptor(key: "name", ascending: true),
-                           NSSortDescriptor(key: "collectorNumber", ascending: true)]
+                           NSSortDescriptor(key: "myNumberOrder", ascending: true)]
     }
     
     // MARK: Overrides
@@ -85,7 +85,6 @@ class TopRatedViewModel: BaseSearchViewModel {
                 for child in snapshot.children {
                     if let c = child as? DataSnapshot {
                         let fcard = FCCard(snapshot: c)
-                
                         
                         if let card = ManaKit.sharedInstance.findObject("CMCard",
                                                                         objectFinder: ["firebaseID": c.key as AnyObject],
@@ -95,11 +94,13 @@ class TopRatedViewModel: BaseSearchViewModel {
                         }
                     }
                 }
-                
+
+                // save to Core Data
                 ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                    // save to Core Data
                     try! backgroundContext.save()
-                    
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
+                                                    object: nil,
+                                                    userInfo: nil)
                     seal.fulfill(())
                 }
             })

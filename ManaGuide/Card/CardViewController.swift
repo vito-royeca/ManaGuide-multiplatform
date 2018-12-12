@@ -213,7 +213,7 @@ class CardViewController: BaseSearchViewController {
                                            withCardIDs: cardIDs,
                                            withSortDescriptors: [NSSortDescriptor(key: "set.releaseDate", ascending: false),
                                                                  NSSortDescriptor(key: "name", ascending: true),
-                                                                 NSSortDescriptor(key: "collectorNumber", ascending: true)])
+                                                                 NSSortDescriptor(key: "myNumberOrder", ascending: true)])
             
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
@@ -228,7 +228,7 @@ class CardViewController: BaseSearchViewController {
                                            withCardIDs: cardIDs,
                                            withSortDescriptors: [NSSortDescriptor(key: "set.releaseDate", ascending: false),
                                                                  NSSortDescriptor(key: "name", ascending: true),
-                                                                 NSSortDescriptor(key: "collectorNumber", ascending: true)])
+                                                                 NSSortDescriptor(key: "myNumberOrder", ascending: true)])
             
         } else if segue.identifier == "showSearch" {
             guard let dest = segue.destination as? SearchViewController,
@@ -675,7 +675,6 @@ class CardViewController: BaseSearchViewController {
     }
     
     func setupCardGridCell(cell: CardGridTableViewCell, withViewModel model: SearchViewModel) {
-        
         let width = CGFloat(138)
         let height = CGFloat(100)
         
@@ -689,6 +688,9 @@ class CardViewController: BaseSearchViewController {
         cell.viewModel = model
         
         if let viewModel = viewModel as? CardViewModel {
+            guard let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0)) as? CMCard else {
+                fatalError()
+            }
             var models = [SearchViewModel]()
             
             if let v = viewModel.partsViewModel,
@@ -703,6 +705,10 @@ class CardViewController: BaseSearchViewController {
                 v.mode == .loading {
                 models.append(v)
             }
+            
+            // pre-load related data
+            let _ = card.cardRulings
+            let _ = card.cardLegalities
             
             if !models.isEmpty {
                 firstly {
@@ -720,8 +726,6 @@ class CardViewController: BaseSearchViewController {
                 }
             }
         }
-        
-        cell.collectionView.reloadData()
     }
     
     func createMainDataCell(forCard card: CMCard, inRow row: Int) -> UITableViewCell {
@@ -893,7 +897,7 @@ extension CardViewController : UITableViewDelegate {
                 
                 request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
                                            NSSortDescriptor(key: "name", ascending: true),
-                                           NSSortDescriptor(key: "collectorNumber", ascending: true)]
+                                           NSSortDescriptor(key: "myNumberOrder", ascending: true)]
                 request.predicate = predicate
                 
                 performSegue(withIdentifier: "showSearch", sender: ["request": request,

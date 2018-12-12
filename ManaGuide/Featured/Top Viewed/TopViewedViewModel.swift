@@ -22,9 +22,9 @@ class TopViewedViewModel: BaseSearchViewModel {
         super.init()
 
         sortDescriptors = [NSSortDescriptor(key: "firebaseViews", ascending: false),
-                           NSSortDescriptor(key: "set.releaseDate", ascending: false),
+                           NSSortDescriptor(key: "set.releaseDate", ascending: true),
                            NSSortDescriptor(key: "name", ascending: true),
-                           NSSortDescriptor(key: "collectorNumber", ascending: true)]
+                           NSSortDescriptor(key: "myNumberOrder", ascending: true)]
     }
     
     // MARK: Overrides
@@ -94,11 +94,12 @@ class TopViewedViewModel: BaseSearchViewModel {
                         }
                     }
                 }
-                
+                // save to Core Data
                 ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                    // save to Core Data
                     try! backgroundContext.save()
-                
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardViewsUpdated),
+                                                    object: nil,
+                                                    userInfo: nil)
                     seal.fulfill(())
                 }
             })

@@ -203,7 +203,7 @@ class SearchViewModel: BaseSearchViewModel {
             request!.predicate = NSPredicate(format: "language.code = %@", "en")
             request!.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
                                         NSSortDescriptor(key: "name", ascending: true),
-                                        NSSortDescriptor(key: "collectorNumber", ascending: true)]
+                                        NSSortDescriptor(key: "myNumberOrder", ascending: true)]
         }
 
         // Create Fetched Results Controller

@@ -64,8 +64,6 @@ class FeaturedViewController: BaseViewController {
                                                          section: 0)) as? LatestCardsTableViewCell {
             cell.stopSlideShow()
         }
-        topRatedViewModel.stopMonitoring()
-        topViewedViewModel.stopMonitoring()
     }
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
@@ -124,7 +122,13 @@ class FeaturedViewController: BaseViewController {
             
             for v in cell.contentView.subviews {
                 if let collectionView = v as? UICollectionView {
-                    collectionView.reloadData()
+                    firstly {
+                        self.topRatedViewModel.fetchData()
+                    }.done {
+                        collectionView.reloadData()
+                    }.catch { error in
+                            
+                    }
                     break
                 }
             }
@@ -139,11 +143,17 @@ class FeaturedViewController: BaseViewController {
             
             for v in cell.contentView.subviews {
                 if let collectionView = v as? UICollectionView {
-                    collectionView.reloadData()
+                    firstly {
+                        self.topViewedViewModel.fetchData()
+                    }.done {
+                        collectionView.reloadData()
+                    }.catch { error in
+                        
+                    }
                     break
                 }
             }
-        }
+    }
     }
 
     @objc func showAllSets(_ sender: UIButton) {

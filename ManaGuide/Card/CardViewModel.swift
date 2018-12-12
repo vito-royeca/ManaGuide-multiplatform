@@ -528,7 +528,7 @@ class CardViewModel: BaseSearchViewModel {
                                         card.name!)
         request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
                                    NSSortDescriptor(key: "name", ascending: true),
-                                   NSSortDescriptor(key: "collectorNumber", ascending: true)]
+                                   NSSortDescriptor(key: "myNumberOrder", ascending: true)]
         return request
     }
     
@@ -544,7 +544,7 @@ class CardViewModel: BaseSearchViewModel {
                                             parts.map({$0.id}))
             request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
                                        NSSortDescriptor(key: "name", ascending: true),
-                                       NSSortDescriptor(key: "collectorNumber", ascending: true)]
+                                       NSSortDescriptor(key: "myNumberOrder", ascending: true)]
         }
         return request
     }
@@ -562,7 +562,7 @@ class CardViewModel: BaseSearchViewModel {
                                         card.name!)
         request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
                                    NSSortDescriptor(key: "name", ascending: true),
-                                   NSSortDescriptor(key: "collectorNumber", ascending: true)]
+                                   NSSortDescriptor(key: "myNumberOrder", ascending: true)]
         return request
     }
     
