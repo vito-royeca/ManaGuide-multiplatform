@@ -1,9 +1,9 @@
-Mana Guide is probably the best card database for the most popular tradable and collectible card game.
+Mana Guide is probably the best card database for the most popular tradable and collectible card game, Magic: the Gathering.
 
 Features:
 
  - All Sets
-Contains all sets from Alpha to the latest set.
+Contains all sets from Alpha to the latest set. Foreign language cards are also included.
 
 - Advanced Card Search
 Find the specific cards you need with advanced filters.

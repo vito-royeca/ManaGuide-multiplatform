@@ -16,6 +16,7 @@ platform :ios do
 
   # my lanes
   lane :screenshots do
+    #fastlane deliver download_metadata
   	capture_screenshots(workspace: "ManaGuide.xcworkspace", scheme: "ManaGuideUITests")
   	frameit(rose_gold: true)
     deliver

@@ -2,14 +2,15 @@
 
 # A list of devices you want to take the screenshots from
 devices([
-   "iPhone 5s",
-   "iPhone 6",
-   "iPhone 6 Plus",
-   "iPhone X",
-   "iPhone XR",
+   "iPhone XS Max", # 6.5"
+   "iPhone X", # 5.8"
+   "iPhone 6 Plus", # 5.5"
+   "iPhone 6", # 4.7"
+   "iPhone 5", # 4"
    "iPad Pro (12.9-inch)",
+   "iPad Pro (11-inch)",
+   "iPad Pro (10.5-inch)",
    "iPad Pro (9.7-inch)"
-#   "Apple TV 1080p"
 ])
 
 languages([
@@ -35,3 +36,4 @@ languages([
 # fastlane action snapshot
 
 # reinstall_app true
+erase_simulator true
