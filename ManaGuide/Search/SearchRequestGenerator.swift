@@ -132,41 +132,43 @@ class SearchRequestGenerator: NSObject {
     
     func createSearchRequest(query: String?, oldRequest: NSFetchRequest<CMCard>?) -> NSFetchRequest<CMCard>? {
         let newRequest: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        var predicate = createKeywordPredicate(query: query)
+        let idPredicate = NSPredicate(format: "id != nil")
+        let languagePredicate = NSPredicate(format: "language.code = %@", "en")
+        var predicates = [NSPredicate]()
+        var predicate: NSPredicate?
+        
+        if let p = createKeywordPredicate(query: query) {
+            predicates.append(p)
+        }
+        if let oldRequest = oldRequest,
+            let p = oldRequest.predicate {
+            predicates.append(p)
+        }
+        
+        if predicates.count > 0 {
+            predicates.append(idPredicate)
+        }
         
         // create a negative predicate, i.e. search for cards with nil name which results to zero
-        if predicate == nil && oldRequest == nil {
-            predicate = NSPredicate(format: "name = nil")
+        if predicates.isEmpty {
+            predicates.append(NSPredicate(format: "name = nil"))
         }
         
-        if let oldRequest = oldRequest {
-            var predicates = [NSPredicate]()
-            
-            if let predicate = predicate {
-                predicates.append(predicate)
-            }
-            if let predicate = oldRequest.predicate {
-                predicates.append(predicate)
-            }
-            
-            if predicates.count > 1 {
-                predicate = NSCompoundPredicate.init(andPredicateWithSubpredicates: predicates)
-            } else {
-                predicate = predicates.first
+        if predicates.count > 1 {
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        } else {
+            predicate = predicates.first
+        }
+        
+        if let p = predicate {
+            if !p.predicateFormat.contains("language.code") {
+                predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [p, languagePredicate])
             }
         }
         
+        newRequest.predicate = predicate
         newRequest.sortDescriptors = createSortDescriptors()
         
-        let idPredicate = NSPredicate(format: "id != nil AND language.code = %@", "en")
-        if let predicate = predicate {
-            newRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
-                                                                                       idPredicate])
-        } else {
-            newRequest.predicate = idPredicate
-        }
-        
-//        print("\(newRequest)")
         return newRequest
     }
     

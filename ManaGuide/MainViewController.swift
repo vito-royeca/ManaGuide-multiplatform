@@ -39,6 +39,10 @@ class MainViewController: UITabBarController {
                                                  style: .solid,
                                                  textColor: UIColor.blue,
                                                  size: CGSize(width: 30, height: 30))
+        
+        // Spotlight
+        let spotlight = SpotlightManager()
+        spotlight.createSpotlightItems()
     }
 
     /*

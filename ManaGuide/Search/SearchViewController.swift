@@ -35,7 +35,7 @@ class SearchViewController: BaseSearchViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .bars,
+        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .slidersH,
                                                         style: .solid,
                                                         textColor: LookAndFeel.GlobalTintColor,
                                                         size: CGSize(width: 30, height: 30))

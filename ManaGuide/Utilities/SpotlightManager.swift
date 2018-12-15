@@ -25,6 +25,55 @@ enum SpotlightCardProperties: String, CaseIterable {
 }
 
 class SpotlightManager: NSObject {
+    func addSpotlightItem(forCards cards: [CMCard]) {
+        var items = [CSSearchableItem]()
+
+        for card in cards {
+            // Create an attribute set to describe an item.
+            let attributeSet = CSSearchableItemAttributeSet(itemContentType: kUTTypeData as String)
+            
+            // Add metadata that supplies details about the item.
+            attributeSet.title = "\(card.name!)"
+            if let typeName = card.typeLine!.name {
+                var description = "\(typeName)"
+                
+                if let myType = card.myType,
+                    let myTypeName = myType.name {
+                    if myTypeName == "Creature" {
+                        if let power = card.power,
+                            let toughness = card.toughness {
+                            description += "\n\(power)/\(toughness)"
+                        }
+                    }
+                }
+                attributeSet.contentDescription = description
+            }
+            if let imageURIs = card.imageURIs,
+                let dict = NSKeyedUnarchiver.unarchiveObject(with: imageURIs as Data) as? [String: String],
+                let urlString = dict["normal"],
+                let path = SDImageCache.shared().defaultCachePath(forKey: urlString),
+                let localUrl = URL(string: "file://\(path)") {
+                
+                attributeSet.thumbnailURL = localUrl
+                
+            }
+            attributeSet.domainIdentifier = "cards"
+            
+            // Create an item with a unique identifier, a domain identifier, and the attribute set you created earlier.
+            let item = CSSearchableItem(uniqueIdentifier: "\(card.id!)",
+                domainIdentifier: "cards",
+                attributeSet: attributeSet)
+            items.append(item)
+        }
+        
+        // Add the item to the on-device index.
+        CSSearchableIndex.default().indexSearchableItems(items) { error in
+            if let error = error {
+                print("\(error)")
+            }
+        }
+    }
+    
     func createSpotlightItems() {
         deletePreviousSpotlightItems()
 
@@ -39,13 +88,12 @@ class SpotlightManager: NSObject {
     }
     
     private func deletePreviousSpotlightItems() {
-        CSSearchableIndex.default()
-            .deleteAllSearchableItems { error in
-                if let error = error {
-                    print("Error deleting spotlight items: \(error)")
-                } else {
-                    print("Spotlight indexing deleted.")
-                }
+        CSSearchableIndex.default().deleteAllSearchableItems { error in
+            if let error = error {
+                print("Error deleting spotlight items: \(error)")
+            } else {
+                print("Spotlight indexing deleted.")
+            }
         }
     }
     
@@ -70,7 +118,7 @@ class SpotlightManager: NSObject {
                     attributeSet.completionDate = f.date(from: releaseDate)
                 }
                 attributeSet.thumbnailData = self.setIcon(set: set)?.pngData()
-                attributeSet.domainIdentifier = "ManaGuide-sets"
+                attributeSet.domainIdentifier = "sets"
                 
                 // Create an item with a unique identifier, a domain identifier, and the attribute set you created earlier.
                 let item = CSSearchableItem(uniqueIdentifier: "\(set.code!)",
@@ -137,7 +185,7 @@ class SpotlightManager: NSObject {
                     attributeSet.thumbnailURL = localUrl
                     
                 }
-                attributeSet.domainIdentifier = "ManaGuide-cards"
+                attributeSet.domainIdentifier = "cards"
                 
                 // Create an item with a unique identifier, a domain identifier, and the attribute set you created earlier.
                 let item = CSSearchableItem(uniqueIdentifier: "\(card.id!)",
