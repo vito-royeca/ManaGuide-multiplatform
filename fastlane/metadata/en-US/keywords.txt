@@ -1,1 +1,1 @@
-mtg, magic, gathering, tcg, ccg, card
+database, mtg, magic, gathering, tcg, ccg, card, game, tap, upkeep, 2nd, core, set, thesaurus

@@ -1,3 +1,3 @@
-- Added set: Magic Fest 2019 (PF19).
-
-- Minor bug fixes and enhancements.
+- Added Spotlight search items.
+- Fixed slow scrolling in Card carousel.
+- Fxed error displaying foreign language cards.
