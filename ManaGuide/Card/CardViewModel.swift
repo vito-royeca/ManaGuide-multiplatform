@@ -928,7 +928,6 @@ class CardViewModel: BaseSearchViewModel {
                 return
             }
             
-            
             // update views
             if let views = value["Views"] as? Int {
                 card.firebaseViews = Int64(views)
@@ -936,10 +935,12 @@ class CardViewModel: BaseSearchViewModel {
             if let rating = value["Rating"] as? Double {
                 card.firebaseRating = rating
             }
-            try! ManaKit.sharedInstance.dataStack?.mainContext.save()
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
-                                            object: nil,
-                                            userInfo: nil)
+            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                try! backgroundContext.save()
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
+                                                object: nil,
+                                                userInfo: nil)
+            }
         })
     }
     
