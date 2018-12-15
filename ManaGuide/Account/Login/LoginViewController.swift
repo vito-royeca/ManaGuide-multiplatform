@@ -287,7 +287,6 @@ class LoginViewController: BaseViewController {
         viewModel = LoginViewModel()
     }
 
-
     // MARK: Custom methods
     func showMessage(title: String, message: String) {
         let alertController = UIAlertController(title: title,

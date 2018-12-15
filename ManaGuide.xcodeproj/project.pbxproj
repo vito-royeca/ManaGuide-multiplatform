@@ -36,6 +36,9 @@
 		1138A3CF20F76E870023423C /* ThrottlingSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3CC20F76E870023423C /* ThrottlingSearchController.swift */; };
 		1138A3D120F786E00023423C /* SearchRequestGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3D020F786E00023423C /* SearchRequestGenerator.swift */; };
 		1138A3D320F786E00023423C /* SearchRequestGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1138A3D020F786E00023423C /* SearchRequestGenerator.swift */; };
+		1139108E21C4836C008878B3 /* SpotlightManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1139108D21C4836C008878B3 /* SpotlightManager.swift */; };
+		1139108F21C4836C008878B3 /* SpotlightManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1139108D21C4836C008878B3 /* SpotlightManager.swift */; };
+		1139109021C4836C008878B3 /* SpotlightManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1139108D21C4836C008878B3 /* SpotlightManager.swift */; };
 		1140F0C71F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
 		1140F0C81F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
 		1140F0C91F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
@@ -327,6 +330,7 @@
 		1138A3C820F76D590023423C /* Throttler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Throttler.swift; sourceTree = "<group>"; };
 		1138A3CC20F76E870023423C /* ThrottlingSearchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThrottlingSearchController.swift; sourceTree = "<group>"; };
 		1138A3D020F786E00023423C /* SearchRequestGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRequestGenerator.swift; sourceTree = "<group>"; };
+		1139108D21C4836C008878B3 /* SpotlightManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightManager.swift; sourceTree = "<group>"; };
 		1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1140F0CB1F42CA500023E107 /* FCCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FCCard.swift; sourceTree = "<group>"; };
 		1141A83F20D00F4A00554872 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
@@ -796,6 +800,7 @@
 				11F336B120BBB47B0007552F /* PDFViewerViewController.swift */,
 				1147B7651F224874004EF296 /* SettingsViewController.swift */,
 				118FDC7620D515E5002FA5E8 /* ShareActivity.xcassets */,
+				1139108D21C4836C008878B3 /* SpotlightManager.swift */,
 				1138A3C820F76D590023423C /* Throttler.swift */,
 				1138A3CC20F76E870023423C /* ThrottlingSearchController.swift */,
 			);
@@ -1402,6 +1407,7 @@
 				11BC2B7A215DC2C600045600 /* BrowserNavigatorTableViewCell.swift in Sources */,
 				1147B7631F224198004EF296 /* SetViewController.swift in Sources */,
 				115FFECF214C2FE100FDB8B0 /* AccountViewModel.swift in Sources */,
+				1139108E21C4836C008878B3 /* SpotlightManager.swift in Sources */,
 				11303C5821A340DE00FF0C2D /* BaseSearchViewController.swift in Sources */,
 				110FD66221778607006AB1A7 /* MainViewController.swift in Sources */,
 				114C1D572161ABC600825DD2 /* BannedViewModel.swift in Sources */,
@@ -1487,6 +1493,7 @@
 				114C1D532161A13100825DD2 /* BannedListViewModel.swift in Sources */,
 				1138A3CA20F76D590023423C /* Throttler.swift in Sources */,
 				11853EE62166D4990055077B /* LoginViewModel.swift in Sources */,
+				1139108F21C4836C008878B3 /* SpotlightManager.swift in Sources */,
 				11303C5921A340DE00FF0C2D /* BaseSearchViewController.swift in Sources */,
 				110FD66321778607006AB1A7 /* MainViewController.swift in Sources */,
 				11A63E2C21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
@@ -1568,6 +1575,7 @@
 				11303C5E21A340FA00FF0C2D /* BaseSearchViewModel.swift in Sources */,
 				11F336B420BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				1138A3CB20F76D590023423C /* Throttler.swift in Sources */,
+				1139109021C4836C008878B3 /* SpotlightManager.swift in Sources */,
 				11A63E112142CC34005AE024 /* ComprehensiveRulesViewModel.swift in Sources */,
 				115D4E2221894EE9006A94EE /* CardNameTableViewCell.swift in Sources */,
 				11A5444E214471EB00B8C59F /* CardViewModel.swift in Sources */,

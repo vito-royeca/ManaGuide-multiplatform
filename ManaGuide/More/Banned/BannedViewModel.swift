@@ -52,7 +52,7 @@ class BannedViewModel: SearchViewModel {
             let request1: NSFetchRequest<CMCard> = CMCard.fetchRequest()
             request1.predicate = NSPredicate(format: "id IN %@ AND language.code = %@", cardLegalities.map { $0.card!.id }, "en")
             request1.sortDescriptors = sortDescriptors
-            let request2 = SearchRequestGenerator().createSearchRequest(query: queryString, oldRequest: request1 as? NSFetchRequest<CMCard>)
+            let request2 = SearchRequestGenerator().createSearchRequest(query: queryString, oldRequest: request1)
             
             fetchedResultsController = getFetchedResultsController(with: request2 as? NSFetchRequest<NSManagedObject>)
             updateSections()

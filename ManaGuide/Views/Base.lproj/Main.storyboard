@@ -32,11 +32,11 @@
                         <viewControllerLayoutGuide type="bottom" id="bam-Dw-5q0"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="65g-4A-NuH">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="88" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="c6Y-yF-szq">
-                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardCell" rowHeight="88" id="NHU-Qb-dj3">
@@ -54,7 +54,7 @@
                                 </connections>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" 100 results" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YWU-Ma-Wde">
-                                <rect key="frame" x="0.0" y="706" width="414" height="30"/>
+                                <rect key="frame" x="0.0" y="541" width="414" height="30"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="uhO-1q-TLd"/>
@@ -153,6 +153,8 @@
                         <segue destination="l7I-xe-vzR" kind="show" identifier="showComprehensiveRules" id="yGD-rl-Kob"/>
                         <segue destination="mlE-sb-2no" kind="show" identifier="showArtists" id="ytX-ww-Sqg"/>
                         <segue destination="BKU-4d-JSb" kind="show" identifier="showPDF" id="XlO-3M-RMI"/>
+                        <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="UKQ-BV-Sbj"/>
+                        <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="K4t-m9-5K4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GLw-q2-tgD" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -177,6 +179,8 @@
                     </navigationItem>
                     <connections>
                         <segue destination="2AI-NE-5zU" kind="show" identifier="showCollection" id="2Ro-zY-FJw"/>
+                        <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="Fad-27-pgz"/>
+                        <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="N73-SM-tSl"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qti-FY-TZS" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -197,6 +201,10 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <navigationItem key="navigationItem" title="Collection" id="FX8-oh-6Fc"/>
+                    <connections>
+                        <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="zt5-Wx-Zbh"/>
+                        <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="Sqw-eD-18I"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yqx-zh-LwF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -271,6 +279,8 @@
                         <outlet property="tableView" destination="qgA-Bv-loi" id="5J6-yy-q9P"/>
                         <segue destination="t1B-qF-FHV" kind="show" identifier="showSearch" id="PW5-em-XGg"/>
                         <segue destination="nQ2-F6-P6p" kind="show" identifier="showBanned" id="XuH-9v-Mnx"/>
+                        <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="ElQ-K1-hh9"/>
+                        <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="6as-IA-T8c"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="25I-Ke-a41" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -479,6 +489,8 @@
                         <outlet property="countLabel" destination="0hR-qL-pM6" id="THh-Dd-q4s"/>
                         <outlet property="tableView" destination="81b-ro-cdm" id="uTD-jn-Wi2"/>
                         <segue destination="t1B-qF-FHV" kind="show" identifier="showSearch" id="oHh-uQ-TZu"/>
+                        <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="Nbd-N6-hZy"/>
+                        <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="afx-XI-wHj"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PjY-b6-TgL" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -612,6 +624,8 @@
                         <outlet property="googleButton" destination="D0K-YZ-sOM" id="u2E-PU-5ae"/>
                         <outlet property="passwordTextField" destination="1Ec-DK-e3o" id="D6g-wp-FtM"/>
                         <outlet property="usernameTextField" destination="0RH-D1-MV7" id="sSQ-Ha-iEn"/>
+                        <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="SDa-6t-oDE"/>
+                        <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="VyR-Kv-GGQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0ru-KY-Ddu" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -674,6 +688,8 @@
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="7Xl-Ov-cSh" id="VZk-iV-vVn"/>
+                        <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="zrL-ru-309"/>
+                        <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="mrM-NJ-60c"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZK4-Fd-rhl" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -745,6 +761,10 @@
                     <navigationItem key="navigationItem" title="Deck" id="Oml-LT-vem">
                         <barButtonItem key="backBarButtonItem" title=" " id="YoZ-PX-3lO"/>
                     </navigationItem>
+                    <connections>
+                        <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="Dvj-vW-Yg1"/>
+                        <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="uB5-cH-leA"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wlb-bc-aMr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -781,6 +801,8 @@
                     </navigationItem>
                     <connections>
                         <segue destination="Zfc-HA-H2b" kind="show" identifier="showList" id="m0b-43-QgZ"/>
+                        <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="ksb-XA-Aol"/>
+                        <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="JoK-hf-R7Z"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HWh-yF-yFy" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -815,6 +837,10 @@
                     <navigationItem key="navigationItem" title="List" id="3xp-fX-8YK">
                         <barButtonItem key="backBarButtonItem" title=" " id="K0p-n3-aNr"/>
                     </navigationItem>
+                    <connections>
+                        <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="2LI-y3-heX"/>
+                        <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="Sp5-67-1y2"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bzn-da-vY3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -836,6 +862,10 @@
                     <navigationItem key="navigationItem" title="PDF Viewer" id="l0k-m6-C5d">
                         <barButtonItem key="backBarButtonItem" title=" " id="Z7l-Xm-qpO"/>
                     </navigationItem>
+                    <connections>
+                        <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="ZJ8-bv-Gdz"/>
+                        <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="YJj-Wt-2xv"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qKa-4H-Xpu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -1445,6 +1475,8 @@
                         <outlet property="rightMenuButton" destination="FAl-H1-Jbe" id="oBH-g9-hJ7"/>
                         <outlet property="tableView" destination="5dz-Le-vRr" id="78H-1s-EcE"/>
                         <segue destination="aOj-40-y9v" kind="show" identifier="showSet" id="ISp-PC-gA3"/>
+                        <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="skB-J1-UTe"/>
+                        <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="q8E-1I-PB3"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a3L-Q8-bbP" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1460,11 +1492,11 @@
                         <viewControllerLayoutGuide type="bottom" id="841-wA-QXv"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="eGO-g0-CCv">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="uA5-1d-p4e">
-                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BrowserNavigatorCell" id="ToY-iY-7LW" customClass="BrowserNavigatorTableViewCell" customModule="ManaGuide" customModuleProvider="target">
@@ -1597,7 +1629,7 @@
                                 </connections>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" 100 results" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E54-Fz-k92">
-                                <rect key="frame" x="0.0" y="706" width="414" height="30"/>
+                                <rect key="frame" x="0.0" y="541" width="414" height="30"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="zjt-zb-V6I"/>
@@ -1662,11 +1694,11 @@
                         <viewControllerLayoutGuide type="bottom" id="tqU-jq-t3l"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="fcE-qX-xlo">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="XTg-F2-G7x">
-                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="571"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CardPricingCell" id="3wT-Qz-7Te" customClass="CardPricingTableViewCell" customModule="ManaGuide" customModuleProvider="target">
@@ -2325,6 +2357,8 @@
                         <segue destination="qgC-JD-Akd" kind="show" identifier="showDecks" id="FA3-5I-awu"/>
                         <segue destination="MTb-7i-dLV" kind="show" identifier="showCollections" id="J5I-gS-dhe"/>
                         <segue destination="6UT-WB-OCK" kind="show" identifier="showLists" id="4eK-rV-hVQ"/>
+                        <segue destination="t4B-nz-Ide" kind="presentation" identifier="showCardModal" modalPresentationStyle="formSheet" id="fJ7-ey-P04"/>
+                        <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="lA2-08-58A"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZzT-MW-J9Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -2415,10 +2449,10 @@
         <image name="forwardButton" width="32" height="32"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Vbm-cg-ye0"/>
-        <segue reference="hIm-Gn-rvG"/>
-        <segue reference="J88-7q-TTb"/>
-        <segue reference="xMx-O9-Y4N"/>
-        <segue reference="whl-Hr-bZH"/>
+        <segue reference="raG-Jp-fAl"/>
+        <segue reference="jVZ-a8-OYH"/>
+        <segue reference="Sp5-67-1y2"/>
+        <segue reference="Mbq-CH-LY8"/>
+        <segue reference="ad4-Pa-Oso"/>
     </inferredMetricsTieBreakers>
 </document>

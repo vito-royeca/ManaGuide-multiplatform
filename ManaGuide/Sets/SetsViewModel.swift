@@ -122,6 +122,7 @@ class SetsViewModel: BaseSearchViewModel {
         sortDescriptors = [NSSortDescriptor(key: setsSortBy, ascending: setsOrderBy)]
     }
     
+    // MARK: Overrides
     override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
         let context = ManaKit.sharedInstance.dataStack!.viewContext
         var request: NSFetchRequest<CMSet>?

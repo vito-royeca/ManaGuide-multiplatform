@@ -40,7 +40,6 @@ class MainViewController: UITabBarController {
                                                  textColor: UIColor.blue,
                                                  size: CGSize(width: 30, height: 30))
     }
-    
 
     /*
     // MARK: - Navigation

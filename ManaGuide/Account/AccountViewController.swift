@@ -87,6 +87,8 @@ class AccountViewController: BaseViewController {
             guard let dest = segue.destination as? ListsViewController else {
                 return
             }
+        } else {
+            super.prepare(for: segue, sender: sender)
         }
     }
     

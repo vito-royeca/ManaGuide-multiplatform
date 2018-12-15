@@ -34,6 +34,8 @@ class BannedListViewController: BaseSearchViewController {
             }
             
             dest.viewModel = BannedViewModel(withFormat: format)
+        } else {
+            super.prepare(for: segue, sender: sender)
         }
     }
     

@@ -8,6 +8,7 @@
 
 import UIKit
 import Fabric
+import CoreSpotlight
 import Crashlytics
 import Firebase
 import FBSDKCoreKit
@@ -22,25 +23,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         print("docsPath = \(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])")
 
-        // Fabric
-        Fabric.with([Crashlytics.self])
         
         // Firebase
         FirebaseApp.configure()
         Database.database().isPersistenceEnabled = true
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
-        FBSDKApplicationDelegate.sharedInstance().application(application,
-                                                              didFinishLaunchingWithOptions: launchOptions)
         
         // Facebook
-        FBSDKApplicationDelegate.sharedInstance()?.application(application,
+        FBSDKApplicationDelegate.sharedInstance().application(application,
                                                                didFinishLaunchingWithOptions: launchOptions)
         
+        // Fabric
+        Fabric.with([Crashlytics.self])
+
         // ManaKit
         ManaKit.sharedInstance.setupResources()
         ManaKit.sharedInstance.configureTCGPlayer(partnerKey: TCGPlayerSettings.PartnerKey,
@@ -92,6 +91,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         return handled
+    }
+    
+    
+    
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        if let rootVC = window?.rootViewController as? MMDrawerController,
+            let tabBarVC = rootVC.centerViewController as? UITabBarController,
+            let viewControllers = tabBarVC.viewControllers,
+            let nvc = viewControllers[tabBarVC.selectedIndex] as? UINavigationController,
+            let vc = nvc.topViewController as? BaseViewController {
+            vc.restoreUserActivityState(userActivity)
+        }
+        
+//        if let nav = window?.rootViewController as? UINavigationController {
+//            if let cardVC = nav.children.first as? CardViewController {
+//                cardVC.restoreUserActivityState(userActivity)
+//            }
+//        } else if let cardVC = window?.rootViewController as? CardViewController {
+//            cardVC.restoreUserActivityState(userActivity)
+//        }
+    
+        return true
     }
 }
 

@@ -61,6 +61,8 @@ class SetsViewController: BaseSearchViewController {
             
             dest.viewModel = SetViewModel(withSet: set,
                                           languageCode: languageCode)
+        } else {
+            super.prepare(for: segue, sender: sender)
         }
     }
 
@@ -86,7 +88,7 @@ class SetsViewController: BaseSearchViewController {
         
         return cell!
     }
-
+    
     // MARK: Custom methods
     @objc func updateDataDisplay(_ notification: Notification) {
         guard let userInfo = notification.userInfo as? [String: Any],

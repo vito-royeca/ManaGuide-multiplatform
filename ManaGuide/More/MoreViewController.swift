@@ -51,6 +51,8 @@ class MoreViewController: BaseViewController {
             dest.viewModel = SearchViewModel(withRequest: request,
                                              andTitle: dict["title"] as? String,
                                              andMode: .loading)
+        } else {
+            super.prepare(for: segue, sender: sender)
         }
     }
 

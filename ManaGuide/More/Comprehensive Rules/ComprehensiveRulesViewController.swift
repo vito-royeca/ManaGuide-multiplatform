@@ -44,6 +44,8 @@ class ComprehensiveRulesViewController: BaseSearchViewController {
                 string.append(definition)
             }
             dest.title = string
+        } else {
+            super.prepare(for: segue, sender: sender)
         }
     }
     

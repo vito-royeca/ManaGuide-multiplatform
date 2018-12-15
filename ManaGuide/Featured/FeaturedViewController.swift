@@ -46,6 +46,10 @@ class FeaturedViewController: BaseViewController {
         latestSetsViewModel.mode = .loading
         topRatedViewModel.mode = .loading
         topViewedViewModel.mode = .loading
+        
+        // spotlight
+        let spotlight = SpotlightManager()
+        spotlight.createSpotlightItems()
     }
 
     override func viewDidAppear(_ animated: Bool) {
