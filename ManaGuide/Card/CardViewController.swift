@@ -131,9 +131,10 @@ class CardViewController: BaseSearchViewController {
             title = viewModel.content.description
             
             firstly {
-                viewModel.fetchData()
+                when(fulfilled: [viewModel.fetchData(),
+                                 viewModel.loadCardData()])
             }.done {
-
+                
             }.catch { error in
                 print("\(error)")
             }
@@ -514,8 +515,12 @@ class CardViewController: BaseSearchViewController {
     
     // MARK: Notification handlers
     @objc func reloadViewController(_ notification: Notification) {
-        guard let viewModel = viewModel as? CardViewModel else {
-            fatalError()
+        guard let viewModel = viewModel as? CardViewModel,
+            let userInfo = notification.userInfo,
+            let card = userInfo["card"] as? CMCard,
+            let currentCard = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0)) as? CMCard,
+            card.id != currentCard.id else {
+            return
         }
         
         DispatchQueue.main.async {

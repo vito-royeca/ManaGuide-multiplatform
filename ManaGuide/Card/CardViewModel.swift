@@ -9,6 +9,7 @@
 import CoreData
 import Firebase
 import ManaKit
+import PromiseKit
 
 enum CardContent: Int {
     case card
@@ -917,31 +918,38 @@ class CardViewModel: BaseSearchViewModel {
         }
     }
     
-    func loadCardData() {
-        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
-            fatalError()
-        }
-        let ref = Database.database().reference().child("cards").child(card.firebaseID!)
-        
-        ref.observeSingleEvent(of: .value, with: { snapshot in
-            guard let value = snapshot.value as? [String : Any] else {
+    func loadCardData() -> Promise<Void> {
+        return Promise { seal in
+            guard let cards = allObjects() as? [CMCard] else {
+                seal.fulfill()
                 return
             }
             
-            // update views
-            if let views = value["Views"] as? Int {
-                card.firebaseViews = Int64(views)
+            for card in cards {
+                let ref = Database.database().reference().child("cards").child(card.firebaseID!)
+                
+                ref.observeSingleEvent(of: .value, with: { snapshot in
+                    guard let value = snapshot.value as? [String : Any] else {
+                        return
+                    }
+                    
+                    // update views
+                    if let views = value["Views"] as? Int {
+                        card.firebaseViews = Int64(views)
+                    }
+                    if let rating = value["Rating"] as? Double {
+                        card.firebaseRating = rating
+                    }
+                    ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                        try! backgroundContext.save()
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
+                                                        object: nil,
+                                                        userInfo: ["card": card])
+                    }
+                })
             }
-            if let rating = value["Rating"] as? Double {
-                card.firebaseRating = rating
-            }
-            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                try! backgroundContext.save()
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
-                                                object: nil,
-                                                userInfo: nil)
-            }
-        })
+            seal.fulfill(())
+        }
     }
     
     private func firebaseCardData() -> [String: Any] {

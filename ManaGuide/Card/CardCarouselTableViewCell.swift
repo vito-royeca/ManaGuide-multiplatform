@@ -119,7 +119,6 @@ class CardCarouselTableViewCell: UITableViewCell {
         viewModel.cardViewIncremented = false
         viewModel.faceOrder = 0
         viewModel.flipAngle = 0
-        viewModel.loadCardData()
         viewModel.reloadRelatedCards()
         delegate?.updatePricingAndActions()
     }
