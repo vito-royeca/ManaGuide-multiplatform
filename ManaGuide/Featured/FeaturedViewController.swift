@@ -43,6 +43,7 @@ class FeaturedViewController: BaseViewController {
                                                selector: #selector(reloadTopViewed(_:)),
                                                name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
                                                object: nil)
+        
         latestSetsViewModel.mode = .loading
         topRatedViewModel.mode = .loading
         topViewedViewModel.mode = .loading
@@ -55,6 +56,7 @@ class FeaturedViewController: BaseViewController {
                                                          section: 0)) as? LatestCardsTableViewCell {
             cell.startSlideShow()
         }
+        fetchData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -114,6 +116,67 @@ class FeaturedViewController: BaseViewController {
     }
 
     // MARK: Custom methods
+    func fetchData() {
+        if latestSetsViewModel.mode == .loading {
+            var width = flowLayoutHeight + (flowLayoutHeight / 2)
+            var itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
+            
+            guard let c = tableView.cellForRow(at: IndexPath(row: FeaturedSection.latestSets.rawValue, section: 0)) as? FeaturedTableViewCell else {
+                fatalError()
+            }
+            
+            firstly {
+                latestSetsViewModel.fetchData()
+            }.done {
+                let divisor = CGFloat(UIDevice.current.userInterfaceIdiom == .phone ? 3 : 4)
+                width = (self.view.frame.size.width / divisor) - 20
+                itemSize = CGSize(width: width - 20, height: self.flowLayoutHeight - 5)
+                
+                self.latestSetsViewModel.mode = self.latestSetsViewModel.isEmpty() ? .noResultsFound : .resultsFound
+                c.setupCollectionView(itemSize: itemSize)
+                c.seeAllButton.isHidden = false
+                c.collectionView.reloadData()
+            }.catch { error in
+                self.topRatedViewModel.mode = .error
+                c.collectionView.reloadData()
+            }
+        }
+        
+        if topRatedViewModel.mode == .loading {
+            guard let c = tableView.cellForRow(at: IndexPath(row: FeaturedSection.topRated.rawValue, section: 0)) as? FeaturedTableViewCell else {
+                fatalError()
+            }
+            
+            firstly {
+                when(fulfilled: [topRatedViewModel.fetchRemoteData(),
+                                 topRatedViewModel.fetchData()])
+            }.done {
+                self.topRatedViewModel.mode = self.topRatedViewModel.isEmpty() ? .noResultsFound : .resultsFound
+                c.collectionView.reloadData()
+            }.catch { error in
+                self.topRatedViewModel.mode = .error
+                c.collectionView.reloadData()
+            }
+        }
+        
+        if topViewedViewModel.mode == .loading {
+            guard let c = tableView.cellForRow(at: IndexPath(row: FeaturedSection.topViewed.rawValue, section: 0)) as? FeaturedTableViewCell else {
+                fatalError()
+            }
+            
+            firstly {
+                when(fulfilled: [topViewedViewModel.fetchRemoteData(),
+                                 topViewedViewModel.fetchData()])
+            }.done {
+                self.topViewedViewModel.mode = self.topViewedViewModel.isEmpty() ? .noResultsFound : .resultsFound
+                c.collectionView.reloadData()
+            }.catch { error in
+                self.topViewedViewModel.mode = .error
+                c.collectionView.reloadData()
+            }
+        }
+    }
+
     @objc func reloadTopRated(_ notification: Notification) {
         DispatchQueue.main.async {
             guard let cell = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topRated.rawValue, section: 0)) else {
@@ -169,8 +232,8 @@ extension FeaturedViewController : UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell:UITableViewCell?
-        var width = self.flowLayoutHeight + (self.flowLayoutHeight / 2)
-        var itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
+        let width = self.flowLayoutHeight + (self.flowLayoutHeight / 2)
+        let itemSize = CGSize(width: width - 20, height: flowLayoutHeight - 5)
         
         if flowLayoutHeight == 0 {
             flowLayoutHeight = (view.frame.size.height / 3) - 50
@@ -193,26 +256,10 @@ extension FeaturedViewController : UITableViewDataSource {
 
             c.setupCollectionView(itemSize: itemSize)
             c.titleLabel.text = FeaturedSection.latestSets.description
+            c.seeAllButton.isHidden = latestSetsViewModel.isEmpty()
             c.section = .latestSets
             c.viewModel = latestSetsViewModel
             c.delegate = self
-            
-            if latestSetsViewModel.mode == .loading {
-                firstly {
-                    latestSetsViewModel.fetchData()
-                }.done {
-                    let divisor = CGFloat(UIDevice.current.userInterfaceIdiom == .phone ? 3 : 4)
-                    width = (self.view.frame.size.width / divisor) - 20
-                    itemSize = CGSize(width: width - 20, height: self.flowLayoutHeight - 5)
-                    
-                    self.latestSetsViewModel.mode = self.latestSetsViewModel.isEmpty() ? .noResultsFound : .resultsFound
-                    c.setupCollectionView(itemSize: itemSize)
-                    c.collectionView.reloadData()
-                }.catch { error in
-                    self.topRatedViewModel.mode = .error
-                    c.collectionView.reloadData()
-                }
-            }
             cell = c
             
         case FeaturedSection.topRated.rawValue:
@@ -227,18 +274,6 @@ extension FeaturedViewController : UITableViewDataSource {
             c.section = .topRated
             c.viewModel = topRatedViewModel
             c.delegate = self
-            if topRatedViewModel.mode == .loading {
-                firstly {
-                    when(fulfilled: [topRatedViewModel.fetchRemoteData(),
-                                     topRatedViewModel.fetchData()])
-                }.done {
-                    self.topRatedViewModel.mode = self.topRatedViewModel.isEmpty() ? .noResultsFound : .resultsFound
-                    c.collectionView.reloadData()
-                }.catch { error in
-                    self.topRatedViewModel.mode = .error
-                    c.collectionView.reloadData()
-                }
-            }
             
             cell = c
             
@@ -254,18 +289,6 @@ extension FeaturedViewController : UITableViewDataSource {
             c.section = .topViewed
             c.viewModel = topViewedViewModel
             c.delegate = self
-            if topViewedViewModel.mode == .loading {
-                firstly {
-                    when(fulfilled: [topViewedViewModel.fetchRemoteData(),
-                                     topViewedViewModel.fetchData()])
-                }.done {
-                    self.topViewedViewModel.mode = self.topViewedViewModel.isEmpty() ? .noResultsFound : .resultsFound
-                    c.collectionView.reloadData()
-                }.catch { error in
-                    self.topViewedViewModel.mode = .error
-                    c.collectionView.reloadData()
-                }
-            }
             cell = c
             
         default:

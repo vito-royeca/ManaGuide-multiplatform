@@ -48,7 +48,7 @@ class LatestCardsTableViewCell: UITableViewCell {
     // MARK: Custom methods
     func startSlideShow() {
         setupCarousel()
-        
+
         _latestCardsTimer = Timer.scheduledTimer(timeInterval: 60 * 5,
                                                  target: self,
                                                  selector: #selector(fetchData),
