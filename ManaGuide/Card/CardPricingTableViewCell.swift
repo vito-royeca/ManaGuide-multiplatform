@@ -28,10 +28,10 @@ class CardPricingTableViewCell: UITableViewCell {
             if willFetchPricing {
                 firstly {
                     ManaKit.sharedInstance.fetchTCGPlayerCardPricing(card: card)
-                    }.done {
-                        self.updatePricing()
-                    }.catch { error in
-                        self.updatePricing()
+                }.done {
+                    self.updatePricing()
+                }.catch { error in
+                    self.updatePricing()
                 }
             } else {
                 updatePricing()

@@ -77,6 +77,8 @@ class SearchModeCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         // Initialization code
         
+        backgroundImage.layer.cornerRadius = 10
+        
     }
 
 }

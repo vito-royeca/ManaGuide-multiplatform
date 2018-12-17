@@ -139,8 +139,13 @@ class SearchViewController: BaseSearchViewController {
     @objc func updateSettings(_ notification: Notification) {
         let searchGenerator = SearchRequestGenerator()
         searchGenerator.syncValues(notification)
-        viewModel.mode = .loading
-        updateDataDisplay()
+        
+        if viewModel.mode != .standBy {
+            viewModel.mode = .loading
+            updateDataDisplay()
+        } else {
+            tableView.reloadData()
+        }
     }
     
     @objc func updateData(_ notification: Notification) {

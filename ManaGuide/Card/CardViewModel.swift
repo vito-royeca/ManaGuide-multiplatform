@@ -322,6 +322,40 @@ class CardViewModel: BaseSearchViewModel {
         return headerTitle
     }
     
+    // MARK: Overrides
+    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
+        let context = ManaKit.sharedInstance.dataStack!.viewContext
+        var request: NSFetchRequest<CMCard>?
+        
+        if let fetchRequest = fetchRequest {
+            request = fetchRequest as? NSFetchRequest<CMCard>
+        } else {
+            // Create a default fetchRequest
+            request = CMCard.fetchRequest()
+            request!.sortDescriptors = sortDescriptors
+        }
+        
+        // Create Fetched Results Controller
+        let frc = NSFetchedResultsController(fetchRequest: request!,
+                                             managedObjectContext: context,
+                                             sectionNameKeyPath: nil,
+                                             cacheName: nil)
+        
+        // Configure Fetched Results Controller
+        frc.delegate = self
+        
+        // perform fetch
+        do {
+            try frc.performFetch()
+        } catch {
+            let fetchError = error as NSError
+            print("Unable to Perform Fetch Request")
+            print("\(fetchError), \(fetchError.localizedDescription)")
+        }
+        
+        return frc as! NSFetchedResultsController<NSManagedObject>
+    }
+
     // MARK: Custom methods
     func cardMainDetails() -> [[CardDetailsMainDataSection: CMCard]] {
         guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
@@ -1001,39 +1035,6 @@ class CardViewModel: BaseSearchViewModel {
         }
         
         return dict
-    }
-    
-    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
-        let context = ManaKit.sharedInstance.dataStack!.viewContext
-        var request: NSFetchRequest<CMCard>?
-        
-        if let fetchRequest = fetchRequest {
-            request = fetchRequest as? NSFetchRequest<CMCard>
-        } else {
-            // Create a default fetchRequest
-            request = CMCard.fetchRequest()
-            request!.sortDescriptors = sortDescriptors
-        }
-        
-        // Create Fetched Results Controller
-        let frc = NSFetchedResultsController(fetchRequest: request!,
-                                             managedObjectContext: context,
-                                             sectionNameKeyPath: nil,
-                                             cacheName: nil)
-        
-        // Configure Fetched Results Controller
-        frc.delegate = self
-        
-        // perform fetch
-        do {
-            try frc.performFetch()
-        } catch {
-            let fetchError = error as NSError
-            print("Unable to Perform Fetch Request")
-            print("\(fetchError), \(fetchError.localizedDescription)")
-        }
-        
-        return frc as! NSFetchedResultsController<NSManagedObject>
     }
 }
 
