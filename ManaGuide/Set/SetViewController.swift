@@ -57,11 +57,15 @@ class SetViewController: SearchViewController {
                                                name: NSNotification.Name(rawValue: kIASKAppSettingChanged),
                                                object: nil)
         
-        rightMenuButton.image = UIImage.fontAwesomeIcon(name: .slidersH,
-                                                        style: .solid,
-                                                        textColor: LookAndFeel.GlobalTintColor,
-                                                        size: CGSize(width: 30, height: 30))
-        rightMenuButton.title = nil
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            navigationItem.rightBarButtonItem = nil
+        } else {
+            rightMenuButton.image = UIImage.fontAwesomeIcon(name: .slidersH,
+                                                            style: .solid,
+                                                            textColor: LookAndFeel.GlobalTintColor,
+                                                            size: CGSize(width: 30, height: 30))
+            rightMenuButton.title = nil
+        }
         
         tableView.register(UINib(nibName: "SearchModeTableViewCell",
                                  bundle: nil),

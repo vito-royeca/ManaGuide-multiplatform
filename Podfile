@@ -10,7 +10,6 @@ def default_pods
     pod 'FBSDKCoreKit', '~> 4.38.0'
     pod 'FBSDKLoginKit', '~> 4.38.0'
     pod 'FBSDKShareKit', '~> 4.38.0'
-    pod 'FBSDKMessengerShareKit'
     pod 'Firebase/Core'
     pod 'Firebase/Database'
     pod 'Firebase/Auth'

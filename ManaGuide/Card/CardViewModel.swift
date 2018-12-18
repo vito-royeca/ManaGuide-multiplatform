@@ -91,9 +91,10 @@ enum CardDetailsMainDataSection : Int {
     case type
     case text
     case powerToughness
-
+    case loyalty
+    
     static var count: Int {
-        return 4
+        return 5
     }
 }
 
@@ -394,7 +395,7 @@ class CardViewModel: BaseSearchViewModel {
                 details.append([CardDetailsMainDataSection.text: a])
             }
             
-            // power / toughness
+            // power / toughness / loyalty
             if let type = card.typeLine,
                 let name = type.name {
                 if name.contains("Creature") {
@@ -402,9 +403,9 @@ class CardViewModel: BaseSearchViewModel {
                         let _ = a.toughness {
                         details.append([CardDetailsMainDataSection.powerToughness: a])
                     }
-                } else if name.contains("Plainswalker") {
+                } else if name.contains("Planeswalker") {
                     if let _ = a.loyalty {
-                        details.append([CardDetailsMainDataSection.powerToughness: a])
+                        details.append([CardDetailsMainDataSection.loyalty: a])
                     }
                 }
             }

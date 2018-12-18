@@ -11,7 +11,6 @@ import Cosmos
 import CoreData
 import FBSDKCoreKit
 import FBSDKShareKit
-import FBSDKMessengerShareKit
 import Firebase
 import FontAwesome_swift
 import iCarousel
@@ -37,9 +36,6 @@ class CardViewController: BaseSearchViewController {
         title = content.description
         
         tableView.reloadData()
-        tableView.scrollToRow(at: IndexPath(row: 0, section: 0),
-                              at: .top,
-                              animated: true)
         
         switch viewModel.content {
         case .card:
@@ -773,6 +769,9 @@ class CardViewController: BaseSearchViewController {
             }
             viewModel.cardRelatedDataLoaded = true
             self.tableView.reloadData()
+            self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0),
+                                       at: .top,
+                                       animated: true)
             self.incrementCardViews()
         }.catch { error in
             for v in models {
@@ -800,6 +799,9 @@ class CardViewController: BaseSearchViewController {
                 viewModel.mode = .error
             }
             self.tableView.reloadData()
+            self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0),
+                                       at: .top,
+                                       animated: true)
         }.catch { error in
             viewModel.mode = .error
             self.tableView.reloadData()
@@ -864,7 +866,7 @@ class CardViewController: BaseSearchViewController {
                 if name.contains("Creature") {
                     c.textLabel?.text = "Power/Toughness"
                     c.detailTextLabel?.text = "\(card.power!)/\(card.toughness!)"
-                } else if name.contains("Plainswalker") {
+                } else if name.contains("Planeswalker") {
                     c.textLabel?.text = "Loyalty"
                     c.detailTextLabel?.text = "\(card.loyalty!)"
                 }
