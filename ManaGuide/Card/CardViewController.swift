@@ -235,6 +235,17 @@ class CardViewController: BaseSearchViewController {
                 return
             }
             loginVC.delegate = self
+            
+        } else if segue.identifier == "showSet" {
+            guard let dest = segue.destination as? SetViewController,
+                let dict = sender as? [String: Any],
+                let set = dict["set"] as? CMSet,
+                let languageCode = dict["languageCode"] as? String else {
+                return
+            }
+            
+            dest.viewModel = SetViewModel(withSet: set,
+                                          languageCode: languageCode)
         }
     }
     
@@ -317,6 +328,8 @@ class CardViewController: BaseSearchViewController {
                         fatalError("\(CardSetTableViewCell.reuseIdentifier) is nil")
                     }
                     c.card = card
+                    c.selectionStyle = .default
+                    c.accessoryType = .disclosureIndicator
                     cell = c
                 case CardDetailsSection.relatedData.rawValue:
                     guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
@@ -341,43 +354,43 @@ class CardViewController: BaseSearchViewController {
                     case CardRelatedDataSection.parts.rawValue:
                         label.text = CardRelatedDataSection.parts.description
                         if viewModel.numberOfParts() > 0 {
-                            detailTextLabel.text = nil
+                            detailTextLabel.text = "\(viewModel.numberOfParts())"
                             c.selectionStyle = .default
-                            c.accessoryView = createBadge(withCount: viewModel.numberOfParts())
+                            c.accessoryType = .disclosureIndicator
                         } else {
                             detailTextLabel.text = "None"
                             c.selectionStyle = .none
                             c.accessoryType = .none
-                            c.accessoryView = nil
                         }
+                        c.accessoryView = nil
                         cell = c
 
                     case CardRelatedDataSection.variations.rawValue:
                         label.text = CardRelatedDataSection.variations.description
                         if viewModel.numberOfVariations() > 0 {
-                            detailTextLabel.text = nil
+                            detailTextLabel.text = "\(viewModel.numberOfVariations())"
                             c.selectionStyle = .default
-                            c.accessoryView = createBadge(withCount: viewModel.numberOfVariations())
+                            c.accessoryType = .disclosureIndicator
                         } else {
                             detailTextLabel.text = "None"
                             c.selectionStyle = .none
                             c.accessoryType = .none
-                            c.accessoryView = nil
                         }
+                        c.accessoryView = nil
                         cell = c
                         
                     case CardRelatedDataSection.otherPrintings.rawValue:
                         label.text = CardRelatedDataSection.otherPrintings.description
                         if viewModel.numberOfOtherPrintings() > 0 {
-                            detailTextLabel.text = nil
+                            detailTextLabel.text = "\(viewModel.numberOfOtherPrintings())"
                             c.selectionStyle = .default
-                            c.accessoryView = createBadge(withCount: viewModel.numberOfOtherPrintings())
+                            c.accessoryType = .disclosureIndicator
                         } else {
                             detailTextLabel.text = "None"
                             c.selectionStyle = .none
                             c.accessoryType = .none
-                            c.accessoryView = nil
                         }
+                        c.accessoryView = nil
                         cell = c
                         
                     default:
@@ -423,7 +436,6 @@ class CardViewController: BaseSearchViewController {
                         cell = c
                     } else {
                         guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
-                            let imageView = c.imageView,
                             let label = c.textLabel,
                             let cardLegalitiesSet = card.cardLegalities,
                             let cardLegalities = cardLegalitiesSet.allObjects as? [CMCardLegality] else {
@@ -435,38 +447,47 @@ class CardViewController: BaseSearchViewController {
                                 return a.format!.name! < b.format!.name!
                             })
                             let cardLegality = orderedCardLegalities[indexPath.row]
-                            if cardLegality.legality!.name == "Legal" {
-                                imageView.image = UIImage.fontAwesomeIcon(name: .checkCircle,
-                                                                          style: .solid,
-                                                                          textColor: UIColor.green,
-                                                                          size: CGSize(width: 30, height: 30))
-                            } else {
-                                imageView.image = UIImage.fontAwesomeIcon(name: .timesCircle,
-                                                                          style: .solid,
-                                                                          textColor: UIColor.red,
-                                                                          size: CGSize(width: 30, height: 30))
-                            }
                             label.text = cardLegality.format!.name
+                            c.accessoryView = createBadge(withCheck: cardLegality.legality!.name == "Legal")
                         }
                         c.selectionStyle = .none
                         c.accessoryType = .none
                         cell = c
                     }
                 case CardDetailsSection.otherDetails.rawValue:
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
-                        let label = c.textLabel,
-                        let detailTextLabel = c.detailTextLabel,
-                        let otherDetails = CardOtherDetailsSection(rawValue: indexPath.row) else {
-                        fatalError("RightDetailCell is nil")
+                    switch indexPath.row {
+                    case CardOtherDetailsSection.colorshifted.rawValue,
+                         CardOtherDetailsSection.reservedList.rawValue,
+                         CardOtherDetailsSection.setOnlineOnly.rawValue,
+                         CardOtherDetailsSection.storySpotlight.rawValue,
+                         CardOtherDetailsSection.timeshifted.rawValue:
+                        guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                            let label = c.textLabel,
+                            let otherDetails = CardOtherDetailsSection(rawValue: indexPath.row) else {
+                            fatalError("BasicCell is nil")
+                        }
+                        label.text = otherDetails.description
+                        c.accessoryView = createBadge(withCheck: viewModel.textOf(otherDetails: otherDetails) == "Yes")
+                        c.selectionStyle = .none
+                        c.accessoryType = .none
+                        cell = c
+
+                    default:
+                        guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
+                            let label = c.textLabel,
+                            let detailTextLabel = c.detailTextLabel,
+                            let otherDetails = CardOtherDetailsSection(rawValue: indexPath.row) else {
+                            fatalError("RightDetailCell is nil")
+                        }
+                        
+                        label.text = otherDetails.description
+                        detailTextLabel.adjustsFontSizeToFitWidth = true
+                        detailTextLabel.text = viewModel.textOf(otherDetails: otherDetails)
+                        c.accessoryView = nil
+                        c.selectionStyle = .none
+                        c.accessoryType = .none
+                        cell = c
                     }
-                    label.text = otherDetails.description
-                    detailTextLabel.adjustsFontSizeToFitWidth = true
-                    detailTextLabel.text = viewModel.textOf(otherDetails: otherDetails)
-                    
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    c.accessoryView = nil
-                    cell = c
                     
                 default:
                     ()
@@ -474,6 +495,8 @@ class CardViewController: BaseSearchViewController {
             }
         
         case .store:
+            tableView.separatorStyle = .singleLine
+
             switch viewModel.mode {
             case .resultsFound:
                 guard let storePricing = card.tcgplayerStorePricing,
@@ -526,21 +549,22 @@ class CardViewController: BaseSearchViewController {
         guard let viewModel = viewModel as? CardViewModel,
             let userInfo = notification.userInfo,
             let card = userInfo["card"] as? CMCard,
-            let currentCard = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0)) as? CMCard,
-            card.id != currentCard.id else {
+            let currentCard = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0)) as? CMCard else {
             return
         }
         
-        DispatchQueue.main.async {
-            switch viewModel.content {
-            case .card:
-                self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
-                                               IndexPath(row: 0, section: CardImageSection.actions.rawValue)],
-                                          with: .automatic)
-            case .store:
-                self.tableView.reloadData()
-            default:
-                ()
+        // TODO: does not load for 0-view cards
+        if card.id == currentCard.id {
+            DispatchQueue.main.async {
+                switch viewModel.content {
+                case .card:
+                    self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
+                                                   IndexPath(row: 0, section: CardImageSection.actions.rawValue)],
+                                              with: .automatic)
+                case .details,
+                     .store:
+                    self.tableView.reloadData()
+                }
             }
         }
     }
@@ -651,6 +675,7 @@ class CardViewController: BaseSearchViewController {
         guard let viewModel = viewModel as? CardViewModel else {
             fatalError()
         }
+        
         MBProgressHUD.showAdded(to: view, animated: true)
         firstly {
             viewModel.toggleCardFavorite(firstAttempt: true)
@@ -660,7 +685,21 @@ class CardViewController: BaseSearchViewController {
             MBProgressHUD.hide(for: self.view, animated: true)
             print("\(error)")
         }
+    }
+    
+    func incrementCardViews() {
+        guard let viewModel = viewModel as? CardViewModel else {
+            fatalError()
+        }
         
+        firstly {
+            viewModel.incrementCardViews(firstAttempt: true)
+        }.done {
+            
+        }.catch { error in
+            
+            print("\(error)")
+        }
     }
     
     @objc func handleLink(_ tapGesture: UITapGestureRecognizer) {
@@ -697,50 +736,49 @@ class CardViewController: BaseSearchViewController {
     }
     
     func reloadRelatedData() {
-        if let viewModel = viewModel as? CardViewModel {
-            guard let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0)) as? CMCard else {
-                fatalError()
-            }
-            var models = [SearchViewModel]()
-            var promises = [Promise<Void>]()
-            
-            if let v = viewModel.partsViewModel,
-                v.mode == .loading {
-                models.append(v)
-            }
-            if let v = viewModel.variationsViewModel,
-                v.mode == .loading {
-                models.append(v)
-            }
-            if let v = viewModel.otherPrintingsViewModel,
-                v.mode == .loading {
-                models.append(v)
-            }
-            
-            // pre-load related data
-            let _ = card.cardRulings
-            let _ = card.cardLegalities
+        guard let viewModel = viewModel as? CardViewModel,
+            let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
+        
+        var models = [SearchViewModel]()
+        var promises = [Promise<Void>]()
+        
+        if let v = viewModel.partsViewModel,
+            v.mode == .loading {
+            models.append(v)
+        }
+        if let v = viewModel.variationsViewModel,
+            v.mode == .loading {
+            models.append(v)
+        }
+        if let v = viewModel.otherPrintingsViewModel,
+            v.mode == .loading {
+            models.append(v)
+        }
+        
+        // pre-load related data
+        let _ = card.cardRulings
+        let _ = card.cardLegalities
 
-            if !models.isEmpty {
-                promises.append(contentsOf: models.map { $0.fetchData() })
+        if !models.isEmpty {
+            promises.append(contentsOf: models.map { $0.fetchData() })
+        }
+        
+        firstly {
+            when(fulfilled: promises)
+        }.done {
+            for v in models {
+                v.mode = v.isEmpty() ? .noResultsFound : .resultsFound
             }
-            
-            firstly {
-                when(fulfilled: promises)
-            }.then {
-                viewModel.incrementCardViews(firstAttempt: true)
-            }.done {
-                for v in models {
-                    v.mode = v.isEmpty() ? .noResultsFound : .resultsFound
-                }
-                viewModel.cardRelatedDataLoaded = true
-                self.tableView.reloadData()
-            }.catch { error in
-                for v in models {
-                    v.mode = .error
-                }
-                self.tableView.reloadData()
+            viewModel.cardRelatedDataLoaded = true
+            self.tableView.reloadData()
+            self.incrementCardViews()
+        }.catch { error in
+            for v in models {
+                v.mode = .error
             }
+            self.tableView.reloadData()
         }
     }
 
@@ -837,17 +875,31 @@ class CardViewController: BaseSearchViewController {
         }
     }
     
-    func createBadge(withCount count: Int) -> UILabel {
+//    func createBadge(withCount count: Int) -> UILabel {
+//        let label = UILabel()
+//
+//        label.text = "\(count)"
+//        label.textColor = .white
+//        label.backgroundColor = .red
+//        label.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+//        label.textAlignment = NSTextAlignment.center
+//        label.layer.cornerRadius = 12
+//        label.clipsToBounds = true
+//        label.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+//        return label
+//    }
+    
+    func createBadge(withCheck check: Bool) -> UILabel {
         let label = UILabel()
         
-        label.text = "\(count)"
-        label.textColor = .white
-        label.backgroundColor = .red
-        label.font = UIFont.systemFont(ofSize: 17)
+        label.text = check ? String.fontAwesomeIcon(name: .checkCircle) : String.fontAwesomeIcon(name: .timesCircle)
+        label.textColor = check ? .green : .red
+        label.backgroundColor = .white
+        label.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
         label.textAlignment = NSTextAlignment.center
-        label.layer.cornerRadius = 15
+        label.layer.cornerRadius = 10
         label.clipsToBounds = true
-        label.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+        label.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
         return label
     }
 }
@@ -934,7 +986,8 @@ extension CardViewController : UITableViewDelegate {
         switch viewModel.content {
         case .details:
             switch indexPath.section {
-            case CardDetailsSection.relatedData.rawValue:
+            case CardDetailsSection.set.rawValue,
+                 CardDetailsSection.relatedData.rawValue:
                 path = indexPath
             default:
                 ()
@@ -956,6 +1009,16 @@ extension CardViewController : UITableViewDelegate {
         switch viewModel.content {
         case .details:
             switch indexPath.section {
+            case CardDetailsSection.set.rawValue:
+                guard let set = card.set,
+                    let language = card.language,
+                    let languageCode = language.code else {
+                    return
+                }
+                let identifier = "showSet"
+                let sender = ["set": set,
+                              "languageCode": languageCode] as [String : Any]
+                performSegue(withIdentifier: identifier, sender: sender)
             case CardDetailsSection.relatedData.rawValue:
                 switch indexPath.row {
                 case CardRelatedDataSection.artist.rawValue:

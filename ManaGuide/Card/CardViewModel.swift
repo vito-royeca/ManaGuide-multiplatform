@@ -721,10 +721,10 @@ class CardViewModel: BaseSearchViewModel {
                         
                         ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
                             try! backgroundContext.save()
-                            seal.fulfill(())
                             NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                                             object: nil,
-                                                            userInfo: nil)
+                                                            userInfo: ["card": card])
+                            seal.fulfill(())
                         }
                     } else {
                         // retry again, if we were aborted from above
@@ -783,10 +783,10 @@ class CardViewModel: BaseSearchViewModel {
                         
                         ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
                             try! backgroundContext.save()
-                            seal.fulfill(())
                             NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardViewsUpdated),
                                                             object: nil,
                                                             userInfo: ["card": card])
+                            seal.fulfill(())
                         }
                         
                     } else {
@@ -867,14 +867,14 @@ class CardViewModel: BaseSearchViewModel {
                             try! backgroundContext.save()
                             NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                             object: nil,
-                                                            userInfo: nil)
+                                                            userInfo: ["card": card])
                             
                             firstly {
                                 self.updateUserRatings(rating: rating, firstAttempt: true)
                             }.done {
                                 seal.fulfill(())
                             }.catch { error in
-                                    seal.reject(error)
+                                seal.reject(error)
                             }
                         }
                         
@@ -952,10 +952,10 @@ class CardViewModel: BaseSearchViewModel {
                             
                             ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
                                 try! backgroundContext.save()
-                                seal.fulfill(())
                                 NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                                 object: nil,
-                                                                userInfo: nil)
+                                                                userInfo: ["card": card])
+                                seal.fulfill(())
                             }
                         }
                     } else {
