@@ -341,39 +341,42 @@ class CardViewController: BaseSearchViewController {
                     case CardRelatedDataSection.parts.rawValue:
                         label.text = CardRelatedDataSection.parts.description
                         if viewModel.numberOfParts() > 0 {
-                            detailTextLabel.text = "\(viewModel.numberOfParts())"
+                            detailTextLabel.text = nil
                             c.selectionStyle = .default
-                            c.accessoryType = .disclosureIndicator
+                            c.accessoryView = createBadge(withCount: viewModel.numberOfParts())
                         } else {
                             detailTextLabel.text = "None"
                             c.selectionStyle = .none
                             c.accessoryType = .none
+                            c.accessoryView = nil
                         }
                         cell = c
 
                     case CardRelatedDataSection.variations.rawValue:
                         label.text = CardRelatedDataSection.variations.description
                         if viewModel.numberOfVariations() > 0 {
-                            detailTextLabel.text = "\(viewModel.numberOfVariations())"
+                            detailTextLabel.text = nil
                             c.selectionStyle = .default
-                            c.accessoryType = .disclosureIndicator
+                            c.accessoryView = createBadge(withCount: viewModel.numberOfVariations())
                         } else {
                             detailTextLabel.text = "None"
                             c.selectionStyle = .none
                             c.accessoryType = .none
+                            c.accessoryView = nil
                         }
                         cell = c
                         
                     case CardRelatedDataSection.otherPrintings.rawValue:
                         label.text = CardRelatedDataSection.otherPrintings.description
                         if viewModel.numberOfOtherPrintings() > 0 {
-                            detailTextLabel.text = "\(viewModel.numberOfOtherPrintings())"
+                            detailTextLabel.text = nil
                             c.selectionStyle = .default
-                            c.accessoryType = .disclosureIndicator
+                            c.accessoryView = createBadge(withCount: viewModel.numberOfOtherPrintings())
                         } else {
                             detailTextLabel.text = "None"
                             c.selectionStyle = .none
                             c.accessoryType = .none
+                            c.accessoryView = nil
                         }
                         cell = c
                         
@@ -462,6 +465,7 @@ class CardViewController: BaseSearchViewController {
                     
                     c.selectionStyle = .none
                     c.accessoryType = .none
+                    c.accessoryView = nil
                     cell = c
                     
                 default:
@@ -775,7 +779,7 @@ class CardViewController: BaseSearchViewController {
         cell.flowLayout.minimumInteritemSpacing = CGFloat(10)
         cell.flowLayout.scrollDirection = .horizontal
         cell.viewModel = model
-        cell.collectionView.reloadData()
+//        cell.collectionView.reloadData()
     }
     
     func createMainDataCell(forCard card: CMCard, inRow row: Int) -> UITableViewCell {
@@ -831,6 +835,20 @@ class CardViewController: BaseSearchViewController {
             c.accessoryType = .none
             return c
         }
+    }
+    
+    func createBadge(withCount count: Int) -> UILabel {
+        let label = UILabel()
+        
+        label.text = "\(count)"
+        label.textColor = .white
+        label.backgroundColor = .red
+        label.font = UIFont.systemFont(ofSize: 17)
+        label.textAlignment = NSTextAlignment.center
+        label.layer.cornerRadius = 15
+        label.clipsToBounds = true
+        label.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+        return label
     }
 }
 
@@ -933,7 +951,8 @@ extension CardViewController : UITableViewDelegate {
             let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0)) as? CMCard else {
             fatalError()
         }
-        
+        var cardVM: CardViewModel?
+
         switch viewModel.content {
         case .details:
             switch indexPath.section {
@@ -952,26 +971,54 @@ extension CardViewController : UITableViewDelegate {
                                                NSSortDescriptor(key: "name", ascending: true),
                                                NSSortDescriptor(key: "myNumberOrder", ascending: true)]
                     request.predicate = predicate
+                    let identifier = "showSearch"
+                    let sender = ["request": request,
+                                  "title": artist.name!] as [String : Any]
+                    performSegue(withIdentifier: identifier, sender: sender)
                     
-                    performSegue(withIdentifier: "showSearch", sender: ["request": request,
-                                                                        "title": artist.name!])
                 case CardRelatedDataSection.parts.rawValue:
-                    ()
+                    guard let model = viewModel.partsViewModel,
+                        let cards = model.allObjects() as? [CMCard] else {
+                        return
+                    }
+                    cardVM = CardViewModel(withCardIndex: 0,
+                                           withCardIDs: cards.map({ $0.id! }),
+                                           withSortDescriptors: model.sortDescriptors)
                 case CardRelatedDataSection.variations.rawValue:
-                    ()
+                    guard let model = viewModel.variationsViewModel,
+                        let cards = model.allObjects() as? [CMCard] else {
+                        return
+                    }
+                    cardVM = CardViewModel(withCardIndex: 0,
+                                           withCardIDs: cards.map({ $0.id! }),
+                                           withSortDescriptors: model.sortDescriptors)
+                    
                 case CardRelatedDataSection.otherPrintings.rawValue:
-                    ()
+                    guard let model = viewModel.otherPrintingsViewModel,
+                        let cards = model.allObjects() as? [CMCard] else {
+                        return
+                    }
+                    cardVM = CardViewModel(withCardIndex: 0,
+                                           withCardIDs: cards.map({ $0.id! }),
+                                           withSortDescriptors: model.sortDescriptors)
                 default:
                     ()
                 }
-                
-                
-                
             default:
                 ()
             }
         default:
             ()
+        }
+        
+        if let cardVM = cardVM {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            
+            if let dest = storyboard.instantiateViewController(withIdentifier: "CardViewController") as? CardViewController,
+                let navigationController = navigationController {
+                dest.viewModel = cardVM
+                navigationController.pushViewController(dest, animated: true)
+            }
         }
     }
 }

@@ -1688,7 +1688,7 @@
         <!--Card View Controller-->
         <scene sceneID="dYq-zF-hTQ">
             <objects>
-                <viewController automaticallyAdjustsScrollViewInsets="NO" id="v6L-wJ-qRt" customClass="CardViewController" customModule="ManaGuide" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CardViewController" automaticallyAdjustsScrollViewInsets="NO" id="v6L-wJ-qRt" customClass="CardViewController" customModule="ManaGuide" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="tRB-T4-B73"/>
                         <viewControllerLayoutGuide type="bottom" id="tqU-jq-t3l"/>
@@ -2067,9 +2067,6 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
-                                        <connections>
-                                            <segue destination="v6L-wJ-qRt" kind="show" identifier="showCard" id="auv-jr-rj4"/>
-                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -2113,7 +2110,6 @@
                         <outlet property="contentSegmentedControl" destination="2bC-Vj-fNr" id="ozL-jl-Es4"/>
                         <outlet property="tableView" destination="XTg-F2-G7x" id="zcJ-OQ-Zvg"/>
                         <segue destination="t1B-qF-FHV" kind="show" identifier="showSearch" id="whl-Hr-bZH"/>
-                        <segue destination="aOj-40-y9v" kind="show" identifier="showSet" id="xMx-O9-Y4N"/>
                         <segue destination="AXD-UP-8RO" kind="presentation" identifier="showLogin" id="Vbm-cg-ye0"/>
                     </connections>
                 </viewController>
@@ -2450,7 +2446,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Vbm-cg-ye0"/>
-        <segue reference="jVZ-a8-OYH"/>
+        <segue reference="hIm-Gn-rvG"/>
         <segue reference="lLZ-BR-fAo"/>
         <segue reference="Mbq-CH-LY8"/>
         <segue reference="whl-Hr-bZH"/>
