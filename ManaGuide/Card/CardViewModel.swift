@@ -43,10 +43,7 @@ enum CardImageSection : Int {
 enum CardDetailsSection : Int {
     case mainData
     case set
-    case artist
-    case parts
-    case variations
-    case otherPrintings
+    case relatedData
     case rulings
     case legalities
     case otherDetails
@@ -56,10 +53,7 @@ enum CardDetailsSection : Int {
         // Use Internationalization, as appropriate.
         case .mainData: return "Main Data"
         case .set: return "Set"
-        case .artist: return "Artist"
-        case .parts: return "Faces, Tokens, & Other Parts"
-        case .variations: return "Variations"
-        case .otherPrintings: return "Other Printings"
+        case .relatedData: return "Related Data"
         case .rulings: return "Rulings"
         case .legalities: return "Legalities"
         case .otherDetails: return "Other Details"
@@ -67,7 +61,28 @@ enum CardDetailsSection : Int {
     }
     
     static var count: Int {
-        return 9
+        return 6
+    }
+}
+
+enum CardRelatedDataSection : Int {
+    case artist
+    case parts
+    case variations
+    case otherPrintings
+    
+    var description : String {
+        switch self {
+        // Use Internationalization, as appropriate.
+            case .artist: return "Artist"
+            case .parts: return "Faces, Tokens, & Other Parts"
+            case .variations: return "Variations"
+            case .otherPrintings: return "Other Printings"
+        }
+    }
+    
+    static var count: Int {
+        return 4
     }
 }
 
@@ -122,7 +137,7 @@ enum CardOtherDetailsSection : Int {
 class CardViewModel: BaseSearchViewModel {
     // MARK: Variables
     var cardIndex = 0
-    var cardViewIncremented = false
+    var cardRelatedDataLoaded = false
     var content: CardContent = .card
     var faceOrder = 0
     var flipAngle = CGFloat(0)
@@ -142,7 +157,7 @@ class CardViewModel: BaseSearchViewModel {
         let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
         request.predicate = NSPredicate(format: "id IN %@",
                                         cardIDs)
-        request.sortDescriptors = sortDescriptors
+        request.sortDescriptors = sd
         fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
         reloadRelatedCards()
     }
@@ -159,31 +174,35 @@ class CardViewModel: BaseSearchViewModel {
             rows = 1
             
         case .details:
-            switch section {
-            case CardDetailsSection.mainData.rawValue:
-                rows = cardMainDetails().count
-
-            case CardDetailsSection.rulings.rawValue:
-                if let rulingsSet = card.cardRulings,
-                    let rulings = rulingsSet.allObjects as? [CMCardRuling] {
-                    rows = rulings.count >= 1 ? rulings.count : 1
+            if cardRelatedDataLoaded {
+                switch section {
+                case CardDetailsSection.mainData.rawValue:
+                    rows = cardMainDetails().count
+                case CardDetailsSection.relatedData.rawValue:
+                    rows = CardRelatedDataSection.count
+                case CardDetailsSection.rulings.rawValue:
+                    if let rulingsSet = card.cardRulings,
+                        let rulings = rulingsSet.allObjects as? [CMCardRuling] {
+                        rows = rulings.count >= 1 ? rulings.count : 1
+                    }
+                case CardDetailsSection.legalities.rawValue:
+                    if let cardLegalitiesSet = card.cardLegalities,
+                        let cardLegalities = cardLegalitiesSet.allObjects as? [CMCardLegality] {
+                        rows = cardLegalities.count >= 1 ? cardLegalities.count : 1
+                    }
+                case CardDetailsSection.otherDetails.rawValue:
+                    rows = CardOtherDetailsSection.count
+                default:
+                    rows = 1
                 }
-            case CardDetailsSection.legalities.rawValue:
-                if let cardLegalitiesSet = card.cardLegalities,
-                    let cardLegalities = cardLegalitiesSet.allObjects as? [CMCardLegality] {
-                    rows = cardLegalities.count >= 1 ? cardLegalities.count : 1
-                }
-            case CardDetailsSection.otherDetails.rawValue:
-                rows = CardOtherDetailsSection.count
-            default:
+            } else {
                 rows = 1
             }
-            
         case .store:
             guard let storePricing = card.tcgplayerStorePricing,
                 let suppliersSet = storePricing.suppliers,
                 let suppliers = suppliersSet.allObjects as? [CMStoreSupplier] else {
-                return rows
+                return 1
             }
             rows = suppliers.count + 1
         }
@@ -262,7 +281,11 @@ class CardViewModel: BaseSearchViewModel {
         case .card:
             sections = CardImageSection.count
         case .details:
-            sections = CardDetailsSection.count
+            if cardRelatedDataLoaded {
+                sections = CardDetailsSection.count
+            } else {
+                sections = 1
+            }
         case .store:
             sections = 1
         }
@@ -278,26 +301,8 @@ class CardViewModel: BaseSearchViewModel {
             switch section {
             case CardDetailsSection.set.rawValue:
                 headerTitle = CardDetailsSection.set.description
-            case CardDetailsSection.artist.rawValue:
-                headerTitle = CardDetailsSection.artist.description
-            case CardDetailsSection.parts.rawValue:
-                headerTitle = CardDetailsSection.parts.description
-                let count = numberOfParts()
-                if count > 0 {
-                    headerTitle?.append(": \(count)")
-                }
-            case CardDetailsSection.variations.rawValue:
-                headerTitle = CardDetailsSection.variations.description
-                let count = numberOfVariations()
-                if count > 0 {
-                    headerTitle?.append(": \(count)")
-                }
-            case CardDetailsSection.otherPrintings.rawValue:
-                headerTitle = CardDetailsSection.otherPrintings.description
-                let count = numberOfOtherPrintings()
-                if count > 0 {
-                    headerTitle?.append(": \(count)")
-                }
+            case CardDetailsSection.relatedData.rawValue:
+                headerTitle = CardDetailsSection.relatedData.description
             case CardDetailsSection.rulings.rawValue:
                 headerTitle = CardDetailsSection.rulings.description
                 let count = numberOfRulings()
@@ -665,8 +670,8 @@ class CardViewModel: BaseSearchViewModel {
     }
 
     // MARK: Firebase methods
-    func toggleCardFavorite(firstAttempt: Bool) {
-        let completion = { () -> Void in
+    func toggleCardFavorite(firstAttempt: Bool)  -> Promise<Void> {
+        let promise = Promise<Void> { seal in
             guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard else {
                 fatalError()
             }
@@ -704,31 +709,42 @@ class CardViewModel: BaseSearchViewModel {
                 }
                 
             }) { (error, committed, snapshot) in
-                if committed {
-                    if favorite {
-                        user.addToFavorites(card)
-                    } else {
-                        user.removeFromFavorites(card)
-                    }
-                    
-                    ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                        try! backgroundContext.save()
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.FavoriteToggled),
-                                                        object: nil,
-                                                        userInfo: nil)
-                    }
+                if let error = error {
+                    seal.reject(error)
                 } else {
-                    // retry again, if we were aborted from above
-                    self.toggleCardFavorite(firstAttempt: false)
+                    if committed {
+                        if favorite {
+                            user.addToFavorites(card)
+                        } else {
+                            user.removeFromFavorites(card)
+                        }
+                        
+                        ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                            try! backgroundContext.save()
+                            seal.fulfill(())
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.FavoriteToggled),
+                                                            object: nil,
+                                                            userInfo: nil)
+                        }
+                    } else {
+                        // retry again, if we were aborted from above
+                        firstly {
+                            self.toggleCardFavorite(firstAttempt: false)
+                        }.done {
+                            seal.fulfill(())
+                        }.catch { error in
+                            seal.reject(error)
+                        }
+                    }
                 }
             }
         }
         
-        saveCardData(firstAttempt: true, completion: completion)
+        return saveCardData(firstAttempt: true, completion: promise)
     }
     
-    func incrementCardViews(firstAttempt: Bool) {
-        let completion = { () -> Void in
+    func incrementCardViews(firstAttempt: Bool) -> Promise<Void> {
+        let promise = Promise<Void> { seal in
             guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard else {
                 fatalError()
             }
@@ -754,33 +770,44 @@ class CardViewModel: BaseSearchViewModel {
                 }
                 
             }) { (error, committed, snapshot) in
-                if committed {
-                    guard let snapshot = snapshot else {
-                        return
-                    }
-                    let fcard = FCCard(snapshot: snapshot)
-                    
-                    card.firebaseViews = Int64(fcard.views == nil ? 1 : fcard.views!)
-                    
-                    ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                        try! backgroundContext.save()
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardViewsUpdated),
-                                                        object: nil,
-                                                        userInfo: ["card": card])
-                    }
-                    
+                if let error = error {
+                    seal.reject(error)
                 } else {
-                    // retry again, if we were aborted from above
-                    self.incrementCardViews(firstAttempt: false)
+                    if committed {
+                        guard let snapshot = snapshot else {
+                            return
+                        }
+                        let fcard = FCCard(snapshot: snapshot)
+                        
+                        card.firebaseViews = Int64(fcard.views == nil ? 1 : fcard.views!)
+                        
+                        ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                            try! backgroundContext.save()
+                            seal.fulfill(())
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardViewsUpdated),
+                                                            object: nil,
+                                                            userInfo: ["card": card])
+                        }
+                        
+                    } else {
+                        // retry again, if we were aborted from above
+                        firstly {
+                            self.incrementCardViews(firstAttempt: false)
+                        }.done {
+                            seal.fulfill(())
+                        }.catch { error in
+                            seal.reject(error)
+                        }
+                    }
                 }
             }
         }
         
-        saveCardData(firstAttempt: true, completion: completion)
+        return saveCardData(firstAttempt: true, completion: promise)
     }
 
-    func updateCardRatings(rating: Double, firstAttempt: Bool) {
-        let completion = { () -> Void in
+    func updateCardRatings(rating: Double, firstAttempt: Bool) -> Promise<Void> {
+        let promise = Promise<Void> { seal in
             guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard else {
                 fatalError()
             }
@@ -824,130 +851,177 @@ class CardViewModel: BaseSearchViewModel {
                 }
                 
             }) { (error, committed, snapshot) in
-                if committed {
-                    guard let snapshot = snapshot else {
-                        return
-                    }
-                    let fcard = FCCard(snapshot: snapshot)
-                    
-                    card.firebaseRating = fcard.rating == nil ? rating : fcard.rating!
-                    card.firebaseRatings = fcard.ratings == nil ? Int32(1) : Int32(fcard.ratings!.count)
-                    
-                    ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                        try! backgroundContext.save()
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
-                                                        object: nil,
-                                                        userInfo: nil)
+                if let error = error {
+                    seal.reject(error)
+                } else {
+                    if committed {
+                        guard let snapshot = snapshot else {
+                            return
+                        }
+                        let fcard = FCCard(snapshot: snapshot)
                         
-                        self.updateUserRatings(rating: rating, firstAttempt: true)
-                    }
-                    
-                } else {
-                    // retry again, if we were aborted from above
-                    self.updateCardRatings(rating: rating, firstAttempt: false)
-                }
-            }
-        }
-        
-        saveCardData(firstAttempt: true, completion: completion)
-    }
-    
-    func updateUserRatings(rating: Double, firstAttempt: Bool) {
-        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
-            fatalError()
-        }
-        
-        guard let fbUser = Auth.auth().currentUser,
-            let user = ManaKit.sharedInstance.findObject("CMUser",
-                                                         objectFinder: ["id": fbUser.uid as AnyObject],
-                                                         createIfNotFound: false) as? CMUser,
-            let id = card.firebaseID else {
-                return
-        }
-        let userRef = Database.database().reference().child("users").child(fbUser.uid).child("ratedCards")
-        
-        userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-            if var post = currentData.value as? [String : Double] {
-                post[id] = rating
-                
-                // Set value and report transaction success
-                currentData.value = post
-                return TransactionResult.success(withValue: currentData)
-                
-            } else {
-                if firstAttempt {
-                    return TransactionResult.abort()
-                } else {
-                    userRef.setValue([id: rating])
-                    return TransactionResult.success(withValue: currentData)
-                }
-            }
-            
-        }) { (error, committed, snapshot) in
-            if committed {
-                if let snapshot = snapshot,
-                    let ratedCards = snapshot.value as? [String: Double] {
-                    
-                    for (k,v) in ratedCards {
-                        if let c = ManaKit.sharedInstance.findObject("CMCard",
-                                                                  objectFinder: ["firebaseID": k as AnyObject],
-                                                                  createIfNotFound: false) as? CMCard,
-                            let cardRating = ManaKit.sharedInstance.findObject("CMCardRating",
-                                                                           objectFinder: ["user.id": user.id! as AnyObject,
-                                                                                          "card.id": k as AnyObject],
-                                                                           createIfNotFound: true) as? CMCardRating {
-                            cardRating.card = c
-                            cardRating.user = user
-                            cardRating.rating = v
-                            user.addToRatings(cardRating)
+                        card.firebaseRating = fcard.rating == nil ? rating : fcard.rating!
+                        card.firebaseRatings = fcard.ratings == nil ? Int32(1) : Int32(fcard.ratings!.count)
+                        
+                        ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                            try! backgroundContext.save()
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
+                                                            object: nil,
+                                                            userInfo: nil)
+                            
+                            firstly {
+                                self.updateUserRatings(rating: rating, firstAttempt: true)
+                            }.done {
+                                seal.fulfill(())
+                            }.catch { error in
+                                    seal.reject(error)
+                            }
+                        }
+                        
+                    } else {
+                        // retry again, if we were aborted from above
+                        firstly {
+                            self.updateCardRatings(rating: rating, firstAttempt: false)
+                        }.done {
+                            seal.fulfill(())
+                        }.catch { error in
+                            seal.reject(error)
                         }
                     }
+                }
+            }
+        }
+        
+        return saveCardData(firstAttempt: true, completion: promise)
+    }
+    
+    func updateUserRatings(rating: Double, firstAttempt: Bool) -> Promise<Void> {
+        return Promise { seal in
+            guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+                fatalError()
+            }
+            
+            guard let fbUser = Auth.auth().currentUser,
+                let user = ManaKit.sharedInstance.findObject("CMUser",
+                                                             objectFinder: ["id": fbUser.uid as AnyObject],
+                                                             createIfNotFound: false) as? CMUser,
+                let id = card.firebaseID else {
+                    return
+            }
+            let userRef = Database.database().reference().child("users").child(fbUser.uid).child("ratedCards")
+            
+            userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+                if var post = currentData.value as? [String : Double] {
+                    post[id] = rating
                     
-                    ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                        try! backgroundContext.save()
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
-                                                        object: nil,
-                                                        userInfo: nil)
+                    // Set value and report transaction success
+                    currentData.value = post
+                    return TransactionResult.success(withValue: currentData)
+                    
+                } else {
+                    if firstAttempt {
+                        return TransactionResult.abort()
+                    } else {
+                        userRef.setValue([id: rating])
+                        return TransactionResult.success(withValue: currentData)
                     }
                 }
-            } else {
-                // retry again, if we were aborted from above
-                self.updateUserRatings(rating: rating, firstAttempt: false)
+                
+            }) { (error, committed, snapshot) in
+                if let error = error {
+                    seal.reject(error)
+                } else {
+                    if committed {
+                        if let snapshot = snapshot,
+                            let ratedCards = snapshot.value as? [String: Double] {
+                            
+                            for (k,v) in ratedCards {
+                                if let c = ManaKit.sharedInstance.findObject("CMCard",
+                                                                          objectFinder: ["firebaseID": k as AnyObject],
+                                                                          createIfNotFound: false) as? CMCard,
+                                    let cardRating = ManaKit.sharedInstance.findObject("CMCardRating",
+                                                                                   objectFinder: ["user.id": user.id! as AnyObject,
+                                                                                                  "card.id": k as AnyObject],
+                                                                                   createIfNotFound: true) as? CMCardRating {
+                                    cardRating.card = c
+                                    cardRating.user = user
+                                    cardRating.rating = v
+                                    user.addToRatings(cardRating)
+                                }
+                            }
+                            
+                            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                                try! backgroundContext.save()
+                                seal.fulfill(())
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
+                                                                object: nil,
+                                                                userInfo: nil)
+                            }
+                        }
+                    } else {
+                        // retry again, if we were aborted from above
+                        firstly {
+                            self.updateUserRatings(rating: rating, firstAttempt: false)
+                        }.done {
+                            seal.fulfill(())
+                        }.catch { error in
+                            seal.reject(error)
+                        }
+                    }
+                }
             }
         }
     }
 
-    private func saveCardData(firstAttempt: Bool, completion: @escaping () -> Void) {
-        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
-            fatalError()
-        }
-        let ref = Database.database().reference().child("cards").child(card.firebaseID!)
-        
-        ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-            if var post = currentData.value as? [String : Any] {
-                for (k,v) in self.firebaseCardData() {
-                    post[k] = v
-                }
-                
-                // Set value and report transaction success
-                currentData.value = post
-                return TransactionResult.success(withValue: currentData)
-                
-            } else {
-                if firstAttempt {
-                    return TransactionResult.abort()
-                } else {
-                    ref.setValue(self.firebaseCardData())
-                    return TransactionResult.success(withValue: currentData)
-                }
+    private func saveCardData(firstAttempt: Bool, completion: Promise<Void>) -> Promise<Void> {
+        return Promise { seal in
+            guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+                fatalError()
             }
+            let ref = Database.database().reference().child("cards").child(card.firebaseID!)
             
-        }) { (error, committed, snapshot) in
-            if committed {
-                completion()
-            } else {
-                // retry again, if we were aborted from above
-                self.saveCardData(firstAttempt: false, completion: completion)
+            ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+                if var post = currentData.value as? [String : Any] {
+                    for (k,v) in self.firebaseCardData() {
+                        post[k] = v
+                    }
+                    
+                    // Set value and report transaction success
+                    currentData.value = post
+                    return TransactionResult.success(withValue: currentData)
+                    
+                } else {
+                    if firstAttempt {
+                        return TransactionResult.abort()
+                    } else {
+                        ref.setValue(self.firebaseCardData())
+                        return TransactionResult.success(withValue: currentData)
+                    }
+                }
+                
+            }) { (error, committed, snapshot) in
+                if let error = error {
+                    seal.reject(error)
+                } else {
+                    if committed {
+                        firstly {
+                            completion
+                        }.done {
+                            seal.fulfill(())
+                        }.catch { error in
+                            seal.reject(error)
+                        }
+                    } else {
+                        // retry again, if we were aborted from above
+                        firstly {
+                            self.saveCardData(firstAttempt: false, completion: completion)
+                        }.done {
+                            seal.fulfill(())
+                        }.catch { error in
+                            seal.reject(error)
+                        }
+                    }
+                }
             }
         }
     }

@@ -11,7 +11,7 @@ import ManaKit
 import PromiseKit
 
 protocol CardGridTableViewCellDelegate : NSObjectProtocol {
-    func showCard(identifier: String, cardIndex: Int, cardIDs: [String])
+    func showCard(identifier: String, cardIndex: Int, cardIDs: [String], sorters: [NSSortDescriptor]?)
 }
 
 class CardGridTableViewCell: UITableViewCell {
@@ -160,6 +160,7 @@ extension CardGridTableViewCell : UICollectionViewDelegate {
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         delegate?.showCard(identifier: identifier,
                            cardIndex: cardIndex,
-                           cardIDs: cards.map({ $0.id! }))
+                           cardIDs: cards.map({ $0.id! }),
+                           sorters: viewModel.sortDescriptors)
     }
 }

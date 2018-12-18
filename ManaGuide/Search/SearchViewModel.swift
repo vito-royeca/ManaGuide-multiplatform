@@ -27,6 +27,7 @@ class SearchViewModel: BaseSearchViewModel {
         super.init()
         
         self.request = request as? NSFetchRequest<NSManagedObject>
+        self.sortDescriptors = request?.sortDescriptors
         self.title = title
         self.mode = mode
     }

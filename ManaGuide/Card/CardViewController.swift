@@ -29,7 +29,6 @@ class CardViewController: BaseSearchViewController {
     // MARK: Actions
     @IBAction func contentAction(_ sender: UISegmentedControl) {
         guard let viewModel = viewModel as? CardViewModel,
-            let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0)) as? CMCard,
             let content = CardContent(rawValue: contentSegmentedControl.selectedSegmentIndex) else {
             return
         }
@@ -37,31 +36,20 @@ class CardViewController: BaseSearchViewController {
         viewModel.content = content
         title = content.description
         
+        tableView.reloadData()
+        tableView.scrollToRow(at: IndexPath(row: 0, section: 0),
+                              at: .top,
+                              animated: true)
+        
         switch viewModel.content {
         case .card:
-            tableView.reloadData()
-            tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
-            
+            ()
         case .details:
-            tableView.reloadData()
-            tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
-            
-            if !viewModel.cardViewIncremented {
-                viewModel.cardViewIncremented = true
-                incrementCardViews()
+            if !viewModel.cardRelatedDataLoaded {
+                reloadRelatedData()
             }
-            
         case .store:
-            MBProgressHUD.showAdded(to: tableView, animated: true)
-            firstly {
-                ManaKit.sharedInstance.fetchTCGPlayerStorePricing(card: card)
-            }.done {
-                MBProgressHUD.hide(for: self.tableView, animated: true)
-                self.tableView.reloadData()
-            }.catch { error in
-                MBProgressHUD.hide(for: self.tableView, animated: true)
-                self.tableView.reloadData()
-            }
+            reloadCardPricing()
         }
     }
     
@@ -126,18 +114,9 @@ class CardViewController: BaseSearchViewController {
         tableView.register(UINib(nibName: "StoreTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: StoreTableViewCell.reuseIdentifier)
-
+        
         if let viewModel = viewModel as? CardViewModel {
             title = viewModel.content.description
-            
-            firstly {
-                when(fulfilled: [viewModel.fetchData(),
-                                 viewModel.loadCardData()])
-            }.done {
-                
-            }.catch { error in
-                print("\(error)")
-            }
         }
     }
     
@@ -175,6 +154,18 @@ class CardViewController: BaseSearchViewController {
                                                selector: #selector(changeNotification(_:)),
                                                name: NSNotification.Name.NSManagedObjectContextObjectsDidChange,
                                                object: nil)
+        
+        if let viewModel = viewModel as? CardViewModel {
+            if viewModel.mode == .loading {
+                firstly {
+                    viewModel.loadCardData()
+                }.done {
+                    viewModel.mode = .resultsFound
+                }.catch { error in
+                    print("\(error)")
+                }
+            }
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -206,15 +197,13 @@ class CardViewController: BaseSearchViewController {
             guard let dest = segue.destination as? CardViewController,
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
-                let cardIDs = dict["cardIDs"] as? [String]else {
+                let cardIDs = dict["cardIDs"] as? [String] else {
                 return
             }
             
             dest.viewModel = CardViewModel(withCardIndex: cardIndex,
                                            withCardIDs: cardIDs,
-                                           withSortDescriptors: [NSSortDescriptor(key: "set.releaseDate", ascending: false),
-                                                                 NSSortDescriptor(key: "name", ascending: true),
-                                                                 NSSortDescriptor(key: "myNumberOrder", ascending: true)])
+                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
             
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
@@ -227,9 +216,7 @@ class CardViewController: BaseSearchViewController {
             
             dest.viewModel = CardViewModel(withCardIndex: cardIndex,
                                            withCardIDs: cardIDs,
-                                           withSortDescriptors: [NSSortDescriptor(key: "set.releaseDate", ascending: false),
-                                                                 NSSortDescriptor(key: "name", ascending: true),
-                                                                 NSSortDescriptor(key: "myNumberOrder", ascending: true)])
+                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
             
         } else if segue.identifier == "showSearch" {
             guard let dest = segue.destination as? SearchViewController,
@@ -309,184 +296,195 @@ class CardViewController: BaseSearchViewController {
             
         case .details:
             tableView.separatorStyle = .singleLine
-            
-            switch indexPath.section {
-            case CardDetailsSection.mainData.rawValue:
-                let cardMainDetails = viewModel.cardMainDetails()
-                for (k,v) in cardMainDetails[indexPath.row] {
-                    cell = createMainDataCell(forCard: v, inRow: k.rawValue)
+
+            if !viewModel.cardRelatedDataLoaded {
+                guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
+                    fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
                 }
-                
-            case CardDetailsSection.set.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardSetTableViewCell.reuseIdentifier,
-                                                            for: indexPath) as? CardSetTableViewCell else {
-                    fatalError("\(CardSetTableViewCell.reuseIdentifier) is nil")
-                }
-                c.card = card
+                c.mode = .loading
                 cell = c
-                
-            case CardDetailsSection.artist.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
-                    let label = c.textLabel else {
-                    fatalError("BasicCell is nil")
-                }
-                
-                if let artist = card.artist {
-                    label.adjustsFontSizeToFitWidth = true
-                    label.text = artist.name
-                } else {
-                    label.text = " "
-                }
-                label.textAlignment = .left
-                c.selectionStyle = .default
-                c.accessoryType = .disclosureIndicator
-                cell = c
-                
-            case CardDetailsSection.parts.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
-                                                            for: indexPath) as? CardGridTableViewCell else {
-                    fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
-                }
-                setupCardGridCell(cell: c, withViewModel: viewModel.partsViewModel!)
-                cell = c
-                
-            case CardDetailsSection.variations.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
-                                                            for: indexPath) as? CardGridTableViewCell else {
-                    fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
-                }
-                setupCardGridCell(cell: c, withViewModel: viewModel.variationsViewModel!)
-                cell = c
-                
-            case CardDetailsSection.otherPrintings.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
-                                                            for: indexPath) as? CardGridTableViewCell else {
-                    fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
-                }
-                setupCardGridCell(cell: c, withViewModel: viewModel.otherPrintingsViewModel!)
-                cell = c
-                
-            case CardDetailsSection.rulings.rawValue:
-                if viewModel.numberOfRulings() == 0 {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
-                                                                for: indexPath) as? CardGridTableViewCell else {
-                        fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
+            } else {
+                switch indexPath.section {
+                case CardDetailsSection.mainData.rawValue:
+                    let cardMainDetails = viewModel.cardMainDetails()
+                    for (k,v) in cardMainDetails[indexPath.row] {
+                        cell = createMainDataCell(forCard: v, inRow: k.rawValue)
                     }
-                    let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-                    request.predicate = NSPredicate(format: "name = nil")
-                    setupCardGridCell(cell: c,
-                                      withViewModel: SearchViewModel(withRequest: nil,
-                                                                     andTitle: nil, andMode:
-                                        .noResultsFound))
-                    cell = c
-                } else {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier,
-                                                                for: indexPath) as? DynamicHeightTableViewCell else {
-                        fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
+                    
+                case CardDetailsSection.set.rawValue:
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardSetTableViewCell.reuseIdentifier,
+                                                                for: indexPath) as? CardSetTableViewCell else {
+                        fatalError("\(CardSetTableViewCell.reuseIdentifier) is nil")
                     }
-                    c.dynamicLabel.attributedText = viewModel.rulingText(inRow: indexPath.row,
-                                                                         pointSize: c.dynamicLabel.font.pointSize)
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
+                    c.card = card
                     cell = c
-                }
-            case CardDetailsSection.legalities.rawValue:
-                if viewModel.numberOfLegalities() == 0 {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
-                                                                for: indexPath) as? CardGridTableViewCell else {
-                        fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
-                    }
-                    let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-                    request.predicate = NSPredicate(format: "name = nil")
-                    setupCardGridCell(cell: c,
-                                      withViewModel: SearchViewModel(withRequest: nil,
-                                                                     andTitle: nil,
-                                                                     andMode: .noResultsFound))
-                    cell = c
-                } else {
+                case CardDetailsSection.relatedData.rawValue:
                     guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
                         let label = c.textLabel,
-                        let detailTextLabel = c.detailTextLabel,
-                        let cardLegalitiesSet = card.cardLegalities,
-                        let cardLegalities = cardLegalitiesSet.allObjects as? [CMCardLegality] else {
+                        let detailTextLabel = c.detailTextLabel else {
                         fatalError("RightDetailCell is nil")
                     }
                     
-                    if cardLegalities.count > 0 {
-                        let orderedCardLegalities = cardLegalities.sorted(by: {(a: CMCardLegality, b: CMCardLegality) -> Bool in
-                            return a.format!.name! < b.format!.name!
-                        })
-                        let cardLegality = orderedCardLegalities[indexPath.row]
-                        label.text = cardLegality.format!.name
-                        detailTextLabel.text = cardLegality.legality!.name
-                    }
-                    c.selectionStyle = .none
-                    c.accessoryType = .none
-                    cell = c
-                }
-            case CardDetailsSection.otherDetails.rawValue:
-                guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
-                    let label = c.textLabel,
-                    let detailTextLabel = c.detailTextLabel,
-                    let otherDetails = CardOtherDetailsSection(rawValue: indexPath.row) else {
-                    fatalError("RightDetailCell is nil")
-                }
-                label.text = otherDetails.description
-                detailTextLabel.adjustsFontSizeToFitWidth = true
-                detailTextLabel.text = viewModel.textOf(otherDetails: otherDetails)
-                
-                c.selectionStyle = .none
-                c.accessoryType = .none
-                cell = c
-                
-            default:
-                ()
-            }
-            
-        case .store:
-            guard let storePricing = card.tcgplayerStorePricing,
-                let suppliersSet = storePricing.suppliers,
-                let suppliers = suppliersSet.allObjects as? [CMStoreSupplier] else {
-                return UITableViewCell(frame: CGRect.zero)
-            }
-            let count = suppliers.count
-            
-            if count == 0 {
-                if storePricing.lastUpdate == nil {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier,
-                                                                for: indexPath) as? DynamicHeightTableViewCell else {
-                        fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
-                    }
-                    c.dynamicLabel.attributedText = NSAttributedString(html: "<html><center>Loading...</center></html>")
-                    c.dynamicLabel.isUserInteractionEnabled = false
-                    if let taps = c.dynamicLabel.gestureRecognizers {
-                        for tap in taps {
-                            c.dynamicLabel.removeGestureRecognizer(tap)
+                    switch indexPath.row {
+                    case CardRelatedDataSection.artist.rawValue:
+                        label.text = CardRelatedDataSection.artist.description
+                        if let artist = card.artist {
+                            detailTextLabel.adjustsFontSizeToFitWidth = true
+                            detailTextLabel.text = artist.name
+                        } else {
+                            detailTextLabel.text = " "
                         }
+                        c.selectionStyle = .default
+                        c.accessoryType = .disclosureIndicator
+                        cell = c
+
+                    case CardRelatedDataSection.parts.rawValue:
+                        label.text = CardRelatedDataSection.parts.description
+                        if viewModel.numberOfParts() > 0 {
+                            detailTextLabel.text = "\(viewModel.numberOfParts())"
+                            c.selectionStyle = .default
+                            c.accessoryType = .disclosureIndicator
+                        } else {
+                            detailTextLabel.text = "None"
+                            c.selectionStyle = .none
+                            c.accessoryType = .none
+                        }
+                        cell = c
+
+                    case CardRelatedDataSection.variations.rawValue:
+                        label.text = CardRelatedDataSection.variations.description
+                        if viewModel.numberOfVariations() > 0 {
+                            detailTextLabel.text = "\(viewModel.numberOfVariations())"
+                            c.selectionStyle = .default
+                            c.accessoryType = .disclosureIndicator
+                        } else {
+                            detailTextLabel.text = "None"
+                            c.selectionStyle = .none
+                            c.accessoryType = .none
+                        }
+                        cell = c
+                        
+                    case CardRelatedDataSection.otherPrintings.rawValue:
+                        label.text = CardRelatedDataSection.otherPrintings.description
+                        if viewModel.numberOfOtherPrintings() > 0 {
+                            detailTextLabel.text = "\(viewModel.numberOfOtherPrintings())"
+                            c.selectionStyle = .default
+                            c.accessoryType = .disclosureIndicator
+                        } else {
+                            detailTextLabel.text = "None"
+                            c.selectionStyle = .none
+                            c.accessoryType = .none
+                        }
+                        cell = c
+                        
+                    default:
+                        ()
                     }
+                    
+                case CardDetailsSection.rulings.rawValue:
+                    if viewModel.numberOfRulings() == 0 {
+                        guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
+                                                                    for: indexPath) as? CardGridTableViewCell else {
+                            fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
+                        }
+                        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+                        request.predicate = NSPredicate(format: "name = nil")
+                        setupCardGridCell(cell: c,
+                                          withViewModel: SearchViewModel(withRequest: nil,
+                                                                         andTitle: nil, andMode:
+                                            .noResultsFound))
+                        cell = c
+                    } else {
+                        guard let c = tableView.dequeueReusableCell(withIdentifier: DynamicHeightTableViewCell.reuseIdentifier,
+                                                                    for: indexPath) as? DynamicHeightTableViewCell else {
+                            fatalError("\(DynamicHeightTableViewCell.reuseIdentifier) is nil")
+                        }
+                        c.dynamicLabel.attributedText = viewModel.rulingText(inRow: indexPath.row,
+                                                                             pointSize: c.dynamicLabel.font.pointSize)
+                        c.selectionStyle = .none
+                        c.accessoryType = .none
+                        cell = c
+                    }
+                case CardDetailsSection.legalities.rawValue:
+                    if viewModel.numberOfLegalities() == 0 {
+                        guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
+                                                                    for: indexPath) as? CardGridTableViewCell else {
+                            fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
+                        }
+                        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+                        request.predicate = NSPredicate(format: "name = nil")
+                        setupCardGridCell(cell: c,
+                                          withViewModel: SearchViewModel(withRequest: nil,
+                                                                         andTitle: nil,
+                                                                         andMode: .noResultsFound))
+                        cell = c
+                    } else {
+                        guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
+                            let imageView = c.imageView,
+                            let label = c.textLabel,
+                            let cardLegalitiesSet = card.cardLegalities,
+                            let cardLegalities = cardLegalitiesSet.allObjects as? [CMCardLegality] else {
+                                fatalError("BasicCell is nil")
+                        }
+                        
+                        if cardLegalities.count > 0 {
+                            let orderedCardLegalities = cardLegalities.sorted(by: {(a: CMCardLegality, b: CMCardLegality) -> Bool in
+                                return a.format!.name! < b.format!.name!
+                            })
+                            let cardLegality = orderedCardLegalities[indexPath.row]
+                            if cardLegality.legality!.name == "Legal" {
+                                imageView.image = UIImage.fontAwesomeIcon(name: .checkCircle,
+                                                                          style: .solid,
+                                                                          textColor: UIColor.green,
+                                                                          size: CGSize(width: 30, height: 30))
+                            } else {
+                                imageView.image = UIImage.fontAwesomeIcon(name: .timesCircle,
+                                                                          style: .solid,
+                                                                          textColor: UIColor.red,
+                                                                          size: CGSize(width: 30, height: 30))
+                            }
+                            label.text = cardLegality.format!.name
+                        }
+                        c.selectionStyle = .none
+                        c.accessoryType = .none
+                        cell = c
+                    }
+                case CardDetailsSection.otherDetails.rawValue:
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: "RightDetailCell"),
+                        let label = c.textLabel,
+                        let detailTextLabel = c.detailTextLabel,
+                        let otherDetails = CardOtherDetailsSection(rawValue: indexPath.row) else {
+                        fatalError("RightDetailCell is nil")
+                    }
+                    label.text = otherDetails.description
+                    detailTextLabel.adjustsFontSizeToFitWidth = true
+                    detailTextLabel.text = viewModel.textOf(otherDetails: otherDetails)
+                    
                     c.selectionStyle = .none
                     c.accessoryType = .none
                     cell = c
-                } else {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier,
-                                                                for: indexPath) as? SearchModeTableViewCell else {
-                        fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
-                    }
-                    cell = c
+                    
+                default:
+                    ()
+                }
+            }
+        
+        case .store:
+            switch viewModel.mode {
+            case .resultsFound:
+                guard let storePricing = card.tcgplayerStorePricing,
+                    let suppliersSet = storePricing.suppliers,
+                    let suppliers = suppliersSet.allObjects as? [CMStoreSupplier] else {
+                    fatalError("storePricing is nil")
                 }
                 
-            } else {
-                if indexPath.row <= count - 1 {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: "StoreCell") as? StoreTableViewCell,
-                        let storePricing = card.tcgplayerStorePricing,
-                        let suppliersSet = storePricing.suppliers,
-                        let suppliers = suppliersSet.allObjects as? [CMStoreSupplier] else {
-                        return UITableViewCell(frame: CGRect.zero)
+                if indexPath.row <= suppliers.count - 1 {
+                    guard let c = tableView.dequeueReusableCell(withIdentifier: StoreTableViewCell.reuseIdentifier) as? StoreTableViewCell else {
+                        fatalError("\(StoreTableViewCell.reuseIdentifier) is nil")
                     }
                     
                     c.delegate = self
                     c.display(suppliers[indexPath.row])
-                    
                     c.selectionStyle = .none
                     c.accessoryType = .none
                     cell = c
@@ -507,6 +505,12 @@ class CardViewController: BaseSearchViewController {
                     c.accessoryType = .none
                     cell = c
                 }
+            default:
+                guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
+                    fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
+                }
+                c.mode = viewModel.mode
+                cell = c
             }
         }
         
@@ -524,8 +528,6 @@ class CardViewController: BaseSearchViewController {
         }
         
         DispatchQueue.main.async {
-            MBProgressHUD.hide(for: self.view, animated: true)
-            
             switch viewModel.content {
             case .card:
                 self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
@@ -608,18 +610,28 @@ class CardViewController: BaseSearchViewController {
         ratingView.settings.fillMode = .full
         
         let nyAlertController = NYAlertViewController(nibName: nil, bundle: nil)
+        let confirmHandler = {  (action: NYAlertAction?) -> Void in
+            self.dismiss(animated: false, completion: nil)
+            
+            MBProgressHUD.showAdded(to: self.view, animated: true)
+            firstly {
+                viewModel.updateCardRatings(rating: ratingView.rating, firstAttempt: true)
+            }.done {
+                MBProgressHUD.hide(for: self.view, animated: true)
+            }.catch { error in
+                MBProgressHUD.hide(for: self.view, animated: true)
+                print("\(error)")
+            }
+        }
+        let cancelHandler = {  (action: NYAlertAction?) -> Void in
+            self.dismiss(animated: false, completion: nil)
+        }
         let confirmAction = NYAlertAction(title: "Ok",
                                           style: .default,
-                                          handler: {  (action: NYAlertAction?) -> Void in
-                                                    self.dismiss(animated: false, completion: nil)
-            
-                                                MBProgressHUD.showAdded(to: self.view, animated: true)
-                                                viewModel.updateCardRatings(rating: ratingView.rating, firstAttempt: true)
-        })
+                                          handler: confirmHandler)
         let cancelAction = NYAlertAction(title: "Cancel",
-                                         style: .default, handler:  {(action: NYAlertAction?) -> Void in
-            self.dismiss(animated: false, completion: nil)
-        })
+                                         style: .default,
+                                         handler:  cancelHandler)
 
         nyAlertController.title = "Rating"
         nyAlertController.message = rating > 0 ? "Update your rating for this card." : "Submit your rating for this card."
@@ -631,19 +643,20 @@ class CardViewController: BaseSearchViewController {
         self.present(nyAlertController, animated: true, completion: nil)
     }
     
-    func incrementCardViews() {
-        guard let viewModel = viewModel as? CardViewModel else {
-            fatalError()
-        }
-        viewModel.incrementCardViews(firstAttempt: true)
-    }
-    
     func toggleCardFavorite() {
         guard let viewModel = viewModel as? CardViewModel else {
             fatalError()
         }
         MBProgressHUD.showAdded(to: view, animated: true)
-        viewModel.toggleCardFavorite(firstAttempt: true)
+        firstly {
+            viewModel.toggleCardFavorite(firstAttempt: true)
+        }.done {
+            MBProgressHUD.hide(for: self.view, animated: true)
+        }.catch { error in
+            MBProgressHUD.hide(for: self.view, animated: true)
+            print("\(error)")
+        }
+        
     }
     
     @objc func handleLink(_ tapGesture: UITapGestureRecognizer) {
@@ -679,24 +692,13 @@ class CardViewController: BaseSearchViewController {
         }
     }
     
-    func setupCardGridCell(cell: CardGridTableViewCell, withViewModel model: SearchViewModel) {
-        let width = CGFloat(138)
-        let height = CGFloat(100)
-        
-        cell.delegate = self
-        cell.imageType = .artCrop
-        cell.animationOptions = .transitionCrossDissolve
-        cell.flowLayout.itemSize = CGSize(width: width, height: height)
-        cell.flowLayout.minimumInteritemSpacing = CGFloat(10)
-        cell.flowLayout.scrollDirection = .horizontal
-        
-        cell.viewModel = model
-        
+    func reloadRelatedData() {
         if let viewModel = viewModel as? CardViewModel {
             guard let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0)) as? CMCard else {
                 fatalError()
             }
             var models = [SearchViewModel]()
+            var promises = [Promise<Void>]()
             
             if let v = viewModel.partsViewModel,
                 v.mode == .loading {
@@ -714,23 +716,66 @@ class CardViewController: BaseSearchViewController {
             // pre-load related data
             let _ = card.cardRulings
             let _ = card.cardLegalities
-            
+
             if !models.isEmpty {
-                firstly {
-                    when(fulfilled: models.map { $0.fetchData() })
-                }.done {
-                    for v in models {
-                        v.mode = v.isEmpty() ? .noResultsFound : .resultsFound
-                    }
-                    cell.collectionView.reloadData()
-                }.catch { error in
-                    for v in models {
-                        v.mode = .error
-                    }
-                    cell.collectionView.reloadData()
+                promises.append(contentsOf: models.map { $0.fetchData() })
+            }
+            
+            firstly {
+                when(fulfilled: promises)
+            }.then {
+                viewModel.incrementCardViews(firstAttempt: true)
+            }.done {
+                for v in models {
+                    v.mode = v.isEmpty() ? .noResultsFound : .resultsFound
                 }
+                viewModel.cardRelatedDataLoaded = true
+                self.tableView.reloadData()
+            }.catch { error in
+                for v in models {
+                    v.mode = .error
+                }
+                self.tableView.reloadData()
             }
         }
+    }
+
+    func reloadCardPricing() {
+        guard let viewModel = viewModel as? CardViewModel,
+            let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
+
+        viewModel.mode = .loading
+        firstly {
+            ManaKit.sharedInstance.fetchTCGPlayerStorePricing(card: card)
+        }.done {
+            if let storePricing = card.tcgplayerStorePricing,
+                let suppliersSet = storePricing.suppliers,
+                let suppliers = suppliersSet.allObjects as? [CMStoreSupplier] {
+                viewModel.mode = suppliers.isEmpty ? .noResultsFound : .resultsFound
+            } else {
+                viewModel.mode = .error
+            }
+            self.tableView.reloadData()
+        }.catch { error in
+            viewModel.mode = .error
+            self.tableView.reloadData()
+        }
+    }
+
+    func setupCardGridCell(cell: CardGridTableViewCell, withViewModel model: SearchViewModel) {
+        let width = CGFloat(138)
+        let height = CGFloat(100)
+        
+        cell.delegate = self
+        cell.imageType = .artCrop
+        cell.animationOptions = .transitionCrossDissolve
+        cell.flowLayout.itemSize = CGSize(width: width, height: height)
+        cell.flowLayout.minimumInteritemSpacing = CGFloat(10)
+        cell.flowLayout.scrollDirection = .horizontal
+        cell.viewModel = model
+        cell.collectionView.reloadData()
     }
     
     func createMainDataCell(forCard card: CMCard, inRow row: Int) -> UITableViewCell {
@@ -812,29 +857,30 @@ extension CardViewController : UITableViewDelegate {
             }
             
         case .details:
-            switch indexPath.section {
-            case CardDetailsSection.set.rawValue:
-                height = CGFloat(56)
-            case CardDetailsSection.variations.rawValue,
-                 CardDetailsSection.parts.rawValue,
-                 CardDetailsSection.otherPrintings.rawValue:
-                height = CGFloat(100)
-            case CardDetailsSection.rulings.rawValue:
-                if viewModel.numberOfRulings() == 0 {
-                    height = CGFloat(100)
-                } else {
+            if viewModel.cardRelatedDataLoaded {
+                switch indexPath.section {
+                case CardDetailsSection.set.rawValue:
+                    height = CGFloat(56)
+                case CardDetailsSection.relatedData.rawValue:
+                    height = UITableView.automaticDimension
+                case CardDetailsSection.rulings.rawValue:
+                    if viewModel.numberOfRulings() == 0 {
+                        height = CGFloat(100)
+                    } else {
+                        height = UITableView.automaticDimension
+                    }
+                case CardDetailsSection.legalities.rawValue:
+                    if viewModel.numberOfLegalities() == 0 {
+                        height = CGFloat(100)
+                    } else {
+                        height = UITableView.automaticDimension
+                    }
+                default:
                     height = UITableView.automaticDimension
                 }
-            case CardDetailsSection.legalities.rawValue:
-                if viewModel.numberOfLegalities() == 0 {
-                    height = CGFloat(100)
-                } else {
-                    height = UITableView.automaticDimension
-                }
-            default:
-                height = UITableView.automaticDimension
+            } else {
+                height = tableView.frame.size.height / 3
             }
-            
         case .store:
             guard let storePricing = card.tcgplayerStorePricing,
                 let suppliersSet = storePricing.suppliers,
@@ -844,7 +890,7 @@ extension CardViewController : UITableViewDelegate {
             let count = suppliers.count
             
             if count == 0 {
-                height = UITableView.automaticDimension
+                height = tableView.frame.size.height / 3
             } else {
                 if indexPath.row <= count - 1 {
                     height = kStoreTableViewCellHeight
@@ -870,7 +916,7 @@ extension CardViewController : UITableViewDelegate {
         switch viewModel.content {
         case .details:
             switch indexPath.section {
-            case CardDetailsSection.artist.rawValue:
+            case CardDetailsSection.relatedData.rawValue:
                 path = indexPath
             default:
                 ()
@@ -891,22 +937,35 @@ extension CardViewController : UITableViewDelegate {
         switch viewModel.content {
         case .details:
             switch indexPath.section {
-            case CardDetailsSection.artist.rawValue:
-                guard let artist = card.artist else {
-                    return
+            case CardDetailsSection.relatedData.rawValue:
+                switch indexPath.row {
+                case CardRelatedDataSection.artist.rawValue:
+                    guard let artist = card.artist else {
+                        return
+                    }
+                    
+                    let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+                    let predicate = NSPredicate(format: "artist.name = %@",
+                                                artist.name!)
+                    
+                    request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
+                                               NSSortDescriptor(key: "name", ascending: true),
+                                               NSSortDescriptor(key: "myNumberOrder", ascending: true)]
+                    request.predicate = predicate
+                    
+                    performSegue(withIdentifier: "showSearch", sender: ["request": request,
+                                                                        "title": artist.name!])
+                case CardRelatedDataSection.parts.rawValue:
+                    ()
+                case CardRelatedDataSection.variations.rawValue:
+                    ()
+                case CardRelatedDataSection.otherPrintings.rawValue:
+                    ()
+                default:
+                    ()
                 }
                 
-                let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-                let predicate = NSPredicate(format: "artist.name = %@",
-                                            artist.name!)
                 
-                request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
-                                           NSSortDescriptor(key: "name", ascending: true),
-                                           NSSortDescriptor(key: "myNumberOrder", ascending: true)]
-                request.predicate = predicate
-                
-                performSegue(withIdentifier: "showSearch", sender: ["request": request,
-                                                                    "title": artist.name!])
                 
             default:
                 ()
@@ -962,9 +1021,12 @@ extension CardViewController : CardActionsTableViewCellDelegate {
 
 // MARK: CardGridTableViewCellDelegate
 extension CardViewController : CardGridTableViewCellDelegate {
-    func showCard(identifier: String, cardIndex: Int, cardIDs: [String]) {
-        let sender = ["cardIndex": cardIndex as Any,
+    func showCard(identifier: String, cardIndex: Int, cardIDs: [String], sorters: [NSSortDescriptor]?) {
+        var sender = ["cardIndex": cardIndex as Any,
                       "cardIDs": cardIDs]
+        if let sorters = sorters {
+            sender["sortDescriptors"] = sorters
+        }
         performSegue(withIdentifier: identifier, sender: sender)
     }
 }

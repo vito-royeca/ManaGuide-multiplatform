@@ -288,8 +288,8 @@ extension SearchViewController : UITableViewDelegate {
 
 // MARK: CardGridTableViewCellDelegate
 extension SearchViewController : CardGridTableViewCellDelegate {
-    func showCard(identifier: String, cardIndex: Int, cardIDs: [String]) {
-        let sender = ["cardIndex": cardIndex as Any,
+    func showCard(identifier: String, cardIndex: Int, cardIDs: [String], sorters: [NSSortDescriptor]?) {
+        var sender = ["cardIndex": cardIndex as Any,
                       "cardIDs": cardIDs]
         performSegue(withIdentifier: identifier, sender: sender)
     }
