@@ -75,15 +75,25 @@ class SpotlightManager: NSObject {
     }
     
     func createSpotlightItems() {
-        deletePreviousSpotlightItems()
+        var willCopy = true
+        
+        if let scryfallDate = UserDefaults.standard.string(forKey: ManaKit.Constants.ScryfallDateKey) {
+            if scryfallDate == ManaKit.Constants.ScryfallDate {
+                willCopy = false
+            }
+        }
+        
+        if willCopy {
+            deletePreviousSpotlightItems()
 
-        firstly {
-//            when(fulfilled: createSetItems(), createCardItems())
-            createCardItems()
-        }.done {
-            print("Spotlight indexing done.")
-        }.catch { error in
-            print("\(error)")
+            firstly {
+    //            when(fulfilled: createSetItems(), createCardItems())
+                createCardItems()
+            }.done {
+                print("Spotlight indexing done.")
+            }.catch { error in
+                print("\(error)")
+            }
         }
     }
     

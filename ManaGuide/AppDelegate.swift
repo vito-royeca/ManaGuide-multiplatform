@@ -27,16 +27,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         print("docsPath = \(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])")
 
-        
         // Firebase
         FirebaseApp.configure()
         Database.database().isPersistenceEnabled = true
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
-        
+
         // Facebook
         FBSDKApplicationDelegate.sharedInstance().application(application,
                                                                didFinishLaunchingWithOptions: launchOptions)
-        
+
         // Fabric
         Fabric.with([Crashlytics.self])
 

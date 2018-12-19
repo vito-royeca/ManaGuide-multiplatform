@@ -36,7 +36,7 @@ class LatestCardsTableViewCell: UITableViewCell {
         carousel.type = .linear
         carousel.isPagingEnabled = true
         carousel.currentItemIndex = 3
-        fetchData()
+//        fetchData()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -48,7 +48,11 @@ class LatestCardsTableViewCell: UITableViewCell {
     // MARK: Custom methods
     func startSlideShow() {
         setupCarousel()
-
+        
+        if viewModel.isEmpty() {
+            fetchData()
+        }
+        
         _latestCardsTimer = Timer.scheduledTimer(timeInterval: 60 * 5,
                                                  target: self,
                                                  selector: #selector(fetchData),
@@ -91,6 +95,7 @@ class LatestCardsTableViewCell: UITableViewCell {
             self.carousel.reloadData()
         }
     }
+    
     private func setupCarousel() {
         carousel.dataSource = self
         carousel.delegate = self
