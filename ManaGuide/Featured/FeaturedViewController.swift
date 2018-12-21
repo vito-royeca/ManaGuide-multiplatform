@@ -15,6 +15,7 @@ import PromiseKit
 class FeaturedViewController: BaseViewController {
 
     // MARK: Variables
+    let latestCardsViewModel  = LatestCardsViewModel()
     let latestSetsViewModel  = LatestSetsViewModel()
     let topRatedViewModel    = TopRatedViewModel()
     let topViewedViewModel   = TopViewedViewModel()
@@ -44,6 +45,7 @@ class FeaturedViewController: BaseViewController {
                                                name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
                                                object: nil)
         
+        latestCardsViewModel.mode = .loading
         latestSetsViewModel.mode = .loading
         topRatedViewModel.mode = .loading
         topViewedViewModel.mode = .loading
@@ -66,6 +68,9 @@ class FeaturedViewController: BaseViewController {
                                                          section: 0)) as? LatestCardsTableViewCell {
             cell.stopSlideShow()
         }
+        
+        topRatedViewModel.stopMonitoring()
+        topViewedViewModel.stopMonitoring()
     }
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
@@ -117,6 +122,20 @@ class FeaturedViewController: BaseViewController {
 
     // MARK: Custom methods
     func fetchData() {
+        if latestCardsViewModel.mode == .loading {
+            firstly {
+                latestCardsViewModel.fetchData()
+            }.done {
+                self.latestCardsViewModel.mode = self.latestCardsViewModel.isEmpty() ? .noResultsFound : .resultsFound
+                self.tableView.reloadRows(at: [IndexPath(row: FeaturedSection.latestCards.rawValue,
+                                                         section: 0)], with: .automatic)
+            }.catch { error in
+                self.latestCardsViewModel.mode = .error
+                self.tableView.reloadRows(at: [IndexPath(row: FeaturedSection.latestCards.rawValue,
+                                                         section: 0)], with: .automatic)
+            }
+        }
+        
         if latestSetsViewModel.mode == .loading {
             firstly {
                 latestSetsViewModel.fetchData()
@@ -143,82 +162,41 @@ class FeaturedViewController: BaseViewController {
             }
         }
         
-        if topRatedViewModel.mode == .loading {
-            firstly {
-                when(fulfilled: [topRatedViewModel.fetchRemoteData(),
-                                 topRatedViewModel.fetchData()])
-            }.done {
-                self.topRatedViewModel.mode = self.topRatedViewModel.isEmpty() ? .noResultsFound : .resultsFound
-                
-                if let c = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topRated.rawValue,
-                                                                   section: 0)) as? FeaturedTableViewCell {
-                    c.collectionView.reloadData()
-                }
-            }.catch { error in
-                self.topRatedViewModel.mode = .error
-
-                if let c = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topRated.rawValue,
-                                                                   section: 0)) as? FeaturedTableViewCell {
-                    c.collectionView.reloadData()
-                }
-            }
-        }
-        
-        if topViewedViewModel.mode == .loading {
-            firstly {
-                when(fulfilled: [topViewedViewModel.fetchRemoteData(),
-                                 topViewedViewModel.fetchData()])
-            }.done {
-                self.topViewedViewModel.mode = self.topViewedViewModel.isEmpty() ? .noResultsFound : .resultsFound
-                
-                if let c = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topViewed.rawValue,
-                                                                   section: 0)) as? FeaturedTableViewCell {
-                    c.collectionView.reloadData()
-                }
-            }.catch { error in
-                self.topViewedViewModel.mode = .error
-                
-                if let c = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topViewed.rawValue,
-                                                                   section: 0)) as? FeaturedTableViewCell {
-                    c.collectionView.reloadData()
-                }
-            }
-        }
+        topRatedViewModel.startMonitoring()
+        topViewedViewModel.startMonitoring()
     }
 
     @objc func reloadTopRated(_ notification: Notification) {
-        DispatchQueue.main.async {
-            firstly {
-                self.topRatedViewModel.fetchData()
-            }.done {
-                if let c = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topRated.rawValue,
-                                                                   section: 0)) as? FeaturedTableViewCell {
-                    c.collectionView.reloadData()
-                }
-            }.catch { error in
-                if let c = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topRated.rawValue,
-                                                                   section: 0)) as? FeaturedTableViewCell {
-                    c.collectionView.reloadData()
-                }
+        firstly {
+            self.topRatedViewModel.fetchData()
+        }.done {
+            self.topRatedViewModel.mode = self.topRatedViewModel.isEmpty() ? .noResultsFound : .resultsFound
+
+            if let c = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topRated.rawValue,
+                                                               section: 0)) as? FeaturedTableViewCell {
+                c.collectionView.reloadData()
+            }
+        }.catch { error in
+            if let c = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topRated.rawValue,
+                                                               section: 0)) as? FeaturedTableViewCell {
+                c.collectionView.reloadData()
             }
         }
     }
     
     @objc func reloadTopViewed(_ notification: Notification) {
-        DispatchQueue.main.async {
-            firstly {
-                self.topViewedViewModel.fetchData()
-            }.done {
-                if let c = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topViewed.rawValue,
-                                                                   section: 0)) as? FeaturedTableViewCell {
-                    c.collectionView.reloadData()
-                }
-                
-            }.catch { error in
-                if let c = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topViewed.rawValue,
-                                                                   section: 0)) as? FeaturedTableViewCell {
-                    c.collectionView.reloadData()
-                }
+        firstly {
+            self.topViewedViewModel.fetchData()
+        }.done {
+            self.topViewedViewModel.mode = self.topViewedViewModel.isEmpty() ? .noResultsFound : .resultsFound
+            if let c = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topViewed.rawValue,
+                                                               section: 0)) as? FeaturedTableViewCell {
+                c.collectionView.reloadData()
+            }
+        }.catch { error in
+            if let c = self.tableView.cellForRow(at: IndexPath(row: FeaturedSection.topViewed.rawValue,
+                                                               section: 0)) as? FeaturedTableViewCell {
+                c.collectionView.reloadData()
             }
         }
     }
@@ -245,12 +223,29 @@ extension FeaturedViewController : UITableViewDataSource {
         
         switch indexPath.row {
         case FeaturedSection.latestCards.rawValue:
-            guard let c = tableView.dequeueReusableCell(withIdentifier: LatestCardsTableViewCell.reuseIdentifier,
-                                                        for: indexPath) as? LatestCardsTableViewCell else {
-                fatalError("\(LatestCardsTableViewCell.reuseIdentifier) not found")
+            if latestCardsViewModel.mode == .resultsFound {
+                guard let c = tableView.dequeueReusableCell(withIdentifier: LatestCardsTableViewCell.reuseIdentifier,
+                                                            for: indexPath) as? LatestCardsTableViewCell else {
+                    fatalError("\(LatestCardsTableViewCell.reuseIdentifier) not found")
+                }
+                c.delegate = self
+                c.viewModel = latestCardsViewModel
+                c.startSlideShow()
+                cell = c
+            } else {
+                guard let c = tableView.dequeueReusableCell(withIdentifier: FeaturedTableViewCell.reuseIdentifier,
+                                                            for: indexPath) as? FeaturedTableViewCell else {
+                    fatalError("\(FeaturedTableViewCell.reuseIdentifier) not found")
+                }
+                
+                c.setupCollectionView(itemSize: itemSize)
+                c.titleLabel.isHidden = true
+                c.seeAllButton.isHidden = true
+                c.section = .latestCards
+                c.viewModel = latestCardsViewModel
+                c.delegate = self
+                cell = c
             }
-            c.delegate = self
-            cell = c
             
         case FeaturedSection.latestSets.rawValue:
             guard let c = tableView.dequeueReusableCell(withIdentifier: FeaturedTableViewCell.reuseIdentifier,

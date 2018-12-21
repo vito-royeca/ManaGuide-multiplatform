@@ -36,6 +36,9 @@ class CardViewController: BaseSearchViewController {
         title = content.description
         
         tableView.reloadData()
+        tableView.scrollToRow(at: IndexPath(row: 0, section: 0),
+                              at: .top,
+                              animated: true)
         
         switch viewModel.content {
         case .card:
@@ -143,14 +146,6 @@ class CardViewController: BaseSearchViewController {
                                                name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                                object: nil)
         
-        NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name.NSManagedObjectContextObjectsDidChange,
-                                                  object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(changeNotification(_:)),
-                                               name: NSNotification.Name.NSManagedObjectContextObjectsDidChange,
-                                               object: nil)
-        
         if let viewModel = viewModel as? CardViewModel {
             if viewModel.mode == .loading {
                 firstly {
@@ -177,10 +172,6 @@ class CardViewController: BaseSearchViewController {
         
         NotificationCenter.default.removeObserver(self,
                                                   name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
-                                                  object: nil)
-        
-        NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name.NSManagedObjectContextObjectsDidChange,
                                                   object: nil)
     }
     
@@ -564,32 +555,6 @@ class CardViewController: BaseSearchViewController {
             }
         }
     }
-    
-    @objc func changeNotification(_ notification: Notification) {
-        guard let viewModel = viewModel as? CardViewModel else {
-            fatalError()
-        }
-        
-        let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0))
-        var willReload = false
-        
-        if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] {
-            if let set = updatedObjects as? NSSet {
-                for o in set.allObjects {
-                    if let c = o as? CMCard {
-                        if c.objectID == card.objectID {
-                            willReload = true
-                            break
-                        }
-                    }
-                }
-            }
-        }
-        
-        if willReload {
-            reloadViewController(notification)
-        }
-    }
 
     // MARK: Custom methods
     func showActivityViewController(_ sender: UIBarButtonItem, card: CMCard) {
@@ -769,9 +734,6 @@ class CardViewController: BaseSearchViewController {
             }
             viewModel.cardRelatedDataLoaded = true
             self.tableView.reloadData()
-            self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0),
-                                       at: .top,
-                                       animated: true)
             self.incrementCardViews()
         }.catch { error in
             for v in models {
@@ -799,9 +761,6 @@ class CardViewController: BaseSearchViewController {
                 viewModel.mode = .error
             }
             self.tableView.reloadData()
-            self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0),
-                                       at: .top,
-                                       animated: true)
         }.catch { error in
             viewModel.mode = .error
             self.tableView.reloadData()
@@ -819,7 +778,6 @@ class CardViewController: BaseSearchViewController {
         cell.flowLayout.minimumInteritemSpacing = CGFloat(10)
         cell.flowLayout.scrollDirection = .horizontal
         cell.viewModel = model
-//        cell.collectionView.reloadData()
     }
     
     func createMainDataCell(forCard card: CMCard, inRow row: Int) -> UITableViewCell {
@@ -876,20 +834,6 @@ class CardViewController: BaseSearchViewController {
             return c
         }
     }
-    
-//    func createBadge(withCount count: Int) -> UILabel {
-//        let label = UILabel()
-//
-//        label.text = "\(count)"
-//        label.textColor = .white
-//        label.backgroundColor = .red
-//        label.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-//        label.textAlignment = NSTextAlignment.center
-//        label.layer.cornerRadius = 12
-//        label.clipsToBounds = true
-//        label.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
-//        return label
-//    }
     
     func createBadge(withCheck check: Bool) -> UILabel {
         let label = UILabel()

@@ -12,7 +12,7 @@ PODS:
   - Crashlytics (3.12.0):
     - Fabric (~> 1.9.0)
   - DACircularProgress (2.3.1)
-  - Eureka (4.3.0)
+  - Eureka (4.3.1)
   - Fabric (1.9.0)
   - FBSDKCoreKit (4.38.1):
     - Bolts (~> 1.9)
@@ -112,7 +112,7 @@ PODS:
   - InAppSettingsKit (2.10)
   - Kanna (4.0.2)
   - leveldb-library (1.20)
-  - ManaKit (3.11.1):
+  - ManaKit (3.11.2):
     - Kanna (~> 4.0.0)
     - PromiseKit
     - SDWebImage
@@ -246,7 +246,7 @@ SPEC CHECKSUMS:
   Cosmos: 309e489f21ffc91a1eeecfebef7f817cd2fcfba6
   Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
-  Eureka: 6d711cb30ca333b4bc893110285a722ae3840114
+  Eureka: 28ea296f06710f6745266b71f17862048941a32d
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
   FBSDKCoreKit: 8d47857400e2f5bdea697a80daff882e91c84ef6
   FBSDKLoginKit: 4621c690d9dd8628031a4791497062183ea34b0d
@@ -271,7 +271,7 @@ SPEC CHECKSUMS:
   InAppSettingsKit: d965e29be941eb19857271e4625de3fba6e23c9f
   Kanna: c60b61d72554bf04ed1ee074f9b379855cab4892
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
-  ManaKit: fdc69d152c48899dc9e59d46612005b72e63e907
+  ManaKit: a591b856bccf590b877ac799e8f42e63bd2ee678
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MMDrawerController: e3a54a5570388463ad3b36975251575b50c4e1a0
   "MMDrawerController+Storyboard": c98f86c0f32cdef1d466d19a7da3ad2fc6c6ac00

@@ -73,42 +73,47 @@ class TopViewedViewModel: BaseSearchViewModel {
     }
 
     // MARK: Custom methods
-    func fetchRemoteData() -> Promise<Void> {
-        return Promise { seal in
-            let ref = Database.database().reference().child("cards")
-            _firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Views).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopViewed)
+    func startMonitoring() {
+        let ref = Database.database().reference().child("cards")
+        _firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Views).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopViewed)
+        mode = .loading
+        
+        // observe changes in Firebase
+        _firebaseQuery!.observe(.value, with: { snapshot in
+            var fcards = [FCCard]()
             
-            ref.keepSynced(true)
+            for child in snapshot.children {
+                if let c = child as? DataSnapshot {
+                    fcards.append(FCCard(snapshot: c))
+                }
+            }
+
+            // save to Core Data
+            let context = ManaKit.sharedInstance.dataStack!.viewContext
+            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+            request.predicate = NSPredicate(format: "firebaseID IN %@", fcards.map { $0.key })
+            let cards = try! context.fetch(request)
             
-            // observe changes in Firebase
-            _firebaseQuery!.observe(.value, with: { snapshot in
-                for child in snapshot.children {
-                    if let c = child as? DataSnapshot {
-                        let fcard = FCCard(snapshot: c)
-                        
-                        
-                        if let card = ManaKit.sharedInstance.findObject("CMCard",
-                                                                        objectFinder: ["firebaseID": c.key as AnyObject],
-                                                                        createIfNotFound: false) as? CMCard {
+            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+                for card in cards {
+                    for fcard in fcards {
+                        if card.firebaseID == fcard.key {
                             card.firebaseViews = Int64(fcard.views == nil ? 0 : fcard.views!)
                         }
                     }
                 }
-                // save to Core Data
-                ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                    try! backgroundContext.save()
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardViewsUpdated),
-                                                    object: nil,
-                                                    userInfo: nil)
-                    seal.fulfill(())
-                }
-            })
-        }
+                try! backgroundContext.save()
+
+                NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardViewsUpdated),
+                                                object: nil,
+                                                userInfo: nil)
+            }
+        })
     }
     
     func stopMonitoring() {
-        let ref = Database.database().reference().child("cards")
-        ref.keepSynced(false)
+//        let ref = Database.database().reference().child("cards")
+//        ref.keepSynced(false)
         
         if _firebaseQuery != nil {
             _firebaseQuery!.removeAllObservers()

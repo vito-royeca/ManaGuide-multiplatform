@@ -55,7 +55,6 @@ class SpotlightManager: NSObject {
                 let localUrl = URL(string: "file://\(path)") {
                 
                 attributeSet.thumbnailURL = localUrl
-                
             }
             attributeSet.domainIdentifier = "cards"
             

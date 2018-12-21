@@ -618,7 +618,7 @@ class CardViewModel: BaseSearchViewModel {
                                                          createIfNotFound: false) as? CMUser,
             let set = user.ratings,
             let ratings = set.allObjects as? [CMCardRating] else {
-                return 0
+            return 0
         }
         
         for c in ratings {
@@ -639,7 +639,7 @@ class CardViewModel: BaseSearchViewModel {
                                                          createIfNotFound: false) as? CMUser,
             let set = user.favorites,
             let favorites = set.allObjects as? [CMCard] else {
-                return false
+            return false
         }
         
         for c in favorites {

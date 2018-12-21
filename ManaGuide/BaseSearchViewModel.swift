@@ -25,18 +25,22 @@ enum ViewModelMode: Int {
         switch self {
         case .standBy:
             return ["setCode": "tmp",
-                    "name": "Scroll Rack"]
+                    "name": "Scroll Rack",
+                    "artCropURL": "https://img.scryfall.com/cards/art_crop/en/tmp/308.jpg?1517813031"]
         case .loading:
             return ["setCode": "chk",
-                    "name": "Azami, Lady of Scrolls"]
+                    "name": "Azami, Lady of Scrolls",
+                    "artCropURL": "https://img.scryfall.com/cards/art_crop/en/chk/52.jpg?1517813031"]
         case .noResultsFound:
             return ["setCode": "chk",
-                    "name": "Azusa, Lost but Seeking"]
+                    "name": "Azusa, Lost but Seeking",
+                    "artCropURL": "https://img.scryfall.com/cards/art_crop/en/chk/201.jpg?1517813031"]
         case .resultsFound:
             return nil
         case .error:
             return ["setCode": "plc",
-                    "name": "Dismal Failure"]
+                    "name": "Dismal Failure",
+                    "artCropURL": "https://img.scryfall.com/cards/art_crop/en/plc/39.jpg?1517813031"]
         }
     }
     
