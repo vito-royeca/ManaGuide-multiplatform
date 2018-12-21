@@ -112,9 +112,6 @@ class TopViewedViewModel: BaseSearchViewModel {
     }
     
     func stopMonitoring() {
-//        let ref = Database.database().reference().child("cards")
-//        ref.keepSynced(false)
-        
         if _firebaseQuery != nil {
             _firebaseQuery!.removeAllObservers()
             _firebaseQuery = nil

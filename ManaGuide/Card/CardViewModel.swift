@@ -138,7 +138,8 @@ enum CardOtherDetailsSection : Int {
 class CardViewModel: BaseSearchViewModel {
     // MARK: Variables
     var cardIndex = 0
-    var cardRelatedDataLoaded = false
+    var relatedDataLoaded = false
+    var firebaseDataLoaded = false
     var content: CardContent = .card
     var faceOrder = 0
     var flipAngle = CGFloat(0)
@@ -175,7 +176,7 @@ class CardViewModel: BaseSearchViewModel {
             rows = 1
             
         case .details:
-            if cardRelatedDataLoaded {
+            if relatedDataLoaded {
                 switch section {
                 case CardDetailsSection.mainData.rawValue:
                     rows = cardMainDetails().count
@@ -282,7 +283,7 @@ class CardViewModel: BaseSearchViewModel {
         case .card:
             sections = CardImageSection.count
         case .details:
-            if cardRelatedDataLoaded {
+            if relatedDataLoaded {
                 sections = CardDetailsSection.count
             } else {
                 sections = 1
@@ -1027,37 +1028,34 @@ class CardViewModel: BaseSearchViewModel {
         }
     }
     
-    func loadCardData() -> Promise<Void> {
-        return Promise { seal in
-            guard let cards = allObjects() as? [CMCard] else {
-                seal.fulfill()
-                return
-            }
+    func loadFirebaseData() {
+        guard let cards = allObjects() as? [CMCard] else {
+            return
+        }
+    
+        for card in cards {
+            let ref = Database.database().reference().child("cards").child(card.firebaseID!)
             
-            for card in cards {
-                let ref = Database.database().reference().child("cards").child(card.firebaseID!)
+            ref.observeSingleEvent(of: .value, with: { snapshot in
+                guard let value = snapshot.value as? [String : Any] else {
+                    return
+                }
                 
-                ref.observeSingleEvent(of: .value, with: { snapshot in
-                    guard let value = snapshot.value as? [String : Any] else {
-                        return
-                    }
-                    
-                    // update views
+                // update views
+                ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
                     if let views = value["Views"] as? Int {
                         card.firebaseViews = Int64(views)
                     }
                     if let rating = value["Rating"] as? Double {
                         card.firebaseRating = rating
                     }
-                    ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                        try! backgroundContext.save()
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
-                                                        object: nil,
-                                                        userInfo: ["card": card])
-                    }
-                })
-            }
-            seal.fulfill(())
+                    try! backgroundContext.save()
+                    
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
+                                                    object: nil,
+                                                    userInfo: ["card": card])
+                }
+            })
         }
     }
     

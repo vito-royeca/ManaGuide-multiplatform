@@ -116,7 +116,7 @@ class CardCarouselTableViewCell: UITableViewCell {
     
     func movePhotoTo(index: Int) {
         viewModel.cardIndex = index
-        viewModel.cardRelatedDataLoaded = false
+        viewModel.relatedDataLoaded = false
         viewModel.faceOrder = 0
         viewModel.flipAngle = 0
         viewModel.reloadRelatedCards()

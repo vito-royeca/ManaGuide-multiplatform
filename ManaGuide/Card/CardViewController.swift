@@ -44,7 +44,7 @@ class CardViewController: BaseSearchViewController {
         case .card:
             ()
         case .details:
-            if !viewModel.cardRelatedDataLoaded {
+            if !viewModel.relatedDataLoaded {
                 reloadRelatedData()
             }
         case .store:
@@ -146,16 +146,10 @@ class CardViewController: BaseSearchViewController {
                                                name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                                object: nil)
         
-        if let viewModel = viewModel as? CardViewModel {
-            if viewModel.mode == .loading {
-                firstly {
-                    viewModel.loadCardData()
-                }.done {
-                    viewModel.mode = .resultsFound
-                }.catch { error in
-                    print("\(error)")
-                }
-            }
+        if let viewModel = viewModel as? CardViewModel,
+            !viewModel.firebaseDataLoaded {
+            viewModel.loadFirebaseData()
+            viewModel.firebaseDataLoaded = true
         }
     }
     
@@ -295,7 +289,7 @@ class CardViewController: BaseSearchViewController {
         case .details:
             tableView.separatorStyle = .singleLine
 
-            if !viewModel.cardRelatedDataLoaded {
+            if !viewModel.relatedDataLoaded {
                 guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {
                     fatalError("\(SearchModeTableViewCell.reuseIdentifier) is nil")
                 }
@@ -539,8 +533,7 @@ class CardViewController: BaseSearchViewController {
             let currentCard = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0)) as? CMCard else {
             return
         }
-        
-        // TODO: does not load for 0-view cards
+
         if card.id == currentCard.id {
             DispatchQueue.main.async {
                 switch viewModel.content {
@@ -548,9 +541,8 @@ class CardViewController: BaseSearchViewController {
                     self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
                                                    IndexPath(row: 0, section: CardImageSection.actions.rawValue)],
                                               with: .automatic)
-                case .details,
-                     .store:
-                    self.tableView.reloadData()
+                default:
+                    ()
                 }
             }
         }
@@ -732,7 +724,7 @@ class CardViewController: BaseSearchViewController {
             for v in models {
                 v.mode = v.isEmpty() ? .noResultsFound : .resultsFound
             }
-            viewModel.cardRelatedDataLoaded = true
+            viewModel.relatedDataLoaded = true
             self.tableView.reloadData()
             self.incrementCardViews()
         }.catch { error in
@@ -873,7 +865,7 @@ extension CardViewController : UITableViewDelegate {
             }
             
         case .details:
-            if viewModel.cardRelatedDataLoaded {
+            if viewModel.relatedDataLoaded {
                 switch indexPath.section {
                 case CardDetailsSection.set.rawValue:
                     height = CGFloat(56)
