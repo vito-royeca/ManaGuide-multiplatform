@@ -14,7 +14,7 @@ class CardImageCollectionViewCell: UICollectionViewCell {
     static let reuseIdentifier = "CardImageCell"
     
     // MARK: Variables
-    var imageType: ManaKit.ImageType = .normal
+    var imageType: CardImageType = .normal
     var animationOptions: UIView.AnimationOptions = []
 
     var card: CMCard? {
@@ -26,8 +26,8 @@ class CardImageCollectionViewCell: UICollectionViewCell {
             switch imageType {
             case .artCrop:
                 setLogoLabel.backgroundColor = UIColor.white
-                setLogoLabel.text = ManaKit.sharedInstance.keyruneUnicode(forSet: card.set!)
-                setLogoLabel.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
+                setLogoLabel.text = card.set!.keyruneUnicode()
+                setLogoLabel.textColor = card.keyruneColor()
                 cardImage.contentMode = .scaleToFill
             default:
                 setLogoLabel.backgroundColor = UIColor.clear
@@ -35,28 +35,26 @@ class CardImageCollectionViewCell: UICollectionViewCell {
                 cardImage.contentMode = .scaleAspectFit
             }
             
-            if let image = ManaKit.sharedInstance.cardImage(card,
-                                                            imageType: imageType,
-                                                            faceOrder: 0,
-                                                            roundCornered: imageType == .artCrop ? false : true) {
+            if let image = card.image(type: imageType,
+                                      faceOrder: 0,
+                                      roundCornered: imageType == .artCrop ? false : true) {
                 cardImage.image = image
             } else {
                 switch imageType {
                 case .artCrop:
                     cardImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
                 default:
-                    cardImage.image = ManaKit.sharedInstance.cardBack(card)
+                    cardImage.image = card.backImage()
                 }
                 
                 firstly {
                     ManaKit.sharedInstance.downloadImage(ofCard: card,
-                                                         imageType: imageType,
+                                                         type: imageType,
                                                          faceOrder: 0)
                 }.done {
-                    guard let image = ManaKit.sharedInstance.cardImage(card,
-                                                                       imageType: self.imageType,
-                                                                       faceOrder: 0,
-                                                                       roundCornered: self.imageType == .artCrop ? false : true) else {
+                    guard let image = card.image(type: self.imageType,
+                                                 faceOrder: 0,
+                                                 roundCornered: self.imageType == .artCrop ? false : true) else {
                         return
                     }
                     

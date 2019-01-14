@@ -8,7 +8,6 @@
 
 import UIKit
 
-import CoreData
 import ManaKit
 import PromiseKit
 
@@ -35,10 +34,9 @@ class HeroCardView: UIView {
     
     // MARK: Custom methods
     func showImage() {
-        if let image = ManaKit.sharedInstance.cardImage(card,
-                                                        imageType: .artCrop,
-                                                        faceOrder: 0,
-                                                        roundCornered: false) {
+        if let image = card.image(type: .artCrop,
+                                  faceOrder: 0,
+                                  roundCornered: false) {
             cropImage.image = image
             MGUtilities.updateColor(ofLabel: nameLabel, from: image)
         } else {
@@ -48,13 +46,12 @@ class HeroCardView: UIView {
             
             firstly {
                 ManaKit.sharedInstance.downloadImage(ofCard: card,
-                                                     imageType: .artCrop,
+                                                     type: .artCrop,
                                                      faceOrder: 0)
             }.done {
-                guard let image = ManaKit.sharedInstance.cardImage(self.card,
-                                                                   imageType: .artCrop,
-                                                                   faceOrder: 0,
-                                                                   roundCornered: false) else {
+                guard let image = self.card.image(type: .artCrop,
+                                                  faceOrder: 0,
+                                                  roundCornered: false) else {
                     return
                 }
                 
@@ -78,7 +75,7 @@ class HeroCardView: UIView {
         nameLabel.text = card.name
         
         if let releaseDate = card.set!.releaseDate {
-            let isModern = ManaKit.sharedInstance.isModern(card)
+            let isModern = card.isModern()
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
             
@@ -96,8 +93,8 @@ class HeroCardView: UIView {
         }
         
         if let set = card.set {
-            setIcon.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-            setIcon.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
+            setIcon.text = set.keyruneUnicode()
+            setIcon.textColor = card.keyruneColor()
             setIcon.backgroundColor = UIColor.white
         }
     }

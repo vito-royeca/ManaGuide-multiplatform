@@ -6,14 +6,12 @@
 //  Copyright © 2018 Jovito Royeca. All rights reserved.
 //
 
-import CoreData
 import ManaKit
 import PromiseKit
+import RealmSwift
 
 class SearchViewModel: BaseSearchViewModel {
-    // MARK: Variables
-    private var _sectionIndexTitles: [String]?
-    private var _sectionTitles: [String]?
+    private var _results: Results<CMCard>? = nil
     
     // MARK: Init
     init(withTitle title: String?, andMode mode: ViewModelMode) {
@@ -23,11 +21,11 @@ class SearchViewModel: BaseSearchViewModel {
         self.mode = mode
     }
 
-    init(withRequest request: NSFetchRequest<CMCard>?, andTitle title: String?, andMode mode: ViewModelMode) {
+    init(withPredicate predicate: NSPredicate?, andSortDescriptors: [SortDescriptor]?, andTitle title: String?, andMode mode: ViewModelMode) {
         super.init()
         
-        self.request = request as? NSFetchRequest<NSManagedObject>
-        self.sortDescriptors = request?.sortDescriptors
+        self.predicate = predicate
+        self.sortDescriptors = sortDescriptors
         self.title = title
         self.mode = mode
     }
@@ -44,11 +42,12 @@ class SearchViewModel: BaseSearchViewModel {
             
             switch displayBy {
             case "list":
-                guard let fetchedResultsController = fetchedResultsController,
-                    let sections = fetchedResultsController.sections else {
-                    return rows
+                guard let results = _results,
+                    let sectionTitles = _sectionTitles else {
+                    return 0
                 }
-                rows = sections[section].numberOfObjects
+                
+                return results.filter("\(sectionName) == %@", sectionTitles[section]).count
                 
             case "grid":
                 rows = 1
@@ -73,11 +72,11 @@ class SearchViewModel: BaseSearchViewModel {
             
             switch displayBy {
             case "list":
-                guard let fetchedResultsController = fetchedResultsController,
-                    let sections = fetchedResultsController.sections else {
-                    return number
+                guard let _ = _results,
+                    let sectionTitles = _sectionTitles else {
+                    return 0
                 }
-                number = sections.count
+                number = sectionTitles.count
                 
             case "grid":
                 number = 1
@@ -162,11 +161,10 @@ class SearchViewModel: BaseSearchViewModel {
             
             switch displayBy {
             case "list":
-                guard let fetchedResultsController = fetchedResultsController,
-                    let sections = fetchedResultsController.sections else {
-                    return titleHeader
+                guard let sectionTitles = _sectionTitles else {
+                    return nil
                 }
-                titleHeader = sections[section].name
+                titleHeader = sectionTitles[section]
             case "grid":
                 ()
             default:
@@ -182,56 +180,22 @@ class SearchViewModel: BaseSearchViewModel {
     // MARK: Custom methods
     override func fetchData() -> Promise<Void> {
         return Promise { seal  in
-            let newRequest = SearchRequestGenerator().createSearchRequest(query: queryString, oldRequest: request as? NSFetchRequest<CMCard>)
-            fetchedResultsController = getFetchedResultsController(with: newRequest as? NSFetchRequest<NSManagedObject>)
+            _results = ManaKit.sharedInstance.realm.objects(CMCard.self)
+            if let newPredicate = SearchRequestGenerator().createSearchPredicate(query: queryString, oldPredicate: predicate) {
+                _results = _results!.filter(newPredicate)
+            }
+            if let sortDescriptors = sortDescriptors {
+                _results = _results!.sorted(by: sortDescriptors)
+            }
+            
             updateSections()
             seal.fulfill(())
         }
     }
     
-    // MARK: Private methods
-    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
-        let searchGenerator = SearchRequestGenerator()
-        let context = ManaKit.sharedInstance.dataStack!.viewContext
-        var request: NSFetchRequest<CMCard>?
-
-        if let fetchRequest = fetchRequest {
-            request = fetchRequest as? NSFetchRequest<CMCard>
-        } else {
-            // create a default fetchRequest
-            request = CMCard.fetchRequest()
-            request!.fetchBatchSize = 20
-            request!.predicate = NSPredicate(format: "language.code = %@", "en")
-            request!.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
-                                        NSSortDescriptor(key: "name", ascending: true),
-                                        NSSortDescriptor(key: "myNumberOrder", ascending: true)]
-        }
-
-        // Create Fetched Results Controller
-        let frc = NSFetchedResultsController(fetchRequest: request!,
-                                             managedObjectContext: context,
-                                             sectionNameKeyPath: searchGenerator.getSectionName(),
-                                             cacheName: nil)
-
-        // Configure Fetched Results Controller
-        frc.delegate = self
-
-        // perform fetch
-        do {
-            try frc.performFetch()
-        } catch {
-            let fetchError = error as NSError
-            print("Unable to Perform Fetch Request")
-            print("\(fetchError), \(fetchError.localizedDescription)")
-        }
-
-        return frc as! NSFetchedResultsController<NSManagedObject>
-    }
-    
+    // MARK: Overrides
     override func updateSections() {
-        guard let fetchedResultsController = fetchedResultsController,
-            let cards = fetchedResultsController.fetchedObjects as? [CMCard],
-            let sections = fetchedResultsController.sections else {
+        guard let results = _results else {
             return
         }
         
@@ -241,7 +205,7 @@ class SearchViewModel: BaseSearchViewModel {
         _sectionIndexTitles = [String]()
         _sectionTitles = [String]()
         
-        for card in cards {
+        for card in results {
             var prefix: String?
             
             switch sortBy {
@@ -274,14 +238,14 @@ class SearchViewModel: BaseSearchViewModel {
             }
         }
         
-        let count = sections.count
-        if count > 0 {
-            for i in 0...count - 1 {
-                if let sectionTitle = sections[i].indexTitle {
-                    _sectionTitles!.append(sectionTitle)
-                }
-            }
-        }
+//        let count = sections.count
+//        if count > 0 {
+//            for i in 0...count - 1 {
+//                if let sectionTitle = sections[i].indexTitle {
+//                    _sectionTitles!.append(sectionTitle)
+//                }
+//            }
+//        }
         
         _sectionIndexTitles!.sort()
         _sectionTitles!.sort()

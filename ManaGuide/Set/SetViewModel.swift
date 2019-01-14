@@ -6,9 +6,9 @@
 //  Copyright © 2018 Jovito Royeca. All rights reserved.
 //
 
-import CoreData
 import ManaKit
 import PromiseKit
+import RealmSwift
 
 enum SetContent: Int {
     case cards

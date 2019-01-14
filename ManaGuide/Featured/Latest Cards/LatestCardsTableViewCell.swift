@@ -150,8 +150,12 @@ extension LatestCardsTableViewCell : iCarouselDelegate {
     }
     
     func carousel(_ carousel: iCarousel, didSelectItemAt index: Int) {
-        let card = viewModel.object(forRowAt: IndexPath(row: index, section: 0)) as! CMCard
-        delegate?.cardSelected(card: card)
+        guard let card = viewModel.object(forRowAt: IndexPath(row: index, section: 0)) as? CMCard,
+            let delegate = delegate else {
+            return
+        }
+        
+        delegate.cardSelected(card: card)
     }
     
     func carousel(_ carousel: iCarousel, valueFor option: iCarouselOption, withDefault value: CGFloat) -> CGFloat {

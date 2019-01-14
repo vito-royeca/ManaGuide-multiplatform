@@ -6,70 +6,64 @@
 //  Copyright © 2018 Jovito Royeca. All rights reserved.
 //
 
-import CoreData
-import CoreData
 import Firebase
 import ManaKit
 import PromiseKit
+import RealmSwift
 
 let kMaxFetchTopViewed  = UInt(10)
 
 class TopViewedViewModel: BaseSearchViewModel {
     // MARK: Variables
+    private var _results: Results<CMCard>? = nil
     private var _firebaseQuery: DatabaseQuery?
     
     override init() {
         super.init()
 
-        sortDescriptors = [NSSortDescriptor(key: "firebaseViews", ascending: false),
-                           NSSortDescriptor(key: "set.releaseDate", ascending: true),
-                           NSSortDescriptor(key: "name", ascending: true),
-                           NSSortDescriptor(key: "myNumberOrder", ascending: true)]
+        sortDescriptors = [SortDescriptor(keyPath: "firebaseViews", ascending: false),
+                           SortDescriptor(keyPath: "set.releaseDate", ascending: true),
+                           SortDescriptor(keyPath: "name", ascending: true),
+                           SortDescriptor(keyPath: "myNumberOrder", ascending: true)]
     }
     
     // MARK: Overrides
     override func fetchData() -> Promise<Void> {
         return Promise { seal in
-            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-            request.predicate = NSPredicate(format: "firebaseViews > 0")
-            request.fetchLimit = 10
-            request.sortDescriptors = sortDescriptors
-            fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
+            let predicate = NSPredicate(format: "firebaseViews > 0")
+            _results = ManaKit.sharedInstance.realm.objects(CMCard.self).filter(predicate).sorted(by: sortDescriptors!)
             seal.fulfill(())
         }
     }
     
-    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
-        let context = ManaKit.sharedInstance.dataStack!.viewContext
-        var request: NSFetchRequest<CMCard>?
-        
-        if let fetchRequest = fetchRequest {
-            request = fetchRequest as? NSFetchRequest<CMCard>
+    override func numberOfRows(inSection section: Int) -> Int {
+        if mode == .resultsFound {
+            guard let _ = _results else {
+                return 0
+            }
+            
+            return Int(kMaxFetchTopViewed)
         } else {
-            // Create a default fetchRequest
-            request = CMCard.fetchRequest()
-            request!.sortDescriptors = sortDescriptors
+            return 1
         }
-        
-        // Create Fetched Results Controller
-        let frc = NSFetchedResultsController(fetchRequest: request!,
-                                             managedObjectContext: context,
-                                             sectionNameKeyPath: nil,
-                                             cacheName: nil)
-        
-        // Configure Fetched Results Controller
-        frc.delegate = self
-        
-        // perform fetch
-        do {
-            try frc.performFetch()
-        } catch {
-            let fetchError = error as NSError
-            print("Unable to Perform Fetch Request")
-            print("\(fetchError), \(fetchError.localizedDescription)")
+    }
+    
+    override func numberOfSections() -> Int {
+        return 1
+    }
+    
+    override func object(forRowAt indexPath: IndexPath) -> Object? {
+        guard let results = _results else {
+            return nil
         }
-        
-        return frc as! NSFetchedResultsController<NSManagedObject>
+        return results[indexPath.row]
+    }
+    
+    override func count() -> Int {
+        guard let results = _results else {
+            return 0
+        }
+        return results.count
     }
 
     // MARK: Custom methods
@@ -80,34 +74,52 @@ class TopViewedViewModel: BaseSearchViewModel {
         
         // observe changes in Firebase
         _firebaseQuery!.observe(.value, with: { snapshot in
-            var fcards = [FCCard]()
-            
             for child in snapshot.children {
                 if let c = child as? DataSnapshot {
-                    fcards.append(FCCard(snapshot: c))
-                }
-            }
-
-            // save to Core Data
-            let context = ManaKit.sharedInstance.dataStack!.viewContext
-            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-            request.predicate = NSPredicate(format: "firebaseID IN %@", fcards.map { $0.key })
-            let cards = try! context.fetch(request)
-            
-            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                for card in cards {
-                    for fcard in fcards {
-                        if card.firebaseID == fcard.key {
-                            card.firebaseViews = Int64(fcard.views == nil ? 0 : fcard.views!)
+                    let fccard = FCCard(snapshot: c)
+                    let oldFBKey = c.key
+                    let newFBKey = self.newFirebaseKey(from: oldFBKey)
+                    
+                    if let card = ManaKit.sharedInstance.realm.objects(CMCard.self).filter("firebaseID = %@", newFBKey).first {
+                        try! ManaKit.sharedInstance.realm.write {
+                            card.firebaseViews = Int64(fccard.views == nil ? 0 : fccard.views!)
+                            card.firebaseLastUpdate = Date()
+                            ManaKit.sharedInstance.realm.add(card, update: true)
+                            
+                            if newFBKey != oldFBKey {
+                                let model = CardViewModel()
+                                let deletePromise = model.deleteOldFirebaseData(with: oldFBKey)
+                                let data = model.firebaseData(with: newFBKey)
+                                
+                                firstly {
+                                    model.saveFirebaseData(with: newFBKey,
+                                                           data: data,
+                                                           firstAttempt: true,
+                                                           completion: deletePromise)
+                                }.done {
+                                    print("Done deleteing oldFBKey: \(oldFBKey)")
+                                }.catch { error in
+                                    print(error)
+                                }
+                            }
+                        }
+                    } else {
+                        let model = CardViewModel()
+                        
+                        print("Deleteing oldFBKey: \(oldFBKey)")
+                        firstly {
+                            model.deleteOldFirebaseData(with: oldFBKey)
+                        }.done {
+                            print("Done deleteing oldFBKey: \(oldFBKey)")
+                        }.catch { error in
+                            print(error)
                         }
                     }
                 }
-                try! backgroundContext.save()
-
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardViewsUpdated),
-                                                object: nil,
-                                                userInfo: nil)
             }
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardViewsUpdated),
+                                            object: nil,
+                                            userInfo: nil)
         })
     }
     

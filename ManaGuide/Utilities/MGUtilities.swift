@@ -40,13 +40,9 @@ class MGUtilities {
                                                           attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nColors: "
-        if let colors_ = card.colors {
-            if let s = colors_.allObjects as? [CMCardColor] {
-                let string = s.map({ $0.name! }).joined(separator: ", ")
-                text.append(string.count > 0 ? string : "\u{2014}")
-            } else {
-                text.append("\u{2014}")
-            }
+        if card.colors.count > 0 {
+            let string = card.colors.map({ $0.name! }).joined(separator: ", ")
+            text.append(string.count > 0 ? string : "\u{2014}")
         } else {
             text.append("\u{2014}")
         }
@@ -54,13 +50,9 @@ class MGUtilities {
                                                           attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nColors Identity: "
-        if let colorIdentities_ = card.colorIdentities {
-            if let s = colorIdentities_.allObjects as? [CMCardColor] {
-                let string = s.map({ $0.name! }).joined(separator: ", ")
-                text.append(string.count > 0 ? string : "\u{2014}")
-            } else {
-                text.append("\u{2014}")
-            }
+        if card.colorIdentities.count > 0 {
+            let string = card.colorIdentities.map({ $0.name! }).joined(separator: ", ")
+            text.append(string.count > 0 ? string : "\u{2014}")
         } else {
             text.append("\u{2014}")
         }

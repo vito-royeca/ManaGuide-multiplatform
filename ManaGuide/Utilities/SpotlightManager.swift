@@ -7,11 +7,11 @@
 //
 
 import UIKit
-import CoreData
 import CoreServices
 import CoreSpotlight
 import ManaKit
 import PromiseKit
+import RealmSwift
 import SDWebImage
 
 enum SpotlightCardProperties: String, CaseIterable {
@@ -76,7 +76,7 @@ class SpotlightManager: NSObject {
     func createSpotlightItems() {
         var willCopy = true
         
-        if let scryfallDate = UserDefaults.standard.string(forKey: ManaKit.Constants.ScryfallDateKey) {
+        if let scryfallDate = UserDefaults.standard.string(forKey: ManaKit.UserDefaultsKeys.ScryfallDate) {
             if scryfallDate == ManaKit.Constants.ScryfallDate {
                 willCopy = false
             }
@@ -108,12 +108,11 @@ class SpotlightManager: NSObject {
     
     private func createSetItems() -> Promise<Void> {
         return Promise { seal in
-            let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
-            request.predicate = NSPredicate(format: "parent = nil")
-            request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
+            let predicate = NSPredicate(format: "parent = nil")
+            let sortDescriptors = [SortDescriptor(keyPath: "releaseDate", ascending: false)]
             
             var items = [CSSearchableItem]()
-            for set in try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) {
+            for set in ManaKit.sharedInstance.realm.objects(CMSet.self).filter(predicate).sorted(by: sortDescriptors) {
                 // Create an attribute set to describe an item.
                 let attributeSet = CSSearchableItemAttributeSet(itemContentType: kUTTypeData as String)
                 let f = DateFormatter()
@@ -150,12 +149,11 @@ class SpotlightManager: NSObject {
     private func createCardItems() -> Promise<Void> {
         return Promise { seal in
             var dict = [String: CMCard]()
-            let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-            request.predicate = NSPredicate(format: "language.code = %@ AND id != nil", "en")
-            request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
-                                       NSSortDescriptor(key: "name", ascending: true)]
+            let predicate = NSPredicate(format: "language.code = %@ AND id != nil", "en")
+            let sortDescriptors = [SortDescriptor(keyPath: "set.releaseDate", ascending: false),
+                                   SortDescriptor(keyPath: "name", ascending: true)]
             
-            for card in  try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request) {
+            for card in  ManaKit.sharedInstance.realm.objects(CMCard.self).filter(predicate).sorted(by: sortDescriptors) {
                 if let _ = dict[card.name!] {
                     continue
                 } else {
@@ -221,7 +219,7 @@ class SpotlightManager: NSObject {
         nameLabel.backgroundColor = .clear
         nameLabel.textColor = .black
         nameLabel.font = UIFont(name: "Keyrune", size: 180)
-        nameLabel.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+        nameLabel.text = set.keyruneUnicode()
         UIGraphicsBeginImageContext(frame.size)
         if let currentContext = UIGraphicsGetCurrentContext() {
             nameLabel.layer.render(in: currentContext)

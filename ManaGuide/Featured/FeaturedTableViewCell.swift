@@ -7,12 +7,12 @@
 //
 
 import UIKit
-import CoreData
 import ManaKit
 import PromiseKit
+import RealmSwift
 
 protocol FeaturedTableViewCellDelegate: NSObjectProtocol {
-    func showItem(section: FeaturedSection, index: Int, objects: [NSManagedObject], sorters: [NSSortDescriptor]?)
+    func showItem(section: FeaturedSection, index: Int, objects: [Object], sorters: [SortDescriptor]?)
     func seeAllItems(section: FeaturedSection)
 }
 
@@ -67,7 +67,7 @@ class FeaturedTableViewCell: UITableViewCell {
 // MARK: UICollectionViewDataSource
 extension FeaturedTableViewCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.collectionNumberOfRows(inSection: section)
+        return viewModel.numberOfRows(inSection: section)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -144,8 +144,8 @@ extension FeaturedTableViewCell: UICollectionViewDelegate {
         }
 
         var index = 0
-        var objects = [NSManagedObject]()
-        var sorters: [NSSortDescriptor]?
+        var objects = [Object]()
+        var sorters: [SortDescriptor]?
 
         switch section {
         case .latestSets:
@@ -155,17 +155,19 @@ extension FeaturedTableViewCell: UICollectionViewDelegate {
         case .topRated,
              .topViewed:
             index = indexPath.item
-            if let allObjects = viewModel.allObjects() {
-                objects = allObjects
-            }
+            // TODO: fix this
+//            if let allObjects = viewModel.allObjects() {
+//                objects = allObjects
+//            }
             sorters = viewModel.sortDescriptors
         default:
             ()
         }
 
-        delegate?.showItem(section: section,
-                           index: index,
-                           objects: objects,
-                           sorters: sorters)
+        // TODO: fix this
+//        delegate?.showItem(section: section,
+//                           index: index,
+//                           objects: objects,
+//                           sorters: sorters)
     }
 }

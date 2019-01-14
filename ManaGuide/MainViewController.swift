@@ -20,13 +20,14 @@ class MainViewController: UITabBarController {
             for vc in viewControllers {
                 if let nvc = vc as? UINavigationController {
                     for child in nvc.viewControllers {
-                        if let searchVC = child as? SearchViewController {
-                            let viewModel = SearchViewModel(withRequest: nil,
-                                                            andTitle: "Search",
-                                                            andMode: .standBy)
-                            viewModel.isStandBy = true
-                            searchVC.viewModel = viewModel
-                        }
+                        // TODO: fix this
+//                        if let searchVC = child as? SearchViewController {
+//                            let viewModel = SearchViewModel(withRequest: nil,
+//                                                            andTitle: "Search",
+//                                                            andMode: .standBy)
+//                            viewModel.isStandBy = true
+//                            searchVC.viewModel = viewModel
+//                        }
                     }
                 }
             }
@@ -35,11 +36,11 @@ class MainViewController: UITabBarController {
         guard let items = tabBar.items else {
             return
         }
-        items[2].image = UIImage.fontAwesomeIcon(name: .userCircle,
-                                                 style: .solid,
-                                                 textColor: UIColor.blue,
-                                                 size: CGSize(width: 30, height: 30))
-        
+        // TODO: fix this
+//        items[2].image = UIImage.fontAwesomeIcon(name: .userCircle,
+//                                                 style: .solid,
+//                                                 textColor: UIColor.blue,
+//                                                 size: CGSize(width: 30, height: 30))        
     }
 
     override func viewDidAppear(_ animated: Bool) {

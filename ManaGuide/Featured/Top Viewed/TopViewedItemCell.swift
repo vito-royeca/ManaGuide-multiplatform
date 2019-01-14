@@ -23,23 +23,21 @@ class TopViewedItemCell: UICollectionViewCell {
     // MARK: Variables
     var card: CMCard! {
         didSet {
-            if let croppedImage = ManaKit.sharedInstance.cardImage(card,
-                                                                   imageType: .artCrop,
-                                                                   faceOrder: 0,
-                                                                   roundCornered: false) {
+            if let croppedImage = card.image(type: .artCrop,
+                                             faceOrder: 0,
+                                             roundCornered: false) {
                 cardImage.image = croppedImage
             } else {
                 cardImage.image = ManaKit.sharedInstance.imageFromFramework(imageName: .cardBackCropped)
                 
                 firstly {
                     ManaKit.sharedInstance.downloadImage(ofCard: card,
-                                                         imageType: .artCrop,
+                                                         type: .artCrop,
                                                          faceOrder: 0)
                 }.done {
-                    guard let image = ManaKit.sharedInstance.cardImage(self.card,
-                                                                       imageType: .artCrop,
-                                                                       faceOrder: 0,
-                                                                       roundCornered: false) else {
+                    guard let image = self.card.image(type: .artCrop,
+                                                      faceOrder: 0,
+                                                      roundCornered: false) else {
                         return
                     }
                     
@@ -58,8 +56,8 @@ class TopViewedItemCell: UICollectionViewCell {
             
             setupUI()
             
-            logoLabel.text = ManaKit.sharedInstance.keyruneUnicode(forSet: card.set!)
-            logoLabel.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
+            logoLabel.text = card.set!.keyruneUnicode()
+            logoLabel.textColor = card.keyruneColor()
             nameLabel.text = card.displayName
             viewsLabel.text = "\u{f06e} \(card.firebaseViews)"
         }

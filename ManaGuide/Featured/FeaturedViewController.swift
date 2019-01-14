@@ -7,10 +7,10 @@
 //
 
 import UIKit
-import CoreData
 import ManaKit
 import MBProgressHUD
 import PromiseKit
+import RealmSwift
 
 class FeaturedViewController: BaseViewController {
 
@@ -85,39 +85,40 @@ class FeaturedViewController: BaseViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showCard" {
-            guard let dest = segue.destination as? CardViewController,
-                let dict = sender as? [String: Any],
-                let cardIndex = dict["cardIndex"] as? Int,
-                let cardIDs = dict["cardIDs"] as? [String] else {
-                return
-            }
-            
-            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
-                                           withCardIDs: cardIDs,
-                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
-            
-        } else if segue.identifier == "showCardModal" {
-            guard let nav = segue.destination as? UINavigationController,
-                let dest = nav.children.first as? CardViewController,
-                let dict = sender as? [String: Any],
-                let cardIndex = dict["cardIndex"] as? Int,
-                let cardIDs = dict["cardIDs"] as? [String] else {
-                return
-            }
-            
-            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
-                                           withCardIDs: cardIDs,
-                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
-            
-        } else if segue.identifier == "showSet" {
-            guard let dest = segue.destination as? SetViewController,
-                let set = sender as? CMSet else {
-                return
-            }
-            
-            dest.viewModel = SetViewModel(withSet: set, languageCode: "en")
-        }
+        // TODO: fix this
+//        if segue.identifier == "showCard" {
+//            guard let dest = segue.destination as? CardViewController,
+//                let dict = sender as? [String: Any],
+//                let cardIndex = dict["cardIndex"] as? Int,
+//                let cardIDs = dict["cardIDs"] as? [String] else {
+//                return
+//            }
+//
+//            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
+//                                           withCardIDs: cardIDs,
+//                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
+//
+//        } else if segue.identifier == "showCardModal" {
+//            guard let nav = segue.destination as? UINavigationController,
+//                let dest = nav.children.first as? CardViewController,
+//                let dict = sender as? [String: Any],
+//                let cardIndex = dict["cardIndex"] as? Int,
+//                let cardIDs = dict["cardIDs"] as? [String] else {
+//                return
+//            }
+//
+//            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
+//                                           withCardIDs: cardIDs,
+//                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
+//
+//        } else if segue.identifier == "showSet" {
+//            guard let dest = segue.destination as? SetViewController,
+//                let set = sender as? CMSet else {
+//                return
+//            }
+//
+//            dest.viewModel = SetViewModel(withSet: set, languageCode: "en")
+//        }
     }
 
     // MARK: Custom methods
@@ -330,7 +331,7 @@ extension FeaturedViewController : LatestCardsTableViewDelegate {
 
 // MARK: FeaturedTableViewCellDelegate
 extension FeaturedViewController: FeaturedTableViewCellDelegate {
-    func showItem(section: FeaturedSection, index: Int, objects: [NSManagedObject], sorters: [NSSortDescriptor]?) {
+    func showItem(section: FeaturedSection, index: Int, objects: [Object], sorters: [SortDescriptor]?) {
         switch section {
         case .latestCards:
             ()

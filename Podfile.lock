@@ -8,7 +8,7 @@ PODS:
   - ChameleonFramework/Default (2.1.0)
   - ChameleonFramework/Swift (2.1.0):
     - ChameleonFramework/Default
-  - Cosmos (17.0.0)
+  - Cosmos (18.0.1)
   - Crashlytics (3.12.0):
     - Fabric (~> 1.9.0)
   - DACircularProgress (2.3.1)
@@ -66,7 +66,7 @@ PODS:
   - FirebaseUI/Storage (5.2.2):
     - Firebase/Storage (~> 5.0)
     - SDWebImage (~> 4.0)
-  - FontAwesome.swift (1.4.7)
+  - FontAwesome.swift (1.4.8)
   - GoogleAppMeasurement (5.4.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
     - GoogleUtilities/MethodSwizzler (~> 5.2)
@@ -110,14 +110,16 @@ PODS:
     - pop
     - SDWebImage
   - InAppSettingsKit (2.10)
-  - Kanna (4.0.2)
+  - Kanna (4.0.3)
+  - KeychainAccess (3.1.2)
   - leveldb-library (1.20)
-  - ManaKit (3.11.2):
+  - ManaKit (4.0.5):
     - Kanna (~> 4.0.0)
+    - KeychainAccess
     - PromiseKit
+    - RealmSwift
     - SDWebImage
     - SSZipArchive
-    - Sync
   - MBProgressHUD (1.1.0)
   - MMDrawerController (0.6.0):
     - MMDrawerController/Core (= 0.6.0)
@@ -141,21 +143,25 @@ PODS:
   - NYAlertViewController (1.3.0)
   - OAuthSwift (1.2.2)
   - pop (1.0.12)
-  - PromiseKit (6.7.0):
-    - PromiseKit/CorePromise (= 6.7.0)
-    - PromiseKit/Foundation (= 6.7.0)
-    - PromiseKit/UIKit (= 6.7.0)
-  - PromiseKit/CorePromise (6.7.0)
-  - PromiseKit/Foundation (6.7.0):
+  - PromiseKit (6.7.1):
+    - PromiseKit/CorePromise (= 6.7.1)
+    - PromiseKit/Foundation (= 6.7.1)
+    - PromiseKit/UIKit (= 6.7.1)
+  - PromiseKit/CorePromise (6.7.1)
+  - PromiseKit/Foundation (6.7.1):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.7.0):
+  - PromiseKit/UIKit (6.7.1):
     - PromiseKit/CorePromise
+  - Realm (3.13.1):
+    - Realm/Headers (= 3.13.1)
+  - Realm/Headers (3.13.1)
+  - RealmSwift (3.13.1):
+    - Realm (= 3.13.1)
   - SDWebImage (4.4.3):
     - SDWebImage/Core (= 4.4.3)
   - SDWebImage/Core (4.4.3)
-  - SimulatorStatusMagic (2.3.2)
+  - SimulatorStatusMagic (2.4.1)
   - SSZipArchive (2.1.4)
-  - Sync (5.1.0)
 
 DEPENDENCIES:
   - ChameleonFramework/Swift (from `https://github.com/ViccAlexander/Chameleon.git`)
@@ -183,6 +189,7 @@ DEPENDENCIES:
   - NYAlertViewController
   - OAuthSwift
   - PromiseKit
+  - RealmSwift
   - SimulatorStatusMagic
   - SSZipArchive
 
@@ -216,6 +223,7 @@ SPEC REPOS:
     - IDMPhotoBrowser
     - InAppSettingsKit
     - Kanna
+    - KeychainAccess
     - leveldb-library
     - ManaKit
     - MBProgressHUD
@@ -226,10 +234,11 @@ SPEC REPOS:
     - OAuthSwift
     - pop
     - PromiseKit
+    - Realm
+    - RealmSwift
     - SDWebImage
     - SimulatorStatusMagic
     - SSZipArchive
-    - Sync
 
 EXTERNAL SOURCES:
   ChameleonFramework:
@@ -243,7 +252,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   ChameleonFramework: d21a3cc247abfe5e37609a283a8238b03575cf64
-  Cosmos: 309e489f21ffc91a1eeecfebef7f817cd2fcfba6
+  Cosmos: 7dfaa3f52584ca5f94ab74b5c2e264019cc9f7f5
   Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
   Eureka: 28ea296f06710f6745266b71f17862048941a32d
@@ -260,7 +269,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
   FirebaseStorage: 3d22c041370593e639fba013d1eb698a8dae2881
   FirebaseUI: 09519bf436a055cd696bf68687d624423150e4c0
-  FontAwesome.swift: ed820aa59420c3c5e1b087afa3f3a78373fc5300
+  FontAwesome.swift: fb8637bffb9a588c7e8c753c084565b27b20a39d
   GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
   GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
   GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
@@ -269,9 +278,10 @@ SPEC CHECKSUMS:
   iCarousel: d782f635afac190c49bb8ee455882284cff8b85f
   IDMPhotoBrowser: 4bb459b1faffc228e92bccdf7c54ad6d6b7e8c37
   InAppSettingsKit: d965e29be941eb19857271e4625de3fba6e23c9f
-  Kanna: c60b61d72554bf04ed1ee074f9b379855cab4892
+  Kanna: 0ebbdd0e7e3308f0aafbd569e79c8cadc5eb877c
+  KeychainAccess: b3816fddcf28aa29d94b10ec305cd52be14c472b
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
-  ManaKit: a591b856bccf590b877ac799e8f42e63bd2ee678
+  ManaKit: a9d836212efe4816fab9a856169363e2b050a87a
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MMDrawerController: e3a54a5570388463ad3b36975251575b50c4e1a0
   "MMDrawerController+Storyboard": c98f86c0f32cdef1d466d19a7da3ad2fc6c6ac00
@@ -279,12 +289,13 @@ SPEC CHECKSUMS:
   NYAlertViewController: b93f82e2c1fc6d5e9485512ddbe7b481f463a074
   OAuthSwift: 27b34fe80b76b67cd8f45571e0be2432bc9f6de1
   pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
-  PromiseKit: 453ddcc947fe7b302f3ef41882b81d31c554df7f
+  PromiseKit: ef376fb8b4e92edfeb66bd403b983eaa07fbde0c
+  Realm: 50071da38fe079e0735e47c9f2eae738c68c5996
+  RealmSwift: 8a1e6a02b7a08cd17a31e3115143fb69fe5f3fb9
   SDWebImage: c5594f1a19c48d526d321e548902b56b479cd508
-  SimulatorStatusMagic: 0c0e711acef6e70dd8a0710962347635a9cdef24
+  SimulatorStatusMagic: 28d4a9d1a500ac7cea0b2b5a43c1c6ddb40ba56c
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
-  Sync: 0412c2b068eb7cf1a04607e948ef92cbd6114d0f
 
-PODFILE CHECKSUM: ea5b48031305b05a933ac885854929cd39a6e0fd
+PODFILE CHECKSUM: c55f529525a336a690a15605a60bd6b212599492
 
 COCOAPODS: 1.5.3

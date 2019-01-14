@@ -6,61 +6,52 @@
 //  Copyright © 2018 Jovito Royeca. All rights reserved.
 //
 
-import CoreData
 import ManaKit
 import PromiseKit
+import RealmSwift
 
 let kMaxLatestSets = 10
 
 class LatestSetsViewModel: BaseSearchViewModel {
+    private var _results: Results<CMSet>? = nil
+
     override init() {
         super.init()
         
-        sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
+        sortDescriptors = [SortDescriptor(keyPath: "releaseDate", ascending: false)]
     }
     
-    // MARK: Custom methods
+    // MARK: Overrides
     override func fetchData() -> Promise<Void> {
         return Promise { seal in
-            let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
-            request.predicate = NSPredicate(format: "parent = nil")
-            request.sortDescriptors = sortDescriptors
-            request.fetchLimit = kMaxLatestSets
-            fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
+            _results = ManaKit.sharedInstance.realm.objects(CMSet.self).filter("parent = nil").sorted(by: sortDescriptors!)
             seal.fulfill(())
         }
     }
     
-    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
-        let context = ManaKit.sharedInstance.dataStack!.viewContext
-        var request: NSFetchRequest<CMSet>?
-        
-        if let fetchRequest = fetchRequest {
-            request = fetchRequest as? NSFetchRequest<CMSet>
+    override func numberOfRows(inSection section: Int) -> Int {
+        if mode == .resultsFound {
+            return kMaxLatestSets
         } else {
-            // Create a default fetchRequest
-            request = CMSet.fetchRequest()
-            request!.sortDescriptors = sortDescriptors
+            return 1
         }
-        
-        // Create Fetched Results Controller
-        let frc = NSFetchedResultsController(fetchRequest: request!,
-                                             managedObjectContext: context,
-                                             sectionNameKeyPath: nil,
-                                             cacheName: nil)
-        
-        // Configure Fetched Results Controller
-        frc.delegate = self
-        
-        // perform fetch
-        do {
-            try frc.performFetch()
-        } catch {
-            let fetchError = error as NSError
-            print("Unable to Perform Fetch Request")
-            print("\(fetchError), \(fetchError.localizedDescription)")
+    }
+    
+    override func numberOfSections() -> Int {
+        return 1
+    }
+    
+    override func object(forRowAt indexPath: IndexPath) -> Object? {
+        guard let results = _results else {
+            return nil
         }
-        
-        return frc as! NSFetchedResultsController<NSManagedObject>
+        return results[indexPath.row]
+    }
+    
+    override func count() -> Int {
+        guard let results = _results else {
+            return 0
+        }
+        return results.count
     }
 }

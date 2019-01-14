@@ -17,8 +17,8 @@ struct FCCard {
     }
     
     // MARK: Properties
-    let key: String?
-    let ref: DatabaseReference?
+    var key: String?
+    var ref: DatabaseReference?
     
     let rating: Double?
     let views: Int?

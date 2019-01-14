@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import CoreData
 import FontAwesome_swift
 import InAppSettingsKit
 import MBProgressHUD

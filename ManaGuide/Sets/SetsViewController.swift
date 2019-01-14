@@ -38,6 +38,8 @@ class SetsViewController: BaseSearchViewController {
         tableView.register(UINib(nibName: "SearchModeTableViewCell",
                                  bundle: nil),
                            forCellReuseIdentifier: SearchModeTableViewCell.reuseIdentifier)
+        tableView.register(ManaKit.sharedInstance.nibFromBundle("SetTableViewCell"),
+                           forCellReuseIdentifier: SetTableViewCell.reuseIdentifier)
         tableView.keyboardDismissMode = .onDrag
         
         rightMenuButton.image = UIImage.fontAwesomeIcon(name: .slidersH,
@@ -70,8 +72,8 @@ class SetsViewController: BaseSearchViewController {
         var cell: UITableViewCell?
         
         if viewModel.mode == .resultsFound {
-            guard let c = tableView.dequeueReusableCell(withIdentifier: SetsTableViewCell.reuseIdentifier,
-                                                        for: indexPath) as? SetsTableViewCell else {
+            guard let c = tableView.dequeueReusableCell(withIdentifier: SetTableViewCell.reuseIdentifier,
+                                                        for: indexPath) as? SetTableViewCell else {
                 fatalError("Unexpected indexPath: \(indexPath)")
             }
             
@@ -105,15 +107,15 @@ class SetsViewController: BaseSearchViewController {
 extension SetsViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if viewModel.mode == .resultsFound {
-            return SetsTableViewCell.cellHeight
+            return SetTableViewCell.cellHeight
         } else {
             return tableView.frame.size.height / 3
         }
     }
 }
 
-// MARK:
-extension SetsViewController: SetsTableViewCellDelegate {
+// MARK: SetsTableViewCellDelegate
+extension SetsViewController: SetTableViewCellDelegate {
     func languageAction(cell: UITableViewCell, code: String) {
         guard let indexPath = tableView.indexPath(for: cell) else {
             return

@@ -6,10 +6,10 @@
 //  Copyright © 2018 Jovito Royeca. All rights reserved.
 //
 
-import CoreData
 import Firebase
 import ManaKit
 import PromiseKit
+import RealmSwift
 
 enum CardContent: Int {
     case card
@@ -144,27 +144,27 @@ class CardViewModel: BaseSearchViewModel {
     var faceOrder = 0
     var flipAngle = CGFloat(0)
 
-    var partsViewModel: SearchViewModel?
-    var variationsViewModel: SearchViewModel?
-    var otherPrintingsViewModel: SearchViewModel?
+    private var _results: Results<CMCard>? = nil
+    private var _partsViewModel: SearchViewModel?
+    private var _variationsViewModel: SearchViewModel?
+    private var _otherPrintingsViewModel: SearchViewModel?
     
+    override init() {
+        
+    }
+
     init(withCardIndex cardIndex: Int,
-         withCardIDs cardIDs: [String],
-         withSortDescriptors sd: [NSSortDescriptor]?) {
+         withCards cards: Results<CMCard>,
+         withSortDescriptors sd: [SortDescriptor]?) {
         super.init()
         
         self.cardIndex = cardIndex
-        self.sortDescriptors = sd
-        
-        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        request.predicate = NSPredicate(format: "id IN %@",
-                                        cardIDs)
-        request.sortDescriptors = sd
-        fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
+        sortDescriptors = sd
+        _results = cards
         reloadRelatedCards()
     }
     
-    // MARK: UITableView methods
+    // MARK: Overrides
     override func numberOfRows(inSection section: Int) -> Int {
         guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
             fatalError()
@@ -183,15 +183,9 @@ class CardViewModel: BaseSearchViewModel {
                 case CardDetailsSection.relatedData.rawValue:
                     rows = CardRelatedDataSection.count
                 case CardDetailsSection.rulings.rawValue:
-                    if let rulingsSet = card.cardRulings,
-                        let rulings = rulingsSet.allObjects as? [CMCardRuling] {
-                        rows = rulings.count >= 1 ? rulings.count : 1
-                    }
+                    rows = card.cardRulings.count >= 1 ? card.cardRulings.count : 1
                 case CardDetailsSection.legalities.rawValue:
-                    if let cardLegalitiesSet = card.cardLegalities,
-                        let cardLegalities = cardLegalitiesSet.allObjects as? [CMCardLegality] {
-                        rows = cardLegalities.count >= 1 ? cardLegalities.count : 1
-                    }
+                    rows = card.cardLegalities.count >= 1 ? card.cardLegalities.count : 1
                 case CardDetailsSection.otherDetails.rawValue:
                     rows = CardOtherDetailsSection.count
                 default:
@@ -201,79 +195,13 @@ class CardViewModel: BaseSearchViewModel {
                 rows = 1
             }
         case .store:
-            guard let storePricing = card.tcgplayerStorePricing,
-                let suppliersSet = storePricing.suppliers,
-                let suppliers = suppliersSet.allObjects as? [CMStoreSupplier] else {
+            guard let storePricing = card.tcgplayerStorePricing else {
                 return 1
             }
-            rows = suppliers.count + 1
+            rows = storePricing.suppliers.count + 1
         }
         
         return rows
-    }
-    
-    func numberOfCards() -> Int {
-        guard let fetchedResultsController = fetchedResultsController,
-            let fetchedObjects = fetchedResultsController.fetchedObjects else {
-            return 0
-        }
-        
-        return fetchedObjects.count
-    }
-
-    func numberOfParts() -> Int {
-        var count = 0
-        
-        if let model = partsViewModel,
-            let allObjects = model.allObjects() {
-            count = allObjects.count
-        }
-        return count
-    }
-    
-    func numberOfVariations() -> Int {
-        var count = 0
-        
-        if let model = variationsViewModel,
-            let allObjects = model.allObjects() {
-            count = allObjects.count
-        }
-        return count
-    }
-    
-    func numberOfOtherPrintings() -> Int {
-        var count = 0
-        
-        if let model = otherPrintingsViewModel,
-            let allObjects = model.allObjects() {
-            count = allObjects.count
-        }
-        return count
-    }
-    
-    func numberOfRulings() -> Int {
-        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
-            fatalError()
-        }
-        var count = 0
-        
-        if let rulingsSet = card.cardRulings,
-            let rulings = rulingsSet.allObjects as? [CMCardRuling] {
-            count = rulings.count
-        }
-        return count
-    }
-    
-    func numberOfLegalities() -> Int {
-        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
-            fatalError()
-        }
-        var count = 0
-        
-        if let cardLegalities = card.cardLegalities {
-            count = cardLegalities.count
-        }
-        return count
     }
     
     override func numberOfSections() -> Int {
@@ -328,42 +256,63 @@ class CardViewModel: BaseSearchViewModel {
         
         return headerTitle
     }
+
+    override func object(forRowAt indexPath: IndexPath) -> Object? {
+        guard let results = _results else {
+            return nil
+        }
+        return results[indexPath.row]
+    }
     
-    // MARK: Overrides
-    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
-        let context = ManaKit.sharedInstance.dataStack!.viewContext
-        var request: NSFetchRequest<CMCard>?
-        
-        if let fetchRequest = fetchRequest {
-            request = fetchRequest as? NSFetchRequest<CMCard>
-        } else {
-            // Create a default fetchRequest
-            request = CMCard.fetchRequest()
-            request!.sortDescriptors = sortDescriptors
+    override func count() -> Int {
+        guard let results = _results else {
+            return 0
         }
+        return results.count
+    }
+    
+    // MARK: Custom methods
+    func numberOfParts() -> Int {
+        var count = 0
         
-        // Create Fetched Results Controller
-        let frc = NSFetchedResultsController(fetchRequest: request!,
-                                             managedObjectContext: context,
-                                             sectionNameKeyPath: nil,
-                                             cacheName: nil)
-        
-        // Configure Fetched Results Controller
-        frc.delegate = self
-        
-        // perform fetch
-        do {
-            try frc.performFetch()
-        } catch {
-            let fetchError = error as NSError
-            print("Unable to Perform Fetch Request")
-            print("\(fetchError), \(fetchError.localizedDescription)")
+        if let model = _partsViewModel {
+            count = model.count()
         }
+        return count
+    }
+    
+    func numberOfVariations() -> Int {
+        var count = 0
         
-        return frc as! NSFetchedResultsController<NSManagedObject>
+        if let model = _variationsViewModel {
+            count = model.count()
+        }
+        return count
+    }
+    
+    func numberOfOtherPrintings() -> Int {
+        var count = 0
+        
+        if let model = _otherPrintingsViewModel {
+            count = model.count()
+        }
+        return count
+    }
+    
+    func numberOfRulings() -> Int {
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
+        return card.cardRulings.count
+    }
+    
+    func numberOfLegalities() -> Int {
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
+        return card.cardLegalities.count
     }
 
-    // MARK: Custom methods
     func cardMainDetails() -> [[CardDetailsMainDataSection: CMCard]] {
         guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
             fatalError()
@@ -372,16 +321,13 @@ class CardViewModel: BaseSearchViewModel {
         var array = [CMCard]()
         var faceIndex = 0
 
-        if let facesSet = card.faces,
-            let faces = facesSet.allObjects as? [CMCard] {
-            if faces.count > 0 {
-                let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
-                    return a.faceOrder < b.faceOrder
-                })
-                array.append(contentsOf: orderedFaces)
-            } else {
-                array.append(card)
-            }
+        if card.faces.count > 0 {
+            let orderedFaces = card.faces.sorted(by: {(a, b) -> Bool in
+                return a.faceOrder < b.faceOrder
+            })
+            array.append(contentsOf: orderedFaces)
+        } else {
+            array.append(card)
         }
         
         for a in array {
@@ -418,13 +364,11 @@ class CardViewModel: BaseSearchViewModel {
     }
     
     func rulingText(inRow row: Int, pointSize: CGFloat) -> NSAttributedString? {
-        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard,
-            let rulingsSet = card.cardRulings ,
-            let rulings = rulingsSet.allObjects as? [CMCardRuling] else {
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
             return nil
         }
         
-        let sortedRulings = rulings.sorted(by: {(first: Any, second: Any) -> Bool in
+        let sortedRulings = card.cardRulings.sorted(by: {(first: Any, second: Any) -> Bool in
             if let a = first as? CMCardRuling,
                 let b = second as? CMCardRuling,
                 let aRuling = a.ruling,
@@ -507,23 +451,14 @@ class CardViewModel: BaseSearchViewModel {
                 text = name
             }
         case .colorIdentity:
-            if let colorIdentities_ = card.colorIdentities {
-                if let s = colorIdentities_.allObjects as? [CMCardColor] {
-                    
-                    let string = s.map({ $0.name! }).joined(separator: ", ")
-                    if string.count > 0 {
-                        text = string
-                    }
-                }
+            let string = card.colorIdentities.map({ $0.name! }).joined(separator: ", ")
+            if string.count > 0 {
+                text = string
             }
         case .colors:
-            if let colors_ = card.colors,
-                let s = colors_.allObjects as? [CMCardColor] {
-                
-                let string = s.map({ $0.name! }).joined(separator: ", ")
-                if string.count > 0 {
-                    text = string
-                }
+            let string = card.colors.map({ $0.name! }).joined(separator: ", ")
+            if string.count > 0 {
+                text = string
             }
         case .colorshifted:
             text = card.isColorshifted ? "Yes" : "No"
@@ -557,56 +492,40 @@ class CardViewModel: BaseSearchViewModel {
         return text
     }
     
-    func requestForVariations() -> NSFetchRequest<CMCard> {
-        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
-            fatalError()
-        }
-        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        
-        request.predicate = NSPredicate(format: "set.code = %@ AND language.code = %@ AND id != %@ AND name = %@",
-                                        card.set!.code!,
-                                        card.language!.code!,
-                                        card.id!,
-                                        card.name!)
-        request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
-                                   NSSortDescriptor(key: "name", ascending: true),
-                                   NSSortDescriptor(key: "myNumberOrder", ascending: true)]
-        return request
-    }
-    
-    func requestForParts() -> NSFetchRequest<CMCard> {
-        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
-            fatalError()
-        }
-        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        
-        if let partsSet = card.parts,
-            let parts = partsSet.allObjects as? [CMCard] {
-            request.predicate = NSPredicate(format: "id IN %@",
-                                            parts.map({$0.id}))
-            request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
-                                       NSSortDescriptor(key: "name", ascending: true),
-                                       NSSortDescriptor(key: "myNumberOrder", ascending: true)]
-        }
-        return request
-    }
-
-    func requestForOtherPrintings() -> NSFetchRequest<CMCard> {
-        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
-            fatalError()
-        }
-        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        
-        request.predicate = NSPredicate(format: "set.code != %@ AND language.code = %@ AND id != %@ AND name = %@",
-                                        card.set!.code!,
-                                        card.language!.code!,
-                                        card.id!,
-                                        card.name!)
-        request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
-                                   NSSortDescriptor(key: "name", ascending: true),
-                                   NSSortDescriptor(key: "myNumberOrder", ascending: true)]
-        return request
-    }
+//    func predicateForVariations() -> NSPredicate {
+//        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+//            fatalError()
+//        }
+//        return NSPredicate(format: "set.code = %@ AND language.code = %@ AND id != %@ AND name = %@",
+//                           card.set!.code!,
+//                           card.language!.code!,
+//                           card.id!,
+//                           card.name!)
+//        request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
+//                                   NSSortDescriptor(key: "name", ascending: true),
+//                                   NSSortDescriptor(key: "myNumberOrder", ascending: true)]
+//    }
+//
+//    func predicateForParts() -> NSPredicate {
+//        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+//            fatalError()
+//        }
+//
+//        return NSPredicate(format: "id IN %@",
+//                           card.parts.map({$0.id}))
+//    }
+//
+//    func predicateForOtherPrintings() -> NSPredicate {
+//        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+//            fatalError()
+//        }
+//
+//        return NSPredicate(format: "set.code != %@ AND language.code = %@ AND id != %@ AND name = %@",
+//                           card.set!.code!,
+//                           card.language!.code!,
+//                           card.id!,
+//                           card.name!)
+//    }
     
     func userRatingForCurrentCard() -> Double {
         guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
@@ -614,15 +533,11 @@ class CardViewModel: BaseSearchViewModel {
         }
         
         guard let fbUser = Auth.auth().currentUser,
-            let user = ManaKit.sharedInstance.findObject("CMUser",
-                                                         objectFinder: ["id": fbUser.uid as AnyObject],
-                                                         createIfNotFound: false) as? CMUser,
-            let set = user.ratings,
-            let ratings = set.allObjects as? [CMCardRating] else {
+            let user = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", fbUser.uid).first else {
             return 0
         }
         
-        for c in ratings {
+        for c in user.ratings {
             if c.card?.id == card.id {
                 return c.rating
             }
@@ -635,15 +550,11 @@ class CardViewModel: BaseSearchViewModel {
             fatalError()
         }
         guard let fbUser = Auth.auth().currentUser,
-            let user = ManaKit.sharedInstance.findObject("CMUser",
-                                                         objectFinder: ["id": fbUser.uid as AnyObject],
-                                                         createIfNotFound: false) as? CMUser,
-            let set = user.favorites,
-            let favorites = set.allObjects as? [CMCard] else {
+            let user = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", fbUser.uid).first else {
             return false
         }
         
-        for c in favorites {
+        for c in user.favorites {
             if c.id == card.id {
                 return true
             }
@@ -651,37 +562,66 @@ class CardViewModel: BaseSearchViewModel {
         return false
     }
 
-    func ratingStringForCard() -> String {
+//    func ratingStringForCard() -> String {
+//        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+//            fatalError()
+//        }
+//
+//        return "\(card.firebaseRatings) Rating\(card.firebaseRatings > 1 ? "s" : "")"
+//    }
+    
+    func reloadRelatedCards() {
         guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
             fatalError()
         }
         
-        return "\(card.firebaseRatings) Rating\(card.firebaseRatings > 1 ? "s" : "")"
-    }
+        let sd = [SortDescriptor(keyPath: "set.releaseDate", ascending: false),
+                  SortDescriptor(keyPath: "name", ascending: true),
+                  SortDescriptor(keyPath: "myNumberOrder", ascending: true)]
+
+
+        let variationsPredicate = NSPredicate(format: "set.code = %@ AND language.code = %@ AND id != %@ AND name = %@",
+                                              card.set!.code!,
+                                              card.language!.code!,
+                                              card.id!,
+                                              card.name!)
+        
+        let partsPredicate = NSPredicate(format: "id IN %@",
+                                         card.parts.map({$0.id}))
     
-    func reloadRelatedCards() {
-        partsViewModel = SearchViewModel(withRequest: requestForParts(),
-                                         andTitle: nil,
-                                         andMode: .loading)
-        variationsViewModel = SearchViewModel(withRequest: requestForVariations(),
-                                              andTitle: nil,
-                                              andMode: .loading)
-        otherPrintingsViewModel = SearchViewModel(withRequest: requestForOtherPrintings(),
-                                                  andTitle: nil,
-                                                  andMode: .loading)
+        
+        let otherPrintingsPredicate = NSPredicate(format: "set.code != %@ AND language.code = %@ AND id != %@ AND name = %@",
+                                                  card.set!.code!,
+                                                  card.language!.code!,
+                                                  card.id!,
+                                                  card.name!)
+        
+        _partsViewModel = SearchViewModel(withPredicate: partsPredicate,
+                                          andSortDescriptors: sd,
+                                          andTitle: nil,
+                                          andMode: .loading)
+        _variationsViewModel = SearchViewModel(withPredicate: variationsPredicate,
+                                               andSortDescriptors: sd,
+                                               andTitle: nil,
+                                               andMode: .loading)
+        _otherPrintingsViewModel = SearchViewModel(withPredicate: otherPrintingsPredicate,
+                                                   andSortDescriptors: sd,
+                                                   andTitle: nil,
+                                                   andMode: .loading)
     }
 
     // MARK: Firebase methods
     func toggleCardFavorite(firstAttempt: Bool)  -> Promise<Void> {
+        guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard,
+            let firebaseID = card.firebaseID else {
+            fatalError()
+        }
+        
+        let data = firebaseData(with: firebaseID)
+        
         let promise = Promise<Void> { seal in
-            guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard else {
-                fatalError()
-            }
-            
             guard let fbUser = Auth.auth().currentUser,
-                let user = ManaKit.sharedInstance.findObject("CMUser",
-                                                             objectFinder: ["id": fbUser.uid as AnyObject],
-                                                             createIfNotFound: false) as? CMUser,
+                let user = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", fbUser.uid).first,
                 let id = card.firebaseID else {
                 return
             }
@@ -715,17 +655,14 @@ class CardViewModel: BaseSearchViewModel {
                     seal.reject(error)
                 } else {
                     if committed {
-                        if favorite {
-                            user.addToFavorites(card)
-                        } else {
-                            user.removeFromFavorites(card)
-                        }
-                        
-                        ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                            try! backgroundContext.save()
-                            NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.FavoriteToggled),
-                                                            object: nil,
-                                                            userInfo: ["card": card])
+                        try! ManaKit.sharedInstance.realm.write {
+                            // TODO: fix this
+//                            if favorite {
+//                                user.favorites.apend(card)
+//                            } else {
+//                                user.favorites.remove(card)
+//                            }
+//                            ManaKit.sharedInstance.realm.add(user)
                             seal.fulfill(())
                         }
                     } else {
@@ -742,15 +679,22 @@ class CardViewModel: BaseSearchViewModel {
             }
         }
         
-        return saveCardData(firstAttempt: true, completion: promise)
+        return saveFirebaseData(with: firebaseID,
+                                data: data,
+                                firstAttempt: true,
+                                completion: promise)
     }
     
     func incrementCardViews(firstAttempt: Bool) -> Promise<Void> {
+        guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard,
+            let firebaseID = card.firebaseID else {
+            fatalError()
+        }
+        
+        let data = firebaseData(with: firebaseID)
+        
         let promise = Promise<Void> { seal in
-            guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard else {
-                fatalError()
-            }
-            let ref = Database.database().reference().child("cards").child(card.firebaseID!)
+            let ref = Database.database().reference().child("cards").child(firebaseID)
             
             ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                 if var post = currentData.value as? [String : Any] {
@@ -781,16 +725,11 @@ class CardViewModel: BaseSearchViewModel {
                         }
                         let fcard = FCCard(snapshot: snapshot)
                         
-                        card.firebaseViews = Int64(fcard.views == nil ? 1 : fcard.views!)
-                        
-                        ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                            try! backgroundContext.save()
-                            NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardViewsUpdated),
-                                                            object: nil,
-                                                            userInfo: ["card": card])
+                        try! ManaKit.sharedInstance.realm.write {
+                            card.firebaseViews = Int64(fcard.views == nil ? 1 : fcard.views!)
+                            ManaKit.sharedInstance.realm.add(card)
                             seal.fulfill(())
                         }
-                        
                     } else {
                         // retry again, if we were aborted from above
                         firstly {
@@ -805,21 +744,25 @@ class CardViewModel: BaseSearchViewModel {
             }
         }
         
-        return saveCardData(firstAttempt: true, completion: promise)
+        return saveFirebaseData(with: firebaseID,
+                                data: data,
+                                firstAttempt: true,
+                                completion: promise)
     }
 
     func updateCardRatings(rating: Double, firstAttempt: Bool) -> Promise<Void> {
+        guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard,
+            let firebaseID = card.firebaseID else {
+            fatalError()
+        }
+        
+        let data = firebaseData(with: firebaseID)
+        
         let promise = Promise<Void> { seal in
-            guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard else {
-                fatalError()
-            }
-            
             guard let fbUser = Auth.auth().currentUser,
-                let user = ManaKit.sharedInstance.findObject("CMUser",
-                                                             objectFinder: ["id": fbUser.uid as AnyObject],
-                                                             createIfNotFound: false) as? CMUser,
+                let user = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", fbUser.uid).first,
                 let id = card.firebaseID else {
-                    return
+                return
             }
             
             let ref = Database.database().reference().child("cards").child(id)
@@ -847,7 +790,7 @@ class CardViewModel: BaseSearchViewModel {
                         return TransactionResult.abort()
                     } else {
                         ref.setValue([FCCard.Keys.Rating: rating,
-                                      FCCard.Keys.Ratings : [id: rating]])
+                                      FCCard.Keys.Ratings: [id: rating]])
                         return TransactionResult.success(withValue: currentData)
                     }
                 }
@@ -862,22 +805,17 @@ class CardViewModel: BaseSearchViewModel {
                         }
                         let fcard = FCCard(snapshot: snapshot)
                         
-                        card.firebaseRating = fcard.rating == nil ? rating : fcard.rating!
-                        card.firebaseRatings = fcard.ratings == nil ? Int32(1) : Int32(fcard.ratings!.count)
+                        try! ManaKit.sharedInstance.realm.write {
+                            card.firebaseRating = fcard.rating == nil ? rating : fcard.rating!
+                            ManaKit.sharedInstance.realm.add(card)
+                        }
                         
-                        ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                            try! backgroundContext.save()
-                            NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
-                                                            object: nil,
-                                                            userInfo: ["card": card])
-                            
-                            firstly {
-                                self.updateUserRatings(rating: rating, firstAttempt: true)
-                            }.done {
-                                seal.fulfill(())
-                            }.catch { error in
-                                seal.reject(error)
-                            }
+                        firstly {
+                            self.updateUserRatings(rating: rating, firstAttempt: true)
+                        }.done {
+                            seal.fulfill(())
+                        }.catch { error in
+                            seal.reject(error)
                         }
                         
                     } else {
@@ -894,7 +832,10 @@ class CardViewModel: BaseSearchViewModel {
             }
         }
         
-        return saveCardData(firstAttempt: true, completion: promise)
+        return saveFirebaseData(with: firebaseID,
+                                data: data,
+                                firstAttempt: true,
+                                completion: promise)
     }
     
     func updateUserRatings(rating: Double, firstAttempt: Bool) -> Promise<Void> {
@@ -904,11 +845,9 @@ class CardViewModel: BaseSearchViewModel {
             }
             
             guard let fbUser = Auth.auth().currentUser,
-                let user = ManaKit.sharedInstance.findObject("CMUser",
-                                                             objectFinder: ["id": fbUser.uid as AnyObject],
-                                                             createIfNotFound: false) as? CMUser,
+                let user = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", fbUser.uid).first,
                 let id = card.firebaseID else {
-                    return
+                return
             }
             let userRef = Database.database().reference().child("users").child(fbUser.uid).child("ratedCards")
             
@@ -938,27 +877,32 @@ class CardViewModel: BaseSearchViewModel {
                             let ratedCards = snapshot.value as? [String: Double] {
                             
                             for (k,v) in ratedCards {
-                                if let c = ManaKit.sharedInstance.findObject("CMCard",
-                                                                          objectFinder: ["firebaseID": k as AnyObject],
-                                                                          createIfNotFound: false) as? CMCard,
-                                    let cardRating = ManaKit.sharedInstance.findObject("CMCardRating",
-                                                                                   objectFinder: ["user.id": user.id! as AnyObject,
-                                                                                                  "card.id": k as AnyObject],
-                                                                                   createIfNotFound: true) as? CMCardRating {
-                                    cardRating.card = c
-                                    cardRating.user = user
-                                    cardRating.rating = v
-                                    user.addToRatings(cardRating)
+                                if let card = ManaKit.sharedInstance.realm.objects(CMCard.self).filter("firebaseID = %@", k).first {
+                                    var cardRating: CMCardRating?
+                                    
+                                    if let c = ManaKit.sharedInstance.realm.objects(CMCardRating.self).filter("user.id = %@ AND card.id = %@", user.id!, k).first {
+                                        cardRating = c
+                                    } else {
+                                        cardRating = CMCardRating()
+                                    }
+                                    cardRating!.card = card
+                                    cardRating!.user = user
+                                    cardRating!.rating = v
+                                    ManaKit.sharedInstance.realm.add(cardRating!)
+                                    
+                                    user.ratings.append(cardRating!)
+                                    ManaKit.sharedInstance.realm.add(user)
                                 }
                             }
                             
-                            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                                try! backgroundContext.save()
-                                NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
-                                                                object: nil,
-                                                                userInfo: ["card": card])
-                                seal.fulfill(())
-                            }
+//                            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+//                                try! backgroundContext.save()
+//                                NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
+//                                                                object: nil,
+//                                                                userInfo: ["card": card])
+//                                seal.fulfill(())
+//                            }
+                            seal.fulfill(())
                         }
                     } else {
                         // retry again, if we were aborted from above
@@ -975,16 +919,53 @@ class CardViewModel: BaseSearchViewModel {
         }
     }
 
-    private func saveCardData(firstAttempt: Bool, completion: Promise<Void>) -> Promise<Void> {
-        return Promise { seal in
-            guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
-                fatalError()
-            }
+    func loadFirebaseData() {
+        guard let results = _results else {
+            return
+        }
+    
+        for card in results {
             let ref = Database.database().reference().child("cards").child(card.firebaseID!)
+            
+            ref.observeSingleEvent(of: .value, with: { snapshot in
+                guard let value = snapshot.value as? [String : Any] else {
+                    return
+                }
+                
+                // update views
+                try! ManaKit.sharedInstance.realm.write {
+                    if let views = value[FCCard.Keys.Views] as? Int {
+                        card.firebaseViews = Int64(views)
+                    }
+                    if let rating = value[FCCard.Keys.Rating] as? Double {
+                        card.firebaseRating = rating
+                    }
+                    ManaKit.sharedInstance.realm.add(card)
+                }
+//                ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
+//                    if let views = value["Views"] as? Int {
+//                        card.firebaseViews = Int64(views)
+//                    }
+//                    if let rating = value["Rating"] as? Double {
+//                        card.firebaseRating = rating
+//                    }
+//                    try! backgroundContext.save()
+//
+//                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
+//                                                    object: nil,
+//                                                    userInfo: ["card": card])
+//                }
+            })
+        }
+    }
+    
+    func saveFirebaseData(with firebaseID: String, data: [String: Any], firstAttempt: Bool, completion: Promise<Void>) -> Promise<Void> {
+        return Promise { seal in
+            let ref = Database.database().reference().child("cards").child(firebaseID)
             
             ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                 if var post = currentData.value as? [String : Any] {
-                    for (k,v) in self.firebaseCardData() {
+                    for (k,v) in data {
                         post[k] = v
                     }
                     
@@ -996,7 +977,7 @@ class CardViewModel: BaseSearchViewModel {
                     if firstAttempt {
                         return TransactionResult.abort()
                     } else {
-                        ref.setValue(self.firebaseCardData())
+                        ref.setValue(data)
                         return TransactionResult.success(withValue: currentData)
                     }
                 }
@@ -1016,7 +997,10 @@ class CardViewModel: BaseSearchViewModel {
                     } else {
                         // retry again, if we were aborted from above
                         firstly {
-                            self.saveCardData(firstAttempt: false, completion: completion)
+                            self.saveFirebaseData(with: firebaseID,
+                                                  data: data,
+                                                  firstAttempt: false,
+                                                  completion: completion)
                         }.done {
                             seal.fulfill(())
                         }.catch { error in
@@ -1028,84 +1012,56 @@ class CardViewModel: BaseSearchViewModel {
         }
     }
     
-    func loadFirebaseData() {
-        guard let cards = allObjects() as? [CMCard] else {
-            return
-        }
-    
-        for card in cards {
-            let ref = Database.database().reference().child("cards").child(card.firebaseID!)
+    func deleteOldFirebaseData(with firebaseID: String) -> Promise<Void> {
+        return Promise<Void> { seal in
+            let ref = Database.database().reference().child("cards").child(firebaseID)
             
-            ref.observeSingleEvent(of: .value, with: { snapshot in
-                guard let value = snapshot.value as? [String : Any] else {
-                    return
+            ref.removeValue(completionBlock: { error, _ in
+                if let error = error {
+                    seal.reject(error)
+                } else {
+                    seal.fulfill(())
                 }
                 
-                // update views
-                ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                    if let views = value["Views"] as? Int {
-                        card.firebaseViews = Int64(views)
-                    }
-                    if let rating = value["Rating"] as? Double {
-                        card.firebaseRating = rating
-                    }
-                    try! backgroundContext.save()
-                    
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
-                                                    object: nil,
-                                                    userInfo: ["card": card])
-                }
             })
         }
     }
     
-    private func firebaseCardData() -> [String: Any] {
-        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+    func firebaseData(with firebaseID: String) -> [String: Any] {
+        guard let card = ManaKit.sharedInstance.realm.objects(CMCard.self).filter("firebaseID = %@", firebaseID).first else {
             fatalError()
         }
+        
         var dict = [String: Any]()
         
-        dict["Name"] = card.name
         dict["CMC"] = card.convertedManaCost
-        dict["ManaCost"] = card.manaCost
+        dict["Mana"] = card.manaCost
         
         if let imageUris = card.imageURIs {
             if let d = NSKeyedUnarchiver.unarchiveObject(with: imageUris as Data) as? [String: String] {
                 dict["image_uris"] = d
             }
+        }
+        
+        if let keyruneCode = card.set!.myKeyruneCode {
+            dict["Keyrune"] = keyruneCode
         } else {
-            if let imageURL = ManaKit.sharedInstance.imageURL(ofCard: card,
-                                                              imageType: .normal,
-                                                              faceOrder: faceOrder) {
-                dict["image_uri"] = imageURL.absoluteString
-            }
-        }
-        dict["ImageURL"] = nil
-        dict["CropURL"] = nil
-        
-        if let type = card.myType {
-            dict["Type"] = type.name
-        } else {
-            dict["Type"] = nil
+            dict["Keyrune"] = nil
         }
         
-        if let rarity = card.rarity {
-            dict["Rarity"] = rarity.name
-        } else {
-            dict["Rarity"] = ""
-        }
-        
-        if let set = card.set {
-            dict["Set_Name"] = set.name
-            dict["Set_Code"] = set.code
-            dict["Set_KeyruneCode"] = set.myKeyruneCode
-        }
-        
-        if let keyruneColor = ManaKit.sharedInstance.keyruneColor(forCard: card) {
+        if let keyruneColor = card.keyruneColor() {
             dict["KeyruneColor"] = keyruneColor.hexValue()
         } else {
             dict["KeyruneColor"] = ""
         }
+        
+        var ratings = [String: Double]()
+        for rating in card.firebaseUserRatings {
+            ratings[rating.user!.id!] = rating.rating
+        }
+        dict[FCCard.Keys.Views] = card.firebaseViews
+        dict[FCCard.Keys.Rating] = card.firebaseRating
+        dict[FCCard.Keys.Ratings] = ratings
         
         return dict
     }

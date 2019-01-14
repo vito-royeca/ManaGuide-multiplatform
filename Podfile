@@ -27,6 +27,7 @@ def default_pods
     pod 'NYAlertViewController'
     pod 'OAuthSwift'
     pod 'PromiseKit'
+    pod 'RealmSwift'
     pod 'SSZipArchive'
     #pod 'SwiftOCR'
 end

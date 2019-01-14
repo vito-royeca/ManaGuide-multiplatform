@@ -46,32 +46,33 @@ class BaseViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showCard" {
-            guard let dest = segue.destination as? CardViewController,
-                let dict = sender as? [String: Any],
-                let cardIndex = dict["cardIndex"] as? Int,
-                let cardIDs = dict["cardIDs"] as? [String] else {
-                    return
-            }
-            
-            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
-                                           withCardIDs: cardIDs,
-                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
-            
-        } else if segue.identifier == "showCardModal" {
-            guard let nav = segue.destination as? UINavigationController,
-                let dest = nav.children.first as? CardViewController,
-                let dict = sender as? [String: Any],
-                let cardIndex = dict["cardIndex"] as? Int,
-                let cardIDs = dict["cardIDs"] as? [String] else {
-                    return
-            }
-            
-            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
-                                           withCardIDs: cardIDs,
-                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
-            
-        }
+        // TODO: fix this
+//        if segue.identifier == "showCard" {
+//            guard let dest = segue.destination as? CardViewController,
+//                let dict = sender as? [String: Any],
+//                let cardIndex = dict["cardIndex"] as? Int,
+//                let cardIDs = dict["cardIDs"] as? [String] else {
+//                    return
+//            }
+//
+//            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
+//                                           withCardIDs: cardIDs,
+//                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
+//
+//        } else if segue.identifier == "showCardModal" {
+//            guard let nav = segue.destination as? UINavigationController,
+//                let dest = nav.children.first as? CardViewController,
+//                let dict = sender as? [String: Any],
+//                let cardIndex = dict["cardIndex"] as? Int,
+//                let cardIDs = dict["cardIDs"] as? [String] else {
+//                    return
+//            }
+//
+//            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
+//                                           withCardIDs: cardIDs,
+//                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
+//
+//        }
     }
 
     override func restoreUserActivityState(_ activity: NSUserActivity) {

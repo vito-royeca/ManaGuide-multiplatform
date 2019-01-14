@@ -7,9 +7,9 @@
 //
 
 import UIKit
-import CoreData
 import InAppSettingsKit
 import ManaKit
+import RealmSwift
 
 class SettingsViewController: IASKAppSettingsViewController {
 
@@ -35,15 +35,10 @@ extension SettingsViewController: IASKSettingsDelegate {
         var array = [String]()
         
         if specifier.key() == "slideshowSet" {
-            let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
-            request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false),
-                                       NSSortDescriptor(key: "name", ascending: true)]
+            let sortDescriptors = [SortDescriptor(keyPath: "releaseDate", ascending: false),
+                                   SortDescriptor(keyPath: "name", ascending: true)]
             
-            guard let sets = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) else {
-                return array
-            }
-            
-            for set in sets {
+            for set in ManaKit.sharedInstance.realm.objects(CMSet.self).sorted(by: sortDescriptors) {
                 array.append(set.name!)
             }
         }
@@ -55,15 +50,10 @@ extension SettingsViewController: IASKSettingsDelegate {
         var array = [String]()
         
         if specifier.key() == "slideshowSet" {
-            let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
-            request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false),
-                                       NSSortDescriptor(key: "name", ascending: true)]
+            let sortDescriptors = [SortDescriptor(keyPath: "releaseDate", ascending: false),
+                                   SortDescriptor(keyPath: "name", ascending: true)]
             
-            guard let sets = try! ManaKit.sharedInstance.dataStack?.mainContext.fetch(request) else {
-                return array
-            }
-            
-            for set in sets {
+            for set in ManaKit.sharedInstance.realm.objects(CMSet.self).sorted(by: sortDescriptors) {
                 array.append(set.code!)
             }
         }

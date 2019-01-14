@@ -33,13 +33,12 @@ class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
         
         firstly {
             ManaKit.sharedInstance.downloadImage(ofCard: card,
-                                                 imageType: .normal,
+                                                 type: .normal,
                                                  faceOrder: 0)
         }.done {
-            self._underlyingImage = ManaKit.sharedInstance.cardImage(card,
-                                                                     imageType: .normal,
-                                                                     faceOrder: 0,
-                                                                     roundCornered: true)
+            self._underlyingImage = card.image(type: .normal,
+                                               faceOrder: 0,
+                                               roundCornered: true)
             self.imageLoadingComplete()
         }.catch { error in
             self.unloadUnderlyingImage()
@@ -56,7 +55,7 @@ class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
             return nil
         }
         
-        return ManaKit.sharedInstance.cardBack(card)
+        return card.backImage()
     }
     
     func caption() -> String? {

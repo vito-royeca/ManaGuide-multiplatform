@@ -41,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // ManaKit
         ManaKit.sharedInstance.setupResources()
-        ManaKit.sharedInstance.configureTCGPlayer(partnerKey: TCGPlayerSettings.PartnerKey,
+        ManaKit.sharedInstance.configureTcgPlayer(partnerKey: TCGPlayerSettings.PartnerKey,
                                                   publicKey: TCGPlayerSettings.PublicKey,
                                                   privateKey: TCGPlayerSettings.PrivateKey)
         // Set the global tint color

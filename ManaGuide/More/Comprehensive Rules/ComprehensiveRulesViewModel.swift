@@ -6,7 +6,6 @@
 //  Copyright © 2018 Jovito Royeca. All rights reserved.
 //
 
-import CoreData
 import ManaKit
 import PromiseKit
 
@@ -65,44 +64,44 @@ class ComprehensiveRulesViewModel: BaseSearchViewModel {
         }
     }
     
-    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
-        let context = ManaKit.sharedInstance.dataStack!.viewContext
-        var request: NSFetchRequest<CMRule>?
-        
-        if let fetchRequest = fetchRequest {
-            request = fetchRequest as? NSFetchRequest<CMRule>
-        } else {
-            // Create a default fetchRequest
-            request = CMRule.fetchRequest()
-            request!.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
-            if let rule = _rule {
-                request!.predicate = NSPredicate(format: "parent = %@", rule)
-            } else {
-                request!.predicate = NSPredicate(format: "parent = nil")
-                
-            }
-        }
-        
-        // Create Fetched Results Controller
-        let frc = NSFetchedResultsController(fetchRequest: request!,
-                                             managedObjectContext: context,
-                                             sectionNameKeyPath: _sectionName,
-                                             cacheName: nil)
-        
-        // Configure Fetched Results Controller
-        frc.delegate = self
-        
-        // perform fetch
-        do {
-            try frc.performFetch()
-        } catch {
-            let fetchError = error as NSError
-            print("Unable to Perform Fetch Request")
-            print("\(fetchError), \(fetchError.localizedDescription)")
-        }
-        
-        return frc as! NSFetchedResultsController<NSManagedObject>
-    }
+//    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
+//        let context = ManaKit.sharedInstance.dataStack!.viewContext
+//        var request: NSFetchRequest<CMRule>?
+//
+//        if let fetchRequest = fetchRequest {
+//            request = fetchRequest as? NSFetchRequest<CMRule>
+//        } else {
+//            // Create a default fetchRequest
+//            request = CMRule.fetchRequest()
+//            request!.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
+//            if let rule = _rule {
+//                request!.predicate = NSPredicate(format: "parent = %@", rule)
+//            } else {
+//                request!.predicate = NSPredicate(format: "parent = nil")
+//
+//            }
+//        }
+//
+//        // Create Fetched Results Controller
+//        let frc = NSFetchedResultsController(fetchRequest: request!,
+//                                             managedObjectContext: context,
+//                                             sectionNameKeyPath: _sectionName,
+//                                             cacheName: nil)
+//
+//        // Configure Fetched Results Controller
+//        frc.delegate = self
+//
+//        // perform fetch
+//        do {
+//            try frc.performFetch()
+//        } catch {
+//            let fetchError = error as NSError
+//            print("Unable to Perform Fetch Request")
+//            print("\(fetchError), \(fetchError.localizedDescription)")
+//        }
+//
+//        return frc as! NSFetchedResultsController<NSManagedObject>
+//    }
     
     override func updateSections() {
         guard let fetchedResultsController = fetchedResultsController,

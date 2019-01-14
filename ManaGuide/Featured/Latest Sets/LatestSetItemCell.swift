@@ -19,7 +19,7 @@ class LatestSetItemCell: UICollectionViewCell {
     // MARK: Variables
     var set: CMSet! {
         didSet {
-            logoLabel.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
+            logoLabel.text = set.keyruneUnicode()
             nameLabel.text = set.name
         }
     }

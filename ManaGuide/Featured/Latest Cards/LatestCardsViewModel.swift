@@ -6,89 +6,87 @@
 //  Copyright © 2018 Jovito Royeca. All rights reserved.
 //
 
-import CoreData
 import ManaKit
 import PromiseKit
+import RealmSwift
 
 let kMaxLatestCards = 10
 
 class LatestCardsViewModel: BaseSearchViewModel {
+    private var _results: Results<CMCard>? = nil
+    
     override init() {
         super.init()
         
-        sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false)]
+        sortDescriptors = [SortDescriptor(keyPath: "set.releaseDate", ascending: false)]
     }
     
-    // MARK: Custom methods
+    // MARK: Overrides
     override func fetchData() -> Promise<Void> {
         return Promise { seal in
-            let sets = fetchLatestSets()
-            var mids = [NSManagedObjectID]()
+            var mids = [String]()
             
-            // get random ManagedObjectIDs first
-            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "CMCard")
-            request.predicate = NSPredicate(format: "language.code = %@ AND imageURIs != nil AND set.code IN %@ AND id != nil", "en",
-                                            sets.map( { $0.code} ))
-            request.resultType = NSFetchRequestResultType.managedObjectIDResultType
-            request.sortDescriptors = sortDescriptors
-            let result = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
+            // Get random IDs first
+            var predicate = NSPredicate(format: "language.code = %@ AND imageURIs != nil AND set.code IN %@ AND id != nil",
+                                        "en",
+                                        fetchLatestSets().map( { $0.code} ))
+            _results = ManaKit.sharedInstance.realm.objects(CMCard.self).filter(predicate).sorted(by: sortDescriptors!)
+            
             repeat {
-                if let mid = result[Int(arc4random_uniform(UInt32(result.count)))] as? NSManagedObjectID {
-                    if !mids.contains(mid) {
-                        mids.append(mid)
-                    }
+                let card = _results![Int(arc4random_uniform(UInt32(_results!.count)))]
+                if !mids.contains(card.id!) {
+                    mids.append(card.id!)
                 }
             } while mids.count < kMaxLatestCards
             
             // then fetch with the random CMCards
-            let newRequest: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-            newRequest.predicate = NSPredicate(format: "self IN %@", mids)
-            newRequest.sortDescriptors = sortDescriptors
-            fetchedResultsController = getFetchedResultsController(with: newRequest as? NSFetchRequest<NSManagedObject>)
+            predicate = NSPredicate(format: "id IN %@",
+                                    mids)
+            _results = ManaKit.sharedInstance.realm.objects(CMCard.self).filter(predicate).sorted(by: sortDescriptors!)
             seal.fulfill(())
         }
     }
     
-    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
-        let context = ManaKit.sharedInstance.dataStack!.viewContext
-        var request: NSFetchRequest<CMCard>?
-        
-        if let fetchRequest = fetchRequest {
-            request = fetchRequest as? NSFetchRequest<CMCard>
+    override func numberOfRows(inSection section: Int) -> Int {
+        if mode == .resultsFound {
+            return kMaxLatestCards
         } else {
-            // Create a default fetchRequest
-            request = CMCard.fetchRequest()
-            request!.sortDescriptors = sortDescriptors
+            return 1
         }
-        
-        // Create Fetched Results Controller
-        let frc = NSFetchedResultsController(fetchRequest: request!,
-                                             managedObjectContext: context,
-                                             sectionNameKeyPath: nil,
-                                             cacheName: nil)
-        
-        // Configure Fetched Results Controller
-        frc.delegate = self
-        
-        // perform fetch
-        do {
-            try frc.performFetch()
-        } catch {
-            let fetchError = error as NSError
-            print("Unable to Perform Fetch Request")
-            print("\(fetchError), \(fetchError.localizedDescription)")
-        }
-        
-        return frc as! NSFetchedResultsController<NSManagedObject>
     }
     
+    override func numberOfSections() -> Int {
+        return 1
+    }
+    
+    override func object(forRowAt indexPath: IndexPath) -> Object? {
+        guard let results = _results else {
+            return nil
+        }
+        return results[indexPath.row]
+    }
+    
+    override func count() -> Int {
+        guard let results = _results else {
+            return 0
+        }
+        return results.count
+    }
+    
+    // MARK: Custom methods
     private func fetchLatestSets() -> [CMSet] {
-        let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
-        request.predicate = NSPredicate(format: "parent = nil")
-        request.sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false)]
-        request.fetchLimit = kMaxLatestSets
+        var sets = [CMSet]()
+        var count = 0
         
-        return try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
+        let sortDescriptors = [SortDescriptor(keyPath: "releaseDate", ascending: false)]
+        for set in ManaKit.sharedInstance.realm.objects(CMSet.self).filter("parent = nil").sorted(by: sortDescriptors) {
+            if count >= kMaxLatestSets {
+                break
+            }
+            sets.append(set)
+            count += 1
+        }
+        return sets
     }
 }
 

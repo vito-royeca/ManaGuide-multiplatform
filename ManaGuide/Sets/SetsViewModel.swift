@@ -6,9 +6,9 @@
 //  Copyright © 2018 Jovito Royeca. All rights reserved.
 //
 
-import CoreData
 import ManaKit
 import PromiseKit
+import RealmSwift
 
 class SetsViewModel: BaseSearchViewModel {
     override init() {
@@ -58,22 +58,26 @@ class SetsViewModel: BaseSearchViewModel {
     // MARK: Custom methods
     override func fetchData() -> Promise<Void> {
         return Promise { seal in
-            let request: NSFetchRequest<CMSet> = CMSet.fetchRequest()
+            var predicate: NSPredicate?
             let count = queryString.count
             
             if count > 0 {
                 if count == 1 {
-                    request.predicate = NSPredicate(format: "name BEGINSWITH[cd] %@ OR code BEGINSWITH[cd] %@",
-                                                    queryString, queryString)
+                    predicate = NSPredicate(format: "name BEGINSWITH[cd] %@ OR code BEGINSWITH[cd] %@",
+                                            queryString, queryString)
                 } else {
-                    request.predicate = NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@",
-                                                    queryString, queryString)
+                    predicate = NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@",
+                                            queryString, queryString)
                 }
             }
             updateSorting(with: nil)
-            request.sortDescriptors = sortDescriptors
             
-            fetchedResultsController = getFetchedResultsController(with: request as? NSFetchRequest<NSManagedObject>)
+            if let predicate = predicate {
+                results = ManaKit.sharedInstance.realm.objects(CMSet.self).filter(predicate).sorted(by: sortDescriptors!) as? Results<Object>
+            } else {
+                results = ManaKit.sharedInstance.realm.objects(CMSet.self).sorted(by: sortDescriptors!) as? Results<Object>
+            }
+            
             updateSections()
             seal.fulfill(())
         }
@@ -119,47 +123,12 @@ class SetsViewModel: BaseSearchViewModel {
         UserDefaults.standard.set(setsOrderBy, forKey: "setsOrderBy")
         UserDefaults.standard.synchronize()
         
-        sortDescriptors = [NSSortDescriptor(key: setsSortBy, ascending: setsOrderBy)]
+        sortDescriptors = [SortDescriptor(keyPath: setsSortBy, ascending: setsOrderBy)]
     }
     
     // MARK: Overrides
-    override func getFetchedResultsController(with fetchRequest: NSFetchRequest<NSManagedObject>?) -> NSFetchedResultsController<NSManagedObject> {
-        let context = ManaKit.sharedInstance.dataStack!.viewContext
-        var request: NSFetchRequest<CMSet>?
-        
-        if let fetchRequest = fetchRequest {
-            request = fetchRequest as? NSFetchRequest<CMSet>
-        } else {
-            // Create a default fetchRequest
-            request = CMSet.fetchRequest()
-            request!.sortDescriptors = sortDescriptors
-        }
-        
-        // Create Fetched Results Controller
-        let frc = NSFetchedResultsController(fetchRequest: request!,
-                                             managedObjectContext: context,
-                                             sectionNameKeyPath: sectionName,
-                                             cacheName: nil)
-        
-        // Configure Fetched Results Controller
-        frc.delegate = self
-        
-        // perform fetch
-        do {
-            try frc.performFetch()
-        } catch {
-            let fetchError = error as NSError
-            print("Unable to Perform Fetch Request")
-            print("\(fetchError), \(fetchError.localizedDescription)")
-        }
-        
-        return frc as! NSFetchedResultsController<NSManagedObject>
-    }
-    
     override func updateSections() {
-        guard let fetchedResultsController = fetchedResultsController,
-            let sets = fetchedResultsController.fetchedObjects as? [CMSet],
-            let sections = fetchedResultsController.sections else {
+        guard let results = results else {
             return
         }
 
@@ -174,7 +143,7 @@ class SetsViewModel: BaseSearchViewModel {
             return
         }
         
-        for set in sets {
+        for set in results {
             var prefix: String?
             
             switch sectionName {
@@ -193,17 +162,17 @@ class SetsViewModel: BaseSearchViewModel {
             }
         }
         
-        let count = sections.count
-        if count > 0 {
-            for i in 0...count - 1 {
-                if let sectionTitle = sections[i].indexTitle {
-                    _sectionTitles!.append(sectionTitle)
-                }
-            }
-        }
-        
-        _sectionIndexTitles!.sort()
-        _sectionTitles!.sort()
+//        let count = sections.count
+//        if count > 0 {
+//            for i in 0...count - 1 {
+//                if let sectionTitle = sections[i].indexTitle {
+//                    _sectionTitles!.append(sectionTitle)
+//                }
+//            }
+//        }
+//
+//        _sectionIndexTitles!.sort()
+//        _sectionTitles!.sort()
     }
     
     private func defaultsValue() -> [String: Any] {

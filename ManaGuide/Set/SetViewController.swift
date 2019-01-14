@@ -7,12 +7,12 @@
 //
 
 import UIKit
-import CoreData
 import FontAwesome_swift
 import InAppSettingsKit
 import ManaKit
 import MBProgressHUD
 import PromiseKit
+import RealmSwift
 
 class SetViewController: SearchViewController {
     // MARK: Outlets

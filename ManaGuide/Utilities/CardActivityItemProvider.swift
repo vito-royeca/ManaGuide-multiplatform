@@ -15,18 +15,16 @@ class CardActivityItemProvider: UIActivityItemProvider {
     init(_ card: CMCard) {
         self.card = card
         
-        super.init(placeholderItem: ManaKit.sharedInstance.cardImage(card,
-                                                                     imageType: .normal,
-                                                                     faceOrder: 0,
-                                                                     roundCornered: true)!)
+        super.init(placeholderItem: card.image(type: .normal,
+                                               faceOrder: 0,
+                                               roundCornered: true)!)
     }
     
     override var item: Any {
         get {
-            return ManaKit.sharedInstance.cardImage(card,
-                                                    imageType: .normal,
-                                                    faceOrder: 0,
-                                                    roundCornered: true)!
+            return card.image(type: .normal,
+                              faceOrder: 0,
+                              roundCornered: true)!
         }
     }
 }

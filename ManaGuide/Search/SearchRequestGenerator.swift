@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import CoreData
 import ManaKit
 
 enum SearchKey : Int {
@@ -130,8 +129,7 @@ class SearchRequestGenerator: NSObject {
         return sectionName
     }
     
-    func createSearchRequest(query: String?, oldRequest: NSFetchRequest<CMCard>?) -> NSFetchRequest<CMCard>? {
-        let newRequest: NSFetchRequest<CMCard> = CMCard.fetchRequest()
+    func createSearchPredicate(query: String?, oldPredicate: NSPredicate?) -> NSPredicate? {
         let idPredicate = NSPredicate(format: "id != nil")
         let languagePredicate = NSPredicate(format: "language.code = %@", "en")
         var predicates = [NSPredicate]()
@@ -140,9 +138,8 @@ class SearchRequestGenerator: NSObject {
         if let p = createKeywordPredicate(query: query) {
             predicates.append(p)
         }
-        if let oldRequest = oldRequest,
-            let p = oldRequest.predicate {
-            predicates.append(p)
+        if let oldPredicate = oldPredicate {
+            predicates.append(oldPredicate)
         }
         
         if predicates.count > 0 {
@@ -166,10 +163,7 @@ class SearchRequestGenerator: NSObject {
             }
         }
         
-        newRequest.predicate = predicate
-        newRequest.sortDescriptors = createSortDescriptors()
-        
-        return newRequest
+        return predicate
     }
     
     func createSortDescriptors() -> [NSSortDescriptor]? {
