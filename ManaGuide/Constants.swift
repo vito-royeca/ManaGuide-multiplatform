@@ -35,6 +35,7 @@ enum GitHubSettings {
 // ---------------------------------------------------------------------- //
 enum NotificationKeys {
     static let FavoriteToggled    = "FavoriteToggled"
+    static let CardPricingUpdated = "CardPricingUpdated"
     static let CardRatingUpdated  = "CardRatingUpdated"
     static let CardViewsUpdated   = "CardViewsUpdated"
     static let DeckUpdated        = "DeckUpdated"

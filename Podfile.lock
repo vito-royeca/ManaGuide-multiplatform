@@ -113,7 +113,7 @@ PODS:
   - Kanna (4.0.3)
   - KeychainAccess (3.1.2)
   - leveldb-library (1.20)
-  - ManaKit (4.0.5):
+  - ManaKit (4.0.6):
     - Kanna (~> 4.0.0)
     - KeychainAccess
     - PromiseKit
@@ -281,7 +281,7 @@ SPEC CHECKSUMS:
   Kanna: 0ebbdd0e7e3308f0aafbd569e79c8cadc5eb877c
   KeychainAccess: b3816fddcf28aa29d94b10ec305cd52be14c472b
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
-  ManaKit: a9d836212efe4816fab9a856169363e2b050a87a
+  ManaKit: b39aa58c8bb8e20bef619af78fcd150bae67d119
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MMDrawerController: e3a54a5570388463ad3b36975251575b50c4e1a0
   "MMDrawerController+Storyboard": c98f86c0f32cdef1d466d19a7da3ad2fc6c6ac00

@@ -16,6 +16,7 @@ protocol CardActionsTableViewCellDelegate : NSObjectProtocol {
 
 class CardActionsTableViewCell: UITableViewCell {
     static let reuseIdentifier = "CardActionsCell"
+    static let cellHeight = CGFloat(44)
     
     // MARK: Variables
     var delegate: CardActionsTableViewCellDelegate?

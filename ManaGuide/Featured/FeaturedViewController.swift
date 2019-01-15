@@ -86,39 +86,36 @@ class FeaturedViewController: BaseViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // TODO: fix this
-//        if segue.identifier == "showCard" {
-//            guard let dest = segue.destination as? CardViewController,
-//                let dict = sender as? [String: Any],
-//                let cardIndex = dict["cardIndex"] as? Int,
-//                let cardIDs = dict["cardIDs"] as? [String] else {
-//                return
-//            }
-//
-//            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
-//                                           withCardIDs: cardIDs,
-//                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
-//
-//        } else if segue.identifier == "showCardModal" {
-//            guard let nav = segue.destination as? UINavigationController,
-//                let dest = nav.children.first as? CardViewController,
-//                let dict = sender as? [String: Any],
-//                let cardIndex = dict["cardIndex"] as? Int,
-//                let cardIDs = dict["cardIDs"] as? [String] else {
-//                return
-//            }
-//
-//            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
-//                                           withCardIDs: cardIDs,
-//                                           withSortDescriptors: dict["sortDescriptors"] as? [NSSortDescriptor])
-//
-//        } else if segue.identifier == "showSet" {
+        if segue.identifier == "showCard" {
+            guard let dest = segue.destination as? CardViewController,
+                let dict = sender as? [String: Any],
+                let cardIndex = dict["cardIndex"] as? Int,
+                let cards = dict["cards"] as? Results<CMCard> else {
+                return
+            }
+
+            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
+                                           withCards: cards)
+        } else if segue.identifier == "showCardModal" {
+            guard let nav = segue.destination as? UINavigationController,
+                let dest = nav.children.first as? CardViewController,
+                let dict = sender as? [String: Any],
+                let cardIndex = dict["cardIndex"] as? Int,
+                let cards = dict["cards"] as? Results<CMCard> else {
+                return
+            }
+
+            dest.viewModel = CardViewModel(withCardIndex: cardIndex,
+                                           withCards: cards)
+
+        } else if segue.identifier == "showSet" {
 //            guard let dest = segue.destination as? SetViewController,
 //                let set = sender as? CMSet else {
 //                return
 //            }
 //
 //            dest.viewModel = SetViewModel(withSet: set, languageCode: "en")
-//        }
+        }
     }
 
     // MARK: Custom methods
@@ -323,37 +320,24 @@ extension FeaturedViewController : LatestCardsTableViewDelegate {
     func cardSelected(card: CMCard) {
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": 0,
-                      "cardIDs": [card.id],
-                      "sortDescriptors": [NSSortDescriptor(key: "name", ascending: true)]] as [String : Any]
+                      "cards": ManaKit.sharedInstance.realm.objects(CMCard.self).filter("id in %@", [card.id!])] as [String : Any]
         performSegue(withIdentifier: identifier, sender: sender)
     }
 }
 
 // MARK: FeaturedTableViewCellDelegate
 extension FeaturedViewController: FeaturedTableViewCellDelegate {
-    func showItem(section: FeaturedSection, index: Int, objects: [Object], sorters: [SortDescriptor]?) {
-        switch section {
-        case .latestCards:
-            ()
-        case .latestSets:
-            performSegue(withIdentifier: "showSet", sender: objects[0])
-        case .topRated,
-             .topViewed:
-            let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-            var sender = ["cardIndex": index] as [String : Any]
-            var cardIDs = [String]()
-            
-            for mo in objects {
-                if let card = mo as? CMCard {
-                    cardIDs.append(card.id!)
-                }
-            }
-            sender["cardIDs"] = cardIDs
-            if let sorters = sorters {
-                sender["sortDescriptors"] = sorters
-            }
-            performSegue(withIdentifier: identifier, sender: sender)
-        }
+    func showSet(_ set: CMSet) {
+        performSegue(withIdentifier: "showSet", sender: set)
+    }
+    
+    func showCards(_ cards: Results<CMCard>, withIndex index: Int) {
+        let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
+        let sender = ["cardIndex": index,
+                      "cards": cards] as [String : Any]
+        
+        performSegue(withIdentifier: identifier, sender: sender)
+        
     }
     
     func seeAllItems(section: FeaturedSection) {

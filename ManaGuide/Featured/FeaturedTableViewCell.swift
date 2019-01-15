@@ -12,7 +12,8 @@ import PromiseKit
 import RealmSwift
 
 protocol FeaturedTableViewCellDelegate: NSObjectProtocol {
-    func showItem(section: FeaturedSection, index: Int, objects: [Object], sorters: [SortDescriptor]?)
+    func showSet(_ set: CMSet)
+    func showCards(_ cards: Results<CMCard>, withIndex index: Int)
     func seeAllItems(section: FeaturedSection)
 }
 
@@ -143,31 +144,31 @@ extension FeaturedTableViewCell: UICollectionViewDelegate {
             return
         }
 
-        var index = 0
-        var objects = [Object]()
-        var sorters: [SortDescriptor]?
-
         switch section {
         case .latestSets:
             if let set = viewModel.object(forRowAt: indexPath) as? CMSet {
-                objects.append(set)
+                delegate?.showSet(set)
             }
         case .topRated,
              .topViewed:
-            index = indexPath.item
-            // TODO: fix this
-//            if let allObjects = viewModel.allObjects() {
-//                objects = allObjects
-//            }
-            sorters = viewModel.sortDescriptors
+            let index = indexPath.item
+            var ids = [String]()
+            
+            for i in 0...viewModel.count() - 1 {
+                if let card = viewModel.object(forRowAt: IndexPath(row: i, section: 0)) as? CMCard,
+                    let id = card.id {
+                    ids.append(id)
+                }
+            }
+            var cards = ManaKit.sharedInstance.realm.objects(CMCard.self).filter("id in %@", ids)
+            if let sortDescriptors = viewModel.sortDescriptors {
+                cards = cards.sorted(by: sortDescriptors)
+            }
+            
+            delegate?.showCards(cards,
+                                withIndex: index)
         default:
             ()
         }
-
-        // TODO: fix this
-//        delegate?.showItem(section: section,
-//                           index: index,
-//                           objects: objects,
-//                           sorters: sorters)
     }
 }

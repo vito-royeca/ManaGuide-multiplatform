@@ -25,8 +25,8 @@ class CardSetTableViewCell: UITableViewCell {
             var detailsText = ""
             
             if let set = card.set {
-                imageLabel.text = ManaKit.sharedInstance.keyruneUnicode(forSet: set)
-                imageLabel.textColor = ManaKit.sharedInstance.keyruneColor(forCard: card)
+                imageLabel.text = set.keyruneUnicode()
+                imageLabel.textColor = card.keyruneColor()
                 nameLabel.text = "\(set.name!) (\(set.code!))"
             }
             

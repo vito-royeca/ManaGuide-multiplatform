@@ -22,8 +22,8 @@ class CardTypeTableViewCell: UITableViewCell {
                 return
             }
             
-            typeImage.image = ManaKit.sharedInstance.typeImage(ofCard: card)
-            typeLabel.text = ManaKit.sharedInstance.typeText(ofCard: card, includePower: false)
+            typeImage.image = card.typeImage()
+            typeLabel.text = card.typeText(includePower: false)
         }
     }
 

@@ -78,7 +78,7 @@ class TopViewedViewModel: BaseSearchViewModel {
                 if let c = child as? DataSnapshot {
                     let fccard = FCCard(snapshot: c)
                     let oldFBKey = c.key
-                    let newFBKey = self.newFirebaseKey(from: oldFBKey)
+                    let newFBKey = ManaKit.sharedInstance.newFirebaseKey(from: oldFBKey)
                     
                     if let card = ManaKit.sharedInstance.realm.objects(CMCard.self).filter("firebaseID = %@", newFBKey).first {
                         try! ManaKit.sharedInstance.realm.write {

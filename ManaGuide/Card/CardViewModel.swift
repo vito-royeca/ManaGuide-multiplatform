@@ -154,12 +154,10 @@ class CardViewModel: BaseSearchViewModel {
     }
 
     init(withCardIndex cardIndex: Int,
-         withCards cards: Results<CMCard>,
-         withSortDescriptors sd: [SortDescriptor]?) {
+         withCards cards: Results<CMCard>) {
         super.init()
         
         self.cardIndex = cardIndex
-        sortDescriptors = sd
         _results = cards
         reloadRelatedCards()
     }
@@ -375,7 +373,7 @@ class CardViewModel: BaseSearchViewModel {
                 let bRuling = b.ruling,
                 let aDate = aRuling.date,
                 let bDate = bRuling.date {
-                    return aDate > bDate
+                return aDate > bDate
             }
             
             return false
@@ -562,13 +560,13 @@ class CardViewModel: BaseSearchViewModel {
         return false
     }
 
-//    func ratingStringForCard() -> String {
-//        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
-//            fatalError()
-//        }
-//
-//        return "\(card.firebaseRatings) Rating\(card.firebaseRatings > 1 ? "s" : "")"
-//    }
+    func ratingStringForCard() -> String {
+        guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            fatalError()
+        }
+
+        return "\(card.firebaseRating) Rating\(card.firebaseRating > 1 ? "s" : "")"
+    }
     
     func reloadRelatedCards() {
         guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
@@ -610,6 +608,33 @@ class CardViewModel: BaseSearchViewModel {
                                                    andMode: .loading)
     }
 
+    func downloadCardPricing() {
+        guard let results = _results else {
+            return
+        }
+        
+        var cards = [CMCard]()
+        for card in results {
+            if card.willUpdateTCGPlayerCardPricing() {
+                cards.append(card)
+            }
+        }
+        
+        if cards.count > 0 {
+            firstly {
+                ManaKit.sharedInstance.authenticateTcgPlayer()
+            }.then {
+                ManaKit.sharedInstance.getTcgPlayerPrices(forCards: cards)
+            }.done {
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardPricingUpdated),
+                                                object: nil,
+                                                userInfo: nil)
+            }.catch { error in
+                print(error)
+            }
+        }
+    }
+    
     // MARK: Firebase methods
     func toggleCardFavorite(firstAttempt: Bool)  -> Promise<Void> {
         guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard,

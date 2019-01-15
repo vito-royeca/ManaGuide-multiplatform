@@ -27,7 +27,7 @@ class CardNameTableViewCell: UITableViewCell {
             
             nameLabel.text = card.displayName
             if let releaseDate = card.set!.releaseDate {
-                let isModern = ManaKit.sharedInstance.isModern(card)
+                let isModern = card.isModern()
                 let formatter = DateFormatter()
                 formatter.dateFormat = "yyyy-MM-dd"
                 

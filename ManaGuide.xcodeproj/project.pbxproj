@@ -14,6 +14,36 @@
 		110BB51A1F207C6400086841 /* ManaGuideUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB5191F207C6400086841 /* ManaGuideUITests.swift */; };
 		110BB52A1F20891D00086841 /* FeaturedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB5291F20891D00086841 /* FeaturedViewController.swift */; };
 		110BB52B1F20891D00086841 /* FeaturedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BB5291F20891D00086841 /* FeaturedViewController.swift */; };
+		110BF20021EC51DC00EEA261 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1F721EC51DC00EEA261 /* CardViewController.swift */; };
+		110BF20121EC51DC00EEA261 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1F721EC51DC00EEA261 /* CardViewController.swift */; };
+		110BF20221EC51DC00EEA261 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1F721EC51DC00EEA261 /* CardViewController.swift */; };
+		110BF20321EC51DC00EEA261 /* CardTypeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1F821EC51DC00EEA261 /* CardTypeTableViewCell.swift */; };
+		110BF20421EC51DC00EEA261 /* CardTypeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1F821EC51DC00EEA261 /* CardTypeTableViewCell.swift */; };
+		110BF20521EC51DC00EEA261 /* CardTypeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1F821EC51DC00EEA261 /* CardTypeTableViewCell.swift */; };
+		110BF20621EC51DC00EEA261 /* CardSetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1F921EC51DC00EEA261 /* CardSetTableViewCell.swift */; };
+		110BF20721EC51DC00EEA261 /* CardSetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1F921EC51DC00EEA261 /* CardSetTableViewCell.swift */; };
+		110BF20821EC51DC00EEA261 /* CardSetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1F921EC51DC00EEA261 /* CardSetTableViewCell.swift */; };
+		110BF20921EC51DC00EEA261 /* CardNameTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FA21EC51DC00EEA261 /* CardNameTableViewCell.swift */; };
+		110BF20A21EC51DC00EEA261 /* CardNameTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FA21EC51DC00EEA261 /* CardNameTableViewCell.swift */; };
+		110BF20B21EC51DC00EEA261 /* CardNameTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FA21EC51DC00EEA261 /* CardNameTableViewCell.swift */; };
+		110BF20C21EC51DC00EEA261 /* StoreTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FB21EC51DC00EEA261 /* StoreTableViewCell.swift */; };
+		110BF20D21EC51DC00EEA261 /* StoreTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FB21EC51DC00EEA261 /* StoreTableViewCell.swift */; };
+		110BF20E21EC51DC00EEA261 /* StoreTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FB21EC51DC00EEA261 /* StoreTableViewCell.swift */; };
+		110BF20F21EC51DC00EEA261 /* CardActionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FC21EC51DC00EEA261 /* CardActionsTableViewCell.swift */; };
+		110BF21021EC51DC00EEA261 /* CardActionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FC21EC51DC00EEA261 /* CardActionsTableViewCell.swift */; };
+		110BF21121EC51DC00EEA261 /* CardActionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FC21EC51DC00EEA261 /* CardActionsTableViewCell.swift */; };
+		110BF21221EC51DC00EEA261 /* StoreTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 110BF1FD21EC51DC00EEA261 /* StoreTableViewCell.xib */; };
+		110BF21321EC51DC00EEA261 /* StoreTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 110BF1FD21EC51DC00EEA261 /* StoreTableViewCell.xib */; };
+		110BF21421EC51DC00EEA261 /* StoreTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 110BF1FD21EC51DC00EEA261 /* StoreTableViewCell.xib */; };
+		110BF21521EC51DC00EEA261 /* CardPricingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FE21EC51DC00EEA261 /* CardPricingTableViewCell.swift */; };
+		110BF21621EC51DC00EEA261 /* CardPricingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FE21EC51DC00EEA261 /* CardPricingTableViewCell.swift */; };
+		110BF21721EC51DC00EEA261 /* CardPricingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FE21EC51DC00EEA261 /* CardPricingTableViewCell.swift */; };
+		110BF21821EC51DC00EEA261 /* CardCarouselTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FF21EC51DC00EEA261 /* CardCarouselTableViewCell.swift */; };
+		110BF21921EC51DC00EEA261 /* CardCarouselTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FF21EC51DC00EEA261 /* CardCarouselTableViewCell.swift */; };
+		110BF21A21EC51DC00EEA261 /* CardCarouselTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF1FF21EC51DC00EEA261 /* CardCarouselTableViewCell.swift */; };
+		110BF21C21EC64C000EEA261 /* CardGridTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF21B21EC64C000EEA261 /* CardGridTableViewCell.swift */; };
+		110BF21D21EC64C000EEA261 /* CardGridTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF21B21EC64C000EEA261 /* CardGridTableViewCell.swift */; };
+		110BF21E21EC64C000EEA261 /* CardGridTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110BF21B21EC64C000EEA261 /* CardGridTableViewCell.swift */; };
 		110FD66221778607006AB1A7 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110FD66121778607006AB1A7 /* MainViewController.swift */; };
 		110FD66321778607006AB1A7 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110FD66121778607006AB1A7 /* MainViewController.swift */; };
 		110FD66421778607006AB1A7 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110FD66121778607006AB1A7 /* MainViewController.swift */; };
@@ -186,6 +216,16 @@
 		110BB5191F207C6400086841 /* ManaGuideUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManaGuideUITests.swift; sourceTree = "<group>"; };
 		110BB51B1F207C6400086841 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		110BB5291F20891D00086841 /* FeaturedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeaturedViewController.swift; sourceTree = "<group>"; };
+		110BF1F721EC51DC00EEA261 /* CardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
+		110BF1F821EC51DC00EEA261 /* CardTypeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardTypeTableViewCell.swift; sourceTree = "<group>"; };
+		110BF1F921EC51DC00EEA261 /* CardSetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardSetTableViewCell.swift; sourceTree = "<group>"; };
+		110BF1FA21EC51DC00EEA261 /* CardNameTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardNameTableViewCell.swift; sourceTree = "<group>"; };
+		110BF1FB21EC51DC00EEA261 /* StoreTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTableViewCell.swift; sourceTree = "<group>"; };
+		110BF1FC21EC51DC00EEA261 /* CardActionsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardActionsTableViewCell.swift; sourceTree = "<group>"; };
+		110BF1FD21EC51DC00EEA261 /* StoreTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StoreTableViewCell.xib; sourceTree = "<group>"; };
+		110BF1FE21EC51DC00EEA261 /* CardPricingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardPricingTableViewCell.swift; sourceTree = "<group>"; };
+		110BF1FF21EC51DC00EEA261 /* CardCarouselTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardCarouselTableViewCell.swift; sourceTree = "<group>"; };
+		110BF21B21EC64C000EEA261 /* CardGridTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardGridTableViewCell.swift; sourceTree = "<group>"; };
 		110FD66121778607006AB1A7 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		11303C5721A340DE00FF0C2D /* BaseSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseSearchViewController.swift; sourceTree = "<group>"; };
 		11303C5B21A340FA00FF0C2D /* BaseSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseSearchViewModel.swift; sourceTree = "<group>"; };
@@ -290,6 +330,13 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		1108275A21ED71E200F592F0 /* Set */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Set;
+			sourceTree = "<group>";
+		};
 		110BB4ED1F207C6400086841 = {
 			isa = PBXGroup;
 			children = (
@@ -317,6 +364,7 @@
 			children = (
 				11D55BC3213250E1002F8F49 /* Featured */,
 				1168ACD421E9827D0071DAC5 /* Card */,
+				1108275A21ED71E200F592F0 /* Set */,
 				1168ACEB21E997150071DAC5 /* Search */,
 				11853EC52166A8B10055077B /* Models */,
 				11853EC42166A8890055077B /* Views */,
@@ -362,7 +410,16 @@
 		1168ACD421E9827D0071DAC5 /* Card */ = {
 			isa = PBXGroup;
 			children = (
+				110BF1FC21EC51DC00EEA261 /* CardActionsTableViewCell.swift */,
+				110BF1FF21EC51DC00EEA261 /* CardCarouselTableViewCell.swift */,
+				110BF1FA21EC51DC00EEA261 /* CardNameTableViewCell.swift */,
+				110BF1FE21EC51DC00EEA261 /* CardPricingTableViewCell.swift */,
+				110BF1F921EC51DC00EEA261 /* CardSetTableViewCell.swift */,
+				110BF1F821EC51DC00EEA261 /* CardTypeTableViewCell.swift */,
+				110BF1F721EC51DC00EEA261 /* CardViewController.swift */,
 				1168ACF821E99DA40071DAC5 /* CardViewModel.swift */,
+				110BF1FB21EC51DC00EEA261 /* StoreTableViewCell.swift */,
+				110BF1FD21EC51DC00EEA261 /* StoreTableViewCell.xib */,
 			);
 			path = Card;
 			sourceTree = "<group>";
@@ -379,6 +436,7 @@
 		11853EC42166A8890055077B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				110BF21B21EC64C000EEA261 /* CardGridTableViewCell.swift */,
 				11853EDF2166B0D40055077B /* CardGridTableViewCell.xib */,
 				11853EC62166ABF70055077B /* CardImageCollectionViewCell.swift */,
 				11853EC72166ABF70055077B /* CardImageCollectionViewCell.xib */,
@@ -627,6 +685,7 @@
 				118FDC7720D515E5002FA5E8 /* ShareActivity.xcassets in Resources */,
 				115C5F6B2168053600662395 /* DynamicHeightTableViewCell.xib in Resources */,
 				11447EB220D1764000DFF5C7 /* HeroCardView.xib in Resources */,
+				110BF21221EC51DC00EEA261 /* StoreTableViewCell.xib in Resources */,
 				11853EE32166B0D40055077B /* CardGridTableViewCell.xib in Resources */,
 				1147B7691F226143004EF296 /* Settings.bundle in Resources */,
 				1140F0C71F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
@@ -649,6 +708,7 @@
 				1140F0C81F42C9CE0023E107 /* GoogleService-Info.plist in Resources */,
 				118FDC7820D515E5002FA5E8 /* ShareActivity.xcassets in Resources */,
 				11853EE42166B0D40055077B /* CardGridTableViewCell.xib in Resources */,
+				110BF21321EC51DC00EEA261 /* StoreTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -658,6 +718,7 @@
 			files = (
 				11853ECD2166ABF80055077B /* CardImageCollectionViewCell.xib in Resources */,
 				11853EC32166A85F0055077B /* SearchModeCollectionViewCell.xib in Resources */,
+				110BF21421EC51DC00EEA261 /* StoreTableViewCell.xib in Resources */,
 				11447EB420D1764000DFF5C7 /* HeroCardView.xib in Resources */,
 				11853EF62166D6550055077B /* Main.storyboard in Resources */,
 				11853EE52166B0D40055077B /* CardGridTableViewCell.xib in Resources */,
@@ -1056,10 +1117,12 @@
 				1138A3C920F76D590023423C /* Throttler.swift in Sources */,
 				1147B7661F224874004EF296 /* SettingsViewController.swift in Sources */,
 				1138A3CD20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
+				110BF20321EC51DC00EEA261 /* CardTypeTableViewCell.swift in Sources */,
 				1139108E21C4836C008878B3 /* SpotlightManager.swift in Sources */,
 				11303C5821A340DE00FF0C2D /* BaseSearchViewController.swift in Sources */,
 				110FD66221778607006AB1A7 /* MainViewController.swift in Sources */,
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
+				110BF21821EC51DC00EEA261 /* CardCarouselTableViewCell.swift in Sources */,
 				11853EBE2166A85F0055077B /* SearchModeCollectionViewCell.swift in Sources */,
 				117CF2FD219E8BE500110C6A /* FeaturedTableViewCell.swift in Sources */,
 				11A63E2721430B94005AE024 /* LatestSetItemCell.swift in Sources */,
@@ -1069,11 +1132,16 @@
 				11448A6220CD3849008EFC40 /* Constants.swift in Sources */,
 				1168ACF521E997150071DAC5 /* SearchRequestGenerator.swift in Sources */,
 				11A63E2B21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
+				110BF20C21EC51DC00EEA261 /* StoreTableViewCell.swift in Sources */,
+				110BF21521EC51DC00EEA261 /* CardPricingTableViewCell.swift in Sources */,
 				11A63E232142F847005AE024 /* TopViewedViewModel.swift in Sources */,
+				110BF20921EC51DC00EEA261 /* CardNameTableViewCell.swift in Sources */,
 				11A63E1F2142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
 				11DFB8C72145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
+				110BF20F21EC51DC00EEA261 /* CardActionsTableViewCell.swift in Sources */,
 				11A63E132142F536005AE024 /* FeaturedViewModel.swift in Sources */,
 				11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
+				110BF20621EC51DC00EEA261 /* CardSetTableViewCell.swift in Sources */,
 				118FDC7320D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
 				1140F0CC1F42CA500023E107 /* FCCard.swift in Sources */,
 				1147B75A1F22379F004EF296 /* BaseViewController.swift in Sources */,
@@ -1081,8 +1149,10 @@
 				11A63E2F21430E60005AE024 /* TopViewedItemCell.swift in Sources */,
 				115C5F682168053600662395 /* DynamicHeightTableViewCell.swift in Sources */,
 				11447EB620D177F700DFF5C7 /* HeroCardView.swift in Sources */,
+				110BF21C21EC64C000EEA261 /* CardGridTableViewCell.swift in Sources */,
 				11A63E172142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
 				118FDC6F20D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
+				110BF20021EC51DC00EEA261 /* CardViewController.swift in Sources */,
 				110BB52A1F20891D00086841 /* FeaturedViewController.swift in Sources */,
 				11F3BA3120D4141900511388 /* MGUtilities.swift in Sources */,
 				1168ACF921E99DA40071DAC5 /* CardViewModel.swift in Sources */,
@@ -1098,10 +1168,12 @@
 				118FDC7420D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
 				1138A3CA20F76D590023423C /* Throttler.swift in Sources */,
 				1139108F21C4836C008878B3 /* SpotlightManager.swift in Sources */,
+				110BF20421EC51DC00EEA261 /* CardTypeTableViewCell.swift in Sources */,
 				11303C5921A340DE00FF0C2D /* BaseSearchViewController.swift in Sources */,
 				110FD66321778607006AB1A7 /* MainViewController.swift in Sources */,
 				11A63E2C21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
 				117CF2FE219E8BE500110C6A /* FeaturedTableViewCell.swift in Sources */,
+				110BF21921EC51DC00EEA261 /* CardCarouselTableViewCell.swift in Sources */,
 				11F3BA3220D4141900511388 /* MGUtilities.swift in Sources */,
 				11A63E182142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
 				11853EBF2166A85F0055077B /* SearchModeCollectionViewCell.swift in Sources */,
@@ -1111,11 +1183,16 @@
 				11303C5D21A340FA00FF0C2D /* BaseSearchViewModel.swift in Sources */,
 				1168ACF621E997150071DAC5 /* SearchRequestGenerator.swift in Sources */,
 				11853EE82166D5A20055077B /* FeaturedViewController.swift in Sources */,
+				110BF20D21EC51DC00EEA261 /* StoreTableViewCell.swift in Sources */,
+				110BF21621EC51DC00EEA261 /* CardPricingTableViewCell.swift in Sources */,
 				11853EC92166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */,
+				110BF20A21EC51DC00EEA261 /* CardNameTableViewCell.swift in Sources */,
 				11A63E202142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
 				11DFB8C82145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
+				110BF21021EC51DC00EEA261 /* CardActionsTableViewCell.swift in Sources */,
 				11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				11A63E2821430B94005AE024 /* LatestSetItemCell.swift in Sources */,
+				110BF20721EC51DC00EEA261 /* CardSetTableViewCell.swift in Sources */,
 				1138A3CE20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
 				118FDC7020D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
 				11A63E142142F536005AE024 /* FeaturedViewModel.swift in Sources */,
@@ -1123,8 +1200,10 @@
 				11D55BCC2132545A002F8F49 /* SettingsViewController.swift in Sources */,
 				115C5F692168053600662395 /* DynamicHeightTableViewCell.swift in Sources */,
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
+				110BF21D21EC64C000EEA261 /* CardGridTableViewCell.swift in Sources */,
 				11A63E242142F847005AE024 /* TopViewedViewModel.swift in Sources */,
 				11A63E1C2142F80E005AE024 /* LatestSetsViewModel.swift in Sources */,
+				110BF20121EC51DC00EEA261 /* CardViewController.swift in Sources */,
 				11448A6320CD3849008EFC40 /* Constants.swift in Sources */,
 				11853EB721669AD50055077B /* SearchModeTableViewCell.swift in Sources */,
 				1168ACFA21E99DA40071DAC5 /* CardViewModel.swift in Sources */,
@@ -1139,18 +1218,26 @@
 				1168ACF421E997150071DAC5 /* SearchViewModel.swift in Sources */,
 				115C5F6A2168053600662395 /* DynamicHeightTableViewCell.swift in Sources */,
 				11303C5E21A340FA00FF0C2D /* BaseSearchViewModel.swift in Sources */,
+				110BF20B21EC51DC00EEA261 /* CardNameTableViewCell.swift in Sources */,
+				110BF21A21EC51DC00EEA261 /* CardCarouselTableViewCell.swift in Sources */,
 				11F336B420BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
+				110BF20521EC51DC00EEA261 /* CardTypeTableViewCell.swift in Sources */,
 				1138A3CB20F76D590023423C /* Throttler.swift in Sources */,
+				110BF21E21EC64C000EEA261 /* CardGridTableViewCell.swift in Sources */,
 				1139109021C4836C008878B3 /* SpotlightManager.swift in Sources */,
 				110FD66421778607006AB1A7 /* MainViewController.swift in Sources */,
 				1168ACFB21E99DA40071DAC5 /* CardViewModel.swift in Sources */,
+				110BF21121EC51DC00EEA261 /* CardActionsTableViewCell.swift in Sources */,
 				1141A84020D00F4A00554872 /* SnapshotHelper.swift in Sources */,
 				1168ACF721E997150071DAC5 /* SearchRequestGenerator.swift in Sources */,
 				110BB51A1F207C6400086841 /* ManaGuideUITests.swift in Sources */,
+				110BF21721EC51DC00EEA261 /* CardPricingTableViewCell.swift in Sources */,
 				11853EC02166A85F0055077B /* SearchModeCollectionViewCell.swift in Sources */,
 				118FDC7120D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
 				11303C5A21A340DE00FF0C2D /* BaseSearchViewController.swift in Sources */,
 				1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */,
+				110BF20E21EC51DC00EEA261 /* StoreTableViewCell.swift in Sources */,
+				110BF20221EC51DC00EEA261 /* CardViewController.swift in Sources */,
 				11A63E252142F847005AE024 /* TopViewedViewModel.swift in Sources */,
 				11A63E192142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
 				11A63E152142F536005AE024 /* FeaturedViewModel.swift in Sources */,
@@ -1161,6 +1248,7 @@
 				11448A6420CD3849008EFC40 /* Constants.swift in Sources */,
 				11F3BA3320D4141900511388 /* MGUtilities.swift in Sources */,
 				11A63E2D21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
+				110BF20821EC51DC00EEA261 /* CardSetTableViewCell.swift in Sources */,
 				11DFB8C92145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
 				11448A6020CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */,

@@ -50,10 +50,9 @@ class CardCarouselTableViewCell: UITableViewCell {
     
     // MARK: Custom methods
     func showImage(ofCard card: CMCard, inImageView imageView: UIImageView, animate: Bool) {
-        if let image = ManaKit.sharedInstance.cardImage(card,
-                                                        imageType: .normal,
-                                                        faceOrder: viewModel.faceOrder,
-                                                        roundCornered: true) {
+        if let image = card.image(type: .normal,
+                                  faceOrder: viewModel.faceOrder,
+                                  roundCornered: true) {
             
             if animate {
                 guard let layout = card.layout,
@@ -85,17 +84,16 @@ class CardCarouselTableViewCell: UITableViewCell {
             }
             
         } else {
-            imageView.image = ManaKit.sharedInstance.cardBack(card)
+            imageView.image = card.backImage()
             
             firstly {
                 ManaKit.sharedInstance.downloadImage(ofCard: card,
-                                                     imageType: .normal,
+                                                     type: .normal,
                                                      faceOrder: viewModel.faceOrder)
             }.done {
-                guard let image = ManaKit.sharedInstance.cardImage(card,
-                                                                   imageType: .normal,
-                                                                   faceOrder: self.viewModel.faceOrder,
-                                                                   roundCornered: true) else {
+                guard let image = card.image(type: .normal,
+                                             faceOrder: self.viewModel.faceOrder,
+                                             roundCornered: true) else {
                     return
                 }
                 
@@ -126,7 +124,7 @@ class CardCarouselTableViewCell: UITableViewCell {
     @objc func imageAction() {
         var photos = [ManaGuidePhoto]()
         
-        for i in 0...viewModel.numberOfCards() - 1 {
+        for i in 0...viewModel.count() - 1 {
             if let card = viewModel.object(forRowAt: IndexPath(row: i, section: 0)) as? CMCard {
                 photos.append(ManaGuidePhoto(withCard: card))
             }
@@ -152,19 +150,15 @@ class CardCarouselTableViewCell: UITableViewCell {
         
         if layoutName == "Double faced token" ||
             layoutName == "Transform" {
-            if let facesSet = card.faces,
-                let faces = facesSet.allObjects as? [CMCard] {
-                
-                let orderedFaces = faces.sorted(by: {(a, b) -> Bool in
-                    return a.faceOrder < b.faceOrder
-                })
-                let count = orderedFaces.count
-                
-                if (viewModel.faceOrder + 1) >= count {
-                    viewModel.faceOrder = 0
-                } else {
-                    viewModel.faceOrder += 1
-                }
+            let orderedFaces = card.faces.sorted(by: {(a, b) -> Bool in
+                return a.faceOrder < b.faceOrder
+            })
+            let count = orderedFaces.count
+            
+            if (viewModel.faceOrder + 1) >= count {
+                viewModel.faceOrder = 0
+            } else {
+                viewModel.faceOrder += 1
             }
         } else if layoutName == "Flip" {
             viewModel.flipAngle = viewModel.flipAngle == 0 ? CGFloat(180 * Double.pi / 180) : 0
@@ -179,7 +173,7 @@ class CardCarouselTableViewCell: UITableViewCell {
 // MARK: iCarouselDataSource
 extension CardCarouselTableViewCell : iCarouselDataSource {
     func numberOfItems(in carousel: iCarousel) -> Int {
-        return viewModel.numberOfCards()
+        return viewModel.count()
     }
     
     func carousel(_ carousel: iCarousel, viewForItemAt index: Int, reusing view: UIView?) -> UIView {

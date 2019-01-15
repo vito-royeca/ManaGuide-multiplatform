@@ -20,7 +20,7 @@ class CardGridTableViewCell: UITableViewCell {
     // MARK: Variables
     var viewModel: SearchViewModel!
     var delegate: CardGridTableViewCellDelegate?
-    var imageType: ManaKit.ImageType = .normal
+    var imageType: CardImageType = .normal
     var animationOptions: UIView.AnimationOptions = []
     
     // MARK: Outlets
@@ -71,7 +71,7 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
         if viewModel.isEmpty() {
             return 1
         } else {
-            return viewModel.collectionNumberOfRows(inSection: section)
+            return viewModel.numberOfRows(inSection: section)
         }
     }
     
@@ -79,7 +79,7 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
         if viewModel.isEmpty() {
             return 1
         } else {
-            return viewModel.collectionNumberOfSections()
+            return viewModel.numberOfSections()
         }
     }
     
@@ -136,7 +136,7 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
                     return v
                 }
                 
-                lab.text = viewModel.collectionTitleForHeaderInSection(section: indexPath.section)//SectionIndexTitles()?[indexPath.section]
+                lab.text = viewModel.titleForHeaderInSection(section: indexPath.section)//SectionIndexTitles()?[indexPath.section]
             }
             
             return v
@@ -151,16 +151,17 @@ extension CardGridTableViewCell : UICollectionViewDelegate {
             return
         }
         
-        guard let cards = viewModel.allObjects() as? [CMCard],
-            let card = viewModel.object(forRowAt: indexPath) as? CMCard,
-            let cardIndex = cards.index(of: card) else {
-            return
-        }
-        
-        let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-        delegate?.showCard(identifier: identifier,
-                           cardIndex: cardIndex,
-                           cardIDs: cards.map({ $0.id! }),
-                           sorters: viewModel.sortDescriptors)
+        // TODO: fix this
+//        guard let cards = viewModel.allObjects() as? [CMCard],
+//            let card = viewModel.object(forRowAt: indexPath) as? CMCard,
+//            let cardIndex = cards.index(of: card) else {
+//            return
+//        }
+//
+//        let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
+//        delegate?.showCard(identifier: identifier,
+//                           cardIndex: cardIndex,
+//                           cardIDs: cards.map({ $0.id! }),
+//                           sorters: viewModel.sortDescriptors)
     }
 }
