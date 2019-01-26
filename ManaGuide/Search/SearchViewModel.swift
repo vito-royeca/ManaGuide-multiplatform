@@ -13,23 +13,6 @@ import RealmSwift
 class SearchViewModel: BaseSearchViewModel {
     private var _results: Results<CMCard>? = nil
     
-    // MARK: Init
-    init(withTitle title: String?, andMode mode: ViewModelMode) {
-        super.init()
-        
-        self.title = title
-        self.mode = mode
-    }
-
-    init(withPredicate predicate: NSPredicate?, andSortDescriptors: [SortDescriptor]?, andTitle title: String?, andMode mode: ViewModelMode) {
-        super.init()
-        
-        self.predicate = predicate
-        self.sortDescriptors = sortDescriptors
-        self.title = title
-        self.mode = mode
-    }
-    
     // MARK: UITableView methods
     override func numberOfRows(inSection section: Int) -> Int {
         if mode == .resultsFound {
@@ -177,13 +160,29 @@ class SearchViewModel: BaseSearchViewModel {
         }
     }
     
-    // MARK: Custom methods
+    // MARK: Overrides
+    override func object(forRowAt indexPath: IndexPath) -> Object? {
+        guard let results = _results else {
+            return nil
+        }
+        return results[indexPath.row]
+    }
+    
+    override func count() -> Int {
+        guard let results = _results else {
+            return 0
+        }
+        return results.count
+    }
+    
     override func fetchData() -> Promise<Void> {
         return Promise { seal  in
-            _results = ManaKit.sharedInstance.realm.objects(CMCard.self)
             if let newPredicate = SearchRequestGenerator().createSearchPredicate(query: queryString, oldPredicate: predicate) {
-                _results = _results!.filter(newPredicate)
+                _results = ManaKit.sharedInstance.realm.objects(CMCard.self).filter(newPredicate)
+            } else {
+                _results = ManaKit.sharedInstance.realm.objects(CMCard.self)
             }
+            
             if let sortDescriptors = sortDescriptors {
                 _results = _results!.sorted(by: sortDescriptors)
             }
@@ -193,7 +192,7 @@ class SearchViewModel: BaseSearchViewModel {
         }
     }
     
-    // MARK: Overrides
+    
     override func updateSections() {
         guard let results = _results else {
             return

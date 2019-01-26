@@ -34,12 +34,13 @@ enum GitHubSettings {
 // ---------------- DO NOT MODIFY ANYTHING BELOW ------------------------ //
 // ---------------------------------------------------------------------- //
 enum NotificationKeys {
-    static let FavoriteToggled    = "FavoriteToggled"
-    static let CardPricingUpdated = "CardPricingUpdated"
-    static let CardRatingUpdated  = "CardRatingUpdated"
-    static let CardViewsUpdated   = "CardViewsUpdated"
-    static let DeckUpdated        = "DeckUpdated"
-    static let ListUpdated        = "ListUpdated"
-    static let UserLoggedIn       = "UserLoggedIn"
+    static let FavoriteToggled        = "FavoriteToggled"
+    static let CardPricingUpdated     = "CardPricingUpdated"
+    static let CardRatingUpdated      = "CardRatingUpdated"
+    static let CardViewsUpdated       = "CardViewsUpdated"
+    static let CardRelatedDataUpdated = "CardRelatedDataUpdated"
+    static let DeckUpdated            = "DeckUpdated"
+    static let ListUpdated            = "ListUpdated"
+    static let UserLoggedIn           = "UserLoggedIn"
 }
 

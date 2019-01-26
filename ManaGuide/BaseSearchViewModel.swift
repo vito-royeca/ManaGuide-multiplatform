@@ -67,6 +67,23 @@ class BaseSearchViewModel: NSObject {
     var _sectionIndexTitles: [String]?
     var _sectionTitles: [String]?
     
+    // MARK: Initializers
+    override init() {
+        super.init()
+    }
+    
+    init(withPredicate predicate: NSPredicate?,
+         andSortDescriptors sortDescriptors: [SortDescriptor]?,
+         andTitle title: String?,
+         andMode mode: ViewModelMode) {
+        
+        super.init()
+        self.predicate = predicate
+        self.sortDescriptors = sortDescriptors
+        self.title = title
+        self.mode = mode
+    }
+    
     // MARK: UITableView methods
     func numberOfRows(inSection section: Int) -> Int {
         return 0

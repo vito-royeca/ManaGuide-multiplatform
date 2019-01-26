@@ -15,6 +15,7 @@ import PromiseKit
 protocol CardCarouselTableViewCellDelegate: NSObjectProtocol {
     func showPhotoBrowser(_ browser: IDMPhotoBrowser)
     func updatePricingAndActions()
+//    func updateCardIndex(_ i: Int)
     func updateCardImage()
 }
 
@@ -27,6 +28,7 @@ class CardCarouselTableViewCell: UITableViewCell {
             carouselView.dataSource = self
             carouselView.delegate = self
             carouselView.currentItemIndex = viewModel.cardIndex
+            carouselView.reloadData()
         }
     }
     var delegate: CardCarouselTableViewCellDelegate?
@@ -114,10 +116,9 @@ class CardCarouselTableViewCell: UITableViewCell {
     
     func movePhotoTo(index: Int) {
         viewModel.cardIndex = index
-        viewModel.relatedDataLoaded = false
+        viewModel.cardViewsIncremented = false
         viewModel.faceOrder = 0
         viewModel.flipAngle = 0
-        viewModel.reloadRelatedCards()
         delegate?.updatePricingAndActions()
     }
     

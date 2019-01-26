@@ -11,7 +11,7 @@ import ManaKit
 import PromiseKit
 import RealmSwift
 
-let kMaxFetchTopViewed  = UInt(10)
+let kMaxFetchTopViewed  = 10
 
 class TopViewedViewModel: BaseSearchViewModel {
     // MARK: Variables
@@ -60,16 +60,15 @@ class TopViewedViewModel: BaseSearchViewModel {
     }
     
     override func count() -> Int {
-        guard let results = _results else {
-            return 0
-        }
-        return results.count
+        return kMaxFetchTopViewed
     }
 
     // MARK: Custom methods
     func startMonitoring() {
         let ref = Database.database().reference().child("cards")
-        _firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Views).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopViewed)
+        _firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Views)
+            .queryStarting(atValue: 1)
+            .queryLimited(toLast: UInt(kMaxFetchTopViewed))
         mode = .loading
         
         // observe changes in Firebase
@@ -88,14 +87,11 @@ class TopViewedViewModel: BaseSearchViewModel {
                             
                             if newFBKey != oldFBKey {
                                 let model = CardViewModel()
-                                let deletePromise = model.deleteOldFirebaseData(with: oldFBKey)
-                                let data = model.firebaseData(with: newFBKey)
                                 
                                 firstly {
-                                    model.saveFirebaseData(with: newFBKey,
-                                                           data: data,
-                                                           firstAttempt: true,
-                                                           completion: deletePromise)
+                                    model.deleteOldFirebaseData(with: oldFBKey)
+                                }.then {
+                                    model.saveFirebaseData(with: newFBKey)
                                 }.done {
                                     print("Done deleteing oldFBKey: \(oldFBKey)")
                                 }.catch { error in

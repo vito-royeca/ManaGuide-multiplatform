@@ -12,7 +12,7 @@ import ManaKit
 import PromiseKit
 
 protocol LatestCardsTableViewDelegate : NSObjectProtocol {
-    func cardSelected(card: CMCard)
+    func showCard(withPredicate predicate: NSPredicate)
 }
 
 class LatestCardsTableViewCell: UITableViewCell {
@@ -155,7 +155,7 @@ extension LatestCardsTableViewCell : iCarouselDelegate {
             return
         }
         
-        delegate.cardSelected(card: card)
+        delegate.showCard(withPredicate: NSPredicate(format: "id = %@", card.id!))
     }
     
     func carousel(_ carousel: iCarousel, valueFor option: iCarouselOption, withDefault value: CGFloat) -> CGFloat {

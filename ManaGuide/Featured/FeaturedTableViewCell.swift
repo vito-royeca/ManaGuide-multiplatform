@@ -13,7 +13,7 @@ import RealmSwift
 
 protocol FeaturedTableViewCellDelegate: NSObjectProtocol {
     func showSet(_ set: CMSet)
-    func showCards(_ cards: Results<CMCard>, withIndex index: Int)
+    func showCards(withPredicate predicate: NSPredicate, withSortDesctiptors sortDescriptors: [SortDescriptor]?, withIndex index: Int)
     func seeAllItems(section: FeaturedSection)
 }
 
@@ -160,12 +160,8 @@ extension FeaturedTableViewCell: UICollectionViewDelegate {
                     ids.append(id)
                 }
             }
-            var cards = ManaKit.sharedInstance.realm.objects(CMCard.self).filter("id in %@", ids)
-            if let sortDescriptors = viewModel.sortDescriptors {
-                cards = cards.sorted(by: sortDescriptors)
-            }
-            
-            delegate?.showCards(cards,
+            delegate?.showCards(withPredicate: NSPredicate(format: "id in %@", ids),
+                                withSortDesctiptors: viewModel.sortDescriptors,
                                 withIndex: index)
         default:
             ()

@@ -90,23 +90,27 @@ class FeaturedViewController: BaseViewController {
             guard let dest = segue.destination as? CardViewController,
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
-                let cards = dict["cards"] as? Results<CMCard> else {
+                let predicate = dict["predicate"] as? NSPredicate else {
                 return
             }
 
             dest.viewModel = CardViewModel(withCardIndex: cardIndex,
-                                           withCards: cards)
+                                           withPredicate: predicate,
+                                           withSortDescriptors: dict["sortDescriptors"] as? [SortDescriptor],
+                                           andMode: .loading)
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
                 let dest = nav.children.first as? CardViewController,
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
-                let cards = dict["cards"] as? Results<CMCard> else {
+                let predicate = dict["predicate"] as? NSPredicate else {
                 return
             }
 
             dest.viewModel = CardViewModel(withCardIndex: cardIndex,
-                                           withCards: cards)
+                                           withPredicate: predicate,
+                                           withSortDescriptors: dict["sortDescriptors"] as? [SortDescriptor],
+                                           andMode: .loading)
 
         } else if segue.identifier == "showSet" {
 //            guard let dest = segue.destination as? SetViewController,
@@ -317,10 +321,10 @@ extension FeaturedViewController : UITableViewDelegate {
 
 // MARK: LatestCardsTableViewDelegate
 extension FeaturedViewController : LatestCardsTableViewDelegate {
-    func cardSelected(card: CMCard) {
+    func showCard(withPredicate predicate: NSPredicate) {
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
         let sender = ["cardIndex": 0,
-                      "cards": ManaKit.sharedInstance.realm.objects(CMCard.self).filter("id in %@", [card.id!])] as [String : Any]
+                      "predicate": predicate] as [String : Any]
         performSegue(withIdentifier: identifier, sender: sender)
     }
 }
@@ -331,13 +335,15 @@ extension FeaturedViewController: FeaturedTableViewCellDelegate {
         performSegue(withIdentifier: "showSet", sender: set)
     }
     
-    func showCards(_ cards: Results<CMCard>, withIndex index: Int) {
+    func showCards(withPredicate predicate: NSPredicate, withSortDesctiptors sortDescriptors: [SortDescriptor]?, withIndex index: Int) {
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-        let sender = ["cardIndex": index,
-                      "cards": cards] as [String : Any]
+        var sender = ["cardIndex": index,
+                      "predicate": predicate] as [String : Any]
+        if let sortDescriptors = sortDescriptors {
+            sender["sortDescriptors"] = sortDescriptors
+        }
         
         performSegue(withIdentifier: identifier, sender: sender)
-        
     }
     
     func seeAllItems(section: FeaturedSection) {

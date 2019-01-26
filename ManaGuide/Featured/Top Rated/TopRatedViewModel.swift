@@ -11,7 +11,7 @@ import ManaKit
 import PromiseKit
 import RealmSwift
 
-let kMaxFetchTopRated  = UInt(10)
+let kMaxFetchTopRated  = 10
 
 class TopRatedViewModel: BaseSearchViewModel {
     // MARK: Variables
@@ -60,16 +60,15 @@ class TopRatedViewModel: BaseSearchViewModel {
     }
     
     override func count() -> Int {
-        guard let results = _results else {
-            return 0
-        }
-        return results.count
+        return kMaxFetchTopRated
     }
 
     // MARK: Custom methods
     func startMonitoring() {
         let ref = Database.database().reference().child("cards")
-        _firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Rating).queryStarting(atValue: 1).queryLimited(toLast: kMaxFetchTopRated)
+        _firebaseQuery = ref.queryOrdered(byChild: FCCard.Keys.Rating)
+            .queryStarting(atValue: 1)
+            .queryLimited(toLast: UInt(kMaxFetchTopRated))
         mode = .loading
         
         // observe changes in Firebase
@@ -114,6 +113,7 @@ class TopRatedViewModel: BaseSearchViewModel {
                                 for (k,v) in ratings {
                                     var user: CMUser?
                                     var cardRating: CMCardRating?
+                                    var found = false
                                     
                                     if let u = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", k).first {
                                         user = u
@@ -125,6 +125,7 @@ class TopRatedViewModel: BaseSearchViewModel {
                                     
                                     if let u = ManaKit.sharedInstance.realm.objects(CMCardRating.self).filter("user.id = %@ AND card.id = %@", k, card.id!).first {
                                         cardRating = u
+                                        found = true
                                     } else {
                                         cardRating = CMCardRating()
                                     }
@@ -132,7 +133,10 @@ class TopRatedViewModel: BaseSearchViewModel {
                                     cardRating!.user = user
                                     cardRating!.rating = v
                                     ManaKit.sharedInstance.realm.add(cardRating!)
-                                    card.firebaseUserRatings.append(cardRating!)
+                                    
+                                    if !found {
+                                        card.firebaseUserRatings.append(cardRating!)
+                                    }
                                 }
                             }
                             card.firebaseLastUpdate = Date()
@@ -140,18 +144,15 @@ class TopRatedViewModel: BaseSearchViewModel {
                             
                             if newFBKey != oldFBKey {
                                 let model = CardViewModel()
-                                let deletePromise = model.deleteOldFirebaseData(with: oldFBKey)
-                                let data = model.firebaseData(with: newFBKey)
                                 
                                 firstly {
-                                    model.saveFirebaseData(with: newFBKey,
-                                                           data: data,
-                                                           firstAttempt: true,
-                                                           completion: deletePromise)
-                                    }.done {
-                                        print("Done deleteing oldFBKey: \(oldFBKey)")
-                                    }.catch { error in
-                                        print(error)
+                                    model.deleteOldFirebaseData(with: oldFBKey)
+                                }.then {
+                                    model.saveFirebaseData(with: newFBKey)
+                                }.done {
+                                    print("Done deleteing oldFBKey: \(oldFBKey)")
+                                }.catch { error in
+                                    print(error)
                                 }
                             }
                         }
