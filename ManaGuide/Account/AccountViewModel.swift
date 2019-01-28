@@ -89,85 +89,79 @@ class AccountViewModel: NSObject {
                 return
             }
             
-            // remove the favorites
-            if let set = user.favorites,
-                let favorites = set.allObjects as? [CMCard] {
-                for card in favorites {
-                    user.removeFromFavorites(card)
-                }
-            }
-            // add any found favorites
-            if let dict = value["favorites"] as? [String : Any] {
-                for (k,_) in dict {
-                    if let card = ManaKit.sharedInstance.findObject("CMCard",
-                                                                 objectFinder: ["firebaseID": k as AnyObject],
-                                                                 createIfNotFound: false) as? CMCard {
-                        user.addToFavorites(card)
+            try! ManaKit.sharedInstance.realm.write {
+                // remove the favorites
+                for card in user.favorites {
+                    for u in card.firebaseUserFavorites {
+                        if u.id == user.id,
+                            let index = card.firebaseUserFavorites.index(of: u) {
+                            card.firebaseUserFavorites.remove(at: index)
+                            ManaKit.sharedInstance.realm.add(card)
+                        }
                     }
                 }
-            }
-            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                try! backgroundContext.save()
+                // add any found favorites
+                if let dict = value["favorites"] as? [String : Any] {
+                    for (k,_) in dict {
+                        if let card = ManaKit.sharedInstance.realm.objects(CMCard.self).filter("firebaseID = %@", k).first {
+                            card.firebaseUserFavorites.append(user)
+                            ManaKit.sharedInstance.realm.add(card)
+                        }
+                    }
+                }
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.FavoriteToggled),
                                                 object: nil,
                                                 userInfo: nil)
-            }
             
-            // remove the ratedCards
-            if let set = user.ratings,
-                let ratings = set.allObjects as? [CMCardRating] {
-                for rating in ratings {
-                    user.removeFromRatings(rating)
+                // remove the ratedCards
+                for i in 0...user.ratings.count - 1 {
+                    let rating = user.ratings[i]
+                    user.ratings.remove(at: i)
+                    ManaKit.sharedInstance.realm.delete(rating)
                 }
-            }
-            // add any found ratedCards
-            if let dict = value["ratedCards"] as? [String : Any] {
-                for (k,v) in dict {
-                    if  let rating = v as? Double,
-                        let card = ManaKit.sharedInstance.findObject("CMCard",
-                                                                    objectFinder: ["firebaseID": k as AnyObject],
-                                                                    createIfNotFound: false) as? CMCard,
-                        let cardRating = ManaKit.sharedInstance.findObject("CMCardRating",
-                                                                           objectFinder: ["user.id": userId as AnyObject,
-                                                                                          "card.id": k as AnyObject],
-                                                                           createIfNotFound: true) as? CMCardRating {
-                        cardRating.card = card
-                        cardRating.user = user
-                        cardRating.rating = rating
-                        user.addToRatings(cardRating)
+                ManaKit.sharedInstance.realm.add(user)
+                
+                // add any found ratedCards
+                if let dict = value["ratedCards"] as? [String : Any] {
+                    for (k,v) in dict {
+                        if  let rating = v as? Double,
+                            let card = ManaKit.sharedInstance.realm.objects(CMCard.self).filter("firebaseID = %@", k).first {
+                            var cardRating = ManaKit.sharedInstance.realm.objects(CMCardRating.self).filter("user.id = %@ AND card.id = %@", userId, k).first
+                            if cardRating == nil {
+                                cardRating = CMCardRating()
+                            }
+                            cardRating!.card = card
+                            cardRating!.user = user
+                            cardRating!.rating = rating
+                            ManaKit.sharedInstance.realm.add(cardRating!)
+                            user.ratings.append(cardRating!)
+                            ManaKit.sharedInstance.realm.add(user)
+                        }
                     }
                 }
-                
-            }
-            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-                try! backgroundContext.save()
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
-                                                object: nil,
-                                                userInfo: nil)
             }
         })
     }
     
     func saveUser(id: String, displayName: String?, avatarURL: URL?) -> CMUser? {
-        guard let user = ManaKit.sharedInstance.findObject("CMUser",
-                                                           objectFinder: ["id": id as AnyObject],
-                                                           createIfNotFound: true) as? CMUser else {
-            return nil
+        var user = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", id).first
+        if user == nil {
+            user = CMUser()
+            user!.id = id
         }
         
-        user.id = id
-        user.displayName = displayName
-        user.avatarURL = avatarURL?.absoluteString
-        try! ManaKit.sharedInstance.dataStack?.mainContext.save()
+        user!.displayName = displayName
+        user!.avatarURL = avatarURL?.absoluteString
+        try! ManaKit.sharedInstance.realm.write {
+            ManaKit.sharedInstance.realm.add(user!)
+        }
         
         return user
     }
     
     func getLoggedInUser() -> CMUser? {
         guard let fbUser = Auth.auth().currentUser,
-            let user = ManaKit.sharedInstance.findObject("CMUser",
-                                                         objectFinder: ["id": fbUser.uid as AnyObject],
-                                                         createIfNotFound: true) as? CMUser else {
+            let user = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", fbUser.uid).first else {
             return nil
         }
         

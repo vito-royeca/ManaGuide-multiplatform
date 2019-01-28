@@ -31,8 +31,6 @@ class CardPricingTableViewCell: UITableViewCell {
     @IBOutlet weak var highFoilLabel: UILabel!
     @IBOutlet weak var marketFoilLabel: UILabel!
     
-    
-    
     // MARK: Overrides
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -58,6 +56,11 @@ class CardPricingTableViewCell: UITableViewCell {
         medianFoilLabel.text = "NA"
         highFoilLabel.text = "NA"
         marketFoilLabel.text = "NA"
+        
+        lowFoilLabel.textColor = UIColor.black
+        medianFoilLabel.textColor = UIColor.black
+        highFoilLabel.textColor = UIColor.black
+        marketFoilLabel.textColor = UIColor.black
     }
 
     private func updateDataDisplay() {
@@ -65,18 +68,24 @@ class CardPricingTableViewCell: UITableViewCell {
             clearDataDisplay()
             return
         }
-        
+        let goldColor = UIColor(red:0.60, green:0.51, blue:0.00, alpha:1.0)
+
         for pricing in card.pricings {
             if pricing.isFoil {
-                lowNormalLabel.text = pricing.lowPrice > 0 ? String(format: "$%.2f", pricing.lowPrice) : "NA"
-                medianNormalLabel.text = pricing.midPrice > 0 ? String(format: "$%.2f", pricing.midPrice) : "NA"
-                highNormalLabel.text = pricing.highPrice > 0 ? String(format: "$%.2f", pricing.highPrice) : "NA"
-                marketNormalLabel.text = pricing.marketPrice > 0 ? String(format: "$%.2f", pricing.marketPrice) : "NA"
-            } else {
                 lowFoilLabel.text = pricing.lowPrice > 0 ? String(format: "$%.2f", pricing.lowPrice) : "NA"
                 medianFoilLabel.text = pricing.midPrice > 0 ? String(format: "$%.2f", pricing.midPrice) : "NA"
                 highFoilLabel.text = pricing.highPrice > 0 ? String(format: "$%.2f", pricing.highPrice) : "NA"
                 marketFoilLabel.text = pricing.marketPrice > 0 ? String(format: "$%.2f", pricing.marketPrice) : "NA"
+                
+                lowFoilLabel.textColor = pricing.lowPrice > 0 ? goldColor : UIColor.black
+                medianFoilLabel.textColor = pricing.midPrice > 0 ? goldColor : UIColor.black
+                highFoilLabel.textColor = pricing.highPrice > 0 ? goldColor : UIColor.black
+                marketFoilLabel.textColor = pricing.marketPrice > 0 ? goldColor : UIColor.black
+            } else {
+                lowNormalLabel.text = pricing.lowPrice > 0 ? String(format: "$%.2f", pricing.lowPrice) : "NA"
+                medianNormalLabel.text = pricing.midPrice > 0 ? String(format: "$%.2f", pricing.midPrice) : "NA"
+                highNormalLabel.text = pricing.highPrice > 0 ? String(format: "$%.2f", pricing.highPrice) : "NA"
+                marketNormalLabel.text = pricing.marketPrice > 0 ? String(format: "$%.2f", pricing.marketPrice) : "NA"
             }
         }
     }

@@ -44,7 +44,7 @@ class CardViewController: BaseSearchViewController {
         case .details:
             loadCardDetails()
         case .store:
-            loadCardPricing()
+            loadStorePricing()
         }
     }
     
@@ -605,12 +605,23 @@ class CardViewController: BaseSearchViewController {
         let nyAlertController = NYAlertViewController(nibName: nil, bundle: nil)
         let confirmHandler = {  (action: NYAlertAction?) -> Void in
             self.dismiss(animated: false, completion: nil)
+            guard let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0)) as? CMCard,
+                let firebaseID = card.firebaseID else {
+                return
+            }
             
             MBProgressHUD.showAdded(to: self.view, animated: true)
             firstly {
-                viewModel.updateCardRatings(rating: ratingView.rating, firstAttempt: true)
+                viewModel.updateCardRatings(rating: ratingView.rating)
+            }.then {
+                viewModel.updateUserRatings(rating: ratingView.rating)
+            }.then {
+                viewModel.saveFirebaseData(with: firebaseID)
             }.done {
                 MBProgressHUD.hide(for: self.view, animated: true)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
+                                                object: nil,
+                                                userInfo: nil)
             }.catch { error in
                 MBProgressHUD.hide(for: self.view, animated: true)
                 print("\(error)")
@@ -697,12 +708,13 @@ class CardViewController: BaseSearchViewController {
             }.done {
                 viewModel.cardViewsIncremented = true
             }.catch { error in
-                
+                viewModel.mode = .error
+                self.tableView.reloadData()
             }
         }
     }
     
-    func loadCardPricing() {
+    func loadStorePricing() {
         guard let viewModel = viewModel as? CardViewModel,
             let card = viewModel.object(forRowAt: IndexPath(row: viewModel.cardIndex, section: 0)) as? CMCard else {
             fatalError()

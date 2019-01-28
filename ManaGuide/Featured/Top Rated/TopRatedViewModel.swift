@@ -108,7 +108,6 @@ class TopRatedViewModel: BaseSearchViewModel {
                     if let card = ManaKit.sharedInstance.realm.objects(CMCard.self).filter("firebaseID = %@", newFBKey).first {
                         try! ManaKit.sharedInstance.realm.write {
                             card.firebaseRating = fccard.rating == nil ? 0 : fccard.rating!
-                            card.firebaseRating = fccard.rating == nil ? 0 : fccard.rating!
                             if let ratings = fccard.ratings {
                                 for (k,v) in ratings {
                                     var user: CMUser?

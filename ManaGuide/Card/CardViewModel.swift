@@ -676,8 +676,7 @@ class CardViewModel: BaseSearchViewModel {
         
         return Promise<Void> { seal in
             guard let fbUser = Auth.auth().currentUser,
-                let user = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", fbUser.uid).first,
-                let id = card.firebaseID else {
+                let user = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", fbUser.uid).first else {
                 return
             }
             
@@ -687,9 +686,9 @@ class CardViewModel: BaseSearchViewModel {
             userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                 if var post = currentData.value as? [String : Bool] {
                     if favorite {
-                        post[id] = true
+                        post[firebaseID] = true
                     } else {
-                        post[id] = nil
+                        post[firebaseID] = nil
                     }
                     
                     // Set value and report transaction success
@@ -697,7 +696,7 @@ class CardViewModel: BaseSearchViewModel {
                     return TransactionResult.success(withValue: currentData)
                     
                 } else {
-                    userRef.setValue([id: favorite ? true : nil])
+                    userRef.setValue([firebaseID: favorite ? true : nil])
                     return TransactionResult.success(withValue: currentData)
                 }
                 
@@ -725,6 +724,9 @@ class CardViewModel: BaseSearchViewModel {
                         if let index = self._results!.index(of: card) {
                             self.cardIndex = index
                         }
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.FavoriteToggled),
+                                                        object: nil,
+                                                        userInfo: ["card": card])
                         seal.fulfill(())
                     }.catch { error in
                         seal.reject(error)
@@ -791,7 +793,7 @@ class CardViewModel: BaseSearchViewModel {
         }
     }
 
-    func updateCardRatings(rating: Double, firstAttempt: Bool) -> Promise<Void> {
+    func updateCardRatings(rating: Double) -> Promise<Void> {
         guard let card = self.object(forRowAt: IndexPath(row: self.cardIndex, section: 0)) as? CMCard,
             let firebaseID = card.firebaseID else {
             fatalError()
@@ -800,11 +802,11 @@ class CardViewModel: BaseSearchViewModel {
         return Promise<Void> { seal in
             guard let fbUser = Auth.auth().currentUser,
                 let user = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", fbUser.uid).first,
-                let id = card.firebaseID else {
+                let userID = user.id else {
                 return
             }
             
-            let ref = Database.database().reference().child("cards").child(id)
+            let ref = Database.database().reference().child("cards").child(firebaseID)
             
             ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                 if var post = currentData.value as? [String : Any] {
@@ -825,135 +827,136 @@ class CardViewModel: BaseSearchViewModel {
                     return TransactionResult.success(withValue: currentData)
                     
                 } else {
-                    if firstAttempt {
-                        return TransactionResult.abort()
-                    } else {
-                        ref.setValue([FCCard.Keys.Rating: rating,
-                                      FCCard.Keys.Ratings: [id: rating]])
-                        return TransactionResult.success(withValue: currentData)
-                    }
+                    ref.setValue([FCCard.Keys.Rating: rating,
+                                  FCCard.Keys.Ratings: [userID: rating]])
+                    return TransactionResult.success(withValue: currentData)
                 }
                 
             }) { (error, committed, snapshot) in
                 if let error = error {
                     seal.reject(error)
                 } else {
-                    if committed {
-                        guard let snapshot = snapshot else {
-                            return
-                        }
-                        let fcard = FCCard(snapshot: snapshot)
+                    guard let snapshot = snapshot else {
+                        return
+                    }
+                    let fcard = FCCard(snapshot: snapshot)
+                    
+                    try! ManaKit.sharedInstance.realm.write {
+                        card.firebaseRating = fcard.rating == nil ? rating : fcard.rating!
                         
-                        try! ManaKit.sharedInstance.realm.write {
-                            card.firebaseRating = fcard.rating == nil ? rating : fcard.rating!
+                        if let ratings = fcard.ratings {
+                            for (k,v) in ratings {
+                                var user: CMUser?
+                                var cardRating: CMCardRating?
+                                
+                                if let u = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", k).first {
+                                    user = u
+                                } else {
+                                    user = CMUser()
+                                    user!.id = k
+                                }
+                                ManaKit.sharedInstance.realm.add(user!)
+                                
+                                if let u = ManaKit.sharedInstance.realm.objects(CMCardRating.self).filter("user.id = %@ AND card.firebaseID = %@", k, firebaseID).first {
+                                    cardRating = u
+                                } else {
+                                    cardRating = CMCardRating()
+                                }
+                                cardRating!.card = card
+                                cardRating!.user = user
+                                cardRating!.rating = v
+                                ManaKit.sharedInstance.realm.add(cardRating!)
+                                
+                                card.firebaseUserRatings.append(cardRating!)
+                                ManaKit.sharedInstance.realm.add(card)
+                            }
+                        } else {
+                            var user: CMUser?
+                            var cardRating: CMCardRating?
+                            
+                            if let u = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", userID).first {
+                                user = u
+                            } else {
+                                user = CMUser()
+                                user!.id = userID
+                            }
+                            ManaKit.sharedInstance.realm.add(user!)
+                            
+                            if let u = ManaKit.sharedInstance.realm.objects(CMCardRating.self).filter("user.id = %@ AND card.firebaseID = %@", userID, firebaseID).first {
+                                cardRating = u
+                            } else {
+                                cardRating = CMCardRating()
+                            }
+                            cardRating!.card = card
+                            cardRating!.user = user
+                            cardRating!.rating = rating
+                            ManaKit.sharedInstance.realm.add(cardRating!)
+                            
+                            card.firebaseUserRatings.append(cardRating!)
                             ManaKit.sharedInstance.realm.add(card)
                         }
-                        
-                        firstly {
-                            self.updateUserRatings(rating: rating, firstAttempt: true)
-                        }.done {
-                            seal.fulfill(())
-                        }.catch { error in
-                            seal.reject(error)
-                        }
-                        
-                    } else {
-                        // retry again, if we were aborted from above
-                        firstly {
-                            self.updateCardRatings(rating: rating, firstAttempt: false)
-                        }.done {
-                            seal.fulfill(())
-                        }.catch { error in
-                            seal.reject(error)
-                        }
                     }
+
+                    seal.fulfill(())
                 }
             }
         }
-
-        // TODO: fix this
-//        return saveFirebaseData(with: firebaseID,
-//                                data: data,
-//                                firstAttempt: true,
-//                                completion: promise)
     }
     
-    func updateUserRatings(rating: Double, firstAttempt: Bool) -> Promise<Void> {
+    func updateUserRatings(rating: Double) -> Promise<Void> {
         return Promise { seal in
-            guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
+            guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard,
+                let firebaseID = card.firebaseID else {
                 fatalError()
             }
             
             guard let fbUser = Auth.auth().currentUser,
-                let user = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", fbUser.uid).first,
-                let id = card.firebaseID else {
+                let user = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", fbUser.uid).first else {
                 return
             }
             let userRef = Database.database().reference().child("users").child(fbUser.uid).child("ratedCards")
             
             userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
                 if var post = currentData.value as? [String : Double] {
-                    post[id] = rating
+                    post[firebaseID] = rating
                     
                     // Set value and report transaction success
                     currentData.value = post
                     return TransactionResult.success(withValue: currentData)
                     
                 } else {
-                    if firstAttempt {
-                        return TransactionResult.abort()
-                    } else {
-                        userRef.setValue([id: rating])
-                        return TransactionResult.success(withValue: currentData)
-                    }
+                    userRef.setValue([firebaseID: rating])
+                    return TransactionResult.success(withValue: currentData)
                 }
                 
             }) { (error, committed, snapshot) in
                 if let error = error {
                     seal.reject(error)
                 } else {
-                    if committed {
-                        if let snapshot = snapshot,
-                            let ratedCards = snapshot.value as? [String: Double] {
-                            
-                            for (k,v) in ratedCards {
-                                if let card = ManaKit.sharedInstance.realm.objects(CMCard.self).filter("firebaseID = %@", k).first {
-                                    var cardRating: CMCardRating?
-                                    
-                                    if let c = ManaKit.sharedInstance.realm.objects(CMCardRating.self).filter("user.id = %@ AND card.id = %@", user.id!, k).first {
-                                        cardRating = c
-                                    } else {
-                                        cardRating = CMCardRating()
-                                    }
-                                    cardRating!.card = card
-                                    cardRating!.user = user
-                                    cardRating!.rating = v
-                                    ManaKit.sharedInstance.realm.add(cardRating!)
-                                    
-                                    user.ratings.append(cardRating!)
-                                    ManaKit.sharedInstance.realm.add(user)
-                                }
-                            }
-                            
-//                            ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-//                                try! backgroundContext.save()
-//                                NotificationCenter.default.post(name: Notification.Name(rawValue: NotificationKeys.CardRatingUpdated),
-//                                                                object: nil,
-//                                                                userInfo: ["card": card])
-//                                seal.fulfill(())
+//                    if let snapshot = snapshot,
+//                        let ratedCards = snapshot.value as? [String: Double] {
+//                        
+//                        for (k,v) in ratedCards {
+//                            if let card = ManaKit.sharedInstance.realm.objects(CMCard.self).filter("firebaseID = %@", k).first {
+//                                var cardRating: CMCardRating?
+//                                
+//                                if let c = ManaKit.sharedInstance.realm.objects(CMCardRating.self).filter("user.id = %@ AND card.id = %@", user.id!, k).first {
+//                                    cardRating = c
+//                                } else {
+//                                    cardRating = CMCardRating()
+//                                }
+//                                cardRating!.card = card
+//                                cardRating!.user = user
+//                                cardRating!.rating = v
+//                                ManaKit.sharedInstance.realm.add(cardRating!)
+//                                
+//                                user.ratings.append(cardRating!)
+//                                ManaKit.sharedInstance.realm.add(user)
 //                            }
-                            seal.fulfill(())
-                        }
-                    } else {
-                        // retry again, if we were aborted from above
-                        firstly {
-                            self.updateUserRatings(rating: rating, firstAttempt: false)
-                        }.done {
-                            seal.fulfill(())
-                        }.catch { error in
-                            seal.reject(error)
-                        }
-                    }
+//                        }
+//                        seal.fulfill(())
+//                    }
+                    seal.fulfill(())
                 }
             }
         }

@@ -37,10 +37,10 @@ class MainViewController: UITabBarController {
             return
         }
         // TODO: fix this
-//        items[2].image = UIImage.fontAwesomeIcon(name: .userCircle,
-//                                                 style: .solid,
-//                                                 textColor: UIColor.blue,
-//                                                 size: CGSize(width: 30, height: 30))        
+        items[1].image = UIImage.fontAwesomeIcon(name: .userCircle,
+                                                 style: .solid,
+                                                 textColor: UIColor.blue,
+                                                 size: CGSize(width: 30, height: 30))
     }
 
     override func viewDidAppear(_ animated: Bool) {

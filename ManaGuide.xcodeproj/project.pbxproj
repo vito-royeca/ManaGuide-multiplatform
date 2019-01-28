@@ -63,6 +63,57 @@
 		1139108E21C4836C008878B3 /* SpotlightManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1139108D21C4836C008878B3 /* SpotlightManager.swift */; };
 		1139108F21C4836C008878B3 /* SpotlightManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1139108D21C4836C008878B3 /* SpotlightManager.swift */; };
 		1139109021C4836C008878B3 /* SpotlightManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1139108D21C4836C008878B3 /* SpotlightManager.swift */; };
+		113BF19D21FD382C0071F162 /* CollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18621FD382C0071F162 /* CollectionViewModel.swift */; };
+		113BF19E21FD382C0071F162 /* CollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18621FD382C0071F162 /* CollectionViewModel.swift */; };
+		113BF19F21FD382C0071F162 /* CollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18621FD382C0071F162 /* CollectionViewModel.swift */; };
+		113BF1A021FD382C0071F162 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18721FD382C0071F162 /* CollectionViewController.swift */; };
+		113BF1A121FD382C0071F162 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18721FD382C0071F162 /* CollectionViewController.swift */; };
+		113BF1A221FD382C0071F162 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18721FD382C0071F162 /* CollectionViewController.swift */; };
+		113BF1A321FD382C0071F162 /* ListsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18921FD382C0071F162 /* ListsViewModel.swift */; };
+		113BF1A421FD382C0071F162 /* ListsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18921FD382C0071F162 /* ListsViewModel.swift */; };
+		113BF1A521FD382C0071F162 /* ListsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18921FD382C0071F162 /* ListsViewModel.swift */; };
+		113BF1A621FD382C0071F162 /* ListsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18A21FD382C0071F162 /* ListsViewController.swift */; };
+		113BF1A721FD382C0071F162 /* ListsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18A21FD382C0071F162 /* ListsViewController.swift */; };
+		113BF1A821FD382C0071F162 /* ListsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18A21FD382C0071F162 /* ListsViewController.swift */; };
+		113BF1A921FD382C0071F162 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18B21FD382C0071F162 /* AccountViewModel.swift */; };
+		113BF1AA21FD382C0071F162 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18B21FD382C0071F162 /* AccountViewModel.swift */; };
+		113BF1AB21FD382C0071F162 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18B21FD382C0071F162 /* AccountViewModel.swift */; };
+		113BF1AC21FD382C0071F162 /* DecksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18D21FD382C0071F162 /* DecksViewController.swift */; };
+		113BF1AD21FD382C0071F162 /* DecksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18D21FD382C0071F162 /* DecksViewController.swift */; };
+		113BF1AE21FD382C0071F162 /* DecksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18D21FD382C0071F162 /* DecksViewController.swift */; };
+		113BF1AF21FD382C0071F162 /* DecksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18E21FD382C0071F162 /* DecksViewModel.swift */; };
+		113BF1B021FD382C0071F162 /* DecksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18E21FD382C0071F162 /* DecksViewModel.swift */; };
+		113BF1B121FD382C0071F162 /* DecksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF18E21FD382C0071F162 /* DecksViewModel.swift */; };
+		113BF1B221FD382C0071F162 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19021FD382C0071F162 /* ListViewController.swift */; };
+		113BF1B321FD382C0071F162 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19021FD382C0071F162 /* ListViewController.swift */; };
+		113BF1B421FD382C0071F162 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19021FD382C0071F162 /* ListViewController.swift */; };
+		113BF1B521FD382C0071F162 /* ListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19121FD382C0071F162 /* ListViewModel.swift */; };
+		113BF1B621FD382C0071F162 /* ListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19121FD382C0071F162 /* ListViewModel.swift */; };
+		113BF1B721FD382C0071F162 /* ListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19121FD382C0071F162 /* ListViewModel.swift */; };
+		113BF1B821FD382C0071F162 /* CollectionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19321FD382C0071F162 /* CollectionsViewController.swift */; };
+		113BF1B921FD382C0071F162 /* CollectionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19321FD382C0071F162 /* CollectionsViewController.swift */; };
+		113BF1BA21FD382C0071F162 /* CollectionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19321FD382C0071F162 /* CollectionsViewController.swift */; };
+		113BF1BB21FD382C0071F162 /* CollectionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19421FD382C0071F162 /* CollectionsViewModel.swift */; };
+		113BF1BC21FD382C0071F162 /* CollectionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19421FD382C0071F162 /* CollectionsViewModel.swift */; };
+		113BF1BD21FD382C0071F162 /* CollectionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19421FD382C0071F162 /* CollectionsViewModel.swift */; };
+		113BF1BE21FD382C0071F162 /* AccountHeroTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19521FD382C0071F162 /* AccountHeroTableViewCell.swift */; };
+		113BF1BF21FD382C0071F162 /* AccountHeroTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19521FD382C0071F162 /* AccountHeroTableViewCell.swift */; };
+		113BF1C021FD382C0071F162 /* AccountHeroTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19521FD382C0071F162 /* AccountHeroTableViewCell.swift */; };
+		113BF1C121FD382C0071F162 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19621FD382C0071F162 /* AccountViewController.swift */; };
+		113BF1C221FD382C0071F162 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19621FD382C0071F162 /* AccountViewController.swift */; };
+		113BF1C321FD382C0071F162 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19621FD382C0071F162 /* AccountViewController.swift */; };
+		113BF1C421FD382C0071F162 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19821FD382C0071F162 /* LoginViewModel.swift */; };
+		113BF1C521FD382C0071F162 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19821FD382C0071F162 /* LoginViewModel.swift */; };
+		113BF1C621FD382C0071F162 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19821FD382C0071F162 /* LoginViewModel.swift */; };
+		113BF1C721FD382C0071F162 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19921FD382C0071F162 /* LoginViewController.swift */; };
+		113BF1C821FD382C0071F162 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19921FD382C0071F162 /* LoginViewController.swift */; };
+		113BF1C921FD382C0071F162 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19921FD382C0071F162 /* LoginViewController.swift */; };
+		113BF1CA21FD382C0071F162 /* DeckViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19B21FD382C0071F162 /* DeckViewController.swift */; };
+		113BF1CB21FD382C0071F162 /* DeckViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19B21FD382C0071F162 /* DeckViewController.swift */; };
+		113BF1CC21FD382C0071F162 /* DeckViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19B21FD382C0071F162 /* DeckViewController.swift */; };
+		113BF1CD21FD382C0071F162 /* DeckViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19C21FD382C0071F162 /* DeckViewModel.swift */; };
+		113BF1CE21FD382C0071F162 /* DeckViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19C21FD382C0071F162 /* DeckViewModel.swift */; };
+		113BF1CF21FD382C0071F162 /* DeckViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113BF19C21FD382C0071F162 /* DeckViewModel.swift */; };
 		1140F0C71F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
 		1140F0C81F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
 		1140F0C91F42C9CE0023E107 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */; };
@@ -233,6 +284,23 @@
 		1138A3C820F76D590023423C /* Throttler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Throttler.swift; sourceTree = "<group>"; };
 		1138A3CC20F76E870023423C /* ThrottlingSearchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThrottlingSearchController.swift; sourceTree = "<group>"; };
 		1139108D21C4836C008878B3 /* SpotlightManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightManager.swift; sourceTree = "<group>"; };
+		113BF18621FD382C0071F162 /* CollectionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewModel.swift; sourceTree = "<group>"; };
+		113BF18721FD382C0071F162 /* CollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
+		113BF18921FD382C0071F162 /* ListsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListsViewModel.swift; sourceTree = "<group>"; };
+		113BF18A21FD382C0071F162 /* ListsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListsViewController.swift; sourceTree = "<group>"; };
+		113BF18B21FD382C0071F162 /* AccountViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
+		113BF18D21FD382C0071F162 /* DecksViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecksViewController.swift; sourceTree = "<group>"; };
+		113BF18E21FD382C0071F162 /* DecksViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecksViewModel.swift; sourceTree = "<group>"; };
+		113BF19021FD382C0071F162 /* ListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
+		113BF19121FD382C0071F162 /* ListViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListViewModel.swift; sourceTree = "<group>"; };
+		113BF19321FD382C0071F162 /* CollectionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionsViewController.swift; sourceTree = "<group>"; };
+		113BF19421FD382C0071F162 /* CollectionsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionsViewModel.swift; sourceTree = "<group>"; };
+		113BF19521FD382C0071F162 /* AccountHeroTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountHeroTableViewCell.swift; sourceTree = "<group>"; };
+		113BF19621FD382C0071F162 /* AccountViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountViewController.swift; sourceTree = "<group>"; };
+		113BF19821FD382C0071F162 /* LoginViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		113BF19921FD382C0071F162 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		113BF19B21FD382C0071F162 /* DeckViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeckViewController.swift; sourceTree = "<group>"; };
+		113BF19C21FD382C0071F162 /* DeckViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeckViewModel.swift; sourceTree = "<group>"; };
 		1140F0C61F42C9CE0023E107 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1140F0CB1F42CA500023E107 /* FCCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FCCard.swift; sourceTree = "<group>"; };
 		1141A83F20D00F4A00554872 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
@@ -366,6 +434,7 @@
 				1168ACD421E9827D0071DAC5 /* Card */,
 				1108275A21ED71E200F592F0 /* Set */,
 				1168ACEB21E997150071DAC5 /* Search */,
+				113BF18421FD382C0071F162 /* Account */,
 				11853EC52166A8B10055077B /* Models */,
 				11853EC42166A8890055077B /* Views */,
 				11D55BCB2132543F002F8F49 /* Utilities */,
@@ -405,6 +474,86 @@
 				110BB51B1F207C6400086841 /* Info.plist */,
 			);
 			path = ManaGuideUITests;
+			sourceTree = "<group>";
+		};
+		113BF18421FD382C0071F162 /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				113BF19521FD382C0071F162 /* AccountHeroTableViewCell.swift */,
+				113BF19621FD382C0071F162 /* AccountViewController.swift */,
+				113BF18B21FD382C0071F162 /* AccountViewModel.swift */,
+				113BF18521FD382C0071F162 /* Collection */,
+				113BF19221FD382C0071F162 /* Collections */,
+				113BF19A21FD382C0071F162 /* Deck */,
+				113BF18C21FD382C0071F162 /* Decks */,
+				113BF18F21FD382C0071F162 /* List */,
+				113BF18821FD382C0071F162 /* Lists */,
+				113BF19721FD382C0071F162 /* Login */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
+		113BF18521FD382C0071F162 /* Collection */ = {
+			isa = PBXGroup;
+			children = (
+				113BF18621FD382C0071F162 /* CollectionViewModel.swift */,
+				113BF18721FD382C0071F162 /* CollectionViewController.swift */,
+			);
+			path = Collection;
+			sourceTree = "<group>";
+		};
+		113BF18821FD382C0071F162 /* Lists */ = {
+			isa = PBXGroup;
+			children = (
+				113BF18921FD382C0071F162 /* ListsViewModel.swift */,
+				113BF18A21FD382C0071F162 /* ListsViewController.swift */,
+			);
+			path = Lists;
+			sourceTree = "<group>";
+		};
+		113BF18C21FD382C0071F162 /* Decks */ = {
+			isa = PBXGroup;
+			children = (
+				113BF18D21FD382C0071F162 /* DecksViewController.swift */,
+				113BF18E21FD382C0071F162 /* DecksViewModel.swift */,
+			);
+			path = Decks;
+			sourceTree = "<group>";
+		};
+		113BF18F21FD382C0071F162 /* List */ = {
+			isa = PBXGroup;
+			children = (
+				113BF19021FD382C0071F162 /* ListViewController.swift */,
+				113BF19121FD382C0071F162 /* ListViewModel.swift */,
+			);
+			path = List;
+			sourceTree = "<group>";
+		};
+		113BF19221FD382C0071F162 /* Collections */ = {
+			isa = PBXGroup;
+			children = (
+				113BF19321FD382C0071F162 /* CollectionsViewController.swift */,
+				113BF19421FD382C0071F162 /* CollectionsViewModel.swift */,
+			);
+			path = Collections;
+			sourceTree = "<group>";
+		};
+		113BF19721FD382C0071F162 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				113BF19821FD382C0071F162 /* LoginViewModel.swift */,
+				113BF19921FD382C0071F162 /* LoginViewController.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		113BF19A21FD382C0071F162 /* Deck */ = {
+			isa = PBXGroup;
+			children = (
+				113BF19B21FD382C0071F162 /* DeckViewController.swift */,
+				113BF19C21FD382C0071F162 /* DeckViewModel.swift */,
+			);
+			path = Deck;
 			sourceTree = "<group>";
 		};
 		1168ACD421E9827D0071DAC5 /* Card */ = {
@@ -1112,34 +1261,47 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				113BF1A021FD382C0071F162 /* CollectionViewController.swift in Sources */,
 				11853EC82166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */,
+				113BF1B521FD382C0071F162 /* ListViewModel.swift in Sources */,
+				113BF1A621FD382C0071F162 /* ListsViewController.swift in Sources */,
 				11F336B220BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				1138A3C920F76D590023423C /* Throttler.swift in Sources */,
 				1147B7661F224874004EF296 /* SettingsViewController.swift in Sources */,
+				113BF1AF21FD382C0071F162 /* DecksViewModel.swift in Sources */,
 				1138A3CD20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
 				110BF20321EC51DC00EEA261 /* CardTypeTableViewCell.swift in Sources */,
 				1139108E21C4836C008878B3 /* SpotlightManager.swift in Sources */,
 				11303C5821A340DE00FF0C2D /* BaseSearchViewController.swift in Sources */,
 				110FD66221778607006AB1A7 /* MainViewController.swift in Sources */,
+				113BF1AC21FD382C0071F162 /* DecksViewController.swift in Sources */,
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
+				113BF1BE21FD382C0071F162 /* AccountHeroTableViewCell.swift in Sources */,
 				110BF21821EC51DC00EEA261 /* CardCarouselTableViewCell.swift in Sources */,
+				113BF1CA21FD382C0071F162 /* DeckViewController.swift in Sources */,
 				11853EBE2166A85F0055077B /* SearchModeCollectionViewCell.swift in Sources */,
 				117CF2FD219E8BE500110C6A /* FeaturedTableViewCell.swift in Sources */,
+				113BF1CD21FD382C0071F162 /* DeckViewModel.swift in Sources */,
+				113BF1B821FD382C0071F162 /* CollectionsViewController.swift in Sources */,
 				11A63E2721430B94005AE024 /* LatestSetItemCell.swift in Sources */,
 				11303C5C21A340FA00FF0C2D /* BaseSearchViewModel.swift in Sources */,
 				1168ACF221E997150071DAC5 /* SearchViewModel.swift in Sources */,
+				113BF1C721FD382C0071F162 /* LoginViewController.swift in Sources */,
 				11A63E1B2142F80E005AE024 /* LatestSetsViewModel.swift in Sources */,
 				11448A6220CD3849008EFC40 /* Constants.swift in Sources */,
 				1168ACF521E997150071DAC5 /* SearchRequestGenerator.swift in Sources */,
+				113BF1A321FD382C0071F162 /* ListsViewModel.swift in Sources */,
 				11A63E2B21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
 				110BF20C21EC51DC00EEA261 /* StoreTableViewCell.swift in Sources */,
 				110BF21521EC51DC00EEA261 /* CardPricingTableViewCell.swift in Sources */,
 				11A63E232142F847005AE024 /* TopViewedViewModel.swift in Sources */,
 				110BF20921EC51DC00EEA261 /* CardNameTableViewCell.swift in Sources */,
+				113BF19D21FD382C0071F162 /* CollectionViewModel.swift in Sources */,
 				11A63E1F2142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
 				11DFB8C72145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
 				110BF20F21EC51DC00EEA261 /* CardActionsTableViewCell.swift in Sources */,
 				11A63E132142F536005AE024 /* FeaturedViewModel.swift in Sources */,
+				113BF1BB21FD382C0071F162 /* CollectionsViewModel.swift in Sources */,
 				11448A5E20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
 				110BF20621EC51DC00EEA261 /* CardSetTableViewCell.swift in Sources */,
 				118FDC7320D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
@@ -1151,10 +1313,14 @@
 				11447EB620D177F700DFF5C7 /* HeroCardView.swift in Sources */,
 				110BF21C21EC64C000EEA261 /* CardGridTableViewCell.swift in Sources */,
 				11A63E172142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
+				113BF1A921FD382C0071F162 /* AccountViewModel.swift in Sources */,
+				113BF1C421FD382C0071F162 /* LoginViewModel.swift in Sources */,
+				113BF1C121FD382C0071F162 /* AccountViewController.swift in Sources */,
 				118FDC6F20D50499002FA5E8 /* CardActivityItemProvider.swift in Sources */,
 				110BF20021EC51DC00EEA261 /* CardViewController.swift in Sources */,
 				110BB52A1F20891D00086841 /* FeaturedViewController.swift in Sources */,
 				11F3BA3120D4141900511388 /* MGUtilities.swift in Sources */,
+				113BF1B221FD382C0071F162 /* ListViewController.swift in Sources */,
 				1168ACF921E99DA40071DAC5 /* CardViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1163,34 +1329,47 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				113BF1A121FD382C0071F162 /* CollectionViewController.swift in Sources */,
 				11853EF42166D63F0055077B /* BaseViewController.swift in Sources */,
+				113BF1B621FD382C0071F162 /* ListViewModel.swift in Sources */,
+				113BF1A721FD382C0071F162 /* ListsViewController.swift in Sources */,
 				11A63E3021430E60005AE024 /* TopViewedItemCell.swift in Sources */,
 				118FDC7420D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
 				1138A3CA20F76D590023423C /* Throttler.swift in Sources */,
+				113BF1B021FD382C0071F162 /* DecksViewModel.swift in Sources */,
 				1139108F21C4836C008878B3 /* SpotlightManager.swift in Sources */,
 				110BF20421EC51DC00EEA261 /* CardTypeTableViewCell.swift in Sources */,
 				11303C5921A340DE00FF0C2D /* BaseSearchViewController.swift in Sources */,
 				110FD66321778607006AB1A7 /* MainViewController.swift in Sources */,
 				11A63E2C21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
+				113BF1AD21FD382C0071F162 /* DecksViewController.swift in Sources */,
 				117CF2FE219E8BE500110C6A /* FeaturedTableViewCell.swift in Sources */,
+				113BF1BF21FD382C0071F162 /* AccountHeroTableViewCell.swift in Sources */,
 				110BF21921EC51DC00EEA261 /* CardCarouselTableViewCell.swift in Sources */,
+				113BF1CB21FD382C0071F162 /* DeckViewController.swift in Sources */,
 				11F3BA3220D4141900511388 /* MGUtilities.swift in Sources */,
 				11A63E182142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
+				113BF1CE21FD382C0071F162 /* DeckViewModel.swift in Sources */,
+				113BF1B921FD382C0071F162 /* CollectionsViewController.swift in Sources */,
 				11853EBF2166A85F0055077B /* SearchModeCollectionViewCell.swift in Sources */,
 				11A5444721445ADF00B8C59F /* HeroCardView.swift in Sources */,
 				1168ACF321E997150071DAC5 /* SearchViewModel.swift in Sources */,
+				113BF1C821FD382C0071F162 /* LoginViewController.swift in Sources */,
 				11F336B320BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				11303C5D21A340FA00FF0C2D /* BaseSearchViewModel.swift in Sources */,
 				1168ACF621E997150071DAC5 /* SearchRequestGenerator.swift in Sources */,
+				113BF1A421FD382C0071F162 /* ListsViewModel.swift in Sources */,
 				11853EE82166D5A20055077B /* FeaturedViewController.swift in Sources */,
 				110BF20D21EC51DC00EEA261 /* StoreTableViewCell.swift in Sources */,
 				110BF21621EC51DC00EEA261 /* CardPricingTableViewCell.swift in Sources */,
 				11853EC92166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */,
 				110BF20A21EC51DC00EEA261 /* CardNameTableViewCell.swift in Sources */,
+				113BF19E21FD382C0071F162 /* CollectionViewModel.swift in Sources */,
 				11A63E202142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
 				11DFB8C82145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
 				110BF21021EC51DC00EEA261 /* CardActionsTableViewCell.swift in Sources */,
 				11448A5F20CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
+				113BF1BC21FD382C0071F162 /* CollectionsViewModel.swift in Sources */,
 				11A63E2821430B94005AE024 /* LatestSetItemCell.swift in Sources */,
 				110BF20721EC51DC00EEA261 /* CardSetTableViewCell.swift in Sources */,
 				1138A3CE20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
@@ -1202,10 +1381,14 @@
 				110BB50F1F207C6400086841 /* ManaGuideTests.swift in Sources */,
 				110BF21D21EC64C000EEA261 /* CardGridTableViewCell.swift in Sources */,
 				11A63E242142F847005AE024 /* TopViewedViewModel.swift in Sources */,
+				113BF1AA21FD382C0071F162 /* AccountViewModel.swift in Sources */,
+				113BF1C521FD382C0071F162 /* LoginViewModel.swift in Sources */,
+				113BF1C221FD382C0071F162 /* AccountViewController.swift in Sources */,
 				11A63E1C2142F80E005AE024 /* LatestSetsViewModel.swift in Sources */,
 				110BF20121EC51DC00EEA261 /* CardViewController.swift in Sources */,
 				11448A6320CD3849008EFC40 /* Constants.swift in Sources */,
 				11853EB721669AD50055077B /* SearchModeTableViewCell.swift in Sources */,
+				113BF1B321FD382C0071F162 /* ListViewController.swift in Sources */,
 				1168ACFA21E99DA40071DAC5 /* CardViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1215,20 +1398,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				11853ECA2166ABF70055077B /* CardImageCollectionViewCell.swift in Sources */,
+				113BF1A221FD382C0071F162 /* CollectionViewController.swift in Sources */,
 				1168ACF421E997150071DAC5 /* SearchViewModel.swift in Sources */,
 				115C5F6A2168053600662395 /* DynamicHeightTableViewCell.swift in Sources */,
 				11303C5E21A340FA00FF0C2D /* BaseSearchViewModel.swift in Sources */,
 				110BF20B21EC51DC00EEA261 /* CardNameTableViewCell.swift in Sources */,
+				113BF1AB21FD382C0071F162 /* AccountViewModel.swift in Sources */,
 				110BF21A21EC51DC00EEA261 /* CardCarouselTableViewCell.swift in Sources */,
+				113BF1A821FD382C0071F162 /* ListsViewController.swift in Sources */,
 				11F336B420BBB47B0007552F /* PDFViewerViewController.swift in Sources */,
 				110BF20521EC51DC00EEA261 /* CardTypeTableViewCell.swift in Sources */,
 				1138A3CB20F76D590023423C /* Throttler.swift in Sources */,
 				110BF21E21EC64C000EEA261 /* CardGridTableViewCell.swift in Sources */,
+				113BF19F21FD382C0071F162 /* CollectionViewModel.swift in Sources */,
 				1139109021C4836C008878B3 /* SpotlightManager.swift in Sources */,
 				110FD66421778607006AB1A7 /* MainViewController.swift in Sources */,
 				1168ACFB21E99DA40071DAC5 /* CardViewModel.swift in Sources */,
 				110BF21121EC51DC00EEA261 /* CardActionsTableViewCell.swift in Sources */,
 				1141A84020D00F4A00554872 /* SnapshotHelper.swift in Sources */,
+				113BF1B421FD382C0071F162 /* ListViewController.swift in Sources */,
+				113BF1C321FD382C0071F162 /* AccountViewController.swift in Sources */,
 				1168ACF721E997150071DAC5 /* SearchRequestGenerator.swift in Sources */,
 				110BB51A1F207C6400086841 /* ManaGuideUITests.swift in Sources */,
 				110BF21721EC51DC00EEA261 /* CardPricingTableViewCell.swift in Sources */,
@@ -1238,27 +1427,38 @@
 				1147B7671F224874004EF296 /* SettingsViewController.swift in Sources */,
 				110BF20E21EC51DC00EEA261 /* StoreTableViewCell.swift in Sources */,
 				110BF20221EC51DC00EEA261 /* CardViewController.swift in Sources */,
+				113BF1A521FD382C0071F162 /* ListsViewModel.swift in Sources */,
 				11A63E252142F847005AE024 /* TopViewedViewModel.swift in Sources */,
+				113BF1CC21FD382C0071F162 /* DeckViewController.swift in Sources */,
 				11A63E192142F7E8005AE024 /* LatestCardsViewModel.swift in Sources */,
+				113BF1BD21FD382C0071F162 /* CollectionsViewModel.swift in Sources */,
 				11A63E152142F536005AE024 /* FeaturedViewModel.swift in Sources */,
 				117CF2FF219E8BE500110C6A /* FeaturedTableViewCell.swift in Sources */,
 				1138A3CF20F76E870023423C /* ThrottlingSearchController.swift in Sources */,
 				11A63E212142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
+				113BF1AE21FD382C0071F162 /* DecksViewController.swift in Sources */,
 				11A63E3121430E60005AE024 /* TopViewedItemCell.swift in Sources */,
+				113BF1B121FD382C0071F162 /* DecksViewModel.swift in Sources */,
 				11448A6420CD3849008EFC40 /* Constants.swift in Sources */,
 				11F3BA3320D4141900511388 /* MGUtilities.swift in Sources */,
 				11A63E2D21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
 				110BF20821EC51DC00EEA261 /* CardSetTableViewCell.swift in Sources */,
+				113BF1C621FD382C0071F162 /* LoginViewModel.swift in Sources */,
 				11DFB8C92145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
 				11448A6020CCF48A008EFC40 /* ManaGuidePhoto.swift in Sources */,
+				113BF1C921FD382C0071F162 /* LoginViewController.swift in Sources */,
 				1140F0CE1F42CA500023E107 /* FCCard.swift in Sources */,
 				118FDC7520D51045002FA5E8 /* FacebookShareActivity.swift in Sources */,
 				11853EB821669AD50055077B /* SearchModeTableViewCell.swift in Sources */,
 				11A63E2921430B94005AE024 /* LatestSetItemCell.swift in Sources */,
 				11447EB820D177F700DFF5C7 /* HeroCardView.swift in Sources */,
+				113BF1B721FD382C0071F162 /* ListViewModel.swift in Sources */,
 				11A63E1D2142F80E005AE024 /* LatestSetsViewModel.swift in Sources */,
+				113BF1C021FD382C0071F162 /* AccountHeroTableViewCell.swift in Sources */,
+				113BF1BA21FD382C0071F162 /* CollectionsViewController.swift in Sources */,
 				1147B75B1F22379F004EF296 /* BaseViewController.swift in Sources */,
 				110BB52B1F20891D00086841 /* FeaturedViewController.swift in Sources */,
+				113BF1CF21FD382C0071F162 /* DeckViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
