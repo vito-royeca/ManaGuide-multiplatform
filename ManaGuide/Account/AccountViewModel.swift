@@ -114,12 +114,14 @@ class AccountViewModel: NSObject {
                                                 userInfo: nil)
             
                 // remove the ratedCards
-                for i in 0...user.ratings.count - 1 {
-                    let rating = user.ratings[i]
-                    user.ratings.remove(at: i)
-                    ManaKit.sharedInstance.realm.delete(rating)
+                if user.ratings.count > 0 {
+                    for i in 0...user.ratings.count - 1 {
+                        let rating = user.ratings[i]
+                        user.ratings.remove(at: i)
+                        ManaKit.sharedInstance.realm.delete(rating)
+                    }
+                    ManaKit.sharedInstance.realm.add(user)
                 }
-                ManaKit.sharedInstance.realm.add(user)
                 
                 // add any found ratedCards
                 if let dict = value["ratedCards"] as? [String : Any] {
@@ -150,9 +152,9 @@ class AccountViewModel: NSObject {
             user!.id = id
         }
         
-        user!.displayName = displayName
-        user!.avatarURL = avatarURL?.absoluteString
         try! ManaKit.sharedInstance.realm.write {
+            user!.displayName = displayName
+            user!.avatarURL = avatarURL?.absoluteString
             ManaKit.sharedInstance.realm.add(user!)
         }
         
