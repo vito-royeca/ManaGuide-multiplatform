@@ -66,7 +66,7 @@ PODS:
   - FirebaseUI/Storage (6.1.0):
     - Firebase/Storage (~> 5.0)
     - SDWebImage (~> 4.0)
-  - FontAwesome.swift (1.4.9)
+  - FontAwesome.swift (1.5.0)
   - GoogleAppMeasurement (5.5.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
     - GoogleUtilities/MethodSwizzler (~> 5.2)
@@ -269,7 +269,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: 97ea7a5dca9afd72c79bfcdddb7a44aa1cbb42a1
   FirebaseStorage: 29075f874c2b3cf61e5221a62c4ceefc809e5412
   FirebaseUI: 9107a94d6637ca22eedd307a7e3d38c1a450f93a
-  FontAwesome.swift: 7f831846e85b93d32ded5d86983804b749921760
+  FontAwesome.swift: 55291c7a334ffacf9b62793d27c14014ec09a11b
   GoogleAppMeasurement: 621f3bc6211d5ba548debe01fafad30cf5ab6859
   GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
   GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d

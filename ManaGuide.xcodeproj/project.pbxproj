@@ -153,6 +153,7 @@
 		1168ACF921E99DA40071DAC5 /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1168ACF821E99DA40071DAC5 /* CardViewModel.swift */; };
 		1168ACFA21E99DA40071DAC5 /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1168ACF821E99DA40071DAC5 /* CardViewModel.swift */; };
 		1168ACFB21E99DA40071DAC5 /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1168ACF821E99DA40071DAC5 /* CardViewModel.swift */; };
+		117B91182219F6C200AB9139 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117B91172219F6C200AB9139 /* SearchViewController.swift */; };
 		117CF2FD219E8BE500110C6A /* FeaturedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117CF2FC219E8BE500110C6A /* FeaturedTableViewCell.swift */; };
 		117CF2FE219E8BE500110C6A /* FeaturedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117CF2FC219E8BE500110C6A /* FeaturedTableViewCell.swift */; };
 		117CF2FF219E8BE500110C6A /* FeaturedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117CF2FC219E8BE500110C6A /* FeaturedTableViewCell.swift */; };
@@ -316,6 +317,7 @@
 		1168ACED21E997150071DAC5 /* SearchViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		1168ACEE21E997150071DAC5 /* SearchRequestGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchRequestGenerator.swift; sourceTree = "<group>"; };
 		1168ACF821E99DA40071DAC5 /* CardViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewModel.swift; sourceTree = "<group>"; };
+		117B91172219F6C200AB9139 /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		117CF2FC219E8BE500110C6A /* FeaturedTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedTableViewCell.swift; sourceTree = "<group>"; };
 		11853EB421669AD50055077B /* SearchModeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModeTableViewCell.swift; sourceTree = "<group>"; };
 		11853EB521669AD50055077B /* SearchModeTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchModeTableViewCell.xib; sourceTree = "<group>"; };
@@ -576,6 +578,7 @@
 		1168ACEB21E997150071DAC5 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				117B91172219F6C200AB9139 /* SearchViewController.swift */,
 				1168ACED21E997150071DAC5 /* SearchViewModel.swift */,
 				1168ACEE21E997150071DAC5 /* SearchRequestGenerator.swift */,
 			);
@@ -1299,6 +1302,7 @@
 				113BF19D21FD382C0071F162 /* CollectionViewModel.swift in Sources */,
 				11A63E1F2142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
 				11DFB8C72145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
+				117B91182219F6C200AB9139 /* SearchViewController.swift in Sources */,
 				110BF20F21EC51DC00EEA261 /* CardActionsTableViewCell.swift in Sources */,
 				11A63E132142F536005AE024 /* FeaturedViewModel.swift in Sources */,
 				113BF1BB21FD382C0071F162 /* CollectionsViewModel.swift in Sources */,

@@ -19,7 +19,8 @@ class SearchViewModel: BaseSearchViewModel {
             let searchGenerator = SearchRequestGenerator()
             var rows = 0
 
-            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
+            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String,
+                let sortBy = searchGenerator.displayValue(for: .sortBy) as? String else {
                 return rows
             }
             
@@ -30,7 +31,20 @@ class SearchViewModel: BaseSearchViewModel {
                     return 0
                 }
                 
-                return results.filter("\(sectionName) == %@", sectionTitles[section]).count
+                switch sortBy {
+                case "name":
+                    return results.filter("myNameSection == %@", sectionTitles[section]).count
+                case "number":
+                    return results.count
+                case "type":
+                    return results.filter("type.nameSection == %@", sectionTitles[section]).count
+                case "rarity":
+                    return results.filter("rarity.nameSection == %@", sectionTitles[section]).count
+                case "artist":
+                    return results.filter("artist.nameSection == %@", sectionTitles[section]).count
+                default:
+                    rows = 1
+                }
                 
             case "grid":
                 rows = 1
@@ -162,10 +176,31 @@ class SearchViewModel: BaseSearchViewModel {
     
     // MARK: Overrides
     override func object(forRowAt indexPath: IndexPath) -> Object? {
-        guard let results = _results else {
+        let searchGenerator = SearchRequestGenerator()
+        
+        guard let sortBy = searchGenerator.displayValue(for: .sortBy) as? String,
+            let results = _results,
+            let sectionTitles = _sectionTitles else {
             return nil
         }
-        return results[indexPath.row]
+        
+//        return results[indexPath.row]
+//        return results.filter("\(sectionName) == %@", _sectionTitles![indexPath.section])[indexPath.row]
+        
+        switch sortBy {
+        case "name":
+            return results.filter("myNameSection == %@", sectionTitles[indexPath.section])[indexPath.row]
+        case "number":
+            return results[indexPath.row]
+        case "type":
+            return results.filter("type.nameSection == %@", sectionTitles[indexPath.section])[indexPath.row]
+        case "rarity":
+            return results.filter("rarity.nameSection == %@" ,sectionTitles[indexPath.section])[indexPath.row]
+        case "artist":
+            return results.filter("artist.nameSection == %@", sectionTitles[indexPath.section])[indexPath.row]
+        default:
+            return nil
+        }
     }
     
     override func count() -> Int {
@@ -233,6 +268,10 @@ class SearchViewModel: BaseSearchViewModel {
             if let prefix = prefix {
                 if !_sectionIndexTitles!.contains(prefix) {
                     _sectionIndexTitles!.append(prefix)
+                }
+                
+                if !_sectionTitles!.contains(prefix) {
+                    _sectionTitles!.append(prefix)
                 }
             }
         }

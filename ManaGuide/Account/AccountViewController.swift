@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 import Firebase
 import ManaKit
+import RealmSwift
 import SDWebImage
 
 class AccountViewController: BaseViewController {
@@ -55,7 +56,7 @@ class AccountViewController: BaseViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // TODO: fix this
-//        if segue.identifier == "showLogin" {
+        if segue.identifier == "showLogin" {
 //            guard let dest = segue.destination as? UINavigationController else {
 //                return
 //            }
@@ -65,32 +66,36 @@ class AccountViewController: BaseViewController {
 //
 //            loginVC.delegate = self
 //
-//        } else if segue.identifier == "showSearch" {
-//            guard let dest = segue.destination as? SearchViewController,
-//                let dict = sender as? [String: Any],
-//                let request = dict["request"] as? NSFetchRequest<CMCard> else {
-//                return
-//            }
-//
-//            dest.viewModel = SearchViewModel(withRequest: request,
-//                                             andTitle: dict["title"] as? String,
-//                                             andMode: .loading)
+        } else if segue.identifier == "showSearch" {
+            guard let dest = segue.destination as? SearchViewController,
+                let dict = sender as? [String: Any],
+                let predicate = dict["predicate"] as? NSPredicate else {
+                return
+            }
+
+            let sortDescriptors = [SortDescriptor(keyPath: "set.releaseDate", ascending: true),
+                                   SortDescriptor(keyPath: "name", ascending: true),
+                                   SortDescriptor(keyPath: "myNumberOrder", ascending: true)]
+            dest.viewModel = SearchViewModel(withPredicate: predicate,
+                                             andSortDescriptors: sortDescriptors,
+                                             andTitle: dict["title"] as? String,
+                                             andMode: .loading)
 //            dest.delegate = self
-//        } else if segue.identifier == "showDecks" {
+        } else if segue.identifier == "showDecks" {
 //            guard let dest = segue.destination as? DecksViewController else {
 //                return
 //            }
-//        } else if segue.identifier == "showCollections" {
+        } else if segue.identifier == "showCollections" {
 //            guard let dest = segue.destination as? CollectionsViewController else {
 //                return
 //            }
-//        } else if segue.identifier == "showLists" {
+        } else if segue.identifier == "showLists" {
 //            guard let dest = segue.destination as? ListsViewController else {
 //                return
 //            }
-//        } else {
+        } else {
 //            super.prepare(for: segue, sender: sender)
-//        }
+        }
     }
     
     // Custom methods
@@ -108,39 +113,31 @@ class AccountViewController: BaseViewController {
         tableView.reloadData()
     }
     
-//    func favoritesRequest() -> NSFetchRequest<CMCard> {
-//        guard let user = viewModel.getLoggedInUser() else {
-//            fatalError("AccountViewModel error")
-//        }
-//        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-//
-//        if let favorites = user.favorites,
-//            let cards = favorites.allObjects as? [CMCard] {
-//            request.predicate = NSPredicate(format: "id IN %@", cards.map({ $0.id }))
-//        } else {
-//            // fetch non-existent cards
-//            request.predicate = NSPredicate(format: "id = %@", "-1")
-//        }
-//
-//        return request
-//    }
-//
-//    func ratedCardsRequest() -> NSFetchRequest<CMCard> {
-//        guard let user = viewModel.getLoggedInUser() else {
-//            fatalError("AccountViewModel error")
-//        }
-//        let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-//
-//        if let ratings = user.ratings,
-//            let cardRatings = ratings.allObjects as? [CMCardRating] {
-//            request.predicate = NSPredicate(format: "id IN %@", cardRatings.map({ $0.card! }).map( { $0.id } ))
-//        } else {
-//            // fetch non-existent cards
-//            request.predicate = NSPredicate(format: "id = %@", "-1")
-//        }
-//
-//        return request
-//    }
+    func favoritesPredicate() -> NSPredicate {
+        guard let user = viewModel.getLoggedInUser() else {
+            fatalError("AccountViewModel error")
+        }
+
+        if user.favorites.count > 0 {
+            return NSPredicate(format: "id IN %@", user.favorites.map({ $0.id }))
+        } else {
+            // fetch non-existent cards
+            return NSPredicate(format: "id = %@", "-1")
+        }
+    }
+
+    func ratedCardsPredicate() -> NSPredicate {
+        guard let user = viewModel.getLoggedInUser() else {
+            fatalError("AccountViewModel error")
+        }
+
+        if user.ratings.count > 0 {
+            return NSPredicate(format: "id IN %@", user.ratings.map({ $0.card! }).map( { $0.id } ))
+        } else {
+            // fetch non-existent cards
+            return NSPredicate(format: "id = %@", "-1")
+        }
+    }
 }
 
 // MARK: UITableViewDataSource
@@ -257,17 +254,17 @@ extension AccountViewController : UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // TODO: fix this
-//        switch indexPath.row {
-//        case AccountSection.favorites.rawValue:
-//            viewModel.accountSection = .favorites
-//            performSegue(withIdentifier: "showSearch",
-//                         sender: ["title": "Favorites",
-//                                  "request": favoritesRequest()])
-//        case AccountSection.ratedCards.rawValue:
-//            viewModel.accountSection = .ratedCards
-//            performSegue(withIdentifier: "showSearch",
-//                         sender: ["title": "Rated Cards",
-//                                  "request": ratedCardsRequest()])
+        switch indexPath.row {
+        case AccountSection.favorites.rawValue:
+            viewModel.accountSection = .favorites
+            performSegue(withIdentifier: "showSearch",
+                         sender: ["title": "Favorites",
+                                  "predicate": favoritesPredicate()])
+        case AccountSection.ratedCards.rawValue:
+            viewModel.accountSection = .ratedCards
+            performSegue(withIdentifier: "showSearch",
+                         sender: ["title": "Rated Cards",
+                                  "predicate": ratedCardsPredicate()])
 //        case AccountSection.decks.rawValue:
 //            viewModel.accountSection = .decks
 //            performSegue(withIdentifier: "showDecks",
@@ -280,9 +277,9 @@ extension AccountViewController : UITableViewDelegate {
 //            viewModel.accountSection = .lists
 //            performSegue(withIdentifier: "showLists",
 //                         sender: nil)
-//        default:
-//            ()
-//        }
+        default:
+            ()
+        }
     }
 }
 
