@@ -84,7 +84,7 @@ class BaseSearchViewModel: NSObject {
         self.mode = mode
     }
     
-    // MARK: UITableView methods
+    // MARK: UITableViewDataSource methods
     func numberOfRows(inSection section: Int) -> Int {
         return 0
     }
@@ -132,6 +132,20 @@ class BaseSearchViewModel: NSObject {
             return nil
         }
     }
+    
+    // MARK: UICollectionViewDataSource methodas
+    func collectionViewNumberOfItems(inSection section: Int) -> Int {
+        return 0
+    }
+    
+    func collectionViewNumberOfSections() -> Int {
+        return 0
+    }
+    
+    func collectionTitleForHeaderInSection(section: Int) -> String? {
+        return nil
+    }
+    
     
     // MARK: Custom methods
     func object(forRowAt indexPath: IndexPath) -> Object? {

@@ -68,19 +68,11 @@ class CardGridTableViewCell: UITableViewCell {
 // MARK: UICollectionViewDataSource
 extension CardGridTableViewCell : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if viewModel.isEmpty() {
-            return 1
-        } else {
-            return viewModel.numberOfRows(inSection: section)
-        }
+        return viewModel.collectionViewNumberOfItems(inSection: section)
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        if viewModel.isEmpty() {
-            return 1
-        } else {
-            return viewModel.numberOfSections()
-        }
+        return viewModel.collectionViewNumberOfSections()
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -136,7 +128,7 @@ extension CardGridTableViewCell : UICollectionViewDataSource {
                     return v
                 }
                 
-                lab.text = viewModel.titleForHeaderInSection(section: indexPath.section)//SectionIndexTitles()?[indexPath.section]
+                lab.text = viewModel.collectionTitleForHeaderInSection(section: indexPath.section)
             }
             
             return v

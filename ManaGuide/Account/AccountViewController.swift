@@ -73,11 +73,8 @@ class AccountViewController: BaseViewController {
                 return
             }
 
-            let sortDescriptors = [SortDescriptor(keyPath: "set.releaseDate", ascending: true),
-                                   SortDescriptor(keyPath: "name", ascending: true),
-                                   SortDescriptor(keyPath: "myNumberOrder", ascending: true)]
             dest.viewModel = SearchViewModel(withPredicate: predicate,
-                                             andSortDescriptors: sortDescriptors,
+                                             andSortDescriptors: nil,
                                              andTitle: dict["title"] as? String,
                                              andMode: .loading)
 //            dest.delegate = self

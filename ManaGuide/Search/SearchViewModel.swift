@@ -13,11 +13,12 @@ import RealmSwift
 class SearchViewModel: BaseSearchViewModel {
     private var _results: Results<CMCard>? = nil
     
-    // MARK: UITableView methods
+    // MARK: UITableViewDataSource methods
     override func numberOfRows(inSection section: Int) -> Int {
+        var rows = 1
+        
         if mode == .resultsFound {
             let searchGenerator = SearchRequestGenerator()
-            var rows = 0
 
             guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String,
                 let sortBy = searchGenerator.displayValue(for: .sortBy) as? String else {
@@ -28,22 +29,23 @@ class SearchViewModel: BaseSearchViewModel {
             case "list":
                 guard let results = _results,
                     let sectionTitles = _sectionTitles else {
-                    return 0
+                    return rows
                 }
                 
                 switch sortBy {
                 case "name":
-                    return results.filter("myNameSection == %@", sectionTitles[section]).count
-                case "number":
-                    return results.count
+                    rows = results.filter("myNameSection == %@", sectionTitles[section]).count
+                case "number",
+                     "collectorNumber":
+                    rows = results.count
                 case "type":
-                    return results.filter("type.nameSection == %@", sectionTitles[section]).count
+                    rows = results.filter("myType.name == %@", sectionTitles[section]).count
                 case "rarity":
-                    return results.filter("rarity.nameSection == %@", sectionTitles[section]).count
+                    rows = results.filter("rarity.name == %@", sectionTitles[section]).count
                 case "artist":
-                    return results.filter("artist.nameSection == %@", sectionTitles[section]).count
+                    rows = results.filter("artist.name == %@", sectionTitles[section]).count
                 default:
-                    rows = 1
+                    ()
                 }
                 
             case "grid":
@@ -51,47 +53,51 @@ class SearchViewModel: BaseSearchViewModel {
             default:
                 ()
             }
-            
-            return rows
-        } else {
-            return 1
         }
+        
+        return rows
     }
     
     override func numberOfSections() -> Int {
+        var sections = 1
+        
         if mode == .resultsFound {
             let searchGenerator = SearchRequestGenerator()
-            var number = 0
-            
-            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
-                return number
+            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String,
+                let sortBy = searchGenerator.displayValue(for: .sortBy) as? String else {
+                return sections
             }
             
             switch displayBy {
             case "list":
                 guard let _ = _results,
                     let sectionTitles = _sectionTitles else {
-                    return 0
+                    return sections
                 }
-                number = sectionTitles.count
+                
+                if sortBy == "number" ||
+                    sortBy == "collectorNumber" {
+                    sections = 1
+                } else {
+                    sections = sectionTitles.count
+                }
                 
             case "grid":
-                number = 1
+                sections = 1
                 
             default:
                 ()
             }
-            
-            return number
-        } else {
-            return 1
         }
+        
+        return sections
     }
     
     override func sectionIndexTitles() -> [String]? {
+        var titles: [String]?
+        
         if mode == .resultsFound {
             let searchGenerator = SearchRequestGenerator()
-            var titles: [String]?
             
             guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
                 return titles
@@ -105,22 +111,21 @@ class SearchViewModel: BaseSearchViewModel {
             default:
                 ()
             }
-            
-            return titles
-        } else {
-            return nil
         }
+        
+        return titles
     }
     
     override func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
+        var sectionIndex = 0
+        
         if mode == .resultsFound {
             let searchGenerator = SearchRequestGenerator()
-            var sectionIndex = 0
             
             guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String,
                 let orderBy = searchGenerator.displayValue(for: .orderBy) as? Bool,
                 let sectionTitles = _sectionTitles else {
-                    return sectionIndex
+                return sectionIndex
             }
             
             switch displayBy {
@@ -140,38 +145,118 @@ class SearchViewModel: BaseSearchViewModel {
             default:
                 ()
             }
-            return sectionIndex
-
-        } else {
-            return 0
         }
+        
+        return sectionIndex
     }
     
     override func titleForHeaderInSection(section: Int) -> String? {
+        var titleHeader: String?
+        
         if mode == .resultsFound {
             let searchGenerator = SearchRequestGenerator()
-            var titleHeader: String?
             
-            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String else {
+            guard let displayBy = searchGenerator.displayValue(for: .displayBy) as? String,
+                let sortBy = searchGenerator.displayValue(for: .sortBy) as? String else {
                 return titleHeader
             }
             
             switch displayBy {
             case "list":
                 guard let sectionTitles = _sectionTitles else {
-                    return nil
+                    return titleHeader
                 }
-                titleHeader = sectionTitles[section]
+                if sortBy == "number" ||
+                    sortBy == "collectorNumber" {
+                    titleHeader = nil
+                } else {
+                    titleHeader = sectionTitles[section]
+                }
             case "grid":
                 ()
             default:
                 ()
             }
-            
-            return titleHeader
-        } else {
-            return nil
         }
+        
+        return titleHeader
+    }
+    
+    // MARK: UICollectionViewDataSource methods
+    override func collectionViewNumberOfItems(inSection section: Int) -> Int {
+        var items = 0
+        
+        if mode == .resultsFound {
+            let searchGenerator = SearchRequestGenerator()
+            
+            guard let sortBy = searchGenerator.displayValue(for: .sortBy) as? String,
+                let results = _results,
+                let sectionTitles = _sectionTitles else {
+                return items
+            }
+            
+            switch sortBy {
+            case "name":
+                items = results.filter("myNameSection == %@", sectionTitles[section]).count
+            case "number",
+                 "collectorNumber":
+                items = results.count
+            case "type":
+                items = results.filter("myType.name == %@", sectionTitles[section]).count
+            case "rarity":
+                items = results.filter("rarity.name == %@", sectionTitles[section]).count
+            case "artist":
+                items = results.filter("artist.name == %@", sectionTitles[section]).count
+            default:
+                ()
+            }
+        }
+        
+        return items
+    }
+    
+    override func collectionViewNumberOfSections() -> Int {
+        var sections = 1
+        
+        if mode == .resultsFound {
+            let searchGenerator = SearchRequestGenerator()
+            guard let sortBy = searchGenerator.displayValue(for: .sortBy) as? String,
+                let _ = _results,
+                let sectionTitles = _sectionTitles else {
+                return sections
+            }
+            
+            if sortBy == "number" ||
+                sortBy == "collectorNumber" {
+                sections = 1
+            } else {
+                sections = sectionTitles.count
+            }
+        }
+        
+        return sections
+    }
+    
+    override func collectionTitleForHeaderInSection(section: Int) -> String? {
+        var titleHeader: String?
+        
+        if mode == .resultsFound {
+            let searchGenerator = SearchRequestGenerator()
+            
+            guard let sortBy = searchGenerator.displayValue(for: .sortBy) as? String,
+                let sectionTitles = _sectionTitles else {
+                return titleHeader
+            }
+            
+            if sortBy == "number" ||
+                sortBy == "collectorNumber" {
+                titleHeader = nil
+            } else {
+                titleHeader = sectionTitles[section]
+            }
+        }
+        
+        return titleHeader
     }
     
     // MARK: Overrides
@@ -184,20 +269,18 @@ class SearchViewModel: BaseSearchViewModel {
             return nil
         }
         
-//        return results[indexPath.row]
-//        return results.filter("\(sectionName) == %@", _sectionTitles![indexPath.section])[indexPath.row]
-        
         switch sortBy {
         case "name":
             return results.filter("myNameSection == %@", sectionTitles[indexPath.section])[indexPath.row]
-        case "number":
+        case "number",
+             "collectorNumber":
             return results[indexPath.row]
         case "type":
-            return results.filter("type.nameSection == %@", sectionTitles[indexPath.section])[indexPath.row]
+            return results.filter("myType.name == %@", sectionTitles[indexPath.section])[indexPath.row]
         case "rarity":
-            return results.filter("rarity.nameSection == %@" ,sectionTitles[indexPath.section])[indexPath.row]
+            return results.filter("rarity.name == %@" ,sectionTitles[indexPath.section])[indexPath.row]
         case "artist":
-            return results.filter("artist.nameSection == %@", sectionTitles[indexPath.section])[indexPath.row]
+            return results.filter("artist.name == %@", sectionTitles[indexPath.section])[indexPath.row]
         default:
             return nil
         }
@@ -240,50 +323,47 @@ class SearchViewModel: BaseSearchViewModel {
         _sectionTitles = [String]()
         
         for card in results {
-            var prefix: String?
+            var sectionIndexTitle: String?
+            var sectionTitle: String?
             
             switch sortBy {
             case "name":
-                prefix = card.myNameSection
-            case "number":
-                _sectionIndexTitles = nil
-                _sectionTitles = nil
-                return
+                sectionIndexTitle = card.myNameSection
+                sectionTitle = card.myNameSection
+            case "number",
+                 "collectorNumber":
+                ()
             case "type":
                 if let type = card.myType {
-                    prefix = type.nameSection
+                    sectionIndexTitle = type.nameSection
+                    sectionTitle = type.name
                 }
             case "rarity":
                 if let rarity = card.rarity {
-                    prefix = rarity.nameSection
+                    sectionIndexTitle = rarity.nameSection
+                    sectionTitle = rarity.name
                 }
             case "artist":
                 if let artist = card.artist {
-                    prefix = artist.nameSection
+                    sectionIndexTitle = artist.nameSection
+                    sectionTitle = artist.name
                 }
             default:
                 ()
             }
             
-            if let prefix = prefix {
-                if !_sectionIndexTitles!.contains(prefix) {
-                    _sectionIndexTitles!.append(prefix)
+            if let sectionIndexTitle = sectionIndexTitle {
+                if !_sectionIndexTitles!.contains(sectionIndexTitle) {
+                    _sectionIndexTitles!.append(sectionIndexTitle)
                 }
-                
-                if !_sectionTitles!.contains(prefix) {
-                    _sectionTitles!.append(prefix)
+            }
+            
+            if let sectionTitle = sectionTitle {
+                if !_sectionTitles!.contains(sectionTitle) {
+                    _sectionTitles!.append(sectionTitle)
                 }
             }
         }
-        
-//        let count = sections.count
-//        if count > 0 {
-//            for i in 0...count - 1 {
-//                if let sectionTitle = sections[i].indexTitle {
-//                    _sectionTitles!.append(sectionTitle)
-//                }
-//            }
-//        }
         
         _sectionIndexTitles!.sort()
         _sectionTitles!.sort()
