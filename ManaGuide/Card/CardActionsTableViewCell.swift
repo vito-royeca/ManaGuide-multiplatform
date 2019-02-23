@@ -8,6 +8,7 @@
 
 import UIKit
 import Cosmos
+import FontAwesome_swift
 
 protocol CardActionsTableViewCellDelegate : NSObjectProtocol {
     func favoriteAction()

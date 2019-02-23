@@ -13,6 +13,7 @@
             <string>FontAwesome5BrandsRegular</string>
         </array>
         <array key="Font Awesome 5 Free-Regular-400.otf">
+            <string>FontAwesome5Free-Regular</string>
             <string>FontAwesome5FreeRegular</string>
         </array>
         <array key="FontAwesome.ttf">
@@ -1110,7 +1111,7 @@
                                                                         <constraints>
                                                                             <constraint firstAttribute="height" constant="17" id="fLB-fN-IzX"/>
                                                                         </constraints>
-                                                                        <fontDescription key="fontDescription" name="FontAwesome5FreeRegular" family="Font Awesome 5 Free" pointSize="13"/>
+                                                                        <fontDescription key="fontDescription" name="FontAwesome5Free-Regular" family="Font Awesome 5 Free" pointSize="13"/>
                                                                         <nil key="textColor"/>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
@@ -1714,7 +1715,7 @@
                                                         </button>
                                                         <label opaque="NO" userInteractionEnabled="NO" tag="300" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" 100" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kkd-kM-zpB">
                                                             <rect key="frame" x="276" y="0.0" width="138" height="43.666666666666664"/>
-                                                            <fontDescription key="fontDescription" name="FontAwesome5FreeRegular" family="Font Awesome 5 Free" pointSize="13"/>
+                                                            <fontDescription key="fontDescription" name="FontAwesome5Free-Regular" family="Font Awesome 5 Free" pointSize="13"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
@@ -2290,10 +2291,10 @@
         <image name="forwardButton" width="32" height="32"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="raG-Jp-fAl"/>
-        <segue reference="X4a-uC-2tC"/>
-        <segue reference="J88-7q-TTb"/>
+        <segue reference="Vbm-cg-ye0"/>
+        <segue reference="jVZ-a8-OYH"/>
+        <segue reference="lLZ-BR-fAo"/>
         <segue reference="Mbq-CH-LY8"/>
-        <segue reference="bra-At-7UT"/>
+        <segue reference="whl-Hr-bZH"/>
     </inferredMetricsTieBreakers>
 </document>
