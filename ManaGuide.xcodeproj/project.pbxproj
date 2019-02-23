@@ -154,6 +154,10 @@
 		1168ACFA21E99DA40071DAC5 /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1168ACF821E99DA40071DAC5 /* CardViewModel.swift */; };
 		1168ACFB21E99DA40071DAC5 /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1168ACF821E99DA40071DAC5 /* CardViewModel.swift */; };
 		117B91182219F6C200AB9139 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117B91172219F6C200AB9139 /* SearchViewController.swift */; };
+		117B911D221A4BBE00AB9139 /* BrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117B9119221A4BBE00AB9139 /* BrowserTableViewCell.swift */; };
+		117B911E221A4BBE00AB9139 /* SetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117B911A221A4BBE00AB9139 /* SetViewModel.swift */; };
+		117B911F221A4BBE00AB9139 /* BrowserNavigatorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117B911B221A4BBE00AB9139 /* BrowserNavigatorTableViewCell.swift */; };
+		117B9120221A4BBE00AB9139 /* SetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117B911C221A4BBE00AB9139 /* SetViewController.swift */; };
 		117CF2FD219E8BE500110C6A /* FeaturedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117CF2FC219E8BE500110C6A /* FeaturedTableViewCell.swift */; };
 		117CF2FE219E8BE500110C6A /* FeaturedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117CF2FC219E8BE500110C6A /* FeaturedTableViewCell.swift */; };
 		117CF2FF219E8BE500110C6A /* FeaturedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117CF2FC219E8BE500110C6A /* FeaturedTableViewCell.swift */; };
@@ -318,6 +322,10 @@
 		1168ACEE21E997150071DAC5 /* SearchRequestGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchRequestGenerator.swift; sourceTree = "<group>"; };
 		1168ACF821E99DA40071DAC5 /* CardViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewModel.swift; sourceTree = "<group>"; };
 		117B91172219F6C200AB9139 /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		117B9119221A4BBE00AB9139 /* BrowserTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserTableViewCell.swift; sourceTree = "<group>"; };
+		117B911A221A4BBE00AB9139 /* SetViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetViewModel.swift; sourceTree = "<group>"; };
+		117B911B221A4BBE00AB9139 /* BrowserNavigatorTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserNavigatorTableViewCell.swift; sourceTree = "<group>"; };
+		117B911C221A4BBE00AB9139 /* SetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetViewController.swift; sourceTree = "<group>"; };
 		117CF2FC219E8BE500110C6A /* FeaturedTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedTableViewCell.swift; sourceTree = "<group>"; };
 		11853EB421669AD50055077B /* SearchModeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModeTableViewCell.swift; sourceTree = "<group>"; };
 		11853EB521669AD50055077B /* SearchModeTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchModeTableViewCell.xib; sourceTree = "<group>"; };
@@ -403,6 +411,10 @@
 		1108275A21ED71E200F592F0 /* Set */ = {
 			isa = PBXGroup;
 			children = (
+				117B911B221A4BBE00AB9139 /* BrowserNavigatorTableViewCell.swift */,
+				117B9119221A4BBE00AB9139 /* BrowserTableViewCell.swift */,
+				117B911C221A4BBE00AB9139 /* SetViewController.swift */,
+				117B911A221A4BBE00AB9139 /* SetViewModel.swift */,
 			);
 			path = Set;
 			sourceTree = "<group>";
@@ -1278,6 +1290,7 @@
 				11303C5821A340DE00FF0C2D /* BaseSearchViewController.swift in Sources */,
 				110FD66221778607006AB1A7 /* MainViewController.swift in Sources */,
 				113BF1AC21FD382C0071F162 /* DecksViewController.swift in Sources */,
+				117B911D221A4BBE00AB9139 /* BrowserTableViewCell.swift in Sources */,
 				110BB4FA1F207C6400086841 /* AppDelegate.swift in Sources */,
 				113BF1BE21FD382C0071F162 /* AccountHeroTableViewCell.swift in Sources */,
 				110BF21821EC51DC00EEA261 /* CardCarouselTableViewCell.swift in Sources */,
@@ -1294,13 +1307,16 @@
 				11448A6220CD3849008EFC40 /* Constants.swift in Sources */,
 				1168ACF521E997150071DAC5 /* SearchRequestGenerator.swift in Sources */,
 				113BF1A321FD382C0071F162 /* ListsViewModel.swift in Sources */,
+				117B9120221A4BBE00AB9139 /* SetViewController.swift in Sources */,
 				11A63E2B21430E48005AE024 /* TopRatedItemCell.swift in Sources */,
 				110BF20C21EC51DC00EEA261 /* StoreTableViewCell.swift in Sources */,
 				110BF21521EC51DC00EEA261 /* CardPricingTableViewCell.swift in Sources */,
 				11A63E232142F847005AE024 /* TopViewedViewModel.swift in Sources */,
 				110BF20921EC51DC00EEA261 /* CardNameTableViewCell.swift in Sources */,
 				113BF19D21FD382C0071F162 /* CollectionViewModel.swift in Sources */,
+				117B911E221A4BBE00AB9139 /* SetViewModel.swift in Sources */,
 				11A63E1F2142F82A005AE024 /* TopRatedViewModel.swift in Sources */,
+				117B911F221A4BBE00AB9139 /* BrowserNavigatorTableViewCell.swift in Sources */,
 				11DFB8C72145B4D500C12FF8 /* LatestCardsTableViewCell.swift in Sources */,
 				117B91182219F6C200AB9139 /* SearchViewController.swift in Sources */,
 				110BF20F21EC51DC00EEA261 /* CardActionsTableViewCell.swift in Sources */,

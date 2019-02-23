@@ -113,12 +113,12 @@ class FeaturedViewController: BaseViewController {
                                            andMode: .loading)
 
         } else if segue.identifier == "showSet" {
-//            guard let dest = segue.destination as? SetViewController,
-//                let set = sender as? CMSet else {
-//                return
-//            }
-//
-//            dest.viewModel = SetViewModel(withSet: set, languageCode: "en")
+            guard let dest = segue.destination as? SetViewController,
+                let set = sender as? CMSet else {
+                return
+            }
+
+            dest.viewModel = SetViewModel(withSet: set, languageCode: "en")
         }
     }
 

@@ -109,43 +109,45 @@ class SetViewController: SearchViewController {
         
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let searchGenerator = SearchRequestGenerator()
-        let sortDescriptors = searchGenerator.createSortDescriptors()
+        //let searchGenerator = SearchRequestGenerator()
+        //let sortDescriptors = searchGenerator.createSortDescriptors()
         
         if segue.identifier == "showCard" {
             guard let dest = segue.destination as? CardViewController,
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
-                let cardIDs = dict["cardIDs"] as? [String] else {
+                let predicate = dict["predicate"] as? NSPredicate else {
                 return
             }
             
             dest.viewModel = CardViewModel(withCardIndex: cardIndex,
-                                           withCardIDs: cardIDs,
-                                           withSortDescriptors: sortDescriptors)
-            
+                                           withPredicate: predicate,
+                                           withSortDescriptors: dict["sortDescriptors"] as? [SortDescriptor],
+                                           andMode: .loading)
+
         } else if segue.identifier == "showCardModal" {
             guard let nav = segue.destination as? UINavigationController,
                 let dest = nav.children.first as? CardViewController,
                 let dict = sender as? [String: Any],
                 let cardIndex = dict["cardIndex"] as? Int,
-                let cardIDs = dict["cardIDs"] as? [String] else {
+                let predicate = dict["predicate"] as? NSPredicate else {
                 return
             }
-            
+
             dest.viewModel = CardViewModel(withCardIndex: cardIndex,
-                                           withCardIDs: cardIDs,
-                                           withSortDescriptors: sortDescriptors)
+                                           withPredicate: predicate,
+                                           withSortDescriptors: dict["sortDescriptors"] as? [SortDescriptor],
+                                           andMode: .loading)
             
         } else if segue.identifier == "showSearch" {
-            guard let dest = segue.destination as? SearchViewController,
+            /*guard let dest = segue.destination as? SearchViewController,
                 let request = sender as? NSFetchRequest<CMCard> else {
                 return
             }
             
             dest.viewModel = SearchViewModel(withRequest: request,
                                              andTitle: "Search Results",
-                                             andMode: .loading)
+                                             andMode: .loading)*/
         }
     }
     
@@ -303,13 +305,9 @@ extension SetViewController : UIWebViewDelegate {
                     }
                 }
                 
-                let request: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-                request.predicate = NSPredicate(format: "name = %@ AND set.code = %@ AND language.code = %@", cardName, setCode, "en")
-                request.sortDescriptors = [NSSortDescriptor(key: "set.releaseDate", ascending: false),
-                                           NSSortDescriptor(key: "name", ascending: true),
-                                           NSSortDescriptor(key: "myNumberOrder", ascending: true)]
-                
-                let results = try! ManaKit.sharedInstance.dataStack!.mainContext.fetch(request)
+                let predicate = NSPredicate(format: "name = %@ AND set.code = %@ AND language.code = %@", cardName, setCode, "en")
+                let results =  ManaKit.sharedInstance.realm.objects(CMCard.self).filter(predicate)
+
                 if results.count == 1 {
                     if let card = results.first {
                         if UIDevice.current.userInterfaceIdiom == .phone {

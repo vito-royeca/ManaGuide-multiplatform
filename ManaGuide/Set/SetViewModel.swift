@@ -32,41 +32,29 @@ class SetViewModel: SearchViewModel {
     var content: SetContent = .cards
 
     private var _set: CMSet?
-    private var _searchViewModel: SearchViewModel?
     
     // MARK: Init
     init(withSet set: CMSet, languageCode: String) {
-        super.init(withTitle: set.name,
+        super.init(withPredicate: NSPredicate(format: "set.code = %@ AND language.code = %@",
+                                              set.code!, languageCode),
+                   andSortDescriptors: nil,
+                   andTitle: set.name,
                    andMode: .loading)
-        
-        let newRequest: NSFetchRequest<CMCard> = CMCard.fetchRequest()
-        newRequest.predicate = NSPredicate(format: "set.code = %@ AND language.code = %@",
-                                           set.code!, languageCode)
-        
-        request = newRequest as? NSFetchRequest<NSManagedObject>
         _set = set
     }
     
     // MARK: Overrides
     override func numberOfRows(inSection section: Int) -> Int {
+        var rows = 2
+        
         switch content {
         case .cards:
-            if mode == .resultsFound {
-                var rows = 0
-                
-                guard let fetchedResultsController = fetchedResultsController,
-                    let sections = fetchedResultsController.sections else {
-                        return rows
-                }
-                rows = sections[section].numberOfObjects
-                return rows
-                
-            } else {
-                return 1
-            }
+            rows = super.numberOfRows(inSection: section)
         case .wiki:
-            return 2
+            rows = 2
         }
+        
+        return rows
     }
     
     override func sectionIndexTitles() -> [String]? {
