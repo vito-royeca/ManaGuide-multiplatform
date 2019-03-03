@@ -99,13 +99,6 @@ class SearchViewController: BaseSearchViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        guard let dict = sender as? [String: Any] else {
-//            return
-//        }
-//
-//        let searchGenerator = SearchRequestGenerator()
-//        let sortDescriptors = searchGenerator.createSortDescriptors()
-        
         if segue.identifier == "showCard" {
             guard let dest = segue.destination as? CardViewController,
                 let dict = sender as? [String: Any],
@@ -258,22 +251,27 @@ class SearchViewController: BaseSearchViewController {
     }
     
     func handleDidSelectRow(at indexPath: IndexPath) {
-        var ids = [String]()
+        let searchGenerator = SearchRequestGenerator()
+        let sortDescriptors = [SortDescriptor(keyPath: "name", ascending: true),
+                               SortDescriptor(keyPath: "myNumberOrder", ascending: true)]
+        var index = 0
         
-        for i in 0...viewModel.count() - 1 {
-            if let card = viewModel.object(forRowAt: IndexPath(row: i, section: 0)) as? CMCard,
-                let id = card.id {
-                ids.append(id)
+        guard let predicate = searchGenerator.createSearchPredicate(query: nil, oldPredicate: viewModel.predicate),
+            let selectedCard = viewModel.object(forRowAt: indexPath) as? CMCard else {
+            return
+        }
+        
+        for card in ManaKit.sharedInstance.realm.objects(CMCard.self).filter(predicate).sorted(by: sortDescriptors) {
+            if card.id == selectedCard.id {
+                break
             }
+            index += 1
         }
         
         let identifier = UIDevice.current.userInterfaceIdiom == .phone ? "showCard" : "showCardModal"
-        var sender = ["cardIndex": indexPath.row,
-                      "predicate": NSPredicate(format: "id in %@", ids)] as [String : Any]
-        if let sortDescriptors = viewModel.sortDescriptors {
-            sender["sortDescriptors"] = sortDescriptors
-        }
-        
+        let sender = ["cardIndex": index,
+                      "predicate": predicate,
+                      "sortDescriptors": sortDescriptors] as [String: Any]
         performSegue(withIdentifier: identifier, sender: sender)
     }
     
@@ -303,9 +301,10 @@ extension SearchViewController : UITableViewDelegate {
 
 // MARK: CardGridTableViewCellDelegate
 extension SearchViewController : CardGridTableViewCellDelegate {
-    func showCard(identifier: String, cardIndex: Int, cardIDs: [String], sorters: [NSSortDescriptor]?) {
+    func showCard(identifier: String, cardIndex: Int, cardIDs: [String], sortDescriptors: [SortDescriptor]) {
         let sender = ["cardIndex": cardIndex,
-                      "cardIDs": cardIDs] as [String : Any]
+                      "cardIDs": cardIDs,
+                      "sortDescriptors": sortDescriptors] as [String : Any]
         performSegue(withIdentifier: identifier, sender: sender)
     }
 }

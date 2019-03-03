@@ -9,9 +9,10 @@
 import UIKit
 import ManaKit
 import PromiseKit
+import RealmSwift
 
 protocol CardGridTableViewCellDelegate : NSObjectProtocol {
-    func showCard(identifier: String, cardIndex: Int, cardIDs: [String], sorters: [NSSortDescriptor]?)
+    func showCard(identifier: String, cardIndex: Int, cardIDs: [String], sortDescriptors: [SortDescriptor])
 }
 
 class CardGridTableViewCell: UITableViewCell {

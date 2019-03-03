@@ -15,7 +15,6 @@ import PromiseKit
 protocol CardCarouselTableViewCellDelegate: NSObjectProtocol {
     func showPhotoBrowser(_ browser: IDMPhotoBrowser)
     func updatePricingAndActions()
-//    func updateCardIndex(_ i: Int)
     func updateCardImage()
 }
 

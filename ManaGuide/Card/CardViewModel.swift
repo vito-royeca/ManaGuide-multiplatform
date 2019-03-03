@@ -138,7 +138,6 @@ enum CardOtherDetailsSection : Int {
 class CardViewModel: BaseSearchViewModel {
     // MARK: Variables
     var cardIndex = 0
-    var firebaseDataLoaded = false
     var cardViewsIncremented = false
     var content: CardContent = .card
     var faceOrder = 0
@@ -962,42 +961,31 @@ class CardViewModel: BaseSearchViewModel {
         }
     }
 
-    func loadFirebaseData() {
-        guard let results = _results else {
-            return
-        }
-    
-        for card in results {
-            let ref = Database.database().reference().child("cards").child(card.firebaseID!)
+    func loadFirebaseData() -> Promise<Void> {
+        return Promise { seal in
+            guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard,
+                let firebaseID = card.firebaseID else {
+                fatalError()
+            }
+            
+            let ref = Database.database().reference().child("cards").child(firebaseID)
             
             ref.observeSingleEvent(of: .value, with: { snapshot in
-                guard let value = snapshot.value as? [String : Any] else {
-                    return
-                }
-                
-                // update views
-                try! ManaKit.sharedInstance.realm.write {
-                    if let views = value[FCCard.Keys.Views] as? Int {
-                        card.firebaseViews = Int64(views)
+                if let value = snapshot.value as? [String : Any] {
+                    // update views
+                    try! ManaKit.sharedInstance.realm.write {
+                        if let views = value[FCCard.Keys.Views] as? Int {
+                            card.firebaseViews = Int64(views)
+                        }
+                        if let rating = value[FCCard.Keys.Rating] as? Double {
+                            card.firebaseRating = rating
+                        }
+                        ManaKit.sharedInstance.realm.add(card)
+                        seal.fulfill(())
                     }
-                    if let rating = value[FCCard.Keys.Rating] as? Double {
-                        card.firebaseRating = rating
-                    }
-                    ManaKit.sharedInstance.realm.add(card)
+                } else {
+                    seal.fulfill(())
                 }
-//                ManaKit.sharedInstance.dataStack!.performInNewBackgroundContext { backgroundContext in
-//                    if let views = value["Views"] as? Int {
-//                        card.firebaseViews = Int64(views)
-//                    }
-//                    if let rating = value["Rating"] as? Double {
-//                        card.firebaseRating = rating
-//                    }
-//                    try! backgroundContext.save()
-//
-//                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: NotificationKeys.CardViewsUpdated),
-//                                                    object: nil,
-//                                                    userInfo: ["card": card])
-//                }
             })
         }
     }
@@ -1031,60 +1019,6 @@ class CardViewModel: BaseSearchViewModel {
             }
         }
     }
-    
-//    func saveFirebaseData(with firebaseID: String, data: [String: Any], firstAttempt: Bool, completion: Promise<Void>) -> Promise<Void> {
-//        return Promise { seal in
-//            let ref = Database.database().reference().child("cards").child(firebaseID)
-//
-//            ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-//                if var post = currentData.value as? [String : Any] {
-//                    for (k,v) in data {
-//                        post[k] = v
-//                    }
-//
-//                    // Set value and report transaction success
-//                    currentData.value = post
-//                    return TransactionResult.success(withValue: currentData)
-//
-//                } else {
-//                    if firstAttempt {
-//                        return TransactionResult.abort()
-//                    } else {
-//                        ref.setValue(data)
-//                        return TransactionResult.success(withValue: currentData)
-//                    }
-//                }
-//
-//            }) { (error, committed, snapshot) in
-//                if let error = error {
-//                    seal.reject(error)
-//                } else {
-//
-//                    if committed {
-//                        firstly {
-//                            completion
-//                        }.done {
-//                            seal.fulfill(())
-//                        }.catch { error in
-//                            seal.reject(error)
-//                        }
-//                    } else {
-//                        // retry again, if we were aborted from above
-//                        firstly {
-//                            self.saveFirebaseData(with: firebaseID,
-//                                                  data: data,
-//                                                  firstAttempt: false,
-//                                                  completion: completion)
-//                        }.done {
-//                            seal.fulfill(())
-//                        }.catch { error in
-//                            seal.reject(error)
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
     
     func deleteOldFirebaseData(with firebaseID: String) -> Promise<Void> {
         return Promise<Void> { seal in

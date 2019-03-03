@@ -19,6 +19,7 @@ import ManaKit
 import MBProgressHUD
 import PromiseKit
 import NYAlertViewController
+import RealmSwift
 
 class CardViewController: BaseSearchViewController {
     // MARK: Outlets
@@ -118,7 +119,7 @@ class CardViewController: BaseSearchViewController {
                 viewModel.downloadCardPricing()
                 self.tableView.reloadData()
             }.catch { error in
-                
+                print("\(error)")
             }
         }
     }
@@ -165,12 +166,6 @@ class CardViewController: BaseSearchViewController {
                                                selector: #selector(reloadCardDetails(_:)),
                                                name: NSNotification.Name(rawValue: NotificationKeys.CardRelatedDataUpdated),
                                                object: nil)
-        
-        if let viewModel = viewModel as? CardViewModel,
-            !viewModel.firebaseDataLoaded {
-            viewModel.loadFirebaseData()
-            viewModel.firebaseDataLoaded = true
-        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -412,10 +407,6 @@ class CardViewController: BaseSearchViewController {
                 }
             case CardDetailsSection.legalities.rawValue:
                 if viewModel.numberOfLegalities() == 0 {
-                    guard let c = tableView.dequeueReusableCell(withIdentifier: CardGridTableViewCell.reuseIdentifier,
-                                                                for: indexPath) as? CardGridTableViewCell else {
-                        fatalError("\(CardGridTableViewCell.reuseIdentifier) is nil")
-                    }
                     cell = createEmptyCardGridCell(for: indexPath)
                 } else {
                     guard let c = tableView.dequeueReusableCell(withIdentifier: "BasicCell"),
@@ -1062,12 +1053,10 @@ extension CardViewController : CardActionsTableViewCellDelegate {
 
 // MARK: CardGridTableViewCellDelegate
 extension CardViewController : CardGridTableViewCellDelegate {
-    func showCard(identifier: String, cardIndex: Int, cardIDs: [String], sorters: [NSSortDescriptor]?) {
-        var sender = ["cardIndex": cardIndex as Any,
-                      "cardIDs": cardIDs]
-        if let sorters = sorters {
-            sender["sortDescriptors"] = sorters
-        }
+    func showCard(identifier: String, cardIndex: Int, cardIDs: [String], sortDescriptors: [SortDescriptor]) {
+        let sender = ["cardIndex": cardIndex,
+                      "cardIDs": cardIDs,
+                      "sortDescriptors": sortDescriptors] as [String : Any]
         performSegue(withIdentifier: identifier, sender: sender)
     }
 }
@@ -1079,9 +1068,17 @@ extension CardViewController : CardCarouselTableViewCellDelegate {
     }
     
     func updatePricingAndActions() {
-        tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
-                                  IndexPath(row: 0, section: CardImageSection.actions.rawValue)],
-                             with: .automatic)
+        if let viewModel = viewModel as? CardViewModel {
+            firstly {
+                viewModel.loadFirebaseData()
+            }.done {
+                self.tableView.reloadRows(at: [IndexPath(row: 0, section: CardImageSection.pricing.rawValue),
+                                               IndexPath(row: 0, section: CardImageSection.actions.rawValue)],
+                                          with: .automatic)
+            }.catch { error in
+                print("\(error)")
+            }
+        }
     }
     
     func updateCardImage() {

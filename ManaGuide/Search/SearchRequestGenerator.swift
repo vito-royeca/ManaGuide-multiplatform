@@ -8,6 +8,7 @@
 
 import UIKit
 import ManaKit
+import RealmSwift
 
 enum SearchKey : Int {
     case keywordName
@@ -166,21 +167,21 @@ class SearchRequestGenerator: NSObject {
         return predicate
     }
     
-    func createSortDescriptors() -> [NSSortDescriptor]? {
+    func createSortDescriptors() -> [SortDescriptor]? {
         guard let orderBy = displayValue(for: .orderBy) as? Bool else {
             return nil
         }
         
-        var sortDescriptors = [NSSortDescriptor]()
+        var sortDescriptors = [SortDescriptor]()
         if let sectionName = getSectionName() {
-            sortDescriptors.append(NSSortDescriptor(key: sectionName, ascending: orderBy))
-            sortDescriptors.append(NSSortDescriptor(key: "name", ascending: orderBy))
-            sortDescriptors.append(NSSortDescriptor(key: "set.releaseDate", ascending: orderBy))
-            sortDescriptors.append(NSSortDescriptor(key: "myNumberOrder", ascending: orderBy))
+            sortDescriptors.append(SortDescriptor(keyPath: sectionName, ascending: orderBy))
+            sortDescriptors.append(SortDescriptor(keyPath: "name", ascending: orderBy))
+            sortDescriptors.append(SortDescriptor(keyPath: "set.releaseDate", ascending: orderBy))
+            sortDescriptors.append(SortDescriptor(keyPath: "myNumberOrder", ascending: orderBy))
         } else {
-            sortDescriptors.append(NSSortDescriptor(key: "myNumberOrder", ascending: orderBy))
-            sortDescriptors.append(NSSortDescriptor(key: "name", ascending: orderBy))
-            sortDescriptors.append(NSSortDescriptor(key: "set.releaseDate", ascending: orderBy))
+            sortDescriptors.append(SortDescriptor(keyPath: "myNumberOrder", ascending: orderBy))
+            sortDescriptors.append(SortDescriptor(keyPath: "name", ascending: orderBy))
+            sortDescriptors.append(SortDescriptor(keyPath: "set.releaseDate", ascending: orderBy))
         }
         
         
