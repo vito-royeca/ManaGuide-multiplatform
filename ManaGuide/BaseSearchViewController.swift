@@ -91,7 +91,7 @@ class BaseSearchViewController: BaseViewController {
             self.viewModel.mode = self.viewModel.isEmpty() ? .noResultsFound : .resultsFound
             self.tableView.reloadData()
             if let countLabel = self.countLabel {
-                countLabel.text = " \(self.viewModel.count()) results"
+                countLabel.text = " \(self.viewModel.count()) cards"
             }
         }.catch { error in
             self.viewModel.mode = .error

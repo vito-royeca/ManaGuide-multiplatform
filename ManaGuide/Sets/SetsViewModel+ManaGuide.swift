@@ -1,5 +1,5 @@
 //
-//  SetsViewModel.swift
+//  SetsViewModel+ManaGuide.swift
 //  ManaGuide
 //
 //  Created by Jovito Royeca on 23.09.18.
@@ -8,16 +8,8 @@
 
 import ManaKit
 import PromiseKit
-import RealmSwift
 
-class SetsViewModel: BaseSearchViewModel {
-    override init() {
-        super.init()
-    }
-    
-    // MARK: Variables
-    private var _sectionIndexTitles: [String]?
-    private var _sectionTitles: [String]?
+extension SetsViewModel {
     
     // MARK: UITableView methods
     override func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
@@ -47,36 +39,41 @@ class SetsViewModel: BaseSearchViewModel {
         }
     }
     
-    override func sectionIndexTitles() -> [String]? {
-        if mode == .resultsFound {
-            return _sectionIndexTitles
-        } else {
-            return nil
-        }
-    }
-
     // MARK: Custom methods
+    override func object(forRowAt indexPath: IndexPath) -> Object? {
+        guard let results = _results else {
+            fatalError("results is nil")
+        }
+        
+        guard let sectionTitles = _sectionTitles else {
+            return results[indexPath.row]
+        }
+        
+        return results.filter("\(sectionName) == %@", sectionTitles[indexPath.section])[indexPath.row]
+    }
+    
+    override func count() -> Int {
+        guard let results = _results else {
+            return 0
+        }
+        return results.count
+    }
+    
     override func fetchData() -> Promise<Void> {
         return Promise { seal in
-            var predicate: NSPredicate?
+            var predicate = NSPredicate(format: "cardCount > 0")
             let count = queryString.count
             
             if count > 0 {
                 if count == 1 {
-                    predicate = NSPredicate(format: "name BEGINSWITH[cd] %@ OR code BEGINSWITH[cd] %@",
-                                            queryString, queryString)
+                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NSPredicate(format: "name BEGINSWITH[cd] %@ OR code BEGINSWITH[cd] %@", queryString, queryString)])
                 } else {
-                    predicate = NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@",
-                                            queryString, queryString)
+                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@", queryString, queryString)])
                 }
             }
             updateSorting(with: nil)
             
-            if let predicate = predicate {
-                results = ManaKit.sharedInstance.realm.objects(CMSet.self).filter(predicate).sorted(by: sortDescriptors!) as? Results<Object>
-            } else {
-                results = ManaKit.sharedInstance.realm.objects(CMSet.self).sorted(by: sortDescriptors!) as? Results<Object>
-            }
+            _results = ManaKit.sharedInstance.realm.objects(CMSet.self).filter(predicate).sorted(by: sortDescriptors!)
             
             updateSections()
             seal.fulfill(())
@@ -128,7 +125,7 @@ class SetsViewModel: BaseSearchViewModel {
     
     // MARK: Overrides
     override func updateSections() {
-        guard let results = results else {
+        guard let results = _results else {
             return
         }
 
@@ -145,12 +142,15 @@ class SetsViewModel: BaseSearchViewModel {
         
         for set in results {
             var prefix: String?
+            var title: String?
             
             switch sectionName {
             case "myNameSection":
                 prefix = set.myNameSection
+                title = set.myNameSection
             case "setType.name":
                 prefix = set.setType!.nameSection
+                title = set.setType!.name
             default:
                 ()
             }
@@ -158,6 +158,12 @@ class SetsViewModel: BaseSearchViewModel {
             if let prefix = prefix {
                 if !_sectionIndexTitles!.contains(prefix) {
                     _sectionIndexTitles!.append(prefix)
+                }
+            }
+            
+            if let title = title {
+                if !_sectionTitles!.contains(title) {
+                    _sectionTitles!.append(title)
                 }
             }
         }
@@ -175,6 +181,7 @@ class SetsViewModel: BaseSearchViewModel {
 //        _sectionTitles!.sort()
     }
     
+    // MARK: Private methods
     private func defaultsValue() -> [String: Any] {
         var values = [String: Any]()
         

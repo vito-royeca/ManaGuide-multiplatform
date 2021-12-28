@@ -10,9 +10,9 @@ import UIKit
 import ManaKit
 
 class CardActivityItemProvider: UIActivityItemProvider {
-    let card: CMCard
+    let card: MGCard
     
-    init(_ card: CMCard) {
+    init(_ card: MGCard) {
         self.card = card
         
         super.init(placeholderItem: card.image(type: .normal,

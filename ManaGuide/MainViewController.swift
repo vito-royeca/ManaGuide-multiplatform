@@ -47,7 +47,7 @@ class MainViewController: UITabBarController {
         super.viewDidAppear(animated)
         
         // Spotlight
-        let spotlight = SpotlightManager()
-        spotlight.createSpotlightItems()
+//        let spotlight = SpotlightManager()
+//        spotlight.createSpotlightItems()
     }
 }

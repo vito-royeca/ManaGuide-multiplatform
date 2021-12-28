@@ -51,7 +51,7 @@ class SpotlightManager: NSObject {
             if let imageURIs = card.imageURIs,
                 let dict = NSKeyedUnarchiver.unarchiveObject(with: imageURIs as Data) as? [String: String],
                 let urlString = dict["normal"],
-                let path = SDImageCache.shared().defaultCachePath(forKey: urlString),
+                let path = SDImageCache.shared.cachePath(forKey: urlString),
                 let localUrl = URL(string: "file://\(path)") {
                 
                 attributeSet.thumbnailURL = localUrl
@@ -186,7 +186,7 @@ class SpotlightManager: NSObject {
                 if let imageURIs = card.imageURIs,
                     let dict = NSKeyedUnarchiver.unarchiveObject(with: imageURIs as Data) as? [String: String],
                     let urlString = dict["normal"],
-                    let path = SDImageCache.shared().defaultCachePath(forKey: urlString),
+                    let path = SDImageCache.shared.cachePath(forKey: urlString),
                     let localUrl = URL(string: "file://\(path)") {
                     
                     attributeSet.thumbnailURL = localUrl

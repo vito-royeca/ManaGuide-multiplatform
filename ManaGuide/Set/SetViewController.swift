@@ -105,9 +105,8 @@ class SetViewController: SearchViewController {
                                                    name: NSNotification.Name(rawValue: NotificationKeys.CardRatingUpdated),
                                                    object: nil)
         }
-        
-        
     }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         //let searchGenerator = SearchRequestGenerator()
         //let sortDescriptors = searchGenerator.createSortDescriptors()

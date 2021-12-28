@@ -119,6 +119,8 @@ class FeaturedViewController: BaseViewController {
             }
 
             dest.viewModel = SetViewModel(withSet: set, languageCode: "en")
+        } else if segue.identifier == "showSets" {
+            
         }
     }
 

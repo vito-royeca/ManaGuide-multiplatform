@@ -24,7 +24,7 @@ class LatestSetsViewModel: BaseSearchViewModel {
     // MARK: Overrides
     override func fetchData() -> Promise<Void> {
         return Promise { seal in
-            _results = ManaKit.sharedInstance.realm.objects(CMSet.self).filter("parent = nil").sorted(by: sortDescriptors!)
+            _results = ManaKit.sharedInstance.realm.objects(CMSet.self).filter("parent = nil AND cardCount > 0").sorted(by: sortDescriptors!)
             seal.fulfill(())
         }
     }

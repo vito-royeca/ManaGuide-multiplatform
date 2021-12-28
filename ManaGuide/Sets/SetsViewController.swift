@@ -56,7 +56,7 @@ class SetsViewController: BaseSearchViewController {
         if segue.identifier == "showSet" {
             guard let dest = segue.destination as? SetViewController,
             let dict = sender as? [String: Any],
-            let set = dict["set"] as? CMSet,
+            let set = dict["set"] as? MGSet,
             let languageCode = dict["languageCode"] as? String else {
                 return
             }
@@ -77,7 +77,7 @@ class SetsViewController: BaseSearchViewController {
                 fatalError("Unexpected indexPath: \(indexPath)")
             }
             
-            c.set = viewModel.object(forRowAt: indexPath) as? CMSet
+            c.set = viewModel.object(forRowAt: indexPath) as? MGSet
             c.delegate = self
             cell = c
         } else {
@@ -117,10 +117,11 @@ extension SetsViewController : UITableViewDelegate {
 // MARK: SetsTableViewCellDelegate
 extension SetsViewController: SetTableViewCellDelegate {
     func languageAction(cell: UITableViewCell, code: String) {
-        guard let indexPath = tableView.indexPath(for: cell) else {
+        guard let indexPath = tableView.indexPath(for: cell),
+            let set = viewModel.object(forRowAt: indexPath) else {
             return
         }
-        let set = viewModel.object(forRowAt: indexPath)
+        
         let sender = ["set": set,
                       "languageCode": code] as [String : Any]
         performSegue(withIdentifier: "showSet", sender: sender)

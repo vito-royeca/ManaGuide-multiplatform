@@ -185,6 +185,7 @@ class SearchViewController: BaseSearchViewController {
                     fatalError("\(CardTableViewCell.reuseIdentifier) is nil")
                 }
                 c.card = card
+                c.updateDataDisplay()
                 cell = c
             default:
                 guard let c = tableView.dequeueReusableCell(withIdentifier: SearchModeTableViewCell.reuseIdentifier) as? SearchModeTableViewCell else {

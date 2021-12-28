@@ -10,10 +10,6 @@ import UIKit
 import Fabric
 import CoreSpotlight
 import Crashlytics
-import Firebase
-import FBSDKCoreKit
-import FBSDKLoginKit
-import GoogleSignIn
 import ManaKit
 import MMDrawerController
 import OAuthSwift
@@ -27,23 +23,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         print("docsPath = \(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])")
 
-        // Firebase
-        FirebaseApp.configure()
-        Database.database().isPersistenceEnabled = true
-        GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
-
-        // Facebook
-        FBSDKApplicationDelegate.sharedInstance().application(application,
-                                                               didFinishLaunchingWithOptions: launchOptions)
-
         // Fabric
         Fabric.with([Crashlytics.self])
 
         // ManaKit
+        ManaKit.sharedInstance.configure(apiURL: "http://192.168.1.182:1993",
+                                         partnerKey: TCGPlayerSettings.PartnerKey,
+                                         publicKey: TCGPlayerSettings.PublicKey,
+                                         privateKey: TCGPlayerSettings.PrivateKey)
         ManaKit.sharedInstance.setupResources()
-        ManaKit.sharedInstance.configureTcgPlayer(partnerKey: TCGPlayerSettings.PartnerKey,
-                                                  publicKey: TCGPlayerSettings.PublicKey,
-                                                  privateKey: TCGPlayerSettings.PrivateKey)
+        
         // Set the global tint color
         window?.tintColor = LookAndFeel.GlobalTintColor
         
@@ -76,18 +65,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         var handled = false
         
-        if url.absoluteString.hasPrefix("fb") {
-            handled = FBSDKApplicationDelegate.sharedInstance().application(app,
-                                                                            open: url,
-                                                                            options: options)
-        } else if url.absoluteString.hasPrefix("com.googleusercontent.apps") {
-            handled = GIDSignIn.sharedInstance().handle(url,
-                                                        sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
-                                                        annotation: options[UIApplication.OpenURLOptionsKey.annotation])
-        } else if (url.host == "oauth-callback") {
-            OAuthSwift.handle(url: url)
-            handled = true
-        }
+//        if url.absoluteString.hasPrefix("fb") {
+//            handled = ApplicationDelegate.shared.application(app,
+//                                                             open: url,
+//                                                             options: options)
+//        } else if url.absoluteString.hasPrefix("com.googleusercontent.apps") {
+//            handled = GIDSignIn.sharedInstance().handle(url)
+//        } else if (url.host == "oauth-callback") {
+//            OAuthSwift.handle(url: url)
+//            handled = true
+//        }
         
         return handled
     }

@@ -7,12 +7,12 @@
 //
 
 import UIKit
-import ChameleonFramework
+//import ChameleonFramework
 import Kanna
 import ManaKit
 
 class MGUtilities {
-    class func composeOtherDetails(forCard card: CMCard) -> NSAttributedString {
+    class func composeOtherDetails(forCard card: MGCard) -> NSAttributedString {
         let attributedString = NSMutableAttributedString()
         
         let titleParagraphStyle = NSMutableParagraphStyle()
@@ -35,27 +35,31 @@ class MGUtilities {
                                                           attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nConverted Mana Cost: "
-        text.append("\(String(format: card.convertedManaCost == floor(card.convertedManaCost) ? "%.0f" : "%.1f", card.convertedManaCost))")
+        text.append("\(String(format: card.cmc == floor(card.cmc) ? "%.0f" : "%.1f", card.cmc))")
         attributedString.append(NSMutableAttributedString(string: text,
                                                           attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nColors: "
-        if card.colors.count > 0 {
-            let string = card.colors.map({ $0.name! }).joined(separator: ", ")
+        if let set = card.colors,
+            let colors = set.allObjects as? [MGColor]{
+            let string = colors.map({ $0.name! }).joined(separator: ", ")
             text.append(string.count > 0 ? string : "\u{2014}")
         } else {
             text.append("\u{2014}")
         }
+        
         attributedString.append(NSMutableAttributedString(string: text,
                                                           attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nColors Identity: "
-        if card.colorIdentities.count > 0 {
-            let string = card.colorIdentities.map({ $0.name! }).joined(separator: ", ")
+        if let set = card.colorIdentities,
+            let colors = set.allObjects as? [MGColor]{
+            let string = colors.map({ $0.name! }).joined(separator: ", ")
             text.append(string.count > 0 ? string : "\u{2014}")
         } else {
             text.append("\u{2014}")
         }
+        
         attributedString.append(NSMutableAttributedString(string: text,
                                                           attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
@@ -83,7 +87,7 @@ class MGUtilities {
                                                           attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes)))
         
         text = "\nRelease Date: "
-        if let releaseDate = card.releaseDate ?? card.set!.releaseDate {
+        if let releaseDate = card.releasedAt ?? card.set!.releaseDate {
             text.append(releaseDate)
         } else {
             text.append("\u{2014}")
@@ -104,12 +108,12 @@ class MGUtilities {
     }
     
     class func updateColor(ofLabel label: UILabel, from image: UIImage) {
-        let shadowColor = AverageColorFromImage(image)
-        let shadowOffset = CGSize(width: 2, height: 2)
-        
-        label.textColor = UIColor.white
-        label.shadowColor = shadowColor
-        label.shadowOffset = shadowOffset
+//        let shadowColor = AverageColorFromImage(image)
+//        let shadowOffset = CGSize(width: 2, height: 2)
+//        
+//        label.textColor = UIColor.white
+//        label.shadowColor = shadowColor
+//        label.shadowOffset = shadowOffset
     }
 }
 

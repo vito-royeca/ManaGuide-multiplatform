@@ -20,7 +20,7 @@ class SearchModeTableViewCell: UITableViewCell {
             guard let cardArt = mode.cardArt,
                 let urlString = cardArt["artCropURL"],
                 let url = URL(string: urlString),
-                let path = SDImageCache.shared().defaultCachePath(forKey: urlString) else {
+                let path = SDImageCache.shared.cachePath(forKey: urlString) else {
                 return
             }
             

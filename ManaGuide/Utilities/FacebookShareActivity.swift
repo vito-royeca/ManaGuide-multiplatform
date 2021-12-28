@@ -13,8 +13,8 @@ import FBSDKShareKit
 class FacebookShareActivity: UIActivity {
     private var parentViewController: UIViewController?
     
-    fileprivate lazy var shareDialog: FBSDKShareDialog = {
-        let dialog = FBSDKShareDialog()
+    fileprivate lazy var shareDialog: ShareDialog = {
+        let dialog = ShareDialog()
         dialog.delegate = self
         dialog.fromViewController = self.parentViewController
         dialog.mode = .automatic
@@ -56,11 +56,11 @@ class FacebookShareActivity: UIActivity {
         
         for item in activityItems {
             if let image = item as? UIImage {
-                let photo = FBSDKSharePhoto()
+                let photo = SharePhoto()
                 photo.image = image
                 photo.isUserGenerated = true
                 
-                let content = FBSDKSharePhotoContent()
+                let content = SharePhotoContent()
                 content.photos = [photo]
                 
                 self.shareDialog.shareContent = content
@@ -74,7 +74,7 @@ class FacebookShareActivity: UIActivity {
         if canPerform {
             do {
                 try shareDialog.validate()
-                canPerform = shareDialog.canShow()
+                canPerform = shareDialog.canShow
             } catch {
                 canPerform = false
             }
@@ -89,19 +89,17 @@ class FacebookShareActivity: UIActivity {
 }
 
 // MARK: FBSDKSharingDelegate
-extension FacebookShareActivity : FBSDKSharingDelegate {
-    func sharer(_ sharer: FBSDKSharing!, didCompleteWithResults results: [AnyHashable : Any]!) {
+extension FacebookShareActivity : SharingDelegate {
+    func sharer(_ sharer: Sharing, didCompleteWithResults results: [String : Any]) {
         
     }
     
-    func sharer(_ sharer: FBSDKSharing!, didFailWithError error: Error!) {
+    func sharer(_ sharer: Sharing, didFailWithError error: Error) {
         
     }
     
-    func sharerDidCancel(_ sharer: FBSDKSharing!) {
+    func sharerDidCancel(_ sharer: Sharing) {
         
     }
-    
-    
 }
 

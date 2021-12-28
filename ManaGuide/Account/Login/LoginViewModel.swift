@@ -168,16 +168,15 @@ class LoginViewModel: NSObject {
                     seal.fulfill(authResult)
                 }
             }
-            
-            Auth.auth().signInAndRetrieveData(with: credential,
-                                              completion: completion)
+            Auth.auth().signIn(with: credential,
+                               completion: completion)
         }
     }
     
     func facebookLogin(withViewController vc: UIViewController) -> Promise<AuthCredential> {
         return Promise { seal in
-            let login = FBSDKLoginManager()
-            let handler = { (result: FBSDKLoginManagerLoginResult?, error: Error?) in
+            let login = LoginManager()
+            let handler = { (result: LoginManagerLoginResult?, error: Error?) in
                 if let error = error {
                     seal.reject(error)
                 } else {
@@ -186,14 +185,18 @@ class LoginViewModel: NSObject {
                             let error = NSError(domain: "400", code: 400, userInfo: [NSLocalizedDescriptionKey: "Login cancelled."])
                             seal.reject(error)
                         } else {
-                            let credential = FacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
-                            seal.fulfill(credential)
+                            if let token = AccessToken.current {
+                                let credential = FacebookAuthProvider.credential(withAccessToken: token.tokenString)
+                                seal.fulfill(credential)
+                            } else {
+                                let error = NSError(domain: "400", code: 400, userInfo: [NSLocalizedDescriptionKey: "Login failed."])
+                                seal.reject(error)
+                            }
                         }
                     }
                 }
             }
-            
-            login.logIn(withReadPermissions: ["public_profile"],
+            login.logIn(permissions: ["public_profile"],
                         from: vc,
                         handler: handler)
         }
@@ -209,21 +212,35 @@ class LoginViewModel: NSObject {
             let safari = SafariURLHandler(viewController: vc,
                                           oauthSwift: oauthswift)//OAuthSwiftOpenURLExternally.sharedInstance
             let state = generateRandomString(length: 20)
-            
             oauthswift.authorizeURLHandler = safari
             
-            let _ = oauthswift.authorize(
-                withCallbackURL: URL(string: GitHubSettings.CallbackURL)!,
-                scope: "user,repo",
-                state: state,
-                success: { credential, response, parameters in
-                    let c = GitHubAuthProvider.credential(withToken: credential.oauthToken)
-                    seal.fulfill(c)
-                },
-                failure: { error in
-                    seal.reject(error)
-                }
-            )
+            if let url = URL(string: GitHubSettings.CallbackURL) {
+                let _ = oauthswift.authorize(
+                    withCallbackURL: url,
+                    scope: "user,repo",
+                    state: state) { result in
+                        switch result {
+                        case .success(let (credential, _, _)):
+                            print(credential.oauthToken)
+                            let c = GitHubAuthProvider.credential(withToken: credential.oauthToken)
+                            seal.fulfill(c)
+                        case .failure(let error):
+                            seal.reject(error)
+                        }
+                    }
+            }
+//            let _ = oauthswift.authorize(
+//                withCallbackURL: URL(string: GitHubSettings.CallbackURL)!,
+//                scope: "user,repo",
+//                state: state,
+//                success: { credential, response, parameters in
+//                    let c = GitHubAuthProvider.credential(withToken: credential.oauthToken)
+//                    seal.fulfill(c)
+//                },
+//                failure: { error in
+//                    seal.reject(error)
+//                }
+//            )
         }
     }
     

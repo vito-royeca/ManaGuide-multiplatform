@@ -282,8 +282,8 @@ class LoginViewController: BaseViewController {
                                                       size: CGSize(width: 30, height: 30)),
                               for: .normal)
         GIDSignIn.sharedInstance().delegate = self
-        GIDSignIn.sharedInstance().uiDelegate = self
-        
+        GIDSignIn.sharedInstance().presentingViewController = self
+
         viewModel = LoginViewModel()
     }
 
@@ -334,20 +334,4 @@ extension LoginViewController : GIDSignInDelegate {
     }
 }
 
-// MARK: GIDSignInUIDelegate
-extension LoginViewController : GIDSignInUIDelegate {
-    func sign(inWillDispatch signIn: GIDSignIn!, error: Error!) {
-//        myActivityIndicator.stopAnimating()
-    }
-    
-    func sign(_ signIn: GIDSignIn!, present viewController: UIViewController!) {
-//        sleep(1) // to fix blank white screen where Google SignIn view is not loaded
-        present(viewController, animated: true, completion: nil)
-    }
-
-
-    func sign(_ signIn: GIDSignIn!, dismiss viewController: UIViewController!) {
-        viewController.dismiss(animated: true, completion: nil)
-    }
-}
 

@@ -9,7 +9,6 @@
 import UIKit
 import InAppSettingsKit
 import ManaKit
-import RealmSwift
 
 class SettingsViewController: IASKAppSettingsViewController {
 
@@ -34,14 +33,14 @@ extension SettingsViewController: IASKSettingsDelegate {
     func settingsViewController(_ sender: IASKAppSettingsViewController!, titlesFor specifier: IASKSpecifier!) -> [Any]! {
         var array = [String]()
         
-        if specifier.key() == "slideshowSet" {
-            let sortDescriptors = [SortDescriptor(keyPath: "releaseDate", ascending: false),
-                                   SortDescriptor(keyPath: "name", ascending: true)]
-            
-            for set in ManaKit.sharedInstance.realm.objects(CMSet.self).sorted(by: sortDescriptors) {
-                array.append(set.name!)
-            }
-        }
+//        if specifier.key() == "slideshowSet" {
+//            let sortDescriptors = [SortDescriptor(keyPath: "releaseDate", ascending: false),
+//                                   SortDescriptor(keyPath: "name", ascending: true)]
+//
+//            for set in ManaKit.sharedInstance.realm.objects(CMSet.self).sorted(by: sortDescriptors) {
+//                array.append(set.name!)
+//            }
+//        }
         
         return array
     }
@@ -49,14 +48,14 @@ extension SettingsViewController: IASKSettingsDelegate {
     func settingsViewController(_ sender: IASKAppSettingsViewController!, valuesFor specifier: IASKSpecifier!) -> [Any]! {
         var array = [String]()
         
-        if specifier.key() == "slideshowSet" {
-            let sortDescriptors = [SortDescriptor(keyPath: "releaseDate", ascending: false),
-                                   SortDescriptor(keyPath: "name", ascending: true)]
-            
-            for set in ManaKit.sharedInstance.realm.objects(CMSet.self).sorted(by: sortDescriptors) {
-                array.append(set.code!)
-            }
-        }
+//        if specifier.key() == "slideshowSet" {
+//            let sortDescriptors = [SortDescriptor(keyPath: "releaseDate", ascending: false),
+//                                   SortDescriptor(keyPath: "name", ascending: true)]
+//
+//            for set in ManaKit.sharedInstance.realm.objects(CMSet.self).sorted(by: sortDescriptors) {
+//                array.append(set.code!)
+//            }
+//        }
         
         return array
     }

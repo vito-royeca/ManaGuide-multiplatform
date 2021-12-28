@@ -910,7 +910,7 @@ class CardViewModel: BaseSearchViewModel {
             }
             
             guard let fbUser = Auth.auth().currentUser,
-                let user = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", fbUser.uid).first else {
+                let _ = ManaKit.sharedInstance.realm.objects(CMUser.self).filter("id = %@", fbUser.uid).first else {
                 return
             }
             let userRef = Database.database().reference().child("users").child(fbUser.uid).child("ratedCards")
@@ -1058,7 +1058,7 @@ class CardViewModel: BaseSearchViewModel {
         }
         
         if let keyruneColor = card.keyruneColor() {
-            dict["KeyruneColor"] = keyruneColor.hexValue()
+//            dict["KeyruneColor"] = keyruneColor.hexValue()
         } else {
             dict["KeyruneColor"] = ""
         }
