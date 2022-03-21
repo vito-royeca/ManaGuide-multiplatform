@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import InAppSettingsKit
 import ManaKit
 
 class SettingsViewController: IASKAppSettingsViewController {

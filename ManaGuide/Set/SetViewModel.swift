@@ -6,9 +6,10 @@
 //  Copyright © 2018 Jovito Royeca. All rights reserved.
 //
 
+import Combine
+import CoreData
+import SwiftUI
 import ManaKit
-import PromiseKit
-import RealmSwift
 
 enum SetContent: Int {
     case cards
@@ -27,66 +28,113 @@ enum SetContent: Int {
     }
 }
 
-class SetViewModel: SearchViewModel {
+class SetViewModel: NSObject, ObservableObject {
     // MARK: Variables
     var content: SetContent = .cards
 
-    private var _set: CMSet?
+    // MARK: - Published Variables
+    @Published var set: MGSet?
+    @Published var cards = [MGCard]()
+    @Published var isBusy = false
     
-    // MARK: Init
-    init(withSet set: CMSet, languageCode: String) {
-        super.init(withPredicate: NSPredicate(format: "set.code = %@ AND language.code = %@",
-                                              set.code!, languageCode),
-                   andSortDescriptors: nil,
-                   andTitle: set.name,
-                   andMode: .loading)
-        _set = set
-    }
+    // MARK: - Variables
+    var setCode: String
+    var languageCode: String
+    var dataAPI: API
+    private var cancellables = Set<AnyCancellable>()
+    private var frc: NSFetchedResultsController<MGCard>
     
-    // MARK: Overrides
-    override func numberOfRows(inSection section: Int) -> Int {
-        var rows = 2
+    // MARK: - Initializers
+    init(setCode: String = "emn", languageCode: String = "en", dataAPI: API = ManaKit.shared) {
+        self.setCode = setCode
+        self.languageCode = languageCode
+        self.dataAPI = dataAPI
         
-        switch content {
-        case .cards:
-            rows = super.numberOfRows(inSection: section)
-        case .wiki:
-            rows = 2
+        frc = NSFetchedResultsController(fetchRequest: MGCard.fetchRequest(),
+                                         managedObjectContext: ManaKit.shared.viewContext,
+                                         sectionNameKeyPath: nil,
+                                         cacheName: nil)
+        
+        super.init()
+    }
+    
+    deinit {
+        print("deinit setViewModel \(setCode)")
+        
+//        cancellables.forEach {
+//            $0.cancel()
+//        }
+//
+//        clearData()
+    }
+    
+    // MARK: - Methods
+    func fetchData() {
+        guard !isBusy && set == nil && cards.isEmpty else {
+            return
         }
         
-        return rows
+        isBusy.toggle()
+        
+        dataAPI.fetchSet(code: setCode,
+                         languageCode: languageCode,
+                         cancellables: &cancellables,
+                         completion: { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let set):
+                    self.set = set
+                    self.fetchLocalData()
+                case .failure(let error):
+                    print(error)
+                    self.set = nil
+                    self.cards.removeAll()
+                }
+                
+                self.isBusy.toggle()
+            }
+        })
     }
     
-    override func sectionIndexTitles() -> [String]? {
-        if content == .cards {
-            return super.sectionIndexTitles()
-        } else {
-            return nil
+    func fetchLocalData() {
+        guard let set = set else {
+            return
+        }
+        
+        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(setCode: set.code, languageCode: "en"),
+                                         managedObjectContext: ManaKit.shared.viewContext,
+                                         sectionNameKeyPath: nil,
+                                         cacheName: nil)
+        frc.delegate = self
+//        self.objectWillChange.send()
+        
+        do {
+            try frc.performFetch()
+            self.cards = frc.fetchedObjects ?? []
+        } catch {
+            print(error)
+            self.cards.removeAll()
         }
     }
     
-    override func sectionForSectionIndexTitle(title: String, at index: Int) -> Int {
-        if content == .cards {
-            return super.sectionForSectionIndexTitle(title: title, at: index)
-        } else {
-            return 0
-        }
+    func clearData() {
+        set = nil
+        cards.removeAll()
     }
     
-    // MARK: Presentation methods
+    // MARK: - Presentation methods
+    
     func wikiURL() -> URL? {
-        guard let set = _set else {
+        guard let set = set else {
             return nil
         }
         
         var path = ""
         
-        if let name = set.name,
-            let code = set.code {
-            
-            if code == "LEA" {
+        if let name = set.name {
+            if set.code == "LEA" {
                 path = "Alpha"
-            } else if code == "LEB" {
+            } else if set.code == "LEB" {
                 path = "Beta"
             } else {
                 path = name.replacingOccurrences(of: " and ", with: " & ")
@@ -95,5 +143,31 @@ class SetViewModel: SearchViewModel {
         }
         
         return URL(string: "https://mtg.gamepedia.com/\(path)")
+    }
+}
+
+// MARK: - NSFetchedResultsControllerDelegate
+extension SetViewModel: NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        guard let cards = controller.fetchedObjects as? [MGCard] else {
+            return
+        }
+        
+//        objectWillChange.send()
+        self.cards = cards
+    }
+}
+
+// MARK: - NSFetchRequest
+extension SetViewModel {
+    func defaultFetchRequest(setCode: String, languageCode: String) -> NSFetchRequest<MGCard> {
+        let sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        let predicate = NSPredicate(format: "set.code == %@ AND language.code == %@ AND collectorNumber != null ", setCode, languageCode)
+        
+        let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
+        request.predicate = predicate
+        request.sortDescriptors = sortDescriptors
+
+        return request
     }
 }

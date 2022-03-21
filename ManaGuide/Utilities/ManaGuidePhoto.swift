@@ -8,9 +8,7 @@
 
 import UIKit
 import CoreData
-import IDMPhotoBrowser
 import ManaKit
-import PromiseKit
 
 class ManaGuidePhoto : NSObject, IDMPhotoProtocol {
     var card: MGCard?

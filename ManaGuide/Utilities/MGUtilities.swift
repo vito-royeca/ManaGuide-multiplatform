@@ -7,8 +7,6 @@
 //
 
 import UIKit
-//import ChameleonFramework
-import Kanna
 import ManaKit
 
 class MGUtilities {
