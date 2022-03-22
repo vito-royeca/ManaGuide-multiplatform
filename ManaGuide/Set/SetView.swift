@@ -25,10 +25,7 @@ struct SetView: View {
     var body: some View {
         List {
             ForEach(viewModel.cards) { card in
-//                let card = viewModel.card(with: cardID)
-//                let cardView = CardView(newID: card.newID)
-//                let lazyView = LazyView(cardView)
-                let cardView = Text(card.displayName)
+                let cardView = CardView(newID: card.newID)
                 CardRowView(card: card)
                     .background(NavigationLink("", destination: cardView).opacity(0))
                     .listRowSeparator(.hidden)
@@ -50,9 +47,6 @@ struct SetView: View {
                 viewModel.languageCode = languageCode
                 viewModel.fetchData()
             }
-//            .onDisappear {
-//                viewModel.clearData()
-//            }
     }
 }
 

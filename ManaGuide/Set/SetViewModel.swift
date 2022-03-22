@@ -6,7 +6,6 @@
 //  Copyright © 2018 Jovito Royeca. All rights reserved.
 //
 
-import Combine
 import CoreData
 import SwiftUI
 import ManaKit
@@ -41,7 +40,6 @@ class SetViewModel: NSObject, ObservableObject {
     var setCode: String
     var languageCode: String
     var dataAPI: API
-    private var cancellables = Set<AnyCancellable>()
     private var frc: NSFetchedResultsController<MGCard>
     
     // MARK: - Initializers
@@ -58,16 +56,6 @@ class SetViewModel: NSObject, ObservableObject {
         super.init()
     }
     
-    deinit {
-        print("deinit setViewModel \(setCode)")
-        
-//        cancellables.forEach {
-//            $0.cancel()
-//        }
-//
-//        clearData()
-    }
-    
     // MARK: - Methods
     func fetchData() {
         guard !isBusy && set == nil && cards.isEmpty else {
@@ -78,7 +66,6 @@ class SetViewModel: NSObject, ObservableObject {
         
         dataAPI.fetchSet(code: setCode,
                          languageCode: languageCode,
-                         cancellables: &cancellables,
                          completion: { result in
             DispatchQueue.main.async {
                 switch result {
@@ -106,14 +93,13 @@ class SetViewModel: NSObject, ObservableObject {
                                          sectionNameKeyPath: nil,
                                          cacheName: nil)
         frc.delegate = self
-//        self.objectWillChange.send()
         
         do {
             try frc.performFetch()
-            self.cards = frc.fetchedObjects ?? []
+            cards = frc.fetchedObjects ?? []
         } catch {
             print(error)
-            self.cards.removeAll()
+            cards.removeAll()
         }
     }
     
@@ -122,8 +108,35 @@ class SetViewModel: NSObject, ObservableObject {
         cards.removeAll()
     }
     
-    // MARK: - Presentation methods
-    
+}
+
+// MARK: - NSFetchedResultsControllerDelegate
+extension SetViewModel: NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        guard let cards = controller.fetchedObjects as? [MGCard] else {
+            return
+        }
+        
+        self.cards = cards
+    }
+}
+
+// MARK: - NSFetchRequest
+extension SetViewModel {
+    func defaultFetchRequest(setCode: String, languageCode: String) -> NSFetchRequest<MGCard> {
+        let sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        let predicate = NSPredicate(format: "set.code == %@ AND language.code == %@ AND collectorNumber != null ", setCode, languageCode)
+        
+        let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
+        request.predicate = predicate
+        request.sortDescriptors = sortDescriptors
+
+        return request
+    }
+}
+
+// MARK: - Legacy Methods
+extension SetViewModel {
     func wikiURL() -> URL? {
         guard let set = set else {
             return nil
@@ -143,31 +156,5 @@ class SetViewModel: NSObject, ObservableObject {
         }
         
         return URL(string: "https://mtg.gamepedia.com/\(path)")
-    }
-}
-
-// MARK: - NSFetchedResultsControllerDelegate
-extension SetViewModel: NSFetchedResultsControllerDelegate {
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        guard let cards = controller.fetchedObjects as? [MGCard] else {
-            return
-        }
-        
-//        objectWillChange.send()
-        self.cards = cards
-    }
-}
-
-// MARK: - NSFetchRequest
-extension SetViewModel {
-    func defaultFetchRequest(setCode: String, languageCode: String) -> NSFetchRequest<MGCard> {
-        let sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        let predicate = NSPredicate(format: "set.code == %@ AND language.code == %@ AND collectorNumber != null ", setCode, languageCode)
-        
-        let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
-        request.predicate = predicate
-        request.sortDescriptors = sortDescriptors
-
-        return request
     }
 }

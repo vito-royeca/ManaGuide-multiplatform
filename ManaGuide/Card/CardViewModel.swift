@@ -6,11 +6,11 @@
 //  Copyright © 2018 Jovito Royeca. All rights reserved.
 //
 
-import Firebase
+import CoreData
+import SwiftUI
 import ManaKit
-import PromiseKit
-import RealmSwift
 
+// MARK: Enums
 enum CardContent: Int {
     case card
     case details
@@ -135,35 +135,67 @@ enum CardOtherDetailsSection : Int {
     }
 }
 
-class CardViewModel: BaseSearchViewModel {
-    // MARK: Variables
-    var cardIndex = 0
-    var cardViewsIncremented = false
-    var content: CardContent = .card
-    var faceOrder = 0
-    var flipAngle = CGFloat(0)
-
-    private var _results: Results<CMCard>? = nil
-    private var _partsViewModel: SearchViewModel?
-    private var _variationsViewModel: SearchViewModel?
-    private var _otherPrintingsViewModel: SearchViewModel?
+class CardViewModel: ObservableObject {
+    @Published var card: MGCard?
+    @Published var isBusy = false
     
-    // MARK: Initializers
-    override init() {
-        super.init()
+    // MARK: - Variables
+    var newID: String
+    var dataAPI: API
+    
+//    var cardIndex = 0
+//    var cardViewsIncremented = false
+//    var content: CardContent = .card
+//    var faceOrder = 0
+//    var flipAngle = CGFloat(0)
+//
+//    private var _results: Results<CMCard>? = nil
+//    private var _partsViewModel: SearchViewModel?
+//    private var _variationsViewModel: SearchViewModel?
+//    private var _otherPrintingsViewModel: SearchViewModel?
+    
+    // MARK: - Initializers
+    init(newID: String = "emn_en_15a", dataAPI: API = ManaKit.shared) {
+        self.newID = newID
+        self.dataAPI = dataAPI
     }
 
-    init(withCardIndex cardIndex: Int,
-         withPredicate predicate: NSPredicate,
-         withSortDescriptors sortDescriptors: [SortDescriptor]?,
-         andMode mode: ViewModelMode) {
+//    init(withCardIndex cardIndex: Int,
+//         withPredicate predicate: NSPredicate,
+//         withSortDescriptors sortDescriptors: [SortDescriptor]?,
+//         andMode mode: ViewModelMode) {
+//
+//        super.init(withPredicate: predicate, andSortDescriptors: sortDescriptors, andTitle: nil, andMode: mode)
+//        self.cardIndex = cardIndex
+//    }
+    
+    func fetchData() {
+        guard !isBusy && card == nil else {
+            return
+        }
         
-        super.init(withPredicate: predicate, andSortDescriptors: sortDescriptors, andTitle: nil, andMode: mode)
-        self.cardIndex = cardIndex
+        isBusy.toggle()
+        
+        dataAPI.fetchCard(newID: newID,
+                         completion: { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let card):
+                    self.card = card
+                case .failure(let error):
+                    print(error)
+                    self.card = nil
+                }
+                self.isBusy.toggle()
+            }
+        })
     }
-    
-    // MARK: Overrides
-    override func numberOfRows(inSection section: Int) -> Int {
+}
+
+// MARK: - Legacy Methods
+/*
+extension CardViewModel {
+    func numberOfRows(inSection section: Int) -> Int {
         guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
             fatalError()
         }
@@ -198,7 +230,7 @@ class CardViewModel: BaseSearchViewModel {
         return rows
     }
     
-    override func numberOfSections() -> Int {
+    func numberOfSections() -> Int {
         var sections = 0
         
         switch content {
@@ -213,7 +245,7 @@ class CardViewModel: BaseSearchViewModel {
         return sections
     }
     
-    override func titleForHeaderInSection(section: Int) -> String? {
+    func titleForHeaderInSection(section: Int) -> String? {
         var headerTitle: String?
         
         switch content {
@@ -247,21 +279,21 @@ class CardViewModel: BaseSearchViewModel {
         return headerTitle
     }
 
-    override func object(forRowAt indexPath: IndexPath) -> Object? {
+    func object(forRowAt indexPath: IndexPath) -> Object? {
         guard let results = _results else {
             return nil
         }
         return results[indexPath.row]
     }
     
-    override func count() -> Int {
+    func count() -> Int {
         guard let results = _results else {
             return 0
         }
         return results.count
     }
     
-    override func fetchData() -> Promise<Void> {
+    func fetchData() -> Promise<Void> {
         return Promise { seal  in
             if let predicate = predicate {
                 _results = ManaKit.sharedInstance.realm.objects(CMCard.self).filter(predicate)
@@ -1074,5 +1106,5 @@ class CardViewModel: BaseSearchViewModel {
         return dict
     }
 }
-
+*/
 

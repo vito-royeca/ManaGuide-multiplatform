@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8BC682A627E93C2700A639C1 /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC682A527E93C2700A639C1 /* CardViewModel.swift */; };
+		8BC682A827E95E1600A639C1 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC682A727E95E1600A639C1 /* CardView.swift */; };
+		8BC682A927E95E1600A639C1 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC682A727E95E1600A639C1 /* CardView.swift */; };
+		8BC682AC27E966F400A639C1 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC682AB27E966F400A639C1 /* SearchView.swift */; };
+		8BC682AD27E966F400A639C1 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC682AB27E966F400A639C1 /* SearchView.swift */; };
+		8BC682AF27E9670A00A639C1 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC682AE27E9670A00A639C1 /* SearchViewModel.swift */; };
+		8BC682B027E9670A00A639C1 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC682AE27E9670A00A639C1 /* SearchViewModel.swift */; };
+		8BC682B227E967BE00A639C1 /* SearchNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC682B127E967BE00A639C1 /* SearchNavigation.swift */; };
+		8BC682B327E967BE00A639C1 /* SearchNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC682B127E967BE00A639C1 /* SearchNavigation.swift */; };
 		8BDAC18C27E90BF400AF523E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8BDAC18B27E90BF400AF523E /* Assets.xcassets */; };
 		8BDAC19927E90BF400AF523E /* ManaGuideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BDAC19827E90BF400AF523E /* ManaGuideTests.swift */; };
 		8BDAC1A327E90BF400AF523E /* ManaGuideUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BDAC1A227E90BF400AF523E /* ManaGuideUITests.swift */; };
@@ -46,6 +55,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8BC682A527E93C2700A639C1 /* CardViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewModel.swift; sourceTree = "<group>"; };
+		8BC682A727E95E1600A639C1 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
+		8BC682AB27E966F400A639C1 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		8BC682AE27E9670A00A639C1 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		8BC682B127E967BE00A639C1 /* SearchNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchNavigation.swift; sourceTree = "<group>"; };
 		8BDAC18427E90BF300AF523E /* ManaGuide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ManaGuide.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BDAC18B27E90BF400AF523E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8BDAC19427E90BF400AF523E /* ManaGuideTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ManaGuideTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -94,6 +108,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8BC6829027E93C0C00A639C1 /* Card */ = {
+			isa = PBXGroup;
+			children = (
+				8BC682A527E93C2700A639C1 /* CardViewModel.swift */,
+				8BC682A727E95E1600A639C1 /* CardView.swift */,
+			);
+			path = Card;
+			sourceTree = "<group>";
+		};
+		8BC682AA27E966D600A639C1 /* SearchView */ = {
+			isa = PBXGroup;
+			children = (
+				8BC682AB27E966F400A639C1 /* SearchView.swift */,
+				8BC682AE27E9670A00A639C1 /* SearchViewModel.swift */,
+			);
+			path = SearchView;
+			sourceTree = "<group>";
+		};
 		8BDAC17B27E90BF300AF523E = {
 			isa = PBXGroup;
 			children = (
@@ -117,7 +149,9 @@
 		8BDAC18627E90BF300AF523E /* ManaGuide */ = {
 			isa = PBXGroup;
 			children = (
+				8BC6829027E93C0C00A639C1 /* Card */,
 				8BFBDB5927E92E710016DC99 /* Common Views */,
+				8BC682AA27E966D600A639C1 /* SearchView */,
 				8BFBDB4A27E921360016DC99 /* Set */,
 				8BDAC1C427E90F0600AF523E /* Sets */,
 				8BFBDB4827E920B80016DC99 /* Info.plist */,
@@ -179,6 +213,7 @@
 			children = (
 				8BFBDB5A27E92E860016DC99 /* CardRowView.swift */,
 				8BFBDB5D27E92EF20016DC99 /* Experimental.swift */,
+				8BC682B127E967BE00A639C1 /* SearchNavigation.swift */,
 			);
 			path = "Common Views";
 			sourceTree = "<group>";
@@ -322,14 +357,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BC682B227E967BE00A639C1 /* SearchNavigation.swift in Sources */,
 				8BFBDB4F27E921360016DC99 /* SetViewModel.swift in Sources */,
 				8BFBDB5B27E92E860016DC99 /* CardRowView.swift in Sources */,
 				8BFBDB5427E92C280016DC99 /* SetView.swift in Sources */,
 				8BFBDB5E27E92EF20016DC99 /* Experimental.swift in Sources */,
+				8BC682A827E95E1600A639C1 /* CardView.swift in Sources */,
 				8BDAC1B927E90D1C00AF523E /* ManaGuideApp.swift in Sources */,
+				8BC682AF27E9670A00A639C1 /* SearchViewModel.swift in Sources */,
 				8BDAC1C327E90EA200AF523E /* MainView.swift in Sources */,
 				8BFBDB4427E91A1B0016DC99 /* SetsViewModel.swift in Sources */,
 				8BFBDB4527E91A1B0016DC99 /* SetsView.swift in Sources */,
+				8BC682A627E93C2700A639C1 /* CardViewModel.swift in Sources */,
+				8BC682AC27E966F400A639C1 /* SearchView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -345,10 +385,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BC682A927E95E1600A639C1 /* CardView.swift in Sources */,
 				8BDAC1B427E90CED00AF523E /* ManaGuideUITestsLaunchTests.swift in Sources */,
 				8BFBDB5F27E92EF20016DC99 /* Experimental.swift in Sources */,
 				8BFBDB5C27E92E860016DC99 /* CardRowView.swift in Sources */,
+				8BC682AD27E966F400A639C1 /* SearchView.swift in Sources */,
 				8BDAC1A327E90BF400AF523E /* ManaGuideUITests.swift in Sources */,
+				8BC682B027E9670A00A639C1 /* SearchViewModel.swift in Sources */,
+				8BC682B327E967BE00A639C1 /* SearchNavigation.swift in Sources */,
 				8BDAC1C127E90E1A00AF523E /* SnapshotHelper.swift in Sources */,
 				8BFBDB5527E92C280016DC99 /* SetView.swift in Sources */,
 			);
