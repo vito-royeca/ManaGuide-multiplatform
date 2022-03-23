@@ -39,7 +39,7 @@ class SetsViewModel: NSObject, ObservableObject {
         isBusy.toggle()
         
         dataAPI.fetchSets(completion: { result in
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 switch result {
                 case .success:
                     self.fetchLocalData()

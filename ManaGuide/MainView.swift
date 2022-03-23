@@ -9,8 +9,10 @@
 import SwiftUI
 
 struct MainView: View {
+    @State private var selection = 0
+    
     var body: some View {
-        TabView{
+        TabView(selection: $selection) {
             SearchView()
                 .navigationViewStyle(.stack)
                 .tabItem {
@@ -25,6 +27,15 @@ struct MainView: View {
                 .tabItem {
                     Image(systemName: "list.number")
                     Text("Sets")
+                }
+            
+            NavigationView {
+                TabTestView()
+            }
+                .navigationViewStyle(.stack)
+                .tabItem {
+                    Image(systemName: "testtube.2")
+                    Text("Test")
                 }
 
 //            NavigationView {

@@ -19,24 +19,9 @@ struct CardRowView: View {
     
     var body: some View {
         let font = card.nameFont()
-
+        
         VStack {
             VStack(alignment: .leading) {
-                if let manaCost = card.manaCost {
-                    ZStack(alignment: .leading) {
-                        Text(card.displayName)
-                            .font(Font.custom(font.name, size: font.size))
-                        Spacer()
-                        AttributedText(
-                            NSAttributedString(symbol: manaCost, pointSize: 16)
-                        )
-                            .multilineTextAlignment(.trailing)
-                    }
-                } else {
-                    Text(card.displayName)
-                        .font(Font.custom(font.name, size: font.size))
-                }
-
                 HStack(spacing: 20) {
                     WebImage(url: card.imageURL(for: .artCrop))
                         .resizable()
@@ -45,21 +30,41 @@ struct CardRowView: View {
                         .transition(.fade(duration: 0.5))
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 100, height: 100, alignment: .center)
+                        .cornerRadius(10)
                         .clipped()
                     
                     VStack(alignment: .leading) {
-                        Text(card.displayTypeLine)
-                            .font(.footnote)
-
+                        Text(card.displayName)
+                            .font(Font.custom(font.name, size: font.size))
+                        
+                        if let manaCost = card.manaCost {
+                            AttributedText(
+                                NSAttributedString(symbol: manaCost, pointSize: 16)
+                            )
+                        }
+                        
+                        if !card.displayPowerToughness.isEmpty {
+                            HStack {
+                                Text(card.displayTypeLine)
+                                    .font(.subheadline)
+                                Spacer()
+                                Text(card.displayPowerToughness)
+                                    .font(.subheadline)
+                            }
+                        } else {
+                            Text(card.displayTypeLine)
+                                .font(.subheadline)
+                        }
+                        
                         Spacer()
                         
                         HStack {
                             Text("Normal")
-                                .font(.footnote)
+                                .font(.subheadline)
                                 .foregroundColor(Color.blue)
                             Spacer()
                             Text(card.displayNormalPrice)
-                                .font(.footnote)
+                                .font(.subheadline)
                                 .foregroundColor(Color.blue)
                                 .multilineTextAlignment(.trailing)
                         }
@@ -76,24 +81,29 @@ struct CardRowView: View {
                         }
                     }
                 }
+                    .padding(10)
                 
                 Divider()
                     .background(Color.secondary)
                 
-                HStack() {
+                HStack {
                     Text(card.displayKeyrune)
                         .font(Font.custom("Keyrune", size: 20))
                         .foregroundColor(Color(card.keyruneColor()))
-                    Text("\u{2022} #\(card.collectorNumber ?? "") \u{2022}")
-                        .font(.footnote)
-                    Text(card.rarity?.name ?? "")
+                    Text("\u{2022} #\(card.collectorNumber ?? "") \u{2022} \(card.rarity?.name ?? "") \u{2022} \(card.language?.displayCode ?? "")")
                         .font(.footnote)
                     Spacer()
-                    Text(card.displayPowerToughness)
-                        .font(.footnote)
+                    Button(action: {
+                        print("button pressed")
+                    }) {
+                        Image(systemName: "ellipsis")
+                            .renderingMode(.original)
+                            .foregroundColor(Color(.systemBlue))
+                    }
+                        .buttonStyle(PlainButtonStyle())
                 }
+                    .padding(5)
             }
-                .padding()
         }
             .cornerRadius(10)
             .overlay(
@@ -105,9 +115,17 @@ struct CardRowView: View {
 
 //struct CardRowView_Previews: PreviewProvider {
 //    static var previews: some View {
-//        let card = MCard()
-//        let view = CardRowView(card: card)
+//        let viewModel = CardViewModel(newID: "sld_en_89")
+//        viewModel.fetchData()
 //
-//        return view
+//        while viewModel.card == nil {
+//            sleep(1)
+//        }
+//
+//        if let card = viewModel.card {
+//            return CardRowView(card: card)
+//        }
+//
+//        return Text("card not found")
 //    }
 //}

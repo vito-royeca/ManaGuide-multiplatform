@@ -10,11 +10,10 @@ import ManaKit
 import SDWebImageSwiftUI
 
 struct CardView: View {
-    @StateObject var viewModel = CardViewModel()
-    var newID: String
+    @StateObject var viewModel: CardViewModel
     
     init(newID: String) {
-        self.newID = newID
+        _viewModel = StateObject(wrappedValue: CardViewModel(newID: newID))
     }
     
     var body: some View {
@@ -68,33 +67,10 @@ struct CardView: View {
                 }
                 
                 Group {
-                    Section(header: Text("Colors: \(viewModel.card?.sortedColors?.count ?? 0)")) {
-                        if let colors = viewModel.card?.sortedColors {
-                            ForEach(colors) { color in
-                                Text(color.name ?? " ")
-                            }
-                        } else {
-                            EmptyView()
-                        }
-                    }
-                    Section(header: Text("Color Identities: \(viewModel.card?.sortedColorIdentities?.count ?? 0)")) {
-                        if let colors = viewModel.card?.sortedColorIdentities {
-                            ForEach(colors) { color in
-                                Text(color.name ?? " ")
-                            }
-                        } else {
-                            EmptyView()
-                        }
-                    }
-                    Section(header: Text("Color Indicators: \(viewModel.card?.sortedColorIndicators?.count ?? 0)")) {
-                        if let colors = viewModel.card?.sortedColorIndicators {
-                            ForEach(colors) { color in
-                                Text(color.name ?? " ")
-                            }
-                        } else {
-                            EmptyView()
-                        }
-                    }
+                    ColorRowView(title: "Colors", colors: viewModel.card?.sortedColors)
+                    ColorRowView(title: "Color Identities", colors: viewModel.card?.sortedColorIdentities)
+                    ColorRowView(title: "Color Indicators", colors: viewModel.card?.sortedColorIndicators)
+
                     Section(header: Text("Component Parts: \(viewModel.card?.sortedComponentParts?.count ?? 0)")) {
                         if let componentParts = viewModel.card?.sortedComponentParts {
                             ForEach(componentParts) { componentPart in
@@ -212,7 +188,6 @@ struct CardView: View {
                         }
                 })
                 .onAppear {
-                    viewModel.newID = newID
                     viewModel.fetchData()
                 }
         }
@@ -222,10 +197,10 @@ struct CardView: View {
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
 //        let api = MockAPI()
-        let view = CardView(newID: "api.newID")
+        let view = CardView(newID: "sld_en_89")
 //        view.viewModel.dataAPI = api
         
-        return view
+        return  view
     }
 }
 
@@ -310,6 +285,35 @@ struct CardCommonInfoView: View {
             Spacer()
             Text(card.artist?.name ?? "")
                 .font(.subheadline)
+        }
+    }
+}
+
+struct ColorRowView: View {
+    var title: String
+    var colors: [MGColor]?
+    private var colorSymbols: String?
+    
+    init(title: String, colors: [MGColor]?) {
+        self.title = title
+        self.colors = colors
+        
+        if let colors = colors {
+            colorSymbols = colors.map{ "{CI_\($0.symbol ?? "")}" }.joined(separator: "")
+        }
+    }
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.headline)
+            Spacer()
+            if let colorSymbols = colorSymbols {
+                AttributedText(
+                    NSAttributedString(symbol: colorSymbols, pointSize: 16)
+                )
+                .multilineTextAlignment(.trailing)
+            }
         }
     }
 }

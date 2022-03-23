@@ -37,7 +37,7 @@ class SearchViewModel: NSObject, ObservableObject {
         
         dataAPI.fetchCards(query: query,
                            completion: { result in
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 switch result {
                 case .success:
                     self.fetchLocalData(query: query)

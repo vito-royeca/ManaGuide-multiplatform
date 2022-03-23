@@ -155,7 +155,7 @@ class CardViewModel: ObservableObject {
 //    private var _otherPrintingsViewModel: SearchViewModel?
     
     // MARK: - Initializers
-    init(newID: String = "emn_en_15a", dataAPI: API = ManaKit.shared) {
+    init(newID: String, dataAPI: API = ManaKit.shared) {
         self.newID = newID
         self.dataAPI = dataAPI
     }
@@ -178,7 +178,7 @@ class CardViewModel: ObservableObject {
         
         dataAPI.fetchCard(newID: newID,
                          completion: { result in
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 switch result {
                 case .success(let card):
                     self.card = card

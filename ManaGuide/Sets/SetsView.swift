@@ -15,14 +15,14 @@ struct SetsView: View {
     var body: some View {
         List {
             ForEach(viewModel.sets) { set in
-                let setView = SetView(setCode: set.code, languageCode: "en")
-                NavigationLink(destination: setView) {
+//                let setView = SetView(setCode: set.code, languageCode: "en")
+                NavigationLink(destination: SetView(setCode: set.code, languageCode: "en")) {
                     SetsRowView(set: set)
                 }
             }
         }
             .listStyle(.plain)
-            .navigationBarTitle(viewModel.isBusy ? "Loading..." : "Sets")
+            .navigationBarTitle("Sets")
             .overlay(
                 Group {
                     if viewModel.isBusy {
@@ -40,9 +40,10 @@ struct SetsView: View {
 
 struct SetsView_Previews: PreviewProvider {
     static var previews: some View {
-        let view = SetsView()
-//        view.viewModel.dataAPI = MockAPI()
-        
+        let view = NavigationView {
+            SetsView()
+        }
+
         return view
     }
 }

@@ -10,29 +10,30 @@ import ManaKit
 import SDWebImageSwiftUI
 
 struct SetView: View {
-    @StateObject var viewModel = SetViewModel()
-    var setCode: String
-    var languageCode: String
+    @StateObject var viewModel: SetViewModel
     
     init(setCode: String, languageCode: String) {
-        self.setCode = setCode
-        self.languageCode = languageCode
-        
+        _viewModel = StateObject(wrappedValue: SetViewModel(setCode: setCode, languageCode: languageCode))
+                                 
         UITableView.appearance().allowsSelection = false
         UITableViewCell.appearance().selectionStyle = .none
     }
     
     var body: some View {
         List {
-            ForEach(viewModel.cards) { card in
-                let cardView = CardView(newID: card.newID)
-                CardRowView(card: card)
-                    .background(NavigationLink("", destination: cardView).opacity(0))
-                    .listRowSeparator(.hidden)
+            if viewModel.cards.isEmpty {
+                EmptyView()
+            } else {
+                ForEach(viewModel.cards) { card in
+                    let cardView = CardView(newID: card.newID)
+                    CardRowView(card: card)
+                        .background(NavigationLink("", destination: cardView).opacity(0))
+                        .listRowSeparator(.hidden)
+                }
             }
         }
             .listStyle(.plain)
-            .navigationBarTitle(viewModel.isBusy ? "Loading..." : viewModel.set?.name ?? "")
+            .navigationBarTitle(viewModel.set?.name ?? "")
             .overlay(
                 Group {
                     if viewModel.isBusy {
@@ -43,8 +44,7 @@ struct SetView: View {
                     }
                 })
             .onAppear {
-                viewModel.setCode = setCode
-                viewModel.languageCode = languageCode
+                print("onAppear... \(viewModel.setCode): \(viewModel.cards.count)")
                 viewModel.fetchData()
             }
     }
@@ -52,10 +52,10 @@ struct SetView: View {
 
 struct SetView_Previews: PreviewProvider {
     static var previews: some View {
-//        let api = MockAPI()
-        let view = SetView(setCode: "api.setCode", languageCode: "en")
-//        view.viewModel.dataAPI = api
-        
+        let view = NavigationView {
+            SetView(setCode: "all", languageCode: "en")
+        }
+
         return view
     }
 }

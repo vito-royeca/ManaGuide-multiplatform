@@ -10,31 +10,12 @@ import CoreData
 import SwiftUI
 import ManaKit
 
-enum SetContent: Int {
-    case cards
-    case wiki
-    
-    var description : String {
-        switch self {
-        // Use Internationalization, as appropriate.
-        case .cards: return "Cards"
-        case .wiki: return "Wiki"
-        }
-    }
-    
-    static var count: Int {
-        return 2
-    }
-}
-
 class SetViewModel: NSObject, ObservableObject {
-    // MARK: Variables
-    var content: SetContent = .cards
 
     // MARK: - Published Variables
-    @Published var set: MGSet?
-    @Published var cards = [MGCard]()
-    @Published var isBusy = false
+    @Published private(set) var set: MGSet?
+    @Published private(set) var cards = [MGCard]()
+    @Published private(set) var isBusy = false
     
     // MARK: - Variables
     var setCode: String
@@ -43,17 +24,19 @@ class SetViewModel: NSObject, ObservableObject {
     private var frc: NSFetchedResultsController<MGCard>
     
     // MARK: - Initializers
-    init(setCode: String = "emn", languageCode: String = "en", dataAPI: API = ManaKit.shared) {
+    init(setCode: String, languageCode: String, dataAPI: API = ManaKit.shared) {
         self.setCode = setCode
         self.languageCode = languageCode
         self.dataAPI = dataAPI
         
-        frc = NSFetchedResultsController(fetchRequest: MGCard.fetchRequest(),
+        frc = NSFetchedResultsController(fetchRequest: SetViewModel.defaultFetchRequest(setCode: setCode, languageCode: languageCode),
                                          managedObjectContext: ManaKit.shared.viewContext,
                                          sectionNameKeyPath: nil,
                                          cacheName: nil)
         
         super.init()
+        frc.delegate = self
+        print("SetViewModel init... \(setCode)")
     }
     
     // MARK: - Methods
@@ -63,11 +46,11 @@ class SetViewModel: NSObject, ObservableObject {
         }
         
         isBusy.toggle()
-        
+
         dataAPI.fetchSet(code: setCode,
                          languageCode: languageCode,
                          completion: { result in
-            DispatchQueue.main.async {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 switch result {
                 case .success(let set):
                     self.set = set
@@ -79,7 +62,7 @@ class SetViewModel: NSObject, ObservableObject {
                 }
                 
                 self.isBusy.toggle()
-            }
+//            }
         })
     }
     
@@ -88,15 +71,10 @@ class SetViewModel: NSObject, ObservableObject {
             return
         }
         
-        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(setCode: set.code, languageCode: "en"),
-                                         managedObjectContext: ManaKit.shared.viewContext,
-                                         sectionNameKeyPath: nil,
-                                         cacheName: nil)
-        frc.delegate = self
-        
         do {
             try frc.performFetch()
             cards = frc.fetchedObjects ?? []
+            print("fetchLocalData... \(set.code): \(cards.count)")
         } catch {
             print(error)
             cards.removeAll()
@@ -104,7 +82,7 @@ class SetViewModel: NSObject, ObservableObject {
     }
     
     func clearData() {
-        set = nil
+//        set = nil
         cards.removeAll()
     }
     
@@ -123,8 +101,9 @@ extension SetViewModel: NSFetchedResultsControllerDelegate {
 
 // MARK: - NSFetchRequest
 extension SetViewModel {
-    func defaultFetchRequest(setCode: String, languageCode: String) -> NSFetchRequest<MGCard> {
-        let sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+    static func defaultFetchRequest(setCode: String, languageCode: String) -> NSFetchRequest<MGCard> {
+        let sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
+                               NSSortDescriptor(key: "collectorNumber", ascending: true)]
         let predicate = NSPredicate(format: "set.code == %@ AND language.code == %@ AND collectorNumber != null ", setCode, languageCode)
         
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
@@ -135,7 +114,27 @@ extension SetViewModel {
     }
 }
 
-// MARK: - Legacy Methods
+// MARK: - Legacy Code
+
+//var content: SetContent = .cards
+
+enum SetContent: Int {
+    case cards
+    case wiki
+    
+    var description : String {
+        switch self {
+        // Use Internationalization, as appropriate.
+        case .cards: return "Cards"
+        case .wiki: return "Wiki"
+        }
+    }
+    
+    static var count: Int {
+        return 2
+    }
+}
+
 extension SetViewModel {
     func wikiURL() -> URL? {
         guard let set = set else {
