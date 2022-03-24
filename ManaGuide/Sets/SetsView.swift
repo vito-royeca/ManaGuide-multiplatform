@@ -15,7 +15,6 @@ struct SetsView: View {
     var body: some View {
         List {
             ForEach(viewModel.sets) { set in
-//                let setView = SetView(setCode: set.code, languageCode: "en")
                 NavigationLink(destination: SetView(setCode: set.code, languageCode: "en")) {
                     SetsRowView(set: set)
                 }

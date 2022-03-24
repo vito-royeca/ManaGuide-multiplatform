@@ -25,36 +25,18 @@ struct MainView: View {
             }
                 .navigationViewStyle(.stack)
                 .tabItem {
-                    Image(systemName: "list.number")
+                    Image(systemName: "rectangle.3.group")
                     Text("Sets")
                 }
             
             NavigationView {
-                TabTestView()
+                TabTestView(date: Date())
             }
                 .navigationViewStyle(.stack)
                 .tabItem {
                     Image(systemName: "testtube.2")
                     Text("Test")
                 }
-
-//            NavigationView {
-//                RulesView()
-//            }
-//                .navigationViewStyle(.stack)
-//                .tabItem {
-//                    Image(systemName: "ruler")
-//                    Text("Rules")
-//                }
-//
-//            NavigationView {
-//                TestView()
-//            }
-//                .navigationViewStyle(.stack)
-//                .tabItem {
-//                    Image(systemName: "testtube.2")
-//                    Text("Test")
-//                }
         }
     }
 }

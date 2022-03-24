@@ -21,15 +21,11 @@ struct SetView: View {
     
     var body: some View {
         List {
-            if viewModel.cards.isEmpty {
-                EmptyView()
-            } else {
-                ForEach(viewModel.cards) { card in
-                    let cardView = CardView(newID: card.newID)
-                    CardRowView(card: card)
-                        .background(NavigationLink("", destination: cardView).opacity(0))
-                        .listRowSeparator(.hidden)
-                }
+            ForEach(viewModel.cards) { card in
+                let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
+                CardRowView(card: card)
+                    .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
+                    .listRowSeparator(.hidden)
             }
         }
             .listStyle(.plain)

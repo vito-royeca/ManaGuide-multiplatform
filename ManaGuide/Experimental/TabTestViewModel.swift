@@ -17,8 +17,15 @@ struct TabTest: Identifiable {
 class TabTestViewModel: NSObject, ObservableObject {
     
     // MARK: - Published Variables
-    @Published var tabTests = [TabTest]()
-    @Published var isBusy = false
+    @Published private(set) var tabTests = [TabTest]()
+    @Published private(set) var isBusy = false
+    
+    var date: Date
+    
+    // MARK: - Initializers
+    init(date: Date) {
+        self.date = date
+    }
     
     func fetchData() {
         guard !isBusy && tabTests.isEmpty else {

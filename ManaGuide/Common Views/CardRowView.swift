@@ -71,11 +71,11 @@ struct CardRowView: View {
 
                         HStack {
                             Text("Foil")
-                                .font(.footnote)
+                                .font(.subheadline)
                                 .foregroundColor(Color.green)
                             Spacer()
                             Text(card.displayFoilPrice)
-                                .font(.footnote)
+                                .font(.subheadline)
                                 .foregroundColor(Color.green)
                                 .multilineTextAlignment(.trailing)
                         }

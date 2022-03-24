@@ -30,7 +30,7 @@ struct CardView: View {
                                height: geometry.size.height/2,
                                alignment: .center)
                 }
-                
+
                 if let faces = viewModel.card?.sortedFaces,
                    faces.count > 1 {
                     ForEach(faces) { face in
@@ -65,7 +65,7 @@ struct CardView: View {
                     CardTextRowView(title: viewModel.card?.layout?.name ?? " ", subtitle: "Layout")
                     CardTextRowView(title: viewModel.card?.watermark?.name ?? " ", subtitle: "Watermark")
                 }
-                
+
                 Group {
                     ColorRowView(title: "Colors", colors: viewModel.card?.sortedColors)
                     ColorRowView(title: "Color Identities", colors: viewModel.card?.sortedColorIdentities)
@@ -92,7 +92,7 @@ struct CardView: View {
                         }
                     }
                 }
-                
+
                 Group {
                     Section(header: Text("Frame Effects: \(viewModel.card?.sortedFrameEffects?.count ?? 0)")) {
                         if let frameEffects = viewModel.card?.sortedFrameEffects {
@@ -154,7 +154,7 @@ struct CardView: View {
                         }
                     }
                 }
-                
+
                 Group {
                     Section(header: Text("Supertypes: \(viewModel.card?.sortedSupertypes?.count ?? 0)")) {
                         if let supertypes = viewModel.card?.sortedSupertypes {

@@ -8,13 +8,17 @@
 import SwiftUI
 
 struct TabTestView: View {
-    @StateObject var viewModel = TabTestViewModel()
+    @StateObject var viewModel: TabTestViewModel
+    
+    init(date: Date) {
+        _viewModel = StateObject(wrappedValue: TabTestViewModel(date: date))
+    }
     
     var body: some View {
         List {
             ForEach(viewModel.tabTests) { tabTest in
-                NavigationLink(destination: Text(tabTest.id)) {
-                    VStack {
+                NavigationLink(destination: TabTestView(date: tabTest.date)) {
+                    VStack(alignment: .leading) {
                         Text(tabTest.id)
                         Text("\(tabTest.date)")
                     }
@@ -22,7 +26,7 @@ struct TabTestView: View {
             }
         }
             .listStyle(.plain)
-            .navigationBarTitle(viewModel.isBusy ? "Loading..." : "Test")
+            .navigationBarTitle(viewModel.isBusy ? "Loading..." : viewModel.date.description)
             .overlay(
                 Group {
                     if viewModel.isBusy {
@@ -33,6 +37,7 @@ struct TabTestView: View {
                     }
                 })
             .onAppear {
+                print("onAppear... \(viewModel.tabTests.count)")
                 viewModel.fetchData()
             }
     }
@@ -40,6 +45,6 @@ struct TabTestView: View {
 
 struct TabTestView_Previews: PreviewProvider {
     static var previews: some View {
-        TabTestView()
+        TabTestView(date: Date())
     }
 }
