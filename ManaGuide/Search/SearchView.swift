@@ -26,26 +26,8 @@ struct SearchView: View {
                          scopeSelection: $scopeSelection,
                          isBusy: $viewModel.isBusy,
                          delegate: self) {
-            List {
-                ForEach(viewModel.cards) { card in
-                    let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
-                    CardRowView(card: card)
-                        .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
-                        .listRowSeparator(.hidden)
-                }
-            }
-                .listStyle(.plain)
-                .navigationBarTitle("Search")
-                .overlay(
-                    Group {
-                        if viewModel.isBusy {
-                            ProgressView()
-                                .progressViewStyle(.circular)
-                        }
-                        else {
-                            EmptyView()
-                        }
-                    })
+            CardsView(viewModel: viewModel)
+                .navigationTitle("Search")
         }
     }
 }
@@ -82,7 +64,9 @@ extension SearchView: SearchNavigationDelegate {
             return
         }
         
-        viewModel.fetchData(query: query)
+        viewModel.query = query
+        viewModel.scopeSelection = scopeSelection
+        viewModel.fetchData()
     }
     
     func scope() {
@@ -91,5 +75,6 @@ extension SearchView: SearchNavigationDelegate {
     
     func cancel() {
         query =  nil
+        viewModel.query = nil
     }
 }

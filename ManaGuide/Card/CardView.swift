@@ -19,17 +19,14 @@ struct CardView: View {
     var body: some View {
         GeometryReader { geometry in
             List {
-                Section {
-                    WebImage(url: viewModel.card?.imageURL(for: .normal))
-                        .resizable()
-                        .placeholder(Image(uiImage: ManaKit.shared.image(name: .cropBack)!))
-                        .indicator(.activity)
-                        .transition(.fade(duration: 0.5))
-                        .scaledToFit()
-                        .frame(width: geometry.size.width/2,
-                               height: geometry.size.height/2,
-                               alignment: .center)
-                }
+                WebImage(url: viewModel.card?.imageURL(for: .normal))
+                    .resizable()
+                    .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
+                    .indicator(.activity)
+                    .transition(.fade(duration: 0.5))
+                    .scaledToFit()
+                    .frame(width: geometry.size.width - (geometry.size.width / 6),
+                           alignment: .center)
 
                 if let faces = viewModel.card?.sortedFaces,
                    faces.count > 1 {
@@ -59,7 +56,6 @@ struct CardView: View {
                     }
                     CardTextRowView(title: viewModel.card?.rarity?.name ?? " ", subtitle: "Rarity")
                     CardTextRowView(title: "#\(viewModel.card?.collectorNumber ?? " ")", subtitle: "Collector Number")
-                    CardTextRowView(title: (viewModel.card?.cmc ?? 0) == 0 ? " " : "\(viewModel.card?.cmc ?? 0)", subtitle: "Converted Mana Cost")
                     CardTextRowView(title: viewModel.card?.frame?.name ?? " ", subtitle: "Frame")
                     CardTextRowView(title: viewModel.card?.language?.name ?? " ", subtitle: "Language")
                     CardTextRowView(title: viewModel.card?.layout?.name ?? " ", subtitle: "Layout")
@@ -71,49 +67,59 @@ struct CardView: View {
                     ColorRowView(title: "Color Identities", colors: viewModel.card?.sortedColorIdentities)
                     ColorRowView(title: "Color Indicators", colors: viewModel.card?.sortedColorIndicators)
 
-                    Section(header: Text("Component Parts: \(viewModel.card?.sortedComponentParts?.count ?? 0)")) {
-                        if let componentParts = viewModel.card?.sortedComponentParts {
+                    if let count = viewModel.card?.sortedComponentParts?.count,
+                        count > 0,
+                        let componentParts = viewModel.card?.sortedComponentParts {
+                        
+                        Section(header: Text("Component Parts: \(count)")) {
                             ForEach(componentParts) { componentPart in
                                 CardTextRowView(title: componentPart.part?.name ?? " ",
                                                 subtitle: componentPart.component?.name ?? " ")
                             }
-                        } else {
-                            EmptyView()
                         }
                     }
-                    Section(header: Text("Legalities: \(viewModel.card?.sortedFormatLegalities?.count ?? 0)")) {
-                        if let formatLegalities = viewModel.card?.sortedFormatLegalities {
+                    
+                    if let count = viewModel.card?.sortedFormatLegalities?.count ?? 0,
+                        count > 0,
+                        let formatLegalities = viewModel.card?.sortedFormatLegalities {
+
+                        Section(header: Text("Legalities: \(count)")) {
                             ForEach(formatLegalities) { formatLegality in
                                 CardTextRowView(title: formatLegality.format?.name ?? " ",
                                                 subtitle: formatLegality.legality?.name ?? " ")
                             }
-                        } else {
-                            EmptyView()
                         }
                     }
                 }
 
                 Group {
-                    Section(header: Text("Frame Effects: \(viewModel.card?.sortedFrameEffects?.count ?? 0)")) {
-                        if let frameEffects = viewModel.card?.sortedFrameEffects {
+                    if let count = viewModel.card?.sortedFrameEffects?.count ?? 0,
+                        count > 0,
+                        let frameEffects = viewModel.card?.sortedFrameEffects {
+                        
+                        Section(header: Text("Frame Effects: \(count)")) {
                             ForEach(frameEffects) { frameEffect in
                                 Text(frameEffect.name ?? " ")
                             }
-                        } else {
-                            EmptyView()
                         }
                     }
-                    Section(header: Text("Other Languages: \(viewModel.card?.sortedOtherLanguages?.count ?? 0)")) {
-                        if let otherLanguages = viewModel.card?.sortedOtherLanguages {
+                    
+                    if let count = viewModel.card?.sortedOtherLanguages?.count ?? 0,
+                        count > 0,
+                        let otherLanguages = viewModel.card?.sortedOtherLanguages {
+                        
+                        Section(header: Text("Other Languages: \(count)")) {
                             ForEach(otherLanguages) { otherLanguage in
                                 Text(otherLanguage.language?.name ?? " ")
                             }
-                        } else {
-                            EmptyView()
                         }
                     }
-                    Section(header: Text("Other Printings: \(viewModel.card?.sortedOtherPrintings?.count ?? 0)")) {
-                        if let otherPrintings = viewModel.card?.sortedOtherPrintings {
+                    
+                    if let count = viewModel.card?.sortedOtherPrintings?.count ?? 0,
+                        count > 0,
+                        let otherPrintings = viewModel.card?.sortedOtherPrintings {
+                        
+                        Section(header: Text("Other Printings: \(count)")) {
                             ForEach(otherPrintings) { otherPrinting in
                                 HStack {
                                     Text(otherPrinting.set?.name ?? " ")
@@ -124,12 +130,14 @@ struct CardView: View {
                                         .foregroundColor(Color(otherPrinting.keyruneColor()))
                                 }
                             }
-                        } else {
-                            EmptyView()
                         }
                     }
-                    Section(header: Text("Rulings: \(viewModel.card?.sortedRulings?.count ?? 0)")) {
-                        if let rulings = viewModel.card?.sortedRulings {
+                    
+                    if let count = viewModel.card?.sortedRulings?.count ?? 0,
+                        count > 0,
+                        let rulings = viewModel.card?.sortedRulings {
+                        
+                        Section(header: Text("Rulings: \(count)")) {
                             ForEach(rulings) { ruling in
                                 VStack(alignment: .leading) {
                                     Text(ruling.datePublished ?? " ")
@@ -140,43 +148,45 @@ struct CardView: View {
                                         .font(.subheadline)
                                 }
                             }
-                        } else {
-                            EmptyView()
-                        }
-                    }
-                    Section(header: Text("Subtypes: \(viewModel.card?.sortedSubtypes?.count ?? 0)")) {
-                        if let subtypes = viewModel.card?.sortedSubtypes {
-                            ForEach(subtypes) { subtype in
-                                Text(subtype.name ?? " ")
-                            }
-                        } else {
-                            EmptyView()
                         }
                     }
                 }
 
                 Group {
-                    Section(header: Text("Supertypes: \(viewModel.card?.sortedSupertypes?.count ?? 0)")) {
-                        if let supertypes = viewModel.card?.sortedSupertypes {
+                    if let count = viewModel.card?.sortedSubtypes?.count ?? 0,
+                        count > 0,
+                        let subtypes = viewModel.card?.sortedSubtypes {
+
+                        Section(header: Text("Subtypes: \(count)")) {
+                            ForEach(subtypes) { subtype in
+                                Text(subtype.name ?? " ")
+                            }
+                        }
+                    }
+                    
+                    if let count = viewModel.card?.sortedSupertypes?.count ?? 0,
+                        count > 0,
+                        let supertypes = viewModel.card?.sortedSupertypes {
+
+                        Section(header: Text("Supertypes: \(count)")) {
                             ForEach(supertypes) { supertype in
                                 Text(supertype.name ?? " ")
                             }
-                        } else {
-                            EmptyView()
                         }
                     }
-                    Section(header: Text("Variations: \(viewModel.card?.sortedVariations?.count ?? 0)")) {
-                        if let variations = viewModel.card?.sortedVariations {
+                    
+                    if let count = viewModel.card?.sortedVariations?.count ?? 0,
+                        count > 0,
+                        let variations = viewModel.card?.sortedVariations {
+                    
+                        Section(header: Text("Variations: \(count)")) {
                             ForEach(variations) { variation in
                                 Text(variation.collectorNumber ?? " ")
                             }
-                        } else {
-                            EmptyView()
                         }
                     }
                 }
             }
-                .listStyle(.insetGrouped)
                 .navigationBarTitle("Card Details")
                 .overlay(
                     Group {
@@ -196,9 +206,9 @@ struct CardView: View {
 
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
-//        let api = MockAPI()
-        let view = CardView(newID: "sld_en_89")
-//        view.viewModel.dataAPI = api
+        let view = NavigationView {
+            CardView(newID: "unh_en_16")
+        }
         
         return  view
     }
@@ -209,10 +219,15 @@ enum CardTextRowViewStyle {
 }
 
 struct CardCommonInfoView: View {
+    let cmcFormatter = NumberFormatter()
     var card: MGCard
     
     init(card: MGCard) {
         self.card = card
+        
+        cmcFormatter.minimumFractionDigits = 0
+        cmcFormatter.maximumFractionDigits = 2
+        cmcFormatter.numberStyle = .decimal
     }
     
     var body: some View {
@@ -231,6 +246,13 @@ struct CardCommonInfoView: View {
                 NSAttributedString(symbol: card.manaCost ?? " ", pointSize: 16)
             )
                 .multilineTextAlignment(.trailing)
+        }
+        HStack {
+            Text("Converted Mana Cost")
+                .font(.headline)
+            Spacer()
+            Text(cmcFormatter.string(from: card.cmc as NSNumber) ?? " ")
+                .font(.subheadline)
         }
         HStack {
             Text("Type")

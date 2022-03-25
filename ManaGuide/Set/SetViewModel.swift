@@ -10,12 +10,12 @@ import CoreData
 import SwiftUI
 import ManaKit
 
-class SetViewModel: NSObject, ObservableObject {
+class SetViewModel: CardsViewModel {
 
     // MARK: - Published Variables
     @Published private(set) var set: MGSet?
-    @Published private(set) var cards = [MGCard]()
-    @Published private(set) var isBusy = false
+//    @Published private(set) var cards = [MGCard]()
+//    @Published private(set) var isBusy = false
     
     // MARK: - Variables
     var setCode: String
@@ -36,11 +36,10 @@ class SetViewModel: NSObject, ObservableObject {
         
         super.init()
         frc.delegate = self
-        print("SetViewModel init... \(setCode)")
     }
     
     // MARK: - Methods
-    func fetchData() {
+    override func fetchData() {
         guard !isBusy && set == nil && cards.isEmpty else {
             return
         }
@@ -66,26 +65,15 @@ class SetViewModel: NSObject, ObservableObject {
         })
     }
     
-    func fetchLocalData() {
-        guard let set = set else {
-            return
-        }
-        
+    override func fetchLocalData() {
         do {
             try frc.performFetch()
             cards = frc.fetchedObjects ?? []
-            print("fetchLocalData... \(set.code): \(cards.count)")
         } catch {
             print(error)
             cards.removeAll()
         }
     }
-    
-    func clearData() {
-//        set = nil
-        cards.removeAll()
-    }
-    
 }
 
 // MARK: - NSFetchedResultsControllerDelegate

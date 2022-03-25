@@ -10,132 +10,8 @@ import CoreData
 import SwiftUI
 import ManaKit
 
-// MARK: Enums
-enum CardContent: Int {
-    case card
-    case details
-    case store
-    
-    var description : String {
-        switch self {
-        // Use Internationalization, as appropriate.
-        case .card: return "Card"
-        case .details: return "Details"
-        case .store: return "Store Pricing"
-        }
-    }
-    
-    static var count: Int {
-        return 3
-    }
-}
 
-enum CardImageSection : Int {
-    case pricing
-    case image
-    case actions
-    
-    static var count: Int {
-        return 3
-    }
-}
-
-enum CardDetailsSection : Int {
-    case mainData
-    case set
-    case relatedData
-    case rulings
-    case legalities
-    case otherDetails
-    
-    var description : String {
-        switch self {
-        // Use Internationalization, as appropriate.
-        case .mainData: return "Main Data"
-        case .set: return "Set"
-        case .relatedData: return "Related Data"
-        case .rulings: return "Rulings"
-        case .legalities: return "Legalities"
-        case .otherDetails: return "Other Details"
-        }
-    }
-    
-    static var count: Int {
-        return 6
-    }
-}
-
-enum CardRelatedDataSection : Int {
-    case artist
-    case parts
-    case variations
-    case otherPrintings
-    
-    var description : String {
-        switch self {
-        // Use Internationalization, as appropriate.
-            case .artist: return "Artist"
-            case .parts: return "Faces, Tokens, & Other Parts"
-            case .variations: return "Variations"
-            case .otherPrintings: return "Other Printings"
-        }
-    }
-    
-    static var count: Int {
-        return 4
-    }
-}
-
-enum CardDetailsMainDataSection : Int {
-    case name
-    case type
-    case text
-    case powerToughness
-    case loyalty
-    
-    static var count: Int {
-        return 5
-    }
-}
-
-enum CardOtherDetailsSection : Int {
-    case border
-    case colorIdentity
-    case colors
-    case colorshifted
-    case convertedManaCost
-    case frameEffect
-    case layout
-    case releaseDate
-    case reservedList
-    case setOnlineOnly
-    case storySpotlight
-    case timeshifted
-    
-    var description : String {
-        switch self {
-        // Use Internationalization, as appropriate.
-        case .border: return "Border"
-        case .colorIdentity: return "Color Identity"
-        case .colors: return "Colors"
-        case .colorshifted: return "Colorshifted"
-        case .convertedManaCost: return "Converted Mana Cost"
-        case .frameEffect: return "Frame Effect"
-        case .layout: return "Layout"
-        case .releaseDate: return "Release Date"
-        case .reservedList: return "Reserved List"
-        case .setOnlineOnly: return "Set Online Only"
-        case .storySpotlight: return "Story Spotlight"
-        case .timeshifted: return "Timeshifted"
-        }
-    }
-    
-    static var count: Int {
-        return 12
-    }
-}
-
-class CardViewModel: ObservableObject {
+class CardViewModel: NSObject, ObservableObject {
     @Published var card: MGCard?
     @Published var isBusy = false
     
@@ -143,32 +19,12 @@ class CardViewModel: ObservableObject {
     var newID: String
     var dataAPI: API
     
-//    var cardIndex = 0
-//    var cardViewsIncremented = false
-//    var content: CardContent = .card
-//    var faceOrder = 0
-//    var flipAngle = CGFloat(0)
-//
-//    private var _results: Results<CMCard>? = nil
-//    private var _partsViewModel: SearchViewModel?
-//    private var _variationsViewModel: SearchViewModel?
-//    private var _otherPrintingsViewModel: SearchViewModel?
-    
     // MARK: - Initializers
     init(newID: String, dataAPI: API = ManaKit.shared) {
         self.newID = newID
         self.dataAPI = dataAPI
     }
 
-//    init(withCardIndex cardIndex: Int,
-//         withPredicate predicate: NSPredicate,
-//         withSortDescriptors sortDescriptors: [SortDescriptor]?,
-//         andMode mode: ViewModelMode) {
-//
-//        super.init(withPredicate: predicate, andSortDescriptors: sortDescriptors, andTitle: nil, andMode: mode)
-//        self.cardIndex = cardIndex
-//    }
-    
     func fetchData() {
         guard !isBusy && card == nil else {
             return
@@ -194,6 +50,132 @@ class CardViewModel: ObservableObject {
 
 // MARK: - Legacy Methods
 /*
+
+ // MARK: Enums
+ enum CardContent: Int {
+     case card
+     case details
+     case store
+     
+     var description : String {
+         switch self {
+         // Use Internationalization, as appropriate.
+         case .card: return "Card"
+         case .details: return "Details"
+         case .store: return "Store Pricing"
+         }
+     }
+     
+     static var count: Int {
+         return 3
+     }
+ }
+
+ enum CardImageSection : Int {
+     case pricing
+     case image
+     case actions
+     
+     static var count: Int {
+         return 3
+     }
+ }
+
+ enum CardDetailsSection : Int {
+     case mainData
+     case set
+     case relatedData
+     case rulings
+     case legalities
+     case otherDetails
+     
+     var description : String {
+         switch self {
+         // Use Internationalization, as appropriate.
+         case .mainData: return "Main Data"
+         case .set: return "Set"
+         case .relatedData: return "Related Data"
+         case .rulings: return "Rulings"
+         case .legalities: return "Legalities"
+         case .otherDetails: return "Other Details"
+         }
+     }
+     
+     static var count: Int {
+         return 6
+     }
+ }
+
+ enum CardRelatedDataSection : Int {
+     case artist
+     case parts
+     case variations
+     case otherPrintings
+     
+     var description : String {
+         switch self {
+         // Use Internationalization, as appropriate.
+             case .artist: return "Artist"
+             case .parts: return "Faces, Tokens, & Other Parts"
+             case .variations: return "Variations"
+             case .otherPrintings: return "Other Printings"
+         }
+     }
+     
+     static var count: Int {
+         return 4
+     }
+ }
+
+ enum CardDetailsMainDataSection : Int {
+     case name
+     case type
+     case text
+     case powerToughness
+     case loyalty
+     
+     static var count: Int {
+         return 5
+     }
+ }
+
+ enum CardOtherDetailsSection : Int {
+     case border
+     case colorIdentity
+     case colors
+     case colorshifted
+     case convertedManaCost
+     case frameEffect
+     case layout
+     case releaseDate
+     case reservedList
+     case setOnlineOnly
+     case storySpotlight
+     case timeshifted
+     
+     var description : String {
+         switch self {
+         // Use Internationalization, as appropriate.
+         case .border: return "Border"
+         case .colorIdentity: return "Color Identity"
+         case .colors: return "Colors"
+         case .colorshifted: return "Colorshifted"
+         case .convertedManaCost: return "Converted Mana Cost"
+         case .frameEffect: return "Frame Effect"
+         case .layout: return "Layout"
+         case .releaseDate: return "Release Date"
+         case .reservedList: return "Reserved List"
+         case .setOnlineOnly: return "Set Online Only"
+         case .storySpotlight: return "Story Spotlight"
+         case .timeshifted: return "Timeshifted"
+         }
+     }
+     
+     static var count: Int {
+         return 12
+     }
+ }
+
 extension CardViewModel {
     func numberOfRows(inSection section: Int) -> Int {
         guard let card = object(forRowAt: IndexPath(row: cardIndex, section: 0)) as? CMCard else {
