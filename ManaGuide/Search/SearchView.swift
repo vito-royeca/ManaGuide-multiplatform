@@ -34,10 +34,7 @@ struct SearchView: View {
 
 struct SearchView_Previews: PreviewProvider {
     static var previews: some View {
-        let view = SearchView()
-//        view.viewModel.dataAPI = MockAPI()
-        
-        return view
+        SearchView()
     }
 }
 

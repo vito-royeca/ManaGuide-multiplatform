@@ -27,10 +27,8 @@ struct SetView: View {
 
 struct SetView_Previews: PreviewProvider {
     static var previews: some View {
-        let view = NavigationView {
+        NavigationView {
             SetView(setCode: "unh", languageCode: "en")
         }
-
-        return view
     }
 }

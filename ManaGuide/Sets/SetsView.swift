@@ -39,11 +39,9 @@ struct SetsView: View {
 
 struct SetsView_Previews: PreviewProvider {
     static var previews: some View {
-        let view = NavigationView {
+        NavigationView {
             SetsView()
         }
-
-        return view
     }
 }
 

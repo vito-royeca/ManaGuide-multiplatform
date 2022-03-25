@@ -19,15 +19,18 @@ struct CardView: View {
     var body: some View {
         GeometryReader { geometry in
             List {
-                WebImage(url: viewModel.card?.imageURL(for: .normal))
-                    .resizable()
-                    .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
-                    .indicator(.activity)
-                    .transition(.fade(duration: 0.5))
-                    .scaledToFit()
-                    .frame(width: geometry.size.width - (geometry.size.width / 6),
-                           alignment: .center)
-
+                HStack(alignment: .center) {
+                    Spacer()
+                    WebImage(url: viewModel.card?.imageURL(for: .normal))
+                        .resizable()
+                        .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
+                        .indicator(.activity)
+                        .transition(.fade(duration: 0.5))
+                        .scaledToFit()
+                        .frame(width: geometry.size.width - (geometry.size.width / 4))
+                    Spacer()
+                }
+                
                 if let faces = viewModel.card?.sortedFaces,
                    faces.count > 1 {
                     ForEach(faces) { face in
@@ -206,11 +209,9 @@ struct CardView: View {
 
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
-        let view = NavigationView {
+        NavigationView {
             CardView(newID: "unh_en_16")
         }
-        
-        return  view
     }
 }
 

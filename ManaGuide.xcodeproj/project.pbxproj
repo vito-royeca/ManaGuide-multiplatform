@@ -13,6 +13,9 @@
 		8BBBFD1927ED454C007D3F4A /* CardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBBFD1727ED454C007D3F4A /* CardsView.swift */; };
 		8BBBFD1B27ED480E007D3F4A /* CardsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBBFD1A27ED480E007D3F4A /* CardsViewModel.swift */; };
 		8BBBFD1C27ED480E007D3F4A /* CardsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBBFD1A27ED480E007D3F4A /* CardsViewModel.swift */; };
+		8BBBFD1E27ED7CFD007D3F4A /* CardsViewSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBBFD1D27ED7CFD007D3F4A /* CardsViewSettings.swift */; };
+		8BBBFD1F27ED7CFD007D3F4A /* CardsViewSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBBFD1D27ED7CFD007D3F4A /* CardsViewSettings.swift */; };
+		8BBBFD2027ED7CFD007D3F4A /* CardsViewSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBBFD1D27ED7CFD007D3F4A /* CardsViewSettings.swift */; };
 		8BBCC5F527EA2FD80045410D /* TabTestViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBCC5F427EA2FD80045410D /* TabTestViewModel.swift */; };
 		8BBCC5F627EA2FD80045410D /* TabTestViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBCC5F427EA2FD80045410D /* TabTestViewModel.swift */; };
 		8BBCC5F727EA2FD80045410D /* TabTestViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBCC5F427EA2FD80045410D /* TabTestViewModel.swift */; };
@@ -67,6 +70,7 @@
 		8BBBFD1327ED4521007D3F4A /* SearchViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		8BBBFD1727ED454C007D3F4A /* CardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsView.swift; sourceTree = "<group>"; };
 		8BBBFD1A27ED480E007D3F4A /* CardsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsViewModel.swift; sourceTree = "<group>"; };
+		8BBBFD1D27ED7CFD007D3F4A /* CardsViewSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsViewSettings.swift; sourceTree = "<group>"; };
 		8BBCC5F427EA2FD80045410D /* TabTestViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabTestViewModel.swift; sourceTree = "<group>"; };
 		8BBCC5F827EA33860045410D /* TabTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabTestView.swift; sourceTree = "<group>"; };
 		8BC682A527E93C2700A639C1 /* CardViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewModel.swift; sourceTree = "<group>"; };
@@ -134,6 +138,7 @@
 			children = (
 				8BBBFD1727ED454C007D3F4A /* CardsView.swift */,
 				8BBBFD1A27ED480E007D3F4A /* CardsViewModel.swift */,
+				8BBBFD1D27ED7CFD007D3F4A /* CardsViewSettings.swift */,
 			);
 			path = Cards;
 			sourceTree = "<group>";
@@ -402,6 +407,7 @@
 				8BDAC1B927E90D1C00AF523E /* ManaGuideApp.swift in Sources */,
 				8BDAC1C327E90EA200AF523E /* MainView.swift in Sources */,
 				8BFBDB4427E91A1B0016DC99 /* SetsViewModel.swift in Sources */,
+				8BBBFD1E27ED7CFD007D3F4A /* CardsViewSettings.swift in Sources */,
 				8BBBFD1427ED4521007D3F4A /* SearchView.swift in Sources */,
 				8BFBDB4527E91A1B0016DC99 /* SetsView.swift in Sources */,
 				8BC682A627E93C2700A639C1 /* CardViewModel.swift in Sources */,
@@ -416,6 +422,7 @@
 				8BBCC5FA27EA33860045410D /* TabTestView.swift in Sources */,
 				8BBCC5F627EA2FD80045410D /* TabTestViewModel.swift in Sources */,
 				8BDAC19927E90BF400AF523E /* ManaGuideTests.swift in Sources */,
+				8BBBFD1F27ED7CFD007D3F4A /* CardsViewSettings.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -431,6 +438,7 @@
 				8BFBDB5C27E92E860016DC99 /* CardRowView.swift in Sources */,
 				8BDAC1A327E90BF400AF523E /* ManaGuideUITests.swift in Sources */,
 				8BC682B327E967BE00A639C1 /* SearchNavigation.swift in Sources */,
+				8BBBFD2027ED7CFD007D3F4A /* CardsViewSettings.swift in Sources */,
 				8BBBFD1C27ED480E007D3F4A /* CardsViewModel.swift in Sources */,
 				8BBCC5FB27EA33860045410D /* TabTestView.swift in Sources */,
 				8BDAC1C127E90E1A00AF523E /* SnapshotHelper.swift in Sources */,

@@ -9,10 +9,15 @@
 import SwiftUI
 
 struct MainView: View {
-    @State private var selection = 0
+    @StateObject var cardsViewSettings = CardsViewSettings()
     
+    init() {
+        cardsViewSettings.sort = .name
+        cardsViewSettings.display = .summary
+    }
+
     var body: some View {
-        TabView(selection: $selection) {
+        TabView {
             SearchView()
                 .navigationViewStyle(.stack)
                 .tabItem {
@@ -38,6 +43,7 @@ struct MainView: View {
                     Text("Test")
                 }
         }
+            .environmentObject(cardsViewSettings)
     }
 }
 

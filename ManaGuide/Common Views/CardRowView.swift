@@ -113,19 +113,19 @@ struct CardRowView: View {
     }
 }
 
-//struct CardRowView_Previews: PreviewProvider {
-//    static var previews: some View {
+struct CardRowView_Previews: PreviewProvider {
+    static var previews: some View {
 //        let viewModel = CardViewModel(newID: "sld_en_89")
 //        viewModel.fetchData()
-//
+
 //        while viewModel.card == nil {
 //            sleep(1)
 //        }
-//
+
 //        if let card = viewModel.card {
 //            return CardRowView(card: card)
 //        }
-//
-//        return Text("card not found")
-//    }
-//}
+
+        return Text("card not found")
+    }
+}
