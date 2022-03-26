@@ -47,7 +47,7 @@ extension SearchView: SearchNavigationDelegate {
             .obscuresBackgroundDuringPresentation: true,
             .hidesNavigationBarDuringPresentation: true,
             .hidesSearchBarWhenScrolling: false,
-            .placeholder: "Search",
+            .placeholder: "Search for Magic cards...",
             .showsBookmarkButton: false,
 //            .scopeButtonTitles: ["All", "Bookmarked", "Seen"],
 //            .scopeBarButtonTitleTextAttributes: [NSAttributedString.Key.font: UIFont.dckxRegularText],
@@ -72,6 +72,7 @@ extension SearchView: SearchNavigationDelegate {
     
     func cancel() {
         query =  nil
-        viewModel.query = nil
+        viewModel.query = query
+        viewModel.fetchData()
     }
 }

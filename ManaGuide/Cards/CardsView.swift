@@ -11,7 +11,6 @@ import SDWebImageSwiftUI
 
 struct CardsView: View {
     @StateObject var viewModel: CardsViewModel
-    
     @State private var showingSort = false
     @State private var showingDisplay = false
     @AppStorage("cardsSort") private var sort = CardsViewSort.name

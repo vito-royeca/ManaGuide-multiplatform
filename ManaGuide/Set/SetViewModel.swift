@@ -69,7 +69,6 @@ class SetViewModel: CardsViewModel {
             try frc.performFetch()
             cards = frc.fetchedObjects ?? []
             sections = frc.sections ?? []
-            
         } catch {
             print(error)
             cards.removeAll()

@@ -9,6 +9,25 @@ import CoreData
 import SwiftUI
 import ManaKit
 
+// MARK: - Settings
+
+enum CardsViewDisplay: String {
+    case image,
+         list,
+         summary
+}
+
+enum CardsViewSort: String {
+    case collectorNumber,
+         name,
+         rarity,
+         setName,
+         setReleaseDate,
+         type
+}
+
+// MARK: - CardsViewModel
+
 class CardsViewModel: NSObject, ObservableObject {
 
     // MARK: - Published Variables

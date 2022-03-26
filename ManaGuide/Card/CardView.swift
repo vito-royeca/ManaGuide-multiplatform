@@ -56,6 +56,17 @@ struct CardView: View {
                 }
             }
                 .navigationBarTitle("Card Details")
+                .toolbar {
+                    ToolbarItemGroup(placement: .navigationBarTrailing) {
+                        Button(action: {
+                            print("button pressed")
+                        }) {
+                            Image(systemName: "ellipsis")
+                                .renderingMode(.original)
+//                                .foregroundColor(Color(.systemBlue))
+                        }
+                    }
+                }
                 .overlay(
                     Group {
                         if viewModel.isBusy {

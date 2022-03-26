@@ -10,19 +10,35 @@ import CoreData
 import SwiftUI
 import ManaKit
 
+// MARK: - Settings
+
+enum SetsViewSort: String {
+    case releaseDate,
+         name,
+         type
+}
+
+// MARK: - SetsViewModel
+
 class SetsViewModel: NSObject, ObservableObject {
     
     // MARK: - Published Variables
     @Published var sets = [MGSet]()
+    @Published var sections = [NSFetchedResultsSectionInfo]()
     @Published var isBusy = false
 
     // MARK: - Variables
     var dataAPI: API
+    var sort: SetsViewSort = .releaseDate
+    var query: String?
+    var scopeSelection: Int
     private var frc: NSFetchedResultsController<MGSet>
     
     // MARK: - Initializers
     init(dataAPI: API = ManaKit.shared) {
         self.dataAPI = dataAPI
+        query = ""
+        scopeSelection = 0
         frc = NSFetchedResultsController()
 
         super.init()
@@ -30,7 +46,7 @@ class SetsViewModel: NSObject, ObservableObject {
     
     // MARK: - Methods
     func fetchData() {
-        guard !isBusy && sets.isEmpty else {
+        guard !isBusy /*&& sets.isEmpty*/ else {
             return
         }
         
@@ -52,19 +68,54 @@ class SetsViewModel: NSObject, ObservableObject {
     }
     
     func fetchLocalData() {
-        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(),
+        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(query: query),
                                          managedObjectContext: ManaKit.shared.viewContext,
-                                         sectionNameKeyPath: nil,
+                                         sectionNameKeyPath: sectionNameKeyPath(),
                                          cacheName: nil)
         frc.delegate = self
         
         do {
             try frc.performFetch()
             sets = frc.fetchedObjects ?? []
+            sections = frc.sections ?? []
         } catch {
             print(error)
             self.sets.removeAll()
         }
+    }
+    
+    func sortDescriptors() -> [NSSortDescriptor] {
+        var sortDescriptors = [NSSortDescriptor]()
+        
+        switch sort {
+        case .releaseDate:
+            sortDescriptors.append(NSSortDescriptor(key: "releaseDate", ascending: false))
+            sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+        case .name:
+            sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+            sortDescriptors.append(NSSortDescriptor(key: "releaseDate", ascending: false))
+        case .type:
+            sortDescriptors.append(NSSortDescriptor(key: "setType.name", ascending: true))
+            sortDescriptors.append(NSSortDescriptor(key: "releaseDate", ascending: false))
+            sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+        }
+        
+        return sortDescriptors
+    }
+    
+    func sectionNameKeyPath() -> String? {
+        var keyPath: String?
+        
+        switch sort {
+        case .releaseDate:
+            keyPath = "yearSection"
+        case .name:
+            keyPath = "nameSection"
+        case .type:
+            keyPath = "setType.name"
+        }
+        
+        return keyPath
     }
 }
 
@@ -81,12 +132,17 @@ extension SetsViewModel: NSFetchedResultsControllerDelegate {
 
 // MARK: - NSFetchRequest
 extension SetsViewModel {
-    func defaultFetchRequest() -> NSFetchRequest<MGSet> {
-        let sortDescriptors = [NSSortDescriptor(key: "releaseDate", ascending: false),
-                               NSSortDescriptor(key: "name", ascending: true)]
-
+    func defaultFetchRequest(query: String?) -> NSFetchRequest<MGSet> {
+        var predicate: NSPredicate?
+        
+        if let query = query,
+           !query.isEmpty {
+            predicate = NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@", query, query)
+        }
+        
         let request: NSFetchRequest<MGSet> = MGSet.fetchRequest()
-        request.sortDescriptors = sortDescriptors
+        request.sortDescriptors = sortDescriptors()
+        request.predicate = predicate
 
         return request
     }

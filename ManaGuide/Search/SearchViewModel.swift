@@ -10,17 +10,16 @@ import SwiftUI
 import ManaKit
 
 class SearchViewModel: CardsViewModel {
-//    // MARK: - Published Variables
-//    @Published var cards = [MGCard]()
-//    @Published var isBusy = false
-    var query: String?
-    var scopeSelection: Int
     
     // MARK: - Variables
+
     var dataAPI: API
+    var query: String?
+    var scopeSelection: Int
     private var frc: NSFetchedResultsController<MGCard>
     
     // MARK: - Initializers
+
     init(dataAPI: API = ManaKit.shared) {
         self.dataAPI = dataAPI
         query = ""
@@ -31,6 +30,7 @@ class SearchViewModel: CardsViewModel {
     }
     
     // MARK: - Methods
+
     override func fetchData() {
         guard let query = query,
             !query.isEmpty,
@@ -71,6 +71,7 @@ class SearchViewModel: CardsViewModel {
         do {
             try frc.performFetch()
             cards = frc.fetchedObjects ?? []
+            sections = frc.sections ?? []
         } catch {
             print(error)
             cards.removeAll()
