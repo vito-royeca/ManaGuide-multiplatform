@@ -28,7 +28,7 @@ struct CardListRowView: View {
                         .indicator(.activity)
                         .transition(.fade(duration: 0.5))
                         .aspectRatio(contentMode: .fill)
-                        .frame(width: 50, height: 50, alignment: .center)
+                        .frame(width: 60, height: 60, alignment: .center)
                         .cornerRadius(5)
                         .clipped()
                     
@@ -56,6 +56,23 @@ struct CardListRowView: View {
                                 .font(.subheadline)
                                 .foregroundColor(Color.green)
                                 .multilineTextAlignment(.trailing)
+                        }
+
+                        HStack {
+                            Text(card.displayKeyrune)
+                                .font(Font.custom("Keyrune", size: 20))
+                                .foregroundColor(Color(card.keyruneColor()))
+                            Text("\u{2022} #\(card.collectorNumber ?? "") \u{2022} \(card.rarity?.name ?? "") \u{2022} \(card.language?.displayCode ?? "")")
+                                .font(.footnote)
+                            Spacer()
+                            Button(action: {
+                                print("button pressed")
+                            }) {
+                                Image(systemName: "ellipsis")
+                                    .renderingMode(.original)
+                                    .foregroundColor(Color(.systemBlue))
+                            }
+                                .buttonStyle(PlainButtonStyle())
                         }
                     }
                 }

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ManaKit
+import SDWebImageSwiftUI
 
 struct CardsView: View {
     @StateObject var viewModel: CardsViewModel
@@ -14,7 +15,7 @@ struct CardsView: View {
     @State private var showingSort = false
     @State private var showingDisplay = false
     @AppStorage("cardsSort") private var sort = CardsViewSort.name
-    @AppStorage("cardsDisplay") private var display = CardsViewDisplay.summary
+    @AppStorage("cardsDisplay") private var display = CardsViewDisplay.list
 
     // MARK: - Initializers
     
@@ -25,52 +26,7 @@ struct CardsView: View {
     // MARK: - Body
     
     var body: some View {
-        List {
-            switch sort {
-            case .collectorNumber:
-                ForEach(viewModel.cards) { card in
-                    let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
-                    
-                    switch display {
-                    case .list:
-                        CardListRowView(card: card)
-                            .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
-                    case .image:
-                        Text(newID)
-                    case .summary:
-                        CardSummaryRowView(card: card)
-                            .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
-                            .listRowSeparator(.hidden)
-                    }
-                }
-
-            case .name,
-                 .rarity,
-                 .setName,
-                 .setReleaseDate,
-                 .type:
-                ForEach(viewModel.sections, id: \.name) { section in
-                    Section(header: Text(section.name)) {
-                        ForEach(section.objects as? [MGCard] ?? []) { card in
-                            let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
-                            
-                            switch display {
-                            case .list:
-                                CardListRowView(card: card)
-                                    .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
-                            case .image:
-                                Text(newID)
-                            case .summary:
-                                CardSummaryRowView(card: card)
-                                    .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
-                                    .listRowSeparator(.hidden)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-            .listStyle(.plain)
+        CardsDataView(sort: sort, display: display, viewModel: viewModel)
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button(action: {
@@ -85,7 +41,7 @@ struct CardsView: View {
                     Button(action: {
                         showingDisplay.toggle()
                     }) {
-                        Image(systemName: "eyeglasses")
+                        Image(systemName: "list.bullet.below.rectangle")
                     }
                         .actionSheet(isPresented: $showingDisplay) {
                             displayActionSheet
@@ -112,13 +68,145 @@ struct CardsView: View {
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewDisplay)) { (output) in
                 viewModel.fetchData()
             }
+
     }
 }
+
+// MARK: - Previews
 
 struct CardsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             CardsView(viewModel: SetViewModel(setCode: "ice", languageCode: "en"))
+        }
+    }
+}
+
+// MARK: - CardsDataView
+
+struct CardsDataView: View {
+    private var sort: CardsViewSort
+    private var display: CardsViewDisplay
+    private var viewModel: CardsViewModel
+    
+    private let gridConfig = [
+        GridItem(),
+        GridItem()
+    ]
+    
+    init(sort: CardsViewSort, display: CardsViewDisplay, viewModel: CardsViewModel) {
+        self.sort = sort
+        self.display = display
+        self.viewModel = viewModel
+    }
+    
+    var body: some View {
+        if display == .image {
+            ScrollView {
+                LazyVGrid(columns: gridConfig, pinnedViews: [.sectionHeaders]) {
+                   switch sort {
+                   case .collectorNumber:
+                       ForEach(viewModel.cards) { card in
+                           let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
+                           
+                           NavigationLink(destination: CardView(newID: newID)) {
+                               WebImage(url: card.imageURL(for: .png))
+                                   .resizable()
+                                   .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
+                                   .indicator(.activity)
+                                   .transition(.fade(duration: 0.5))
+                                   .aspectRatio(contentMode: .fill)
+                                   .cornerRadius(5)
+                                   .clipped()
+                           }
+                       }
+                   case .name,
+                        .rarity,
+                        .setName,
+                        .setReleaseDate,
+                        .type:
+                       ForEach(viewModel.sections, id: \.name) { section in
+                           Section(header: stickyHeaderView(section.name)) {
+                               ForEach(section.objects as? [MGCard] ?? []) { card in
+                                   let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
+                                   
+                                   NavigationLink(destination: CardView(newID: newID)) {
+                                       WebImage(url: card.imageURL(for: .png))
+                                           .resizable()
+                                           .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
+                                           .indicator(.activity)
+                                           .transition(.fade(duration: 0.5))
+                                           .aspectRatio(contentMode: .fill)
+                                           .cornerRadius(5)
+                                           .clipped()
+                                   }
+                               }
+                           }
+                       }
+                   }
+               }
+                .padding()
+            }
+
+        } else {
+            List {
+                switch sort {
+                case .collectorNumber:
+                    ForEach(viewModel.cards) { card in
+                        let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
+                        
+                        switch display {
+                        case .list:
+                            CardListRowView(card: card)
+                                .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
+                        case .image:
+                            EmptyView()
+                        case .summary:
+                            CardSummaryRowView(card: card)
+                                .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
+                                .listRowSeparator(.hidden)
+                        }
+                    }
+
+                case .name,
+                     .rarity,
+                     .setName,
+                     .setReleaseDate,
+                     .type:
+                    ForEach(viewModel.sections, id: \.name) { section in
+                        Section(header: Text(section.name)) {
+                            ForEach(section.objects as? [MGCard] ?? []) { card in
+                                let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
+                                
+                                switch display {
+                                case .list:
+                                    CardListRowView(card: card)
+                                        .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
+                                case .image:
+                                    EmptyView()
+                                case .summary:
+                                    CardSummaryRowView(card: card)
+                                        .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
+                                        .listRowSeparator(.hidden)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+                .listStyle(.plain)
+        }
+    }
+    
+    func stickyHeaderView(_ text: String) -> some View {
+        VStack(alignment: .leading) {
+            Text(text)
+                .foregroundColor(Color.gray)
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+                .background(Color(UIColor.systemBackground))
+                .multilineTextAlignment(.leading)
+            
         }
     }
 }

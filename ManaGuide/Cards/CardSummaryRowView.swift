@@ -43,12 +43,12 @@ struct CardSummaryRowView: View {
                             )
                         }
                         
-                        if !card.displayPowerToughness.isEmpty {
+                        if let displayPowerToughness = card.displayPowerToughness {
                             HStack {
                                 Text(card.displayTypeLine)
                                     .font(.subheadline)
                                 Spacer()
-                                Text(card.displayPowerToughness)
+                                Text(displayPowerToughness)
                                     .font(.subheadline)
                             }
                         } else {

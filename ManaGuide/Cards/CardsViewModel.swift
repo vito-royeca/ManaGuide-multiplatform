@@ -50,6 +50,7 @@ class CardsViewModel: NSObject, ObservableObject {
             sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
             sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
         case .type:
+            sortDescriptors.append(NSSortDescriptor(key: "type.name", ascending: true))
             sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
             sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
         }
@@ -72,7 +73,7 @@ class CardsViewModel: NSObject, ObservableObject {
         case .setReleaseDate:
             keyPath = "set.releaseDate"
         case .type:
-            keyPath = "typeSection"
+            keyPath = "type.name"
         }
         
         return keyPath
