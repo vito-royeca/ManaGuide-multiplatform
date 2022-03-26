@@ -9,13 +9,6 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject var cardsViewSettings = CardsViewSettings()
-    
-    init() {
-        cardsViewSettings.sort = .name
-        cardsViewSettings.display = .summary
-    }
-
     var body: some View {
         TabView {
             SearchView()
@@ -43,7 +36,6 @@ struct MainView: View {
                     Text("Test")
                 }
         }
-            .environmentObject(cardsViewSettings)
     }
 }
 

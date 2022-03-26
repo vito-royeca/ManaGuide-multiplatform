@@ -23,10 +23,8 @@ class SetsViewModel: NSObject, ObservableObject {
     // MARK: - Initializers
     init(dataAPI: API = ManaKit.shared) {
         self.dataAPI = dataAPI
-        frc = NSFetchedResultsController(fetchRequest: MGSet.fetchRequest(),
-                                         managedObjectContext: ManaKit.shared.viewContext,
-                                         sectionNameKeyPath: nil,
-                                         cacheName: nil)
+        frc = NSFetchedResultsController()
+
         super.init()
     }
     

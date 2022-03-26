@@ -1,5 +1,5 @@
 //
-//  CardRowView.swift
+//  CardSummaryRowView.swift
 //  ManaGuide
 //
 //  Created by Vito Royeca on 3/21/22.
@@ -10,16 +10,16 @@ import ManaKit
 import SDWebImageSwiftUI
 
 
-struct CardRowView: View {
+struct CardSummaryRowView: View {
+    private let font: ManaKit.Font
     private let card: MGCard
     
     init(card: MGCard) {
         self.card = card
+        font = card.nameFont()
     }
     
     var body: some View {
-        let font = card.nameFont()
-        
         VStack {
             VStack(alignment: .leading) {
                 HStack(spacing: 20) {

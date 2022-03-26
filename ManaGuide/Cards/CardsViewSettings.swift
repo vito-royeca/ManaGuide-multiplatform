@@ -7,23 +7,17 @@
 
 import Foundation
 
-enum CardsViewDisplay {
+enum CardsViewDisplay: String {
     case image,
          list,
          summary
 }
 
-enum CardsViewSort {
-    case castingCost,
-         collectorNumber,
+enum CardsViewSort: String {
+    case collectorNumber,
          name,
          rarity,
          setName,
          setReleaseDate,
          type
-}
-
-class CardsViewSettings: ObservableObject {
-    @Published var display: CardsViewDisplay = .summary
-    @Published var sort: CardsViewSort = .name
 }

@@ -14,8 +14,6 @@ class SetViewModel: CardsViewModel {
 
     // MARK: - Published Variables
     @Published private(set) var set: MGSet?
-//    @Published private(set) var cards = [MGCard]()
-//    @Published private(set) var isBusy = false
     
     // MARK: - Variables
     var setCode: String
@@ -28,19 +26,14 @@ class SetViewModel: CardsViewModel {
         self.setCode = setCode
         self.languageCode = languageCode
         self.dataAPI = dataAPI
-        
-        frc = NSFetchedResultsController(fetchRequest: SetViewModel.defaultFetchRequest(setCode: setCode, languageCode: languageCode),
-                                         managedObjectContext: ManaKit.shared.viewContext,
-                                         sectionNameKeyPath: nil,
-                                         cacheName: nil)
+        frc = NSFetchedResultsController()
         
         super.init()
-        frc.delegate = self
     }
     
     // MARK: - Methods
     override func fetchData() {
-        guard !isBusy && set == nil && cards.isEmpty else {
+        guard !isBusy /*&& set == nil && cards.isEmpty*/ else {
             return
         }
         
@@ -66,9 +59,17 @@ class SetViewModel: CardsViewModel {
     }
     
     override func fetchLocalData() {
+        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(setCode: setCode, languageCode: languageCode),
+                                         managedObjectContext: ManaKit.shared.viewContext,
+                                         sectionNameKeyPath: sectionNameKeyPath(),
+                                         cacheName: nil)
+        frc.delegate = self
+        
         do {
             try frc.performFetch()
             cards = frc.fetchedObjects ?? []
+            sections = frc.sections ?? []
+            
         } catch {
             print(error)
             cards.removeAll()
@@ -89,14 +90,12 @@ extension SetViewModel: NSFetchedResultsControllerDelegate {
 
 // MARK: - NSFetchRequest
 extension SetViewModel {
-    static func defaultFetchRequest(setCode: String, languageCode: String) -> NSFetchRequest<MGCard> {
-        let sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
-                               NSSortDescriptor(key: "collectorNumber", ascending: true)]
+    func defaultFetchRequest(setCode: String, languageCode: String) -> NSFetchRequest<MGCard> {
         let predicate = NSPredicate(format: "set.code == %@ AND language.code == %@ AND collectorNumber != null ", setCode, languageCode)
         
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
         request.predicate = predicate
-        request.sortDescriptors = sortDescriptors
+        request.sortDescriptors = sortDescriptors()
 
         return request
     }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B3F768F27EEB72E00059C45 /* CardListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B3F768E27EEB72E00059C45 /* CardListRowView.swift */; };
 		8BBBFD1427ED4521007D3F4A /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBBFD1227ED4521007D3F4A /* SearchView.swift */; };
 		8BBBFD1527ED4521007D3F4A /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBBFD1327ED4521007D3F4A /* SearchViewModel.swift */; };
 		8BBBFD1827ED454C007D3F4A /* CardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBBFD1727ED454C007D3F4A /* CardsView.swift */; };
@@ -42,8 +43,8 @@
 		8BFBDB5427E92C280016DC99 /* SetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5327E92C280016DC99 /* SetView.swift */; };
 		8BFBDB5527E92C280016DC99 /* SetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5327E92C280016DC99 /* SetView.swift */; };
 		8BFBDB5827E92DD90016DC99 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8BFBDB5727E92DD90016DC99 /* SDWebImageSwiftUI */; };
-		8BFBDB5B27E92E860016DC99 /* CardRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5A27E92E860016DC99 /* CardRowView.swift */; };
-		8BFBDB5C27E92E860016DC99 /* CardRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5A27E92E860016DC99 /* CardRowView.swift */; };
+		8BFBDB5B27E92E860016DC99 /* CardSummaryRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5A27E92E860016DC99 /* CardSummaryRowView.swift */; };
+		8BFBDB5C27E92E860016DC99 /* CardSummaryRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5A27E92E860016DC99 /* CardSummaryRowView.swift */; };
 		8BFBDB5E27E92EF20016DC99 /* Experimental.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5D27E92EF20016DC99 /* Experimental.swift */; };
 		8BFBDB5F27E92EF20016DC99 /* Experimental.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5D27E92EF20016DC99 /* Experimental.swift */; };
 /* End PBXBuildFile section */
@@ -66,6 +67,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8B3F768E27EEB72E00059C45 /* CardListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardListRowView.swift; sourceTree = "<group>"; };
 		8BBBFD1227ED4521007D3F4A /* SearchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		8BBBFD1327ED4521007D3F4A /* SearchViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		8BBBFD1727ED454C007D3F4A /* CardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsView.swift; sourceTree = "<group>"; };
@@ -93,7 +95,7 @@
 		8BFBDB4827E920B80016DC99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8BFBDB4B27E921360016DC99 /* SetViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetViewModel.swift; sourceTree = "<group>"; };
 		8BFBDB5327E92C280016DC99 /* SetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetView.swift; sourceTree = "<group>"; };
-		8BFBDB5A27E92E860016DC99 /* CardRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardRowView.swift; sourceTree = "<group>"; };
+		8BFBDB5A27E92E860016DC99 /* CardSummaryRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardSummaryRowView.swift; sourceTree = "<group>"; };
 		8BFBDB5D27E92EF20016DC99 /* Experimental.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Experimental.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -136,6 +138,8 @@
 		8BBBFD1627ED4528007D3F4A /* Cards */ = {
 			isa = PBXGroup;
 			children = (
+				8B3F768E27EEB72E00059C45 /* CardListRowView.swift */,
+				8BFBDB5A27E92E860016DC99 /* CardSummaryRowView.swift */,
 				8BBBFD1727ED454C007D3F4A /* CardsView.swift */,
 				8BBBFD1A27ED480E007D3F4A /* CardsViewModel.swift */,
 				8BBBFD1D27ED7CFD007D3F4A /* CardsViewSettings.swift */,
@@ -248,7 +252,6 @@
 		8BFBDB5927E92E710016DC99 /* Common Views */ = {
 			isa = PBXGroup;
 			children = (
-				8BFBDB5A27E92E860016DC99 /* CardRowView.swift */,
 				8BFBDB5D27E92EF20016DC99 /* Experimental.swift */,
 				8BC682B127E967BE00A639C1 /* SearchNavigation.swift */,
 			);
@@ -399,11 +402,12 @@
 				8BFBDB4F27E921360016DC99 /* SetViewModel.swift in Sources */,
 				8BBBFD1827ED454C007D3F4A /* CardsView.swift in Sources */,
 				8BBCC5F527EA2FD80045410D /* TabTestViewModel.swift in Sources */,
-				8BFBDB5B27E92E860016DC99 /* CardRowView.swift in Sources */,
+				8BFBDB5B27E92E860016DC99 /* CardSummaryRowView.swift in Sources */,
 				8BFBDB5427E92C280016DC99 /* SetView.swift in Sources */,
 				8BFBDB5E27E92EF20016DC99 /* Experimental.swift in Sources */,
 				8BBBFD1527ED4521007D3F4A /* SearchViewModel.swift in Sources */,
 				8BC682A827E95E1600A639C1 /* CardView.swift in Sources */,
+				8B3F768F27EEB72E00059C45 /* CardListRowView.swift in Sources */,
 				8BDAC1B927E90D1C00AF523E /* ManaGuideApp.swift in Sources */,
 				8BDAC1C327E90EA200AF523E /* MainView.swift in Sources */,
 				8BFBDB4427E91A1B0016DC99 /* SetsViewModel.swift in Sources */,
@@ -435,7 +439,7 @@
 				8BC682A927E95E1600A639C1 /* CardView.swift in Sources */,
 				8BDAC1B427E90CED00AF523E /* ManaGuideUITestsLaunchTests.swift in Sources */,
 				8BFBDB5F27E92EF20016DC99 /* Experimental.swift in Sources */,
-				8BFBDB5C27E92E860016DC99 /* CardRowView.swift in Sources */,
+				8BFBDB5C27E92E860016DC99 /* CardSummaryRowView.swift in Sources */,
 				8BDAC1A327E90BF400AF523E /* ManaGuideUITests.swift in Sources */,
 				8BC682B327E967BE00A639C1 /* SearchNavigation.swift in Sources */,
 				8BBBFD2027ED7CFD007D3F4A /* CardsViewSettings.swift in Sources */,

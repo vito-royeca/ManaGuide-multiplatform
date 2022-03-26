@@ -25,10 +25,8 @@ class SearchViewModel: CardsViewModel {
         self.dataAPI = dataAPI
         query = ""
         scopeSelection = 0
-        frc = NSFetchedResultsController(fetchRequest: MGCard.fetchRequest(),
-                                         managedObjectContext: ManaKit.shared.viewContext,
-                                         sectionNameKeyPath: nil,
-                                         cacheName: nil)
+        frc = NSFetchedResultsController()
+        
         super.init()
     }
     
@@ -64,9 +62,9 @@ class SearchViewModel: CardsViewModel {
             return
         }
         
-        frc = NSFetchedResultsController(fetchRequest: SearchViewModel.defaultFetchRequest(query: query),
+        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(query: query),
                                          managedObjectContext: ManaKit.shared.viewContext,
-                                         sectionNameKeyPath: nil,
+                                         sectionNameKeyPath: sectionNameKeyPath(),
                                          cacheName: nil)
         frc.delegate = self
         
@@ -93,12 +91,11 @@ extension SearchViewModel: NSFetchedResultsControllerDelegate {
 
 // MARK: - NSFetchRequest
 extension SearchViewModel {
-    static func defaultFetchRequest(query: String) -> NSFetchRequest<MGCard> {
-        let sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        let predicate = NSPredicate(format: "newID != nil AND newID != '' AND name CONTAINS[cd] %@ AND collectorNumber != nil ", query)
+    func defaultFetchRequest(query: String) -> NSFetchRequest<MGCard> {
+        let predicate = NSPredicate(format: "newID != nil AND newID != '' AND collectorNumber != nil AND name CONTAINS[cd] %@", query)
         
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
-        request.sortDescriptors = sortDescriptors
+        request.sortDescriptors = sortDescriptors()
         request.predicate = predicate
 
         return request
