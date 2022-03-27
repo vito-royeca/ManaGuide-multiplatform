@@ -45,9 +45,7 @@ struct CardListRowView: View {
                                 .font(.subheadline)
                                 .foregroundColor(Color.blue)
                                 .multilineTextAlignment(.trailing)
-                        }
-
-                        HStack {
+                            Spacer()
                             Text("Foil")
                                 .font(.subheadline)
                                 .foregroundColor(Color.green)
@@ -57,7 +55,7 @@ struct CardListRowView: View {
                                 .foregroundColor(Color.green)
                                 .multilineTextAlignment(.trailing)
                         }
-
+                        Spacer()
                         HStack {
                             Text(card.displayKeyrune)
                                 .font(Font.custom("Keyrune", size: 20))

@@ -31,12 +31,18 @@ struct CardView: View {
                             .frame(width: geometry.size.width - (geometry.size.width / 4))
                         Spacer()
                     }
-                
+                    
+                    if let prices = card.prices?.allObjects as? [MGCardPrice] {
+                        Section {
+                            CardPricingInfoView(prices: prices)
+                        }
+                    }
+                    
                     if let faces = card.sortedFaces,
                        faces.count > 1 {
                         ForEach(faces) { face in
                             Section {
-                                    CardCommonInfoView(card: face)
+                                CardCommonInfoView(card: face)
                             }
                         }
                     } else {
@@ -88,7 +94,61 @@ struct CardView: View {
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            CardView(newID: "isd_de_51")
+            CardView(newID: "ulg_en_126")
+        }
+    }
+}
+
+// MARK: - CardPricingInfoView
+
+struct CardPricingInfoView: View {
+    @State var isPricingExpanded = false
+    var prices: [MGCardPrice]
+    
+    var body: some View {
+        
+        CardPricingRowView(title: "Market",
+                           normal: prices.filter({ !$0.isFoil }).map{ $0.market}.first ?? 0,
+                           foil: prices.filter({ $0.isFoil }).map{ $0.market}.first ?? 0)
+        
+        DisclosureGroup("Other TCGPlayer Prices", isExpanded: $isPricingExpanded) {
+            CardPricingRowView(title: "Low",
+                               normal: prices.filter({ !$0.isFoil }).map{ $0.low}.first ?? 0,
+                               foil: prices.filter({ $0.isFoil }).map{ $0.low}.first ?? 0)
+            CardPricingRowView(title: "Median",
+                               normal: prices.filter({ !$0.isFoil }).map{ $0.median}.first ?? 0,
+                               foil: prices.filter({ $0.isFoil }).map{ $0.median}.first ?? 0)
+            CardPricingRowView(title: "High",
+                               normal: prices.filter({ !$0.isFoil }).map{ $0.high}.first ?? 0,
+                               foil: prices.filter({ $0.isFoil }).map{ $0.high}.first ?? 0)
+            CardPricingRowView(title: "Direct Low",
+                               normal: prices.filter({ !$0.isFoil }).map{ $0.directLow}.first ?? 0,
+                               foil: prices.filter({ $0.isFoil }).map{ $0.directLow}.first ?? 0)
+        }
+    }
+}
+
+// MARK: - CardPricingRowView
+
+struct CardPricingRowView: View {
+    var title: String
+    var normal: Double
+    var foil: Double
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.headline)
+            Spacer()
+            VStack(alignment: .trailing) {
+                Text("Normal \(normal > 0 ? String(format: "$%.2f", normal) : "\u{2014}")")
+                    .font(.subheadline)
+                    .foregroundColor(Color.blue)
+                Spacer()
+                Text("Foil \(foil > 0 ? String(format: "$%.2f", foil) : "\u{2014}")")
+                    .font(.subheadline)
+                    .foregroundColor(Color.green)
+            }
         }
     }
 }

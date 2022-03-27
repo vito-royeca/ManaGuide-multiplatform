@@ -67,9 +67,7 @@ struct CardSummaryRowView: View {
                                 .font(.subheadline)
                                 .foregroundColor(Color.blue)
                                 .multilineTextAlignment(.trailing)
-                        }
-
-                        HStack {
+                            Spacer()
                             Text("Foil")
                                 .font(.subheadline)
                                 .foregroundColor(Color.green)

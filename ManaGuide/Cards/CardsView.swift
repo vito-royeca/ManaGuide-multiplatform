@@ -109,14 +109,7 @@ struct CardsDataView: View {
                            let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
                            
                            NavigationLink(destination: CardView(newID: newID)) {
-                               WebImage(url: card.imageURL(for: .png))
-                                   .resizable()
-                                   .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
-                                   .indicator(.activity)
-                                   .transition(.fade(duration: 0.5))
-                                   .aspectRatio(contentMode: .fill)
-                                   .cornerRadius(5)
-                                   .clipped()
+                               CardImageRowView(card: card)
                            }
                        }
                    case .name,
@@ -130,14 +123,7 @@ struct CardsDataView: View {
                                    let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
                                    
                                    NavigationLink(destination: CardView(newID: newID)) {
-                                       WebImage(url: card.imageURL(for: .png))
-                                           .resizable()
-                                           .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
-                                           .indicator(.activity)
-                                           .transition(.fade(duration: 0.5))
-                                           .aspectRatio(contentMode: .fill)
-                                           .cornerRadius(5)
-                                           .clipped()
+                                       CardImageRowView(card: card)
                                    }
                                }
                            }
