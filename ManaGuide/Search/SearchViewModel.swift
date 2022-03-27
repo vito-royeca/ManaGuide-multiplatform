@@ -57,6 +57,7 @@ class SearchViewModel: CardsViewModel {
     }
     
     override func fetchLocalData() {
+        // TODO: fix when changing sort where query is nil
         guard let query = query,
             !query.isEmpty else {
             return
@@ -93,7 +94,7 @@ extension SearchViewModel: NSFetchedResultsControllerDelegate {
 // MARK: - NSFetchRequest
 extension SearchViewModel {
     func defaultFetchRequest(query: String) -> NSFetchRequest<MGCard> {
-        let predicate = NSPredicate(format: "newID != nil AND newID != '' AND collectorNumber != nil AND name CONTAINS[cd] %@", query)
+        let predicate = NSPredicate(format: "newID != nil AND newID != '' AND collectorNumber != nil AND language.code = %@ AND name CONTAINS[cd] %@", "en", query)
         
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
         request.sortDescriptors = sortDescriptors()

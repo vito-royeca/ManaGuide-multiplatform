@@ -33,7 +33,7 @@ struct CardListRowView: View {
                         .clipped()
                     
                     VStack(alignment: .leading) {
-                        Text(card.displayName)
+                        Text(card.displayName ?? "")
                             .font(Font.custom(font.name, size: font.size))
                         
                         HStack {

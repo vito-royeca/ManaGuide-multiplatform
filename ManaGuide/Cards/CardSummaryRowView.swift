@@ -34,7 +34,7 @@ struct CardSummaryRowView: View {
                         .clipped()
                     
                     VStack(alignment: .leading) {
-                        Text(card.displayName)
+                        Text(card.displayName ?? "")
                             .font(Font.custom(font.name, size: font.size))
                         
                         if let manaCost = card.manaCost {
@@ -45,14 +45,14 @@ struct CardSummaryRowView: View {
                         
                         if let displayPowerToughness = card.displayPowerToughness {
                             HStack {
-                                Text(card.displayTypeLine)
+                                Text(card.displayTypeLine ?? "")
                                     .font(.subheadline)
                                 Spacer()
                                 Text(displayPowerToughness)
                                     .font(.subheadline)
                             }
                         } else {
-                            Text(card.displayTypeLine)
+                            Text(card.displayTypeLine ?? "")
                                 .font(.subheadline)
                         }
                         

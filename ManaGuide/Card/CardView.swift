@@ -88,7 +88,7 @@ struct CardView: View {
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            CardView(newID: "pemn_en_15as")
+            CardView(newID: "isd_de_51")
         }
     }
 }
@@ -116,7 +116,7 @@ struct CardCommonInfoView: View {
             Text("Name")
                 .font(.headline)
             Spacer()
-            Text(card.displayName)
+            Text(card.displayName ?? "")
                 .font(.subheadline)
         }
 
@@ -142,7 +142,7 @@ struct CardCommonInfoView: View {
             Text("Type")
                 .font(.headline)
             Spacer()
-            Text(card.displayTypeLine)
+            Text(card.displayTypeLine ?? "")
                 .font(.subheadline)
         }
         
@@ -167,19 +167,6 @@ struct CardCommonInfoView: View {
             }
         }
 
-        if let oracleText = card.oracleText,
-           !oracleText.isEmpty {
-            VStack(alignment: .leading) {
-                Text("Oracle Text")
-                    .font(.headline)
-                Spacer()
-                AttributedText(
-                    NSAttributedString(symbol: oracleText, pointSize: 16)
-                )
-                    .font(.subheadline)
-            }
-        }
-        
         if let printedText = card.printedText,
            !printedText.isEmpty {
             VStack(alignment: .leading) {
@@ -188,6 +175,19 @@ struct CardCommonInfoView: View {
                 Spacer()
                 AttributedText(
                     NSAttributedString(symbol: printedText, pointSize: 16)
+                )
+                    .font(.subheadline)
+            }
+        }
+
+        if let oracleText = card.oracleText,
+           !oracleText.isEmpty {
+            VStack(alignment: .leading) {
+                Text("Oracle Text")
+                    .font(.headline)
+                Spacer()
+                AttributedText(
+                    NSAttributedString(symbol: oracleText, pointSize: 16)
                 )
                     .font(.subheadline)
             }
