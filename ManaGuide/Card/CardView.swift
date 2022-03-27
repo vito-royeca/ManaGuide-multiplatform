@@ -120,6 +120,7 @@ struct CardSwipeView: View {
     @State var width: CGFloat
     @State private var offset: CGFloat = 0
     @State private var index = 0
+//    @State private var cardArray = [MGCard]()
     let spacing: CGFloat = 10
 
     init(cardsViewModel: CardsViewModel, newID: String, width: CGFloat) {
@@ -133,14 +134,13 @@ struct CardSwipeView: View {
             ScrollView(.horizontal, showsIndicators: true) {
                 HStack(spacing: spacing) {
                     ForEach(cardsViewModel.cards, id: \.newIDCopy) { card in
-                        WebImage(url: card.imageURL(for: .normal))
+                        WebImage(url: card.imageURL(for: .normal), options: [SDWebImageOptions.lowPriority])
                             .resizable()
                             .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
                             .indicator(.activity)
                             .transition(.fade(duration: 0.5))
                             .scaledToFit()
                             .frame(width: width)
-                            .id(card.newIDCopy)
                     }
                 }
             }
@@ -158,7 +158,9 @@ struct CardSwipeView: View {
                             if value.predictedEndTranslation.width > width / 2, index > 0 {
                                 index -= 1
                             }
-                            withAnimation { offset = -(width + spacing) * CGFloat(index) }
+                            withAnimation {
+                                offset = -(width + spacing) * CGFloat(index)
+                            }
                             
                             let card = cardsViewModel.cards[index]
                             newID = card.newIDCopy
@@ -169,16 +171,15 @@ struct CardSwipeView: View {
                         })
                 )
                 .onAppear {
-                    var currentIndex = 0
                     for card in cardsViewModel.cards {
                         if card.newIDCopy == newID {
                             break
                         }
-                        currentIndex += 1
+                        index += 1
                     }
-                    predownloadCards(from: currentIndex)
                     
-                    scrollViewReader.scrollTo(newID, anchor: .leading)
+                    offset = -(width + spacing) * CGFloat(index)
+                    predownloadCards(from: index)
                 }
         }
     }
