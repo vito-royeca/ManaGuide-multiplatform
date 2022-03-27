@@ -45,6 +45,28 @@ struct TabTestView: View {
 
 struct TabTestView_Previews: PreviewProvider {
     static var previews: some View {
-        TabTestView(date: Date())
+//        TabTestView(date: Date())
+        TestScrollView()
+    }
+}
+struct TestScrollView: View {
+    var body: some View {
+        ScrollViewReader { proxy in
+            VStack {
+                Button("Jump to #50") {
+                    proxy.scrollTo(50, anchor: .top)
+                }
+
+                List{
+                    ForEach(0..<100) { i in
+                        Text("Example \(i)")
+                        .id(i)
+                    }
+                }
+                    .onAppear{
+                        proxy.scrollTo(45, anchor: .top)
+                    }
+            }
+        }
     }
 }

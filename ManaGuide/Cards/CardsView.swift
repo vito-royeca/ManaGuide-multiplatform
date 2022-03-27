@@ -106,9 +106,7 @@ struct CardsDataView: View {
                    switch sort {
                    case .collectorNumber:
                        ForEach(viewModel.cards) { card in
-                           let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
-                           
-                           NavigationLink(destination: CardView(newID: newID)) {
+                           NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
                                CardImageRowView(card: card)
                            }
                        }
@@ -120,9 +118,7 @@ struct CardsDataView: View {
                        ForEach(viewModel.sections, id: \.name) { section in
                            Section(header: stickyHeaderView(section.name)) {
                                ForEach(section.objects as? [MGCard] ?? []) { card in
-                                   let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
-                                   
-                                   NavigationLink(destination: CardView(newID: newID)) {
+                                   NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
                                        CardImageRowView(card: card)
                                    }
                                }
@@ -138,17 +134,15 @@ struct CardsDataView: View {
                 switch sort {
                 case .collectorNumber:
                     ForEach(viewModel.cards) { card in
-                        let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
-                        
                         switch display {
                         case .list:
                             CardListRowView(card: card)
-                                .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
+                                .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
                         case .image:
                             EmptyView()
                         case .summary:
                             CardSummaryRowView(card: card)
-                                .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
+                                .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
                                 .listRowSeparator(.hidden)
                         }
                     }
@@ -161,17 +155,15 @@ struct CardsDataView: View {
                     ForEach(viewModel.sections, id: \.name) { section in
                         Section(header: Text(section.name)) {
                             ForEach(section.objects as? [MGCard] ?? []) { card in
-                                let newID = "\(card.set?.code ?? "")_\(card.language?.code ?? "")_\(card.collectorNumber ?? "")"
-                                
                                 switch display {
                                 case .list:
                                     CardListRowView(card: card)
-                                        .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
+                                        .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
                                 case .image:
                                     EmptyView()
                                 case .summary:
                                     CardSummaryRowView(card: card)
-                                        .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
+                                        .background(NavigationLink("", destination: CardView(newID: card.newID, cardsViewModel: viewModel)).opacity(0))
                                         .listRowSeparator(.hidden)
                                 }
                             }

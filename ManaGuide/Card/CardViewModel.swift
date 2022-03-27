@@ -26,7 +26,7 @@ class CardViewModel: NSObject, ObservableObject {
     }
 
     func fetchData() {
-        guard !isBusy && card == nil else {
+        guard !isBusy /*&& card == nil*/ else {
             return
         }
         

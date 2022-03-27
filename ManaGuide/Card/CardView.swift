@@ -10,27 +10,22 @@ import ManaKit
 import SDWebImageSwiftUI
 
 struct CardView: View {
+    @ObservedObject var cardsViewModel: CardsViewModel
     @StateObject var viewModel: CardViewModel
     
-    init(newID: String) {
+    init(newID: String, cardsViewModel: CardsViewModel) {
         _viewModel = StateObject(wrappedValue: CardViewModel(newID: newID))
+        self.cardsViewModel = cardsViewModel
     }
     
     var body: some View {
         GeometryReader { geometry in
             List {
                 if let card = viewModel.card {
-                    HStack(alignment: .center) {
-                        Spacer()
-                        WebImage(url: card.imageURL(for: .normal))
-                            .resizable()
-                            .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
-                            .indicator(.activity)
-                            .transition(.fade(duration: 0.5))
-                            .scaledToFit()
-                            .frame(width: geometry.size.width - (geometry.size.width / 4))
-                        Spacer()
-                    }
+                    let width =  geometry.size.width - (geometry.size.width / 4)
+                    CardSwipeView(cardsViewModel: cardsViewModel,
+                                  newID: card.newIDCopy,
+                                  width: width)
                     
                     if let prices = card.prices?.allObjects as? [MGCardPrice] {
                         Section {
@@ -55,13 +50,13 @@ struct CardView: View {
                         CardOtherInfoView(card: card)
                     }
                     Section {
-                        CardExtraInfoView(card: card)
+                        CardExtraInfoView(card: card, cardsViewModel: cardsViewModel)
                     }
                 } else {
                     EmptyView()
                 }
             }
-                .navigationBarTitle("Card Details")
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarTrailing) {
                         Button(action: {
@@ -69,7 +64,6 @@ struct CardView: View {
                         }) {
                             Image(systemName: "ellipsis")
                                 .renderingMode(.original)
-//                                .foregroundColor(Color(.systemBlue))
                         }
                     }
                 }
@@ -84,6 +78,20 @@ struct CardView: View {
                 })
                 .onAppear {
                     viewModel.fetchData()
+                    
+                    // download other cards
+//                    for card in cardsViewModel.cards {
+//                        print("downloading \(card.newIDCopy)...")
+//                        let cvc = CardViewModel(newID: card.newIDCopy)
+//                        cvc.fetchData()
+//                    }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardViewSwipe)) { output in
+                    if let userInfo = output.userInfo,
+                       let newID = userInfo["newID"] as? String {
+                        viewModel.newID = newID
+                        viewModel.fetchData()
+                    }
                 }
         }
     }
@@ -94,9 +102,114 @@ struct CardView: View {
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            CardView(newID: "ulg_en_126")
+            let model = SetViewModel(setCode: "ulg", languageCode: "en")
+            CardView(newID: "ulg_en_126",
+                     cardsViewModel: model)
+                .onAppear {
+                    model.fetchData()
+                }
         }
     }
+}
+
+// MARK: - CardSwipeView
+
+struct CardSwipeView: View {
+    @ObservedObject var cardsViewModel: CardsViewModel
+    @State var newID: String = ""
+    @State var width: CGFloat
+    @State private var offset: CGFloat = 0
+    @State private var index = 0
+    let spacing: CGFloat = 10
+
+    init(cardsViewModel: CardsViewModel, newID: String, width: CGFloat) {
+        self.cardsViewModel = cardsViewModel
+        self.newID = newID
+        self.width = width
+    }
+    
+    var body: some View {
+        ScrollViewReader { scrollViewReader in
+            ScrollView(.horizontal, showsIndicators: true) {
+                HStack(spacing: spacing) {
+                    ForEach(cardsViewModel.cards, id: \.newIDCopy) { card in
+                        WebImage(url: card.imageURL(for: .normal))
+                            .resizable()
+                            .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
+                            .indicator(.activity)
+                            .transition(.fade(duration: 0.5))
+                            .scaledToFit()
+                            .frame(width: width)
+                            .id(card.newIDCopy)
+                    }
+                }
+            }
+                .content.offset(x: offset)
+                .frame(width: width, alignment: .leading)
+                .gesture(
+                    DragGesture()
+                        .onChanged({ value in
+                            offset = value.translation.width - width * CGFloat(index)
+                        })
+                        .onEnded({ value in
+                            if -value.predictedEndTranslation.width > width / 2, index < cardsViewModel.cards.count - 1 {
+                                index += 1
+                            }
+                            if value.predictedEndTranslation.width > width / 2, index > 0 {
+                                index -= 1
+                            }
+                            withAnimation { offset = -(width + spacing) * CGFloat(index) }
+                            
+                            let card = cardsViewModel.cards[index]
+                            newID = card.newIDCopy
+                            NotificationCenter.default.post(name: NSNotification.CardViewSwipe,
+                                                            object: nil,
+                                                            userInfo: ["newID": newID])
+                            predownloadCards(from: index)
+                        })
+                )
+                .onAppear {
+                    var currentIndex = 0
+                    for card in cardsViewModel.cards {
+                        if card.newIDCopy == newID {
+                            break
+                        }
+                        currentIndex += 1
+                    }
+                    predownloadCards(from: currentIndex)
+                    
+                    scrollViewReader.scrollTo(newID, anchor: .leading)
+                }
+        }
+    }
+    
+    func predownloadCards(from index: Int) {
+        // download last five and next 5 cards
+        let end = cardsViewModel.cards.count - 1
+        let downloadCount = 5
+        
+        for i in 1...downloadCount {
+            let nextIndex = index + i
+            let previousIndex = index - i
+            
+            if nextIndex <= end {
+                let nextID = cardsViewModel.cards[nextIndex].newIDCopy
+                let model = CardViewModel(newID: nextID)
+                model.fetchData()
+            }
+            if previousIndex >= 0 {
+                let previousID = cardsViewModel.cards[previousIndex].newIDCopy
+                let model = CardViewModel(newID: previousID)
+                model.fetchData()
+            }
+        }
+    }
+}
+
+// MARK: - NSNotifications
+
+extension NSNotification {
+    static let CardViewSwipe = Notification.Name.init("CardViewSwipe")
 }
 
 // MARK: - CardPricingInfoView
@@ -324,6 +437,7 @@ struct CardOtherInfoView: View {
 // MARK: - CardExtraInfoView
 
 struct CardExtraInfoView: View {
+    @ObservedObject var cardsViewModel: CardsViewModel
     @State var isColorsExpanded         = false
     @State var isComponentPartsExpanded = false
     @State var isFrameEffectsExpanded   = false
@@ -337,8 +451,9 @@ struct CardExtraInfoView: View {
     
     var card: MGCard
     
-    init(card: MGCard) {
+    init(card: MGCard, cardsViewModel: CardsViewModel) {
         self.card = card
+        self.cardsViewModel = cardsViewModel
     }
     
     var body: some View {
@@ -352,30 +467,28 @@ struct CardExtraInfoView: View {
             if let count = card.sortedComponentParts?.count,
                 count > 0,
                 let componentParts = card.sortedComponentParts {
-                
+
                 DisclosureGroup("Component Parts: \(count)", isExpanded: $isComponentPartsExpanded) {
                     ForEach(componentParts) { componentPart in
-                        let newID = "\(componentPart.part?.set?.code ?? "")_\(componentPart.part?.language?.code ?? "")_\(componentPart.part?.collectorNumber ?? "")"
-                        
-                        NavigationLink(destination: CardView(newID: newID)) {
+                        NavigationLink(destination: CardView(newID: componentPart.part?.newIDCopy ?? "", cardsViewModel: cardsViewModel)) {
                             CardTextRowView(title: componentPart.part?.name ?? " ",
                                             subtitle: componentPart.component?.name ?? " ")
                         }
                     }
                 }
             }
-            
+
             if let count = card.sortedFrameEffects?.count ?? 0,
                 count > 0,
                 let frameEffects = card.sortedFrameEffects {
-                
+
                 DisclosureGroup("Frame Effects: \(count)", isExpanded: $isFrameEffectsExpanded) {
                     ForEach(frameEffects) { frameEffect in
                         Text(frameEffect.name ?? " ")
                     }
                 }
             }
-            
+
             if let count = card.sortedFormatLegalities?.count ?? 0,
                 count > 0,
                 let formatLegalities = card.sortedFormatLegalities {
@@ -394,10 +507,8 @@ struct CardExtraInfoView: View {
 
                 DisclosureGroup("Other Languages: \(count)", isExpanded: $isOtherLanguagesExpanded) {
                     ForEach(otherLanguages) { otherLanguage in
-                        let newID = "\(otherLanguage.set?.code ?? "")_\(otherLanguage.language?.code ?? "")_\(otherLanguage.collectorNumber ?? "")"
-                        
                         CardListRowView(card: otherLanguage)
-                            .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
+                            .background(NavigationLink("", destination: CardView(newID: otherLanguage.newIDCopy, cardsViewModel: cardsViewModel)).opacity(0))
                     }
                 }
             }
@@ -408,10 +519,8 @@ struct CardExtraInfoView: View {
 
                 DisclosureGroup("Other Printings: \(count)", isExpanded: $isOtherPrintingsExpanded) {
                     ForEach(otherPrintings) { otherPrinting in
-                        let newID = "\(otherPrinting.set?.code ?? "")_\(otherPrinting.language?.code ?? "")_\(otherPrinting.collectorNumber ?? "")"
-                        
                         CardListRowView(card: otherPrinting)
-                            .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
+                            .background(NavigationLink("", destination: CardView(newID: otherPrinting.newIDCopy, cardsViewModel: cardsViewModel)).opacity(0))
                     }
                 }
             }
@@ -462,10 +571,8 @@ struct CardExtraInfoView: View {
 
                 DisclosureGroup("Variations: \(count)", isExpanded: $isVariationsExpanded) {
                     ForEach(variations) { variation in
-                        let newID = "\(variation.set?.code ?? "")_\(variation.language?.code ?? "")_\(variation.collectorNumber ?? "")"
-                        
                         CardListRowView(card: variation)
-                            .background(NavigationLink("", destination: CardView(newID: newID)).opacity(0))
+                            .background(NavigationLink("", destination: CardView(newID: variation.newIDCopy, cardsViewModel: cardsViewModel)).opacity(0))
                     }
                 }
             }

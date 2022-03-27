@@ -25,14 +25,15 @@ struct MainView: View {
                     Text("Sets")
                 }
             
-//            NavigationView {
+            NavigationView {
 //                TabTestView(date: Date())
-//            }
-//                .navigationViewStyle(.stack)
-//                .tabItem {
-//                    Image(systemName: "testtube.2")
-//                    Text("Test")
-//                }
+                TestScrollView()
+            }
+                .navigationViewStyle(.stack)
+                .tabItem {
+                    Image(systemName: "testtube.2")
+                    Text("Test")
+                }
         }
     }
 }
