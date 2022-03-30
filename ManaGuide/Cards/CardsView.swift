@@ -77,7 +77,7 @@ struct CardsView: View {
 struct CardsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            CardsView(viewModel: SetViewModel(setCode: "ulg", languageCode: "en"))
+            CardsView(viewModel: SetViewModel(setCode: "leb", languageCode: "en"))
         }
     }
 }

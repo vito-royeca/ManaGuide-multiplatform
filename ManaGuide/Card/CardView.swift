@@ -28,7 +28,13 @@ struct CardView: View {
                             .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
                             .indicator(.activity)
                             .transition(.fade(duration: 0.5))
-                            .scaledToFit()
+                            .aspectRatio(contentMode: .fill)
+                            .cornerRadius(10)
+                            .clipped()
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.clear, lineWidth: 0)
+                            )
                     }
                     
                     if let prices = card.prices?.allObjects as? [MGCardPrice] {
@@ -100,7 +106,7 @@ struct CardView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             let model = SetViewModel(setCode: "ulg", languageCode: "en")
-            CardView(newID: "ulg_en_126",
+            CardView(newID: "lea_en_46",
                      cardsViewModel: model)
                 .onAppear {
                     model.fetchData()

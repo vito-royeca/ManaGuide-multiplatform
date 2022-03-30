@@ -31,8 +31,11 @@ struct CardImageRowView: View {
                 .transition(.fade(duration: 0.5))
                 .aspectRatio(contentMode: .fill)
                 .cornerRadius(10)
-                .shadow(radius: 10)
                 .clipped()
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.clear, lineWidth: 0)
+                )
 //            Spacer()
             if priceStyle == .oneLine {
                 HStack {
