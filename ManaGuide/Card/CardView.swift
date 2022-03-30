@@ -22,10 +22,14 @@ struct CardView: View {
         GeometryReader { geometry in
             List {
                 if let card = viewModel.card {
-                    let width =  geometry.size.width - (geometry.size.width / 4)
-                    CardSwipeView(cardsViewModel: cardsViewModel,
-                                  newID: card.newIDCopy,
-                                  width: width)
+                    Section {
+                        WebImage(url: card.imageURL(for: .normal), options: [SDWebImageOptions.lowPriority])
+                            .resizable()
+                            .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
+                            .indicator(.activity)
+                            .transition(.fade(duration: 0.5))
+                            .scaledToFit()
+                    }
                     
                     if let prices = card.prices?.allObjects as? [MGCardPrice] {
                         Section {
@@ -78,21 +82,14 @@ struct CardView: View {
                 })
                 .onAppear {
                     viewModel.fetchData()
-                    
-                    // download other cards
-//                    for card in cardsViewModel.cards {
-//                        print("downloading \(card.newIDCopy)...")
-//                        let cvc = CardViewModel(newID: card.newIDCopy)
-//                        cvc.fetchData()
+                }
+//                .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardViewSwipe)) { output in
+//                    if let userInfo = output.userInfo,
+//                       let newID = userInfo["newID"] as? String {
+//                        viewModel.newID = newID
+//                        viewModel.fetchData()
 //                    }
-                }
-                .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardViewSwipe)) { output in
-                    if let userInfo = output.userInfo,
-                       let newID = userInfo["newID"] as? String {
-                        viewModel.newID = newID
-                        viewModel.fetchData()
-                    }
-                }
+//                }
         }
     }
 }
@@ -110,107 +107,6 @@ struct CardView_Previews: PreviewProvider {
                 }
         }
     }
-}
-
-// MARK: - CardSwipeView
-
-struct CardSwipeView: View {
-    @ObservedObject var cardsViewModel: CardsViewModel
-    @State var newID: String = ""
-    @State var width: CGFloat
-    @State private var offset: CGFloat = 0
-    @State private var index = 0
-//    @State private var cardArray = [MGCard]()
-    let spacing: CGFloat = 10
-
-    init(cardsViewModel: CardsViewModel, newID: String, width: CGFloat) {
-        self.cardsViewModel = cardsViewModel
-        self.newID = newID
-        self.width = width
-    }
-    
-    var body: some View {
-        ScrollViewReader { scrollViewReader in
-            ScrollView(.horizontal, showsIndicators: true) {
-                HStack(spacing: spacing) {
-                    ForEach(cardsViewModel.cards, id: \.newIDCopy) { card in
-                        WebImage(url: card.imageURL(for: .normal), options: [SDWebImageOptions.lowPriority])
-                            .resizable()
-                            .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
-                            .indicator(.activity)
-                            .transition(.fade(duration: 0.5))
-                            .scaledToFit()
-                            .frame(width: width)
-                    }
-                }
-            }
-                .content.offset(x: offset)
-                .frame(width: width, alignment: .leading)
-                .gesture(
-                    DragGesture()
-                        .onChanged({ value in
-                            offset = value.translation.width - width * CGFloat(index)
-                        })
-                        .onEnded({ value in
-                            if -value.predictedEndTranslation.width > width / 2, index < cardsViewModel.cards.count - 1 {
-                                index += 1
-                            }
-                            if value.predictedEndTranslation.width > width / 2, index > 0 {
-                                index -= 1
-                            }
-                            withAnimation {
-                                offset = -(width + spacing) * CGFloat(index)
-                            }
-                            
-                            let card = cardsViewModel.cards[index]
-                            newID = card.newIDCopy
-                            NotificationCenter.default.post(name: NSNotification.CardViewSwipe,
-                                                            object: nil,
-                                                            userInfo: ["newID": newID])
-                            predownloadCards(from: index)
-                        })
-                )
-                .onAppear {
-                    for card in cardsViewModel.cards {
-                        if card.newIDCopy == newID {
-                            break
-                        }
-                        index += 1
-                    }
-                    
-                    offset = -(width + spacing) * CGFloat(index)
-                    predownloadCards(from: index)
-                }
-        }
-    }
-    
-    func predownloadCards(from index: Int) {
-        // download last five and next 5 cards
-        let end = cardsViewModel.cards.count - 1
-        let downloadCount = 5
-        
-        for i in 1...downloadCount {
-            let nextIndex = index + i
-            let previousIndex = index - i
-            
-            if nextIndex <= end {
-                let nextID = cardsViewModel.cards[nextIndex].newIDCopy
-                let model = CardViewModel(newID: nextID)
-                model.fetchData()
-            }
-            if previousIndex >= 0 {
-                let previousID = cardsViewModel.cards[previousIndex].newIDCopy
-                let model = CardViewModel(newID: previousID)
-                model.fetchData()
-            }
-        }
-    }
-}
-
-// MARK: - NSNotifications
-
-extension NSNotification {
-    static let CardViewSwipe = Notification.Name.init("CardViewSwipe")
 }
 
 // MARK: - CardPricingInfoView

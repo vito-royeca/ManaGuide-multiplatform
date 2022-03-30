@@ -9,11 +9,17 @@ import SwiftUI
 import ManaKit
 import SDWebImageSwiftUI
 
+enum CardImageRowPriceStyle {
+    case oneLine, twoLines
+}
+
 struct CardImageRowView: View {
     private let card: MGCard
+    private let priceStyle: CardImageRowPriceStyle
     
-    init(card: MGCard) {
+    init(card: MGCard, priceStyle: CardImageRowPriceStyle) {
         self.card = card
+        self.priceStyle = priceStyle
     }
     
     var body: some View {
@@ -24,9 +30,12 @@ struct CardImageRowView: View {
                 .indicator(.activity)
                 .transition(.fade(duration: 0.5))
                 .aspectRatio(contentMode: .fill)
-                .cornerRadius(5)
+                .cornerRadius(10)
+                .shadow(radius: 10)
                 .clipped()
-            HStack {
+//            Spacer()
+            if priceStyle == .oneLine {
+                HStack {
                     Text("Normal")
                         .font(.footnote)
                         .foregroundColor(Color.blue)
@@ -44,14 +53,42 @@ struct CardImageRowView: View {
                         .font(.footnote)
                         .foregroundColor(Color.green)
                         .multilineTextAlignment(.trailing)
+                }
+                    .padding(5)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 0)
+                            .stroke(Color.secondary, lineWidth: 1)
+                    )
+            } else {
+                VStack {
+                    HStack {
+                        Text("Normal")
+                            .font(.footnote)
+                            .foregroundColor(Color.blue)
+                        Spacer()
+                        Text(card.displayNormalPrice)
+                            .font(.footnote)
+                            .foregroundColor(Color.blue)
+                            .multilineTextAlignment(.trailing)
+                    }
+                    HStack {
+                        Text("Foil")
+                            .font(.footnote)
+                            .foregroundColor(Color.green)
+                        Spacer()
+                        Text(card.displayFoilPrice)
+                            .font(.footnote)
+                            .foregroundColor(Color.green)
+                            .multilineTextAlignment(.trailing)
+                    }
+                }
+                    .padding(5)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 0)
+                            .stroke(Color.secondary, lineWidth: 1)
+                    )
             }
-            .padding(5)
         }
-            .cornerRadius(10)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.secondary, lineWidth: 1)
-            )
     }
 }
 

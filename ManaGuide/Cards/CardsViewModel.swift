@@ -12,7 +12,8 @@ import ManaKit
 // MARK: - Settings
 
 enum CardsViewDisplay: String {
-    case image,
+    case imageCarousel,
+         imageGrid,
          list,
          summary
 }

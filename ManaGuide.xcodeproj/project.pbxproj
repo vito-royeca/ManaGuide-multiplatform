@@ -39,6 +39,13 @@
 		8BEA1FCD27F0C4790052F747 /* TinderCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BEA1FCB27F0C4790052F747 /* TinderCardView.swift */; };
 		8BEA1FCF27F0CF6F0052F747 /* TinderCardContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BEA1FCE27F0CF6F0052F747 /* TinderCardContentView.swift */; };
 		8BEA1FD027F0CF6F0052F747 /* TinderCardContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BEA1FCE27F0CF6F0052F747 /* TinderCardContentView.swift */; };
+		8BEA1FD827F291550052F747 /* CardSwipeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BEA1FD727F291550052F747 /* CardSwipeView.swift */; };
+		8BEA1FD927F291550052F747 /* CardSwipeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BEA1FD727F291550052F747 /* CardSwipeView.swift */; };
+		8BEA1FDB27F2A1F80052F747 /* CardsCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BEA1FDA27F2A1F80052F747 /* CardsCarouselView.swift */; };
+		8BEA1FDC27F2A1F80052F747 /* CardsCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BEA1FDA27F2A1F80052F747 /* CardsCarouselView.swift */; };
+		8BEA1FDE27F2A5A10052F747 /* ScrollingHStackModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BEA1FDD27F2A5A10052F747 /* ScrollingHStackModifier.swift */; };
+		8BEA1FDF27F2A5A10052F747 /* ScrollingHStackModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BEA1FDD27F2A5A10052F747 /* ScrollingHStackModifier.swift */; };
+		8BEA1FEB27F3A7570052F747 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 8BEA1FEA27F3A7570052F747 /* SwiftUIPager */; };
 		8BFBDB4127E9180F0016DC99 /* ManaKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8BFBDB4027E9180F0016DC99 /* ManaKit */; };
 		8BFBDB4427E91A1B0016DC99 /* SetsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB4227E91A1B0016DC99 /* SetsViewModel.swift */; };
 		8BFBDB4527E91A1B0016DC99 /* SetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB4327E91A1B0016DC99 /* SetsView.swift */; };
@@ -48,8 +55,8 @@
 		8BFBDB5827E92DD90016DC99 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8BFBDB5727E92DD90016DC99 /* SDWebImageSwiftUI */; };
 		8BFBDB5B27E92E860016DC99 /* CardSummaryRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5A27E92E860016DC99 /* CardSummaryRowView.swift */; };
 		8BFBDB5C27E92E860016DC99 /* CardSummaryRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5A27E92E860016DC99 /* CardSummaryRowView.swift */; };
-		8BFBDB5E27E92EF20016DC99 /* Experimental.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5D27E92EF20016DC99 /* Experimental.swift */; };
-		8BFBDB5F27E92EF20016DC99 /* Experimental.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5D27E92EF20016DC99 /* Experimental.swift */; };
+		8BFBDB5E27E92EF20016DC99 /* Oddities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5D27E92EF20016DC99 /* Oddities.swift */; };
+		8BFBDB5F27E92EF20016DC99 /* Oddities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBDB5D27E92EF20016DC99 /* Oddities.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,13 +102,16 @@
 		8BEA1FC427F0005E0052F747 /* CardImageRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardImageRowView.swift; sourceTree = "<group>"; };
 		8BEA1FCB27F0C4790052F747 /* TinderCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderCardView.swift; sourceTree = "<group>"; };
 		8BEA1FCE27F0CF6F0052F747 /* TinderCardContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderCardContentView.swift; sourceTree = "<group>"; };
+		8BEA1FD727F291550052F747 /* CardSwipeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardSwipeView.swift; sourceTree = "<group>"; };
+		8BEA1FDA27F2A1F80052F747 /* CardsCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsCarouselView.swift; sourceTree = "<group>"; };
+		8BEA1FDD27F2A5A10052F747 /* ScrollingHStackModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollingHStackModifier.swift; sourceTree = "<group>"; };
 		8BFBDB4227E91A1B0016DC99 /* SetsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetsViewModel.swift; sourceTree = "<group>"; };
 		8BFBDB4327E91A1B0016DC99 /* SetsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetsView.swift; sourceTree = "<group>"; };
 		8BFBDB4827E920B80016DC99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8BFBDB4B27E921360016DC99 /* SetViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetViewModel.swift; sourceTree = "<group>"; };
 		8BFBDB5327E92C280016DC99 /* SetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetView.swift; sourceTree = "<group>"; };
 		8BFBDB5A27E92E860016DC99 /* CardSummaryRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardSummaryRowView.swift; sourceTree = "<group>"; };
-		8BFBDB5D27E92EF20016DC99 /* Experimental.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Experimental.swift; sourceTree = "<group>"; };
+		8BFBDB5D27E92EF20016DC99 /* Oddities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Oddities.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +121,7 @@
 			files = (
 				8BFBDB5827E92DD90016DC99 /* SDWebImageSwiftUI in Frameworks */,
 				8BFBDB4127E9180F0016DC99 /* ManaKit in Frameworks */,
+				8BEA1FEB27F3A7570052F747 /* SwiftUIPager in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,11 +154,11 @@
 		8BBBFD1627ED4528007D3F4A /* Cards */ = {
 			isa = PBXGroup;
 			children = (
+				8BEA1FC427F0005E0052F747 /* CardImageRowView.swift */,
 				8B3F768E27EEB72E00059C45 /* CardListRowView.swift */,
 				8BFBDB5A27E92E860016DC99 /* CardSummaryRowView.swift */,
 				8BBBFD1727ED454C007D3F4A /* CardsView.swift */,
 				8BBBFD1A27ED480E007D3F4A /* CardsViewModel.swift */,
-				8BEA1FC427F0005E0052F747 /* CardImageRowView.swift */,
 			);
 			path = Cards;
 			sourceTree = "<group>";
@@ -155,6 +166,9 @@
 		8BBCC5F027EA2C850045410D /* Experimental */ = {
 			isa = PBXGroup;
 			children = (
+				8BEA1FDD27F2A5A10052F747 /* ScrollingHStackModifier.swift */,
+				8BEA1FD727F291550052F747 /* CardSwipeView.swift */,
+				8BEA1FDA27F2A1F80052F747 /* CardsCarouselView.swift */,
 				8BEA1FCA27F0C43A0052F747 /* TinderSwipe */,
 				8BBCC5F427EA2FD80045410D /* TabTestViewModel.swift */,
 				8BBCC5F827EA33860045410D /* TabTestView.swift */,
@@ -267,7 +281,7 @@
 		8BFBDB5927E92E710016DC99 /* Common Views */ = {
 			isa = PBXGroup;
 			children = (
-				8BFBDB5D27E92EF20016DC99 /* Experimental.swift */,
+				8BFBDB5D27E92EF20016DC99 /* Oddities.swift */,
 				8BC682B127E967BE00A639C1 /* SearchNavigation.swift */,
 			);
 			path = "Common Views";
@@ -292,6 +306,7 @@
 			packageProductDependencies = (
 				8BFBDB4027E9180F0016DC99 /* ManaKit */,
 				8BFBDB5727E92DD90016DC99 /* SDWebImageSwiftUI */,
+				8BEA1FEA27F3A7570052F747 /* SwiftUIPager */,
 			);
 			productName = ManaGuide;
 			productReference = 8BDAC18427E90BF300AF523E /* ManaGuide.app */;
@@ -369,6 +384,7 @@
 			packageReferences = (
 				8BFBDB3F27E9180F0016DC99 /* XCRemoteSwiftPackageReference "ManaKit" */,
 				8BFBDB5627E92DD90016DC99 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				8BEA1FE927F3A7570052F747 /* XCRemoteSwiftPackageReference "SwiftUIPager" */,
 			);
 			productRefGroup = 8BDAC18527E90BF300AF523E /* Products */;
 			projectDirPath = "";
@@ -421,18 +437,21 @@
 				8BEA1FCF27F0CF6F0052F747 /* TinderCardContentView.swift in Sources */,
 				8BFBDB5B27E92E860016DC99 /* CardSummaryRowView.swift in Sources */,
 				8BFBDB5427E92C280016DC99 /* SetView.swift in Sources */,
-				8BFBDB5E27E92EF20016DC99 /* Experimental.swift in Sources */,
+				8BFBDB5E27E92EF20016DC99 /* Oddities.swift in Sources */,
 				8BBBFD1527ED4521007D3F4A /* SearchViewModel.swift in Sources */,
 				8BC682A827E95E1600A639C1 /* CardView.swift in Sources */,
 				8B3F768F27EEB72E00059C45 /* CardListRowView.swift in Sources */,
+				8BEA1FDB27F2A1F80052F747 /* CardsCarouselView.swift in Sources */,
 				8BDAC1B927E90D1C00AF523E /* ManaGuideApp.swift in Sources */,
 				8BDAC1C327E90EA200AF523E /* MainView.swift in Sources */,
 				8BEA1FC527F0005E0052F747 /* CardImageRowView.swift in Sources */,
 				8BFBDB4427E91A1B0016DC99 /* SetsViewModel.swift in Sources */,
+				8BEA1FDE27F2A5A10052F747 /* ScrollingHStackModifier.swift in Sources */,
 				8BBBFD1427ED4521007D3F4A /* SearchView.swift in Sources */,
 				8BFBDB4527E91A1B0016DC99 /* SetsView.swift in Sources */,
 				8BC682A627E93C2700A639C1 /* CardViewModel.swift in Sources */,
 				8BBCC5F927EA33860045410D /* TabTestView.swift in Sources */,
+				8BEA1FD827F291550052F747 /* CardSwipeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -455,12 +474,15 @@
 				8BC682A927E95E1600A639C1 /* CardView.swift in Sources */,
 				8BDAC1B427E90CED00AF523E /* ManaGuideUITestsLaunchTests.swift in Sources */,
 				8BEA1FCD27F0C4790052F747 /* TinderCardView.swift in Sources */,
-				8BFBDB5F27E92EF20016DC99 /* Experimental.swift in Sources */,
+				8BFBDB5F27E92EF20016DC99 /* Oddities.swift in Sources */,
 				8BFBDB5C27E92E860016DC99 /* CardSummaryRowView.swift in Sources */,
 				8BDAC1A327E90BF400AF523E /* ManaGuideUITests.swift in Sources */,
 				8BC682B327E967BE00A639C1 /* SearchNavigation.swift in Sources */,
 				8BEA1FD027F0CF6F0052F747 /* TinderCardContentView.swift in Sources */,
 				8BBBFD1C27ED480E007D3F4A /* CardsViewModel.swift in Sources */,
+				8BEA1FDC27F2A1F80052F747 /* CardsCarouselView.swift in Sources */,
+				8BEA1FDF27F2A5A10052F747 /* ScrollingHStackModifier.swift in Sources */,
+				8BEA1FD927F291550052F747 /* CardSwipeView.swift in Sources */,
 				8BBCC5FB27EA33860045410D /* TabTestView.swift in Sources */,
 				8BEA1FC627F0005E0052F747 /* CardImageRowView.swift in Sources */,
 				8BDAC1C127E90E1A00AF523E /* SnapshotHelper.swift in Sources */,
@@ -785,6 +807,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		8BEA1FE927F3A7570052F747 /* XCRemoteSwiftPackageReference "SwiftUIPager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/fermoya/SwiftUIPager.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 		8BFBDB3F27E9180F0016DC99 /* XCRemoteSwiftPackageReference "ManaKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/vito-royeca/ManaKit.git";
@@ -804,6 +834,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8BEA1FEA27F3A7570052F747 /* SwiftUIPager */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8BEA1FE927F3A7570052F747 /* XCRemoteSwiftPackageReference "SwiftUIPager" */;
+			productName = SwiftUIPager;
+		};
 		8BFBDB4027E9180F0016DC99 /* ManaKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8BFBDB3F27E9180F0016DC99 /* XCRemoteSwiftPackageReference "ManaKit" */;

@@ -8,6 +8,7 @@
 import SwiftUI
 import ManaKit
 import SDWebImageSwiftUI
+import SwiftUIPager
 
 struct CardsView: View {
     @StateObject var viewModel: CardsViewModel
@@ -76,7 +77,7 @@ struct CardsView: View {
 struct CardsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            CardsView(viewModel: SetViewModel(setCode: "ice", languageCode: "en"))
+            CardsView(viewModel: SetViewModel(setCode: "ulg", languageCode: "en"))
         }
     }
 }
@@ -84,10 +85,16 @@ struct CardsView_Previews: PreviewProvider {
 // MARK: - CardsDataView
 
 struct CardsDataView: View {
+    @StateObject var page1: Page = .first()
+    @State private var isShowingDetailView = false
+    
     private var sort: CardsViewSort
     private var display: CardsViewDisplay
     private var viewModel: CardsViewModel
     
+    private let carouselConfig = [
+        GridItem()
+    ]
     private let gridConfig = [
         GridItem(),
         GridItem()
@@ -100,78 +107,120 @@ struct CardsDataView: View {
     }
     
     var body: some View {
-        if display == .image {
-            ScrollView {
-                LazyVGrid(columns: gridConfig, pinnedViews: [.sectionHeaders]) {
-                   switch sort {
-                   case .collectorNumber:
-                       ForEach(viewModel.cards) { card in
-                           NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
-                               CardImageRowView(card: card)
+        GeometryReader { geometryReader in
+            if display == .imageCarousel {
+//                let screenWidth = geometryReader.size.width + 50
+//                ScrollView(.horizontal, showsIndicators: true) {
+//                    LazyHGrid(rows: [GridItem(.fixed(screenWidth))], alignment: .top, spacing: 10) {
+//                        ForEach(viewModel.cards) { card in
+//                            NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
+//                                CardImageRowView(card: card, priceStyle: .oneLine)
+//                            }
+//                        }
+//                    }
+//                }
+//                .padding()
+                
+                ScrollView() {
+                    VStack {
+                        let width = min(geometryReader.size.height, geometryReader.size.width)
+//                        let height = min(geometryReader.size.height, geometryReader.size.width)
+                        let height = geometryReader.size.height - 50
+
+                        Pager(page: page1,
+                              data: viewModel.cards,
+                              id: \.newIDCopy) { card in
+                            NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
+                            CardImageRowView(card: card, priceStyle: .oneLine)
+                            }
+                        }
+//                            .interactive(rotation: true)
+                            .interactive(scale: 0.6)
+                            .interactive(opacity: 0.5)
+                            .itemSpacing(10)
+                            .itemAspectRatio(0.8, alignment: .center)
+                            .pagingPriority(.high)
+                            .frame(width: width, height: height)
+//                            .background(Color.gray.opacity(0.3))
+                    }
+                }
+                
+                
+            } else if display == .imageGrid {
+                ScrollView() {
+                    LazyVGrid(columns: gridConfig, pinnedViews: [.sectionHeaders]) {
+                       switch sort {
+                       case .collectorNumber:
+                           ForEach(viewModel.cards) { card in
+                               NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
+                                   CardImageRowView(card: card, priceStyle: .twoLines)
+                               }
                            }
-                       }
-                   case .name,
-                        .rarity,
-                        .setName,
-                        .setReleaseDate,
-                        .type:
-                       ForEach(viewModel.sections, id: \.name) { section in
-                           Section(header: stickyHeaderView(section.name)) {
-                               ForEach(section.objects as? [MGCard] ?? []) { card in
-                                   NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
-                                       CardImageRowView(card: card)
+                       case .name,
+                            .rarity,
+                            .setName,
+                            .setReleaseDate,
+                            .type:
+                           ForEach(viewModel.sections, id: \.name) { section in
+                               Section(header: stickyHeaderView(section.name)) {
+                                   ForEach(section.objects as? [MGCard] ?? []) { card in
+                                       NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
+                                           CardImageRowView(card: card, priceStyle: .twoLines)
+                                       }
                                    }
                                }
                            }
                        }
                    }
-               }
-                .padding()
-            }
+                    .padding()
+                }
 
-        } else {
-            List {
-                switch sort {
-                case .collectorNumber:
-                    ForEach(viewModel.cards) { card in
-                        switch display {
-                        case .list:
-                            CardListRowView(card: card)
-                                .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
-                        case .image:
-                            EmptyView()
-                        case .summary:
-                            CardSummaryRowView(card: card)
-                                .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
-                                .listRowSeparator(.hidden)
+            } else {
+                List {
+                    switch sort {
+                    case .collectorNumber:
+                        ForEach(viewModel.cards) { card in
+                            switch display {
+                            case .imageCarousel,
+                                 .imageGrid:
+                                EmptyView()
+                            case .list:
+                                CardListRowView(card: card)
+                                    .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
+                            case .summary:
+                                CardSummaryRowView(card: card)
+                                    .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
+                                    .listRowSeparator(.hidden)
+                            }
                         }
-                    }
 
-                case .name,
-                     .rarity,
-                     .setName,
-                     .setReleaseDate,
-                     .type:
-                    ForEach(viewModel.sections, id: \.name) { section in
-                        Section(header: Text(section.name)) {
-                            ForEach(section.objects as? [MGCard] ?? []) { card in
-                                switch display {
-                                case .list:
-                                    CardListRowView(card: card)
-                                        .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
-                                case .image:
-                                    EmptyView()
-                                case .summary:
-                                    CardSummaryRowView(card: card)
-                                        .background(NavigationLink("", destination: CardView(newID: card.newID, cardsViewModel: viewModel)).opacity(0))
-                                        .listRowSeparator(.hidden)
+                    case .name,
+                         .rarity,
+                         .setName,
+                         .setReleaseDate,
+                         .type:
+                        ForEach(viewModel.sections, id: \.name) { section in
+                            Section(header: Text(section.name)) {
+                                ForEach(section.objects as? [MGCard] ?? []) { card in
+                                    switch display {
+                                    case .imageCarousel,
+                                         .imageGrid:
+                                        EmptyView()
+                                    case .list:
+                                        CardListRowView(card: card)
+                                            .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
+                                    case .summary:
+                                        CardSummaryRowView(card: card)
+                                            .background(NavigationLink("", destination: CardView(newID: card.newID, cardsViewModel: viewModel)).opacity(0))
+                                            .listRowSeparator(.hidden)
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                    .listStyle(.plain)
             }
-                .listStyle(.plain)
         }
     }
     
@@ -234,9 +283,14 @@ extension CardsView {
         ActionSheet(
             title: Text("Display by"),
             buttons: [
-                .default(Text("\(display == .image ? "\u{2713}" : "") Image")) {
-                    display = .image
-                    viewModel.display = .image
+                .default(Text("\(display == .imageCarousel ? "\u{2713}" : "") Carousel")) {
+                    display = .imageCarousel
+                    viewModel.display = .imageCarousel
+                    NotificationCenter.default.post(name: NSNotification.CardsViewDisplay, object: nil)
+                },
+                .default(Text("\(display == .imageGrid ? "\u{2713}" : "") Grid")) {
+                    display = .imageGrid
+                    viewModel.display = .imageGrid
                     NotificationCenter.default.post(name: NSNotification.CardsViewDisplay, object: nil)
                 },
                 .default(Text("\(display == .list ? "\u{2713}" : "") List")) {

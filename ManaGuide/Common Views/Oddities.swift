@@ -1,5 +1,5 @@
 //
-//  Experimental.swift
+//  Oddities.swift
 //  ManaGuide
 //
 //  Created by Vito Royeca on 3/21/22.
