@@ -109,22 +109,9 @@ struct CardsDataView: View {
     var body: some View {
         GeometryReader { geometryReader in
             if display == .imageCarousel {
-//                let screenWidth = geometryReader.size.width + 50
-//                ScrollView(.horizontal, showsIndicators: true) {
-//                    LazyHGrid(rows: [GridItem(.fixed(screenWidth))], alignment: .top, spacing: 10) {
-//                        ForEach(viewModel.cards) { card in
-//                            NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
-//                                CardImageRowView(card: card, priceStyle: .oneLine)
-//                            }
-//                        }
-//                    }
-//                }
-//                .padding()
-                
                 ScrollView() {
                     VStack {
                         let width = min(geometryReader.size.height, geometryReader.size.width)
-//                        let height = min(geometryReader.size.height, geometryReader.size.width)
                         let height = geometryReader.size.height - 50
 
                         Pager(page: page1,
@@ -134,17 +121,14 @@ struct CardsDataView: View {
                             CardImageRowView(card: card, priceStyle: .oneLine)
                             }
                         }
-//                            .interactive(rotation: true)
                             .interactive(scale: 0.6)
                             .interactive(opacity: 0.5)
                             .itemSpacing(10)
                             .itemAspectRatio(0.8, alignment: .center)
                             .pagingPriority(.high)
                             .frame(width: width, height: height)
-//                            .background(Color.gray.opacity(0.3))
                     }
                 }
-                
                 
             } else if display == .imageGrid {
                 ScrollView() {
