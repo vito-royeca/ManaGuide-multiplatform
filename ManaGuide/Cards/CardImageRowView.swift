@@ -23,7 +23,7 @@ struct CardImageRowView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 2) {
             WebImage(url: card.imageURL(for: .png))
                 .resizable()
                 .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
@@ -38,28 +38,42 @@ struct CardImageRowView: View {
                 )
 //            Spacer()
             if priceStyle == .oneLine {
-                HStack {
-                    Text("Normal")
-                        .font(.footnote)
-                        .foregroundColor(Color.blue)
+                VStack {
+                    HStack {
+                        Text("Normal")
+                            .font(.footnote)
+                            .foregroundColor(Color.blue)
+                        Spacer()
+                        Text(card.displayNormalPrice)
+                            .font(.footnote)
+                            .foregroundColor(Color.blue)
+                            .multilineTextAlignment(.trailing)
+                        Spacer()
+                        Text("Foil")
+                            .font(.footnote)
+                            .foregroundColor(Color.green)
+                        Spacer()
+                        Text(card.displayFoilPrice)
+                            .font(.footnote)
+                            .foregroundColor(Color.green)
+                            .multilineTextAlignment(.trailing)
+                    }
                     Spacer()
-                    Text(card.displayNormalPrice)
-                        .font(.footnote)
-                        .foregroundColor(Color.blue)
-                        .multilineTextAlignment(.trailing)
-                    Spacer()
-                    Text("Foil")
-                        .font(.footnote)
-                        .foregroundColor(Color.green)
-                    Spacer()
-                    Text(card.displayFoilPrice)
-                        .font(.footnote)
-                        .foregroundColor(Color.green)
-                        .multilineTextAlignment(.trailing)
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            print("button pressed")
+                        }) {
+                            Image(systemName: "ellipsis")
+                                .renderingMode(.original)
+                                .foregroundColor(Color(.systemBlue))
+                        }
+                            .buttonStyle(PlainButtonStyle())
+                    }
                 }
                     .padding(5)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 0)
+                        RoundedRectangle(cornerRadius: 10)
                             .stroke(Color.secondary, lineWidth: 1)
                     )
             } else {
@@ -84,10 +98,22 @@ struct CardImageRowView: View {
                             .foregroundColor(Color.green)
                             .multilineTextAlignment(.trailing)
                     }
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            print("button pressed")
+                        }) {
+                            Image(systemName: "ellipsis")
+                                .renderingMode(.original)
+                                .foregroundColor(Color(.systemBlue))
+                        }
+                            .buttonStyle(PlainButtonStyle())
+                    }
                 }
                     .padding(5)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 0)
+                        RoundedRectangle(cornerRadius: 10)
                             .stroke(Color.secondary, lineWidth: 1)
                     )
             }

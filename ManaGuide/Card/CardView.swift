@@ -89,13 +89,6 @@ struct CardView: View {
                 .onAppear {
                     viewModel.fetchData()
                 }
-//                .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardViewSwipe)) { output in
-//                    if let userInfo = output.userInfo,
-//                       let newID = userInfo["newID"] as? String {
-//                        viewModel.newID = newID
-//                        viewModel.fetchData()
-//                    }
-//                }
         }
     }
 }
@@ -176,6 +169,7 @@ enum CardTextRowViewStyle {
 }
 
 struct CardCommonInfoView: View {
+    @Environment(\.colorScheme) var colorScheme
     let cmcFormatter = NumberFormatter()
     var card: MGCard
     
@@ -250,7 +244,7 @@ struct CardCommonInfoView: View {
                     .font(.headline)
                 Spacer()
                 AttributedText(
-                    NSAttributedString(symbol: printedText, pointSize: 16)
+                    addColor(to: NSAttributedString(symbol: printedText, pointSize: 16))
                 )
                     .font(.subheadline)
             }
@@ -263,7 +257,7 @@ struct CardCommonInfoView: View {
                     .font(.headline)
                 Spacer()
                 AttributedText(
-                    NSAttributedString(symbol: oracleText, pointSize: 16)
+                    addColor(to: NSAttributedString(symbol: oracleText, pointSize: 16))
                 )
                     .font(.subheadline)
             }
@@ -288,6 +282,16 @@ struct CardCommonInfoView: View {
             Text(card.artist?.name ?? "")
                 .font(.subheadline)
         }
+    }
+    
+    func addColor(to attributedString: NSAttributedString) -> NSAttributedString {
+        let newAttributedString = NSMutableAttributedString(attributedString: attributedString)
+        
+        let range = NSRange(location: 0, length: newAttributedString.string.count)
+        let color = colorScheme == .dark ? UIColor.white : UIColor.black
+        newAttributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: color, range: range)
+        
+        return newAttributedString
     }
 }
 

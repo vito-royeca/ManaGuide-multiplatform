@@ -77,7 +77,7 @@ struct CardsView: View {
 struct CardsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            CardsView(viewModel: SetViewModel(setCode: "leb", languageCode: "en"))
+            CardsView(viewModel: SetViewModel(setCode: "ktk", languageCode: "en"))
         }
     }
 }
@@ -132,7 +132,7 @@ struct CardsDataView: View {
                 
             } else if display == .imageGrid {
                 ScrollView() {
-                    LazyVGrid(columns: gridConfig, pinnedViews: [.sectionHeaders]) {
+                    LazyVGrid(columns: gridConfig, spacing: 10, pinnedViews: [.sectionHeaders]) {
                        switch sort {
                        case .collectorNumber:
                            ForEach(viewModel.cards) { card in
