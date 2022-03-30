@@ -72,7 +72,6 @@ extension SearchView: SearchNavigationDelegate {
     
     func cancel() {
         query =  nil
-        viewModel.query = query
         viewModel.fetchData()
     }
 }

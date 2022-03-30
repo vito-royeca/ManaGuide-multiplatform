@@ -32,15 +32,13 @@ class SearchViewModel: CardsViewModel {
     // MARK: - Methods
 
     override func fetchData() {
-        guard let query = query,
-            !query.isEmpty,
-            !isBusy else {
+        if !willFetch() {
             return
         }
         
         isBusy.toggle()
         
-        dataAPI.fetchCards(query: query,
+        dataAPI.fetchCards(query: query!,
                            completion: { result in
 //            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 switch result {
@@ -57,13 +55,11 @@ class SearchViewModel: CardsViewModel {
     }
     
     override func fetchLocalData() {
-        // TODO: fix when changing sort where query is nil
-        guard let query = query,
-            !query.isEmpty else {
+        if !willFetch() {
             return
         }
         
-        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(query: query),
+        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(query: query!),
                                          managedObjectContext: ManaKit.shared.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath(),
                                          cacheName: nil)
@@ -77,6 +73,20 @@ class SearchViewModel: CardsViewModel {
             print(error)
             cards.removeAll()
         }
+    }
+    
+    func willFetch() -> Bool {
+        let hasPredicate = frc.fetchRequest.predicate != nil
+        let hasQuery = query != nil && !query!.isEmpty
+        var result = false
+        
+        if hasPredicate {
+            result = true
+        } else {
+            result = hasQuery
+        }
+        
+        return result
     }
 }
 
