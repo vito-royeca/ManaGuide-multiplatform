@@ -115,7 +115,6 @@ struct CardPricingInfoView: View {
     var prices: [MGCardPrice]
     
     var body: some View {
-        
         CardPricingRowView(title: "Market",
                            normal: prices.filter({ !$0.isFoil }).map{ $0.market}.first ?? 0,
                            foil: prices.filter({ $0.isFoil }).map{ $0.market}.first ?? 0)
@@ -244,7 +243,7 @@ struct CardCommonInfoView: View {
                     .font(.headline)
                 Spacer()
                 AttributedText(
-                    addColor(to: NSAttributedString(symbol: printedText, pointSize: 16))
+                    addColor(to: NSAttributedString(symbol: printedText, pointSize: 16), colorScheme: colorScheme)
                 )
                     .font(.subheadline)
             }
@@ -257,7 +256,7 @@ struct CardCommonInfoView: View {
                     .font(.headline)
                 Spacer()
                 AttributedText(
-                    addColor(to: NSAttributedString(symbol: oracleText, pointSize: 16))
+                    addColor(to: NSAttributedString(symbol: oracleText, pointSize: 16), colorScheme: colorScheme)
                 )
                     .font(.subheadline)
             }
@@ -282,16 +281,6 @@ struct CardCommonInfoView: View {
             Text(card.artist?.name ?? "")
                 .font(.subheadline)
         }
-    }
-    
-    func addColor(to attributedString: NSAttributedString) -> NSAttributedString {
-        let newAttributedString = NSMutableAttributedString(attributedString: attributedString)
-        
-        let range = NSRange(location: 0, length: newAttributedString.string.count)
-        let color = colorScheme == .dark ? UIColor.white : UIColor.black
-        newAttributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: color, range: range)
-        
-        return newAttributedString
     }
 }
 
@@ -344,6 +333,7 @@ struct CardOtherInfoView: View {
 // MARK: - CardExtraInfoView
 
 struct CardExtraInfoView: View {
+    @Environment(\.colorScheme) var colorScheme
     @ObservedObject var cardsViewModel: CardsViewModel
     @State var isColorsExpanded         = false
     @State var isComponentPartsExpanded = false
@@ -442,7 +432,7 @@ struct CardExtraInfoView: View {
                             Text(ruling.datePublished ?? " ")
                             Spacer()
                             AttributedText(
-                                NSAttributedString(symbol: ruling.text ?? " ", pointSize: 16)
+                                addColor(to: NSAttributedString(symbol: ruling.text ?? " ", pointSize: 16), colorScheme: colorScheme)
                             )
                                 .font(.subheadline)
                         }

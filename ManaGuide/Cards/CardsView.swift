@@ -68,7 +68,6 @@ struct CardsView: View {
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewDisplay)) { (output) in
                 viewModel.fetchData()
             }
-
     }
 }
 

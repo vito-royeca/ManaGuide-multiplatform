@@ -24,14 +24,14 @@ class NewsViewModel: NSObject, ObservableObject {
         "ChannelFireBall": "https://strategy.channelfireball.com/all-strategy/feed/"
     ]
     let maxFeeds = 20
+    var lastUpdated: Date?
     
     func fetchData() {
-        guard !isBusy else {
+        guard !isBusy, willFetchNews() else {
             return
         }
         
         isBusy.toggle()
-        
         
         let group = DispatchGroup()
         let date = Date()
@@ -75,10 +75,26 @@ class NewsViewModel: NSObject, ObservableObject {
     //            print("\(newFeed.datePublished ?? Date()): \(newFeed.datePublishedString ?? "")")
     //        }
 
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.feeds = newFeeds
-                self.isBusy.toggle()
-//            }
+            self.lastUpdated = Date()
+            self.feeds = newFeeds
+            self.isBusy.toggle()
         })
+    }
+    
+    func willFetchNews() -> Bool {
+        var willFetch = true
+
+        if let lastUpdated = lastUpdated {
+            // 5 minutes
+            if let diff = Calendar.current.dateComponents([.minute],
+                                                          from: lastUpdated,
+                                                          to: Date()).minute {
+                willFetch = diff >= Constants.cacheAge
+            }
+        } else {
+            lastUpdated = Date()
+        }
+        
+        return willFetch
     }
 }

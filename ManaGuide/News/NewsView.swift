@@ -18,7 +18,6 @@ struct NewsView: View {
     init() {
         UITableView.appearance().allowsSelection = false
         UITableViewCell.appearance().selectionStyle = .none
-        
     }
 
     var body: some View {
@@ -146,28 +145,3 @@ struct NewsFeedRowView: View {
             )
     }
 }
-
-// MARK: - SafariView
-
-//struct SafariView: UIViewControllerRepresentable {
-////    @Binding var presentedAsModal: Bool
-//    let url: URL
-//
-//    func makeUIViewController(context: UIViewControllerRepresentableContext<SafariView>) -> SFSafariViewController {
-//        let configuration = SFSafariViewController.Configuration()
-//        configuration.barCollapsingEnabled = true
-//        configuration.entersReaderIfAvailable = true
-//        let safari = SFSafariViewController(url: url, configuration: configuration)
-//
-//        return safari
-//    }
-//
-//    func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SafariView>) {
-//
-//    }
-//
-////    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-////        self.presentedAsModal = false
-////    }
-//}
-
