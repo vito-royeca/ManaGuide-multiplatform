@@ -11,11 +11,13 @@ import SwiftUI
 struct MainView: View {
     var body: some View {
         TabView {
-            SearchView()
+            NavigationView {
+                NewsView()
+            }
                 .navigationViewStyle(.stack)
                 .tabItem {
-                    Image(systemName: "magnifyingglass")
-                    Text("Search")
+                    Image(systemName: "newspaper")
+                    Text("News")
                 }
             
             SetsView()
@@ -25,15 +27,13 @@ struct MainView: View {
                     Text("Sets")
                 }
             
-            NavigationView {
-//                TabTestView(date: Date())
-                TestScrollView()
-            }
+            SearchView()
                 .navigationViewStyle(.stack)
                 .tabItem {
-                    Image(systemName: "testtube.2")
-                    Text("Test")
+                    Image(systemName: "magnifyingglass")
+                    Text("Search")
                 }
+            
         }
     }
 }

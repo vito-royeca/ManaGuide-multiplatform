@@ -13,8 +13,8 @@ import ManaKit
 // MARK: - Settings
 
 enum SetsViewSort: String {
-    case releaseDate,
-         name,
+    case name,
+         releaseDate,
          type
 }
 
@@ -88,12 +88,12 @@ class SetsViewModel: NSObject, ObservableObject {
         var sortDescriptors = [NSSortDescriptor]()
         
         switch sort {
-        case .releaseDate:
-            sortDescriptors.append(NSSortDescriptor(key: "releaseDate", ascending: false))
-            sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
         case .name:
             sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
             sortDescriptors.append(NSSortDescriptor(key: "releaseDate", ascending: false))
+        case .releaseDate:
+            sortDescriptors.append(NSSortDescriptor(key: "releaseDate", ascending: false))
+            sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
         case .type:
             sortDescriptors.append(NSSortDescriptor(key: "setType.name", ascending: true))
             sortDescriptors.append(NSSortDescriptor(key: "releaseDate", ascending: false))
@@ -107,10 +107,10 @@ class SetsViewModel: NSObject, ObservableObject {
         var keyPath: String?
         
         switch sort {
-        case .releaseDate:
-            keyPath = "yearSection"
         case .name:
             keyPath = "nameSection"
+        case .releaseDate:
+            keyPath = "yearSection"
         case .type:
             keyPath = "setType.name"
         }

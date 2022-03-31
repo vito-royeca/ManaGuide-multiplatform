@@ -174,14 +174,14 @@ extension SetsDataView {
         ActionSheet(
             title: Text("Sort by"),
             buttons: [
-                .default(Text("\(sort == .releaseDate ? "\u{2713}" : "") Release Date")) {
-                    sort = .releaseDate
-                    viewModel.sort = .releaseDate
-                    viewModel.fetchData()
-                },
                 .default(Text("\(sort == .name ? "\u{2713}" : "") Name")) {
                     sort = .name
                     viewModel.sort = .name
+                    viewModel.fetchData()
+                },
+                .default(Text("\(sort == .releaseDate ? "\u{2713}" : "") Release Date")) {
+                    sort = .releaseDate
+                    viewModel.sort = .releaseDate
                     viewModel.fetchData()
                 },
                 .default(Text("\(sort == .type ? "\u{2713}" : "") Type")) {

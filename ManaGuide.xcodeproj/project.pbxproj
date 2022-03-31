@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B33544B27F4BEFF00AF09D1 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B33544A27F4BEFF00AF09D1 /* NewsView.swift */; };
+		8B33544D27F4BF8D00AF09D1 /* NewsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B33544C27F4BF8D00AF09D1 /* NewsViewModel.swift */; };
+		8B33544E27F4BF8D00AF09D1 /* NewsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B33544C27F4BF8D00AF09D1 /* NewsViewModel.swift */; };
+		8B33545327F4C05200AF09D1 /* NewsAPIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B33545227F4C05200AF09D1 /* NewsAPIManager.swift */; };
+		8B33545427F4C05200AF09D1 /* NewsAPIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B33545227F4C05200AF09D1 /* NewsAPIManager.swift */; };
+		8B33545C27F4E74100AF09D1 /* NewsMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B33545B27F4E74100AF09D1 /* NewsMap.swift */; };
+		8B33545D27F4E74100AF09D1 /* NewsMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B33545B27F4E74100AF09D1 /* NewsMap.swift */; };
+		8B33546027F5210E00AF09D1 /* Kanna in Frameworks */ = {isa = PBXBuildFile; productRef = 8B33545F27F5210E00AF09D1 /* Kanna */; };
+		8B33546827F5604200AF09D1 /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8B33546727F5604200AF09D1 /* FeedKit */; };
+		8B33546A27F5640900AF09D1 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B33546927F5640900AF09D1 /* WebView.swift */; };
+		8B33546B27F5640900AF09D1 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B33546927F5640900AF09D1 /* WebView.swift */; };
+		8B33547227F5749400AF09D1 /* BetterSafariView in Frameworks */ = {isa = PBXBuildFile; productRef = 8B33547127F5749400AF09D1 /* BetterSafariView */; };
 		8B3F768F27EEB72E00059C45 /* CardListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B3F768E27EEB72E00059C45 /* CardListRowView.swift */; };
 		8BBBFD1427ED4521007D3F4A /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBBFD1227ED4521007D3F4A /* SearchView.swift */; };
 		8BBBFD1527ED4521007D3F4A /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBBFD1327ED4521007D3F4A /* SearchViewModel.swift */; };
@@ -67,6 +79,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8B33544A27F4BEFF00AF09D1 /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
+		8B33544C27F4BF8D00AF09D1 /* NewsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsViewModel.swift; sourceTree = "<group>"; };
+		8B33545227F4C05200AF09D1 /* NewsAPIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsAPIManager.swift; sourceTree = "<group>"; };
+		8B33545B27F4E74100AF09D1 /* NewsMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsMap.swift; sourceTree = "<group>"; };
+		8B33546927F5640900AF09D1 /* WebView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		8B3F768E27EEB72E00059C45 /* CardListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardListRowView.swift; sourceTree = "<group>"; };
 		8BBBFD1227ED4521007D3F4A /* SearchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		8BBBFD1327ED4521007D3F4A /* SearchViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
@@ -105,8 +122,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BFBDB5827E92DD90016DC99 /* SDWebImageSwiftUI in Frameworks */,
+				8B33547227F5749400AF09D1 /* BetterSafariView in Frameworks */,
+				8B33546827F5604200AF09D1 /* FeedKit in Frameworks */,
 				8BFBDB4127E9180F0016DC99 /* ManaKit in Frameworks */,
 				8BEA1FEB27F3A7570052F747 /* SwiftUIPager in Frameworks */,
+				8B33546027F5210E00AF09D1 /* Kanna in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,6 +147,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B33544927F4BEE400AF09D1 /* News */ = {
+			isa = PBXGroup;
+			children = (
+				8B33544A27F4BEFF00AF09D1 /* NewsView.swift */,
+				8B33544C27F4BF8D00AF09D1 /* NewsViewModel.swift */,
+				8B33545227F4C05200AF09D1 /* NewsAPIManager.swift */,
+				8B33545B27F4E74100AF09D1 /* NewsMap.swift */,
+			);
+			path = News;
+			sourceTree = "<group>";
+		};
 		8BBBFD0927ED445B007D3F4A /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -193,6 +224,7 @@
 				8BBBFD1627ED4528007D3F4A /* Cards */,
 				8BFBDB5927E92E710016DC99 /* Common Views */,
 				8BBCC5F027EA2C850045410D /* Experimental */,
+				8B33544927F4BEE400AF09D1 /* News */,
 				8BBBFD0927ED445B007D3F4A /* Search */,
 				8BFBDB4A27E921360016DC99 /* Set */,
 				8BDAC1C427E90F0600AF523E /* Sets */,
@@ -253,8 +285,9 @@
 		8BFBDB5927E92E710016DC99 /* Common Views */ = {
 			isa = PBXGroup;
 			children = (
-				8BFBDB5D27E92EF20016DC99 /* TextViewWrapper.swift */,
 				8BC682B127E967BE00A639C1 /* SearchNavigation.swift */,
+				8BFBDB5D27E92EF20016DC99 /* TextViewWrapper.swift */,
+				8B33546927F5640900AF09D1 /* WebView.swift */,
 			);
 			path = "Common Views";
 			sourceTree = "<group>";
@@ -279,6 +312,9 @@
 				8BFBDB4027E9180F0016DC99 /* ManaKit */,
 				8BFBDB5727E92DD90016DC99 /* SDWebImageSwiftUI */,
 				8BEA1FEA27F3A7570052F747 /* SwiftUIPager */,
+				8B33545F27F5210E00AF09D1 /* Kanna */,
+				8B33546727F5604200AF09D1 /* FeedKit */,
+				8B33547127F5749400AF09D1 /* BetterSafariView */,
 			);
 			productName = ManaGuide;
 			productReference = 8BDAC18427E90BF300AF523E /* ManaGuide.app */;
@@ -357,6 +393,9 @@
 				8BFBDB3F27E9180F0016DC99 /* XCRemoteSwiftPackageReference "ManaKit" */,
 				8BFBDB5627E92DD90016DC99 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				8BEA1FE927F3A7570052F747 /* XCRemoteSwiftPackageReference "SwiftUIPager" */,
+				8B33545E27F5210E00AF09D1 /* XCRemoteSwiftPackageReference "Kanna" */,
+				8B33546627F5604100AF09D1 /* XCRemoteSwiftPackageReference "FeedKit" */,
+				8B33547027F5749400AF09D1 /* XCRemoteSwiftPackageReference "BetterSafariView" */,
 			);
 			productRefGroup = 8BDAC18527E90BF300AF523E /* Products */;
 			projectDirPath = "";
@@ -404,15 +443,20 @@
 				8BBBFD1B27ED480E007D3F4A /* CardsViewModel.swift in Sources */,
 				8BFBDB4F27E921360016DC99 /* SetViewModel.swift in Sources */,
 				8BBBFD1827ED454C007D3F4A /* CardsView.swift in Sources */,
+				8B33544D27F4BF8D00AF09D1 /* NewsViewModel.swift in Sources */,
 				8BBCC5F527EA2FD80045410D /* TabTestViewModel.swift in Sources */,
 				8BFBDB5B27E92E860016DC99 /* CardSummaryRowView.swift in Sources */,
 				8BFBDB5427E92C280016DC99 /* SetView.swift in Sources */,
 				8BFBDB5E27E92EF20016DC99 /* TextViewWrapper.swift in Sources */,
+				8B33546A27F5640900AF09D1 /* WebView.swift in Sources */,
+				8B33545C27F4E74100AF09D1 /* NewsMap.swift in Sources */,
 				8BBBFD1527ED4521007D3F4A /* SearchViewModel.swift in Sources */,
 				8BC682A827E95E1600A639C1 /* CardView.swift in Sources */,
 				8B3F768F27EEB72E00059C45 /* CardListRowView.swift in Sources */,
 				8BDAC1B927E90D1C00AF523E /* ManaGuideApp.swift in Sources */,
 				8BDAC1C327E90EA200AF523E /* MainView.swift in Sources */,
+				8B33544B27F4BEFF00AF09D1 /* NewsView.swift in Sources */,
+				8B33545327F4C05200AF09D1 /* NewsAPIManager.swift in Sources */,
 				8BEA1FC527F0005E0052F747 /* CardImageRowView.swift in Sources */,
 				8BFBDB4427E91A1B0016DC99 /* SetsViewModel.swift in Sources */,
 				8BBBFD1427ED4521007D3F4A /* SearchView.swift in Sources */,
@@ -437,7 +481,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BBBFD1927ED454C007D3F4A /* CardsView.swift in Sources */,
+				8B33545427F4C05200AF09D1 /* NewsAPIManager.swift in Sources */,
 				8BBCC5F727EA2FD80045410D /* TabTestViewModel.swift in Sources */,
+				8B33545D27F4E74100AF09D1 /* NewsMap.swift in Sources */,
 				8BC682A927E95E1600A639C1 /* CardView.swift in Sources */,
 				8BDAC1B427E90CED00AF523E /* ManaGuideUITestsLaunchTests.swift in Sources */,
 				8BFBDB5F27E92EF20016DC99 /* TextViewWrapper.swift in Sources */,
@@ -445,8 +491,10 @@
 				8BDAC1A327E90BF400AF523E /* ManaGuideUITests.swift in Sources */,
 				8BC682B327E967BE00A639C1 /* SearchNavigation.swift in Sources */,
 				8BBBFD1C27ED480E007D3F4A /* CardsViewModel.swift in Sources */,
+				8B33546B27F5640900AF09D1 /* WebView.swift in Sources */,
 				8BBCC5FB27EA33860045410D /* TabTestView.swift in Sources */,
 				8BEA1FC627F0005E0052F747 /* CardImageRowView.swift in Sources */,
+				8B33544E27F4BF8D00AF09D1 /* NewsViewModel.swift in Sources */,
 				8BDAC1C127E90E1A00AF523E /* SnapshotHelper.swift in Sources */,
 				8BFBDB5527E92C280016DC99 /* SetView.swift in Sources */,
 			);
@@ -769,6 +817,30 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		8B33545E27F5210E00AF09D1 /* XCRemoteSwiftPackageReference "Kanna" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tid-kijyun/Kanna.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+		8B33546627F5604100AF09D1 /* XCRemoteSwiftPackageReference "FeedKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nmdias/FeedKit.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		8B33547027F5749400AF09D1 /* XCRemoteSwiftPackageReference "BetterSafariView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stleamist/BetterSafariView.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		8BEA1FE927F3A7570052F747 /* XCRemoteSwiftPackageReference "SwiftUIPager" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/fermoya/SwiftUIPager.git";
@@ -796,6 +868,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8B33545F27F5210E00AF09D1 /* Kanna */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B33545E27F5210E00AF09D1 /* XCRemoteSwiftPackageReference "Kanna" */;
+			productName = Kanna;
+		};
+		8B33546727F5604200AF09D1 /* FeedKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B33546627F5604100AF09D1 /* XCRemoteSwiftPackageReference "FeedKit" */;
+			productName = FeedKit;
+		};
+		8B33547127F5749400AF09D1 /* BetterSafariView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B33547027F5749400AF09D1 /* XCRemoteSwiftPackageReference "BetterSafariView" */;
+			productName = BetterSafariView;
+		};
 		8BEA1FEA27F3A7570052F747 /* SwiftUIPager */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8BEA1FE927F3A7570052F747 /* XCRemoteSwiftPackageReference "SwiftUIPager" */;
