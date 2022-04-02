@@ -22,10 +22,9 @@ struct SetView: View {
     var body: some View {
         CardsView(viewModel: viewModel) {
             if let set = viewModel.set {
-                VStack {
+                VStack(spacing: 0) {
                     SetRowView(set: set)
-                    LazyVGrid(columns: [GridItem(),GridItem(),GridItem(),GridItem(),GridItem(),GridItem()]) {
-                        
+                    LazyVGrid(columns: [GridItem(),GridItem(),GridItem(),GridItem(),GridItem(),GridItem()], spacing: 0) {
                         ForEach(set.sortedLanguageCodes ?? [], id:\.self) { code in
                             if displayCode(for: viewModel.languageCode) == code {
                                 Text(code)
@@ -45,6 +44,24 @@ struct SetView: View {
                 EmptyView()
             }
         }
+            .navigationBarTitle {
+                Button(action: {
+                  // do nothing
+                }) {
+                    if let set = viewModel.set,
+                       let url = set.logoURL {
+                        WebImage(url: url)
+                            .resizable()
+                            .indicator(.activity)
+                            .transition(.fade(duration: 0.5))
+                            .aspectRatio(contentMode: .fit)
+                            .clipped()
+                    } else {
+                        EmptyView()
+                    }
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
     }
     
     func displayCode(for code: String) -> String {
@@ -71,7 +88,7 @@ struct SetView: View {
 struct SetView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            SetView(setCode: "lea", languageCode: "en")
+            SetView(setCode: "afr", languageCode: "en")
         }
     }
 }

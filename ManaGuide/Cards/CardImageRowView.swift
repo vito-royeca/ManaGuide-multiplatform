@@ -36,7 +36,6 @@ struct CardImageRowView: View {
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(Color.clear, lineWidth: 0)
                 )
-//            Spacer()
             if priceStyle == .oneLine {
                 VStack {
                     HStack {

@@ -17,4 +17,10 @@ extension View {
         
         return newAttributedString
     }
+    
+    func navigationBarTitle<Content>(@ViewBuilder content: () -> Content) -> some View where Content : View {
+        self.toolbar {
+            ToolbarItem(placement: .principal, content: content)
+        }
+    }
 }

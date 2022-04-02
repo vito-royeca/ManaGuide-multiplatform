@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ManaKit
+import SDWebImageSwiftUI
 
 struct SetRowView: View {
     private let set: MGSet
@@ -17,6 +18,16 @@ struct SetRowView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
+//            if let url = set.logoURL {
+//                WebImage(url: url)
+//                    .resizable()
+//                    .indicator(.activity)
+//                    .transition(.fade(duration: 0.5))
+//                    .aspectRatio(contentMode: .fit)
+//                    .frame(height: 40)
+//                    .clipped()
+//            }
+//            Spacer()
             HStack {
                 Text(set.keyrune2Unicode())
                     .scaledToFit()

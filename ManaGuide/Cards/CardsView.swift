@@ -116,11 +116,8 @@ struct CardsDataView<Content> : View where Content : View {
     
     var body: some View {
         GeometryReader { geometryReader in
-            
-                
             if display == .imageCarousel {
                 ScrollView {
-                
                     let width = min(geometryReader.size.height, geometryReader.size.width)
                     let height = geometryReader.size.height - (geometryReader.size.height / 4)
                     
@@ -131,7 +128,7 @@ struct CardsDataView<Content> : View where Content : View {
                           data: viewModel.cards,
                           id: \.newIDCopy) { card in
                         NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
-                        CardImageRowView(card: card, priceStyle: .oneLine)
+                            CardImageRowView(card: card, priceStyle: .oneLine)
                         }
                     }
                         .interactive(scale: 0.6)
