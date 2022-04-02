@@ -30,9 +30,7 @@ struct SetsView: View {
 
 struct SetsView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
-            SetsView()
-        }
+        SetsView()
     }
 }
 
@@ -92,7 +90,7 @@ struct SetsDataView: View {
                 Section(header: Text(section.name)) {
                     ForEach(section.objects as? [MGSet] ?? []) { set in
                         NavigationLink(destination: SetView(setCode: set.code, languageCode: "en")) {
-                            SetsRowView(set: set)
+                            SetRowView(set: set)
                         }
                     }
                 }
@@ -124,46 +122,6 @@ struct SetsDataView: View {
                 viewModel.sort = sort
                 viewModel.fetchData()
             }
-    }
-}
-
-// MARK: - SetsRowView
-
-struct SetsRowView: View {
-    private let set: MGSet
-    
-    init(set: MGSet) {
-        self.set = set
-    }
-    
-    var body: some View {
-        HStack {
-            Text(set.keyrune2Unicode())
-                .scaledToFit()
-                .font(Font.custom("Keyrune", size: 30))
-            
-            VStack(alignment: .leading) {
-                Text(set.name ?? "")
-                    .font(.headline)
-                
-                HStack {
-                    Text("Code: \(set.code)")
-                        .font(.subheadline)
-                        .foregroundColor(Color.gray)
-                    
-                    Spacer()
-                    
-                    Text("\(set.cardCount) card\(set.cardCount > 1 ? "s" : "")")
-                        .font(.subheadline)
-                        .foregroundColor(Color.gray)
-                        .multilineTextAlignment(.trailing)
-                }
-                
-                Text("Release Date: \(set.releaseDate ?? "")")
-                    .font(.subheadline)
-                    .foregroundColor(Color.gray)
-            }
-        }
     }
 }
 

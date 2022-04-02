@@ -26,7 +26,9 @@ struct SearchView: View {
                          scopeSelection: $scopeSelection,
                          isBusy: $viewModel.isBusy,
                          delegate: self) {
-            CardsView(viewModel: viewModel)
+            CardsView(viewModel: viewModel) {
+                EmptyView()
+            }
                 .navigationTitle("Search")
         }
     }

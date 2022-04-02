@@ -74,6 +74,61 @@ class SetViewModel: CardsViewModel {
             cards.removeAll()
         }
     }
+    
+    override func sortDescriptors() -> [NSSortDescriptor] {
+        var sortDescriptors = [NSSortDescriptor]()
+        
+        switch sort {
+        case .collectorNumber:
+            sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+            if languageCode == "en" {
+                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+            } else {
+                sortDescriptors.append(NSSortDescriptor(key: "printedName", ascending: true))
+            }
+        case .name:
+            if languageCode == "en" {
+                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+            } else {
+                sortDescriptors.append(NSSortDescriptor(key: "printedName", ascending: true))
+            }
+            sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+        case .rarity:
+            sortDescriptors.append(NSSortDescriptor(key: "rarity.name", ascending: true))
+            if languageCode == "en" {
+                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+            } else {
+                sortDescriptors.append(NSSortDescriptor(key: "printedName", ascending: true))
+            }
+            sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+        case .setName:
+            sortDescriptors.append(NSSortDescriptor(key: "set.name", ascending: true))
+            if languageCode == "en" {
+                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+            } else {
+                sortDescriptors.append(NSSortDescriptor(key: "printedName", ascending: true))
+            }
+            sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+        case .setReleaseDate:
+            sortDescriptors.append(NSSortDescriptor(key: "set.releaseDate", ascending: true))
+            if languageCode == "en" {
+                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+            } else {
+                sortDescriptors.append(NSSortDescriptor(key: "printedName", ascending: true))
+            }
+            sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+        case .type:
+            sortDescriptors.append(NSSortDescriptor(key: "type.name", ascending: true))
+            if languageCode == "en" {
+                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+            } else {
+                sortDescriptors.append(NSSortDescriptor(key: "printedName", ascending: true))
+            }
+            sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+        }
+        
+        return sortDescriptors
+    }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate

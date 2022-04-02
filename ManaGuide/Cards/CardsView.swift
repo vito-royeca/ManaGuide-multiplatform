@@ -10,23 +10,28 @@ import ManaKit
 import SDWebImageSwiftUI
 import SwiftUIPager
 
-struct CardsView: View {
+struct CardsView<Content> : View where Content : View {
     @StateObject var viewModel: CardsViewModel
     @State private var showingSort = false
     @State private var showingDisplay = false
     @AppStorage("cardsSort") private var sort = CardsViewSort.name
     @AppStorage("cardsDisplay") private var display = CardsViewDisplay.list
 
+    private var content: Content
+    
     // MARK: - Initializers
     
-    init(viewModel: CardsViewModel) {
+    init(viewModel: CardsViewModel, @ViewBuilder content: @escaping () -> Content) {
         _viewModel = StateObject(wrappedValue: viewModel)
+        self.content = content()
     }
     
     // MARK: - Body
     
     var body: some View {
-        CardsDataView(sort: sort, display: display, viewModel: viewModel)
+        CardsDataView(sort: sort, display: display, viewModel: viewModel) {
+            content
+        }
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button(action: {
@@ -76,20 +81,23 @@ struct CardsView: View {
 struct CardsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            CardsView(viewModel: SetViewModel(setCode: "ktk", languageCode: "en"))
+            CardsView(viewModel: SetViewModel(setCode: "unh", languageCode: "en")) {
+                EmptyView()
+            }
         }
     }
 }
 
 // MARK: - CardsDataView
 
-struct CardsDataView: View {
+struct CardsDataView<Content> : View where Content : View {
     @StateObject var page1: Page = .first()
     @State private var isShowingDetailView = false
     
     private var sort: CardsViewSort
     private var display: CardsViewDisplay
     private var viewModel: CardsViewModel
+    private var content: Content
     
     private let carouselConfig = [
         GridItem()
@@ -99,56 +107,63 @@ struct CardsDataView: View {
         GridItem()
     ]
     
-    init(sort: CardsViewSort, display: CardsViewDisplay, viewModel: CardsViewModel) {
+    init(sort: CardsViewSort, display: CardsViewDisplay, viewModel: CardsViewModel, @ViewBuilder content: @escaping () -> Content) {
         self.sort = sort
         self.display = display
         self.viewModel = viewModel
+        self.content = content()
     }
     
     var body: some View {
         GeometryReader { geometryReader in
+            
+                
             if display == .imageCarousel {
-                ScrollView() {
-                    VStack {
-                        let width = min(geometryReader.size.height, geometryReader.size.width)
-                        let height = geometryReader.size.height - 50
-
-                        Pager(page: page1,
-                              data: viewModel.cards,
-                              id: \.newIDCopy) { card in
-                            NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
-                            CardImageRowView(card: card, priceStyle: .oneLine)
-                            }
+                ScrollView {
+                
+                    let width = min(geometryReader.size.height, geometryReader.size.width)
+                    let height = geometryReader.size.height - (geometryReader.size.height / 4)
+                    
+                    content
+                        .padding()
+                    
+                    Pager(page: page1,
+                          data: viewModel.cards,
+                          id: \.newIDCopy) { card in
+                        NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
+                        CardImageRowView(card: card, priceStyle: .oneLine)
                         }
-                            .interactive(scale: 0.6)
-                            .interactive(opacity: 0.5)
-                            .itemSpacing(10)
-                            .itemAspectRatio(0.8, alignment: .center)
-                            .pagingPriority(.high)
-                            .frame(width: width, height: height)
                     }
+                        .interactive(scale: 0.6)
+                        .interactive(opacity: 0.5)
+                        .itemSpacing(10)
+                        .itemAspectRatio(0.8, alignment: .center)
+                        .pagingPriority(.high)
+                        .frame(width: width, height: height)
                 }
                 
             } else if display == .imageGrid {
                 ScrollView() {
+                    content
+                        .padding()
                     LazyVGrid(columns: gridConfig, spacing: 10, pinnedViews: [.sectionHeaders]) {
-                       switch sort {
-                       case .collectorNumber:
-                           ForEach(viewModel.cards) { card in
-                               NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
-                                   CardImageRowView(card: card, priceStyle: .twoLines)
-                               }
-                           }
-                       case .name,
-                            .rarity,
-                            .setName,
-                            .setReleaseDate,
-                            .type:
-                           ForEach(viewModel.sections, id: \.name) { section in
-                               Section(header: stickyHeaderView(section.name)) {
-                                   ForEach(section.objects as? [MGCard] ?? []) { card in
-                                       NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
-                                           CardImageRowView(card: card, priceStyle: .twoLines)
+                        switch sort {
+                        case .collectorNumber:
+                            ForEach(viewModel.cards) { card in
+                                NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
+                                    CardImageRowView(card: card, priceStyle: .twoLines)
+                                }
+                            }
+                        case .name,
+                             .rarity,
+                             .setName,
+                             .setReleaseDate,
+                             .type:
+                            ForEach(viewModel.sections, id: \.name) { section in
+                                Section(header: stickyHeaderView(section.name)) {
+                                    ForEach(section.objects as? [MGCard] ?? []) { card in
+                                        NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
+                                            CardImageRowView(card: card, priceStyle: .twoLines)
                                        }
                                    }
                                }
@@ -160,6 +175,8 @@ struct CardsDataView: View {
 
             } else {
                 List {
+                    content
+                        .listRowSeparator(.hidden)
                     switch sort {
                     case .collectorNumber:
                         ForEach(viewModel.cards) { card in
@@ -194,7 +211,7 @@ struct CardsDataView: View {
                                             .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
                                     case .summary:
                                         CardSummaryRowView(card: card)
-                                            .background(NavigationLink("", destination: CardView(newID: card.newID, cardsViewModel: viewModel)).opacity(0))
+                                            .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
                                             .listRowSeparator(.hidden)
                                     }
                                 }
@@ -204,6 +221,7 @@ struct CardsDataView: View {
                 }
                     .listStyle(.plain)
             }
+            
         }
     }
     

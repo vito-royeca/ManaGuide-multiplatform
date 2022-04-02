@@ -36,13 +36,13 @@ struct CardSummaryRowView: View {
                     VStack(alignment: .leading) {
                         Text(card.displayName ?? "")
                             .font(Font.custom(font.name, size: font.size))
-                        
+                        Spacer()
                         if let manaCost = card.manaCost {
                             AttributedText(
                                 NSAttributedString(symbol: manaCost, pointSize: 16)
                             )
+                            Spacer()
                         }
-                        
                         if let displayPowerToughness = card.displayPowerToughness {
                             HStack {
                                 Text(card.displayTypeLine ?? "")
@@ -55,9 +55,7 @@ struct CardSummaryRowView: View {
                             Text(card.displayTypeLine ?? "")
                                 .font(.subheadline)
                         }
-                        
                         Spacer()
-                        
                         HStack {
                             Text("Normal")
                                 .font(.subheadline)
@@ -77,6 +75,7 @@ struct CardSummaryRowView: View {
                                 .foregroundColor(Color.green)
                                 .multilineTextAlignment(.trailing)
                         }
+                        Spacer()
                     }
                 }
                     .padding(10)
@@ -91,14 +90,15 @@ struct CardSummaryRowView: View {
                     Text("\u{2022} #\(card.collectorNumber ?? "") \u{2022} \(card.rarity?.name ?? "") \u{2022} \(card.language?.displayCode ?? "")")
                         .font(.footnote)
                     Spacer()
-                    Button(action: {
-                        print("button pressed")
-                    }) {
-                        Image(systemName: "ellipsis")
-                            .renderingMode(.original)
-                            .foregroundColor(Color(.systemBlue))
-                    }
-                        .buttonStyle(PlainButtonStyle())
+                    // TODO: implement in the future
+//                    Button(action: {
+//                        print("button pressed")
+//                    }) {
+//                        Image(systemName: "ellipsis")
+//                            .renderingMode(.original)
+//                            .foregroundColor(Color(.systemBlue))
+//                    }
+//                        .buttonStyle(PlainButtonStyle())
                 }
                     .padding(5)
             }
@@ -113,17 +113,6 @@ struct CardSummaryRowView: View {
 
 struct CardRowView_Previews: PreviewProvider {
     static var previews: some View {
-//        let viewModel = CardViewModel(newID: "sld_en_89")
-//        viewModel.fetchData()
-
-//        while viewModel.card == nil {
-//            sleep(1)
-//        }
-
-//        if let card = viewModel.card {
-//            return CardRowView(card: card)
-//        }
-
-        return Text("card not found")
+        Text("card not found")
     }
 }

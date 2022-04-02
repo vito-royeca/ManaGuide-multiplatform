@@ -11,14 +11,14 @@ import SwiftUI
 struct MainView: View {
     var body: some View {
         TabView {
-            NavigationView {
-                NewsView()
-            }
-                .navigationViewStyle(.stack)
-                .tabItem {
-                    Image(systemName: "newspaper")
-                    Text("News")
-                }
+//            NavigationView {
+//                NewsView()
+//            }
+//                .navigationViewStyle(.stack)
+//                .tabItem {
+//                    Image(systemName: "newspaper")
+//                    Text("News")
+//                }
             
             SetsView()
                 .navigationViewStyle(.stack)

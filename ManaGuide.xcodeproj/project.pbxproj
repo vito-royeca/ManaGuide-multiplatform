@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B2F4C5027F7C7AC004053F9 /* SetRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F4C4F27F7C7AC004053F9 /* SetRowView.swift */; };
+		8B2F4C5127F7C7AC004053F9 /* SetRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F4C4F27F7C7AC004053F9 /* SetRowView.swift */; };
 		8B33544B27F4BEFF00AF09D1 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B33544A27F4BEFF00AF09D1 /* NewsView.swift */; };
 		8B33544D27F4BF8D00AF09D1 /* NewsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B33544C27F4BF8D00AF09D1 /* NewsViewModel.swift */; };
 		8B33544E27F4BF8D00AF09D1 /* NewsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B33544C27F4BF8D00AF09D1 /* NewsViewModel.swift */; };
@@ -83,6 +85,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8B2F4C4F27F7C7AC004053F9 /* SetRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetRowView.swift; sourceTree = "<group>"; };
 		8B33544A27F4BEFF00AF09D1 /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
 		8B33544C27F4BF8D00AF09D1 /* NewsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsViewModel.swift; sourceTree = "<group>"; };
 		8B33545227F4C05200AF09D1 /* NewsAPIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsAPIManager.swift; sourceTree = "<group>"; };
@@ -90,6 +93,7 @@
 		8B33546927F5640900AF09D1 /* WebView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		8B33547627F5E3C600AF09D1 /* View+Extras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extras.swift"; sourceTree = "<group>"; };
 		8B33547927F5E78700AF09D1 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		8B33548027F6245F00AF09D1 /* FeedKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FeedKit; path = ../../../tmp/FeedKit; sourceTree = "<group>"; };
 		8B3F768E27EEB72E00059C45 /* CardListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardListRowView.swift; sourceTree = "<group>"; };
 		8BBBFD1227ED4521007D3F4A /* SearchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		8BBBFD1327ED4521007D3F4A /* SearchViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
@@ -164,6 +168,14 @@
 			path = News;
 			sourceTree = "<group>";
 		};
+		8B33547F27F6245F00AF09D1 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				8B33548027F6245F00AF09D1 /* FeedKit */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
 		8BBBFD0927ED445B007D3F4A /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -206,6 +218,7 @@
 		8BDAC17B27E90BF300AF523E = {
 			isa = PBXGroup;
 			children = (
+				8B33547F27F6245F00AF09D1 /* Packages */,
 				8BDAC18627E90BF300AF523E /* ManaGuide */,
 				8BDAC19727E90BF400AF523E /* ManaGuideTests */,
 				8BDAC1A127E90BF400AF523E /* ManaGuideUITests */,
@@ -276,6 +289,7 @@
 			children = (
 				8BFBDB4327E91A1B0016DC99 /* SetsView.swift */,
 				8BFBDB4227E91A1B0016DC99 /* SetsViewModel.swift */,
+				8B2F4C4F27F7C7AC004053F9 /* SetRowView.swift */,
 			);
 			path = Sets;
 			sourceTree = "<group>";
@@ -457,6 +471,7 @@
 				8B33547A27F5E78700AF09D1 /* Constants.swift in Sources */,
 				8BFBDB5B27E92E860016DC99 /* CardSummaryRowView.swift in Sources */,
 				8BFBDB5427E92C280016DC99 /* SetView.swift in Sources */,
+				8B2F4C5027F7C7AC004053F9 /* SetRowView.swift in Sources */,
 				8BFBDB5E27E92EF20016DC99 /* TextViewWrapper.swift in Sources */,
 				8B33546A27F5640900AF09D1 /* WebView.swift in Sources */,
 				8B33545C27F4E74100AF09D1 /* NewsMap.swift in Sources */,
@@ -496,6 +511,7 @@
 				8BBCC5F727EA2FD80045410D /* TabTestViewModel.swift in Sources */,
 				8B33545D27F4E74100AF09D1 /* NewsMap.swift in Sources */,
 				8BC682A927E95E1600A639C1 /* CardView.swift in Sources */,
+				8B2F4C5127F7C7AC004053F9 /* SetRowView.swift in Sources */,
 				8BDAC1B427E90CED00AF523E /* ManaGuideUITestsLaunchTests.swift in Sources */,
 				8BFBDB5F27E92EF20016DC99 /* TextViewWrapper.swift in Sources */,
 				8BFBDB5C27E92E860016DC99 /* CardSummaryRowView.swift in Sources */,

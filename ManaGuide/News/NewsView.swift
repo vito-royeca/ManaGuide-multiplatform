@@ -6,14 +6,13 @@
 //
 
 import SwiftUI
+import BetterSafariView
 import FeedKit
 import SDWebImageSwiftUI
-import BetterSafariView
 
 struct NewsView: View {
     @StateObject var viewModel = NewsViewModel()
-    @State private var showingSafariView = false
-    @State private var currentItem: FeedItem? = nil
+    @State private var currentFeed: FeedItem? = nil
     
     init() {
         UITableView.appearance().allowsSelection = false
@@ -25,8 +24,7 @@ struct NewsView: View {
             ForEach(viewModel.feeds, id:\.id) { feed in
                 let tap = TapGesture()
                     .onEnded { _ in
-                        showingSafariView = true
-                        currentItem = feed
+                        currentFeed = feed
                     }
                 
                 NewsFeedRowView(item: feed)
@@ -34,14 +32,16 @@ struct NewsView: View {
                     .gesture(tap)
             }
         }
-            .sheet(item: $currentItem, content: { currentItem in
-                SafariView(
-                    url: URL(string: currentItem.url ?? "")!,
-                    configuration: SafariView.Configuration(
-                        entersReaderIfAvailable: true,
-                        barCollapsingEnabled: true
+            .sheet(item: $currentFeed, content: { currentFeed in
+                if let url = URL(string: currentFeed.url ?? "") {
+                    SafariView(
+                        url: url,
+                        configuration: SafariView.Configuration(
+                            entersReaderIfAvailable: true,
+                            barCollapsingEnabled: true
+                        )
                     )
-                )
+                }
             })
             .listStyle(.plain)
             .navigationTitle("News")
@@ -110,8 +110,9 @@ struct NewsFeedRowView: View {
                             Text(item.channel ?? "")
                                 .font(.subheadline)
                         }
+                        Spacer()
                         Text(item.title ?? "")
-                            .font(.title3)
+                            .font(.headline)
                         Spacer()
                     }
                 }
@@ -126,14 +127,14 @@ struct NewsFeedRowView: View {
                         .font(.footnote)
                         .foregroundColor(.secondary)
                     Spacer()
-                    Button(action: {
-                        print("button pressed")
-                    }) {
-                        Image(systemName: "ellipsis")
-                            .renderingMode(.original)
-                            .foregroundColor(Color(.systemBlue))
-                    }
-                        .buttonStyle(PlainButtonStyle())
+//                    Button(action: {
+//                        print("button pressed")
+//                    }) {
+//                        Image(systemName: "ellipsis")
+//                            .renderingMode(.original)
+//                            .foregroundColor(Color(.systemBlue))
+//                    }
+//                        .buttonStyle(PlainButtonStyle())
                 }
                     .padding(5)
             }
@@ -145,3 +146,4 @@ struct NewsFeedRowView: View {
             )
     }
 }
+

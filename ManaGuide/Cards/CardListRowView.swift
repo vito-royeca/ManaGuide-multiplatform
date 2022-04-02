@@ -63,14 +63,15 @@ struct CardListRowView: View {
                             Text("\u{2022} #\(card.collectorNumber ?? "") \u{2022} \(card.rarity?.name ?? "") \u{2022} \(card.language?.displayCode ?? "")")
                                 .font(.footnote)
                             Spacer()
-                            Button(action: {
-                                print("button pressed")
-                            }) {
-                                Image(systemName: "ellipsis")
-                                    .renderingMode(.original)
-                                    .foregroundColor(Color(.systemBlue))
-                            }
-                                .buttonStyle(PlainButtonStyle())
+                            // TODO: implement in the future
+//                            Button(action: {
+//                                print("button pressed")
+//                            }) {
+//                                Image(systemName: "ellipsis")
+//                                    .renderingMode(.original)
+//                                    .foregroundColor(Color(.systemBlue))
+//                            }
+//                                .buttonStyle(PlainButtonStyle())
                         }
                     }
                 }
@@ -81,7 +82,6 @@ struct CardListRowView: View {
 
 struct CardListRowView_Previews: PreviewProvider {
     static var previews: some View {
-//        CardListRowView()
-        return Text("card not found")
+        Text("card not found")
     }
 }

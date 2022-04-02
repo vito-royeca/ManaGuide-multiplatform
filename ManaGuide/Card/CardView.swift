@@ -98,8 +98,8 @@ struct CardView: View {
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            let model = SetViewModel(setCode: "ulg", languageCode: "en")
-            CardView(newID: "lea_en_46",
+            let model = SetViewModel(setCode: "ugl", languageCode: "en")
+            CardView(newID: "ugl_en_28",
                      cardsViewModel: model)
                 .onAppear {
                     model.fetchData()

@@ -58,18 +58,19 @@ struct CardImageRowView: View {
                             .foregroundColor(Color.green)
                             .multilineTextAlignment(.trailing)
                     }
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            print("button pressed")
-                        }) {
-                            Image(systemName: "ellipsis")
-                                .renderingMode(.original)
-                                .foregroundColor(Color(.systemBlue))
-                        }
-                            .buttonStyle(PlainButtonStyle())
-                    }
+                    // TODO: implement in the future
+//                    Spacer()
+//                    HStack {
+//                        Spacer()
+//                        Button(action: {
+//                            print("button pressed")
+//                        }) {
+//                            Image(systemName: "ellipsis")
+//                                .renderingMode(.original)
+//                                .foregroundColor(Color(.systemBlue))
+//                        }
+//                            .buttonStyle(PlainButtonStyle())
+//                    }
                 }
                     .padding(5)
                     .overlay(
@@ -98,18 +99,19 @@ struct CardImageRowView: View {
                             .foregroundColor(Color.green)
                             .multilineTextAlignment(.trailing)
                     }
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            print("button pressed")
-                        }) {
-                            Image(systemName: "ellipsis")
-                                .renderingMode(.original)
-                                .foregroundColor(Color(.systemBlue))
-                        }
-                            .buttonStyle(PlainButtonStyle())
-                    }
+                    // TODO: implement in the future
+//                    Spacer()
+//                    HStack {
+//                        Spacer()
+//                        Button(action: {
+//                            print("button pressed")
+//                        }) {
+//                            Image(systemName: "ellipsis")
+//                                .renderingMode(.original)
+//                                .foregroundColor(Color(.systemBlue))
+//                        }
+//                            .buttonStyle(PlainButtonStyle())
+//                    }
                 }
                     .padding(5)
                     .overlay(
@@ -123,7 +125,6 @@ struct CardImageRowView: View {
 
 struct CardImageRowView_Previews: PreviewProvider {
     static var previews: some View {
-//        CardImageRowView()
-        return Text("card not found")
+        Text("card not found")
     }
 }

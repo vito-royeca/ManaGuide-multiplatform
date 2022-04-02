@@ -21,7 +21,15 @@ class NewsViewModel: NSObject, ObservableObject {
         "MTG Goldfish": "https://www.mtggoldfish.com/feed.rss",
         "WotC": "https://magic.wizards.com/en/rss/rss.xml",
         "MTGAzone": "https://mtgazone.com/feed/",
-        "ChannelFireBall": "https://strategy.channelfireball.com/all-strategy/feed/"
+        "ChannelFireBall": "https://strategy.channelfireball.com/all-strategy/feed/",
+        "HotC": "https://www.hipstersofthecoast.com/feed/",
+        "Pure MTGO": "https://puremtgo.com/rss.xml",
+        "FacetoFace": "https://magic.facetofacegames.com/feed/",
+        "Quiet Speculation": "https://www.quietspeculation.com/feed/",
+        "EDHREC": "https://edhrec.com/articles//feed",
+        "Card Kingdom Blog": "https://blog.cardkingdom.com/feed/",
+        "SCG": "https://articles.starcitygames.com/feed/",
+        "Draftism": "https://draftsim.com//feed"
     ]
     let maxFeeds = 20
     var lastUpdated: Date?
@@ -40,12 +48,10 @@ class NewsViewModel: NSObject, ObservableObject {
         for (_, value) in feedSource {
             if let url = URL(string: value) {
                 group.enter()
-                print("Entered: \(value)")
             
                 let parser = FeedParser(URL: url)
                 parser.parseAsync(queue: DispatchQueue.global(qos: .userInitiated)) { (result) in
                     group.leave()
-                    print("Left: \(url)")
                     
                     switch result {
                     case .success(let feed):
@@ -67,8 +73,6 @@ class NewsViewModel: NSObject, ObservableObject {
         group.notify(queue: DispatchQueue.main, execute: {
             newFeeds = newFeeds.sorted(by: { ($0.datePublished ?? date) > ($1.datePublished ?? date) })
             newFeeds = newFeeds.count >= self.maxFeeds ? Array(newFeeds.prefix(upTo: self.maxFeeds)) : newFeeds
-            
-            print("All done. feeds = \(newFeeds.count)")
             
     //        print(date)
     //        for feed in limitedFeeds {
@@ -98,3 +102,4 @@ class NewsViewModel: NSObject, ObservableObject {
         return willFetch
     }
 }
+
