@@ -26,7 +26,7 @@ struct ManaGuideApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MainView()
+            ContentView()
         }
             .onChange(of: scenePhase) { newScenePhase in
                 switch newScenePhase {
@@ -39,6 +39,9 @@ struct ManaGuideApp: App {
                 @unknown default:
                     print("Oh - interesting: I received an unexpected new value.")
                 }
+            }
+            .commands {
+                SidebarCommands()
             }
     }
 }

@@ -101,6 +101,7 @@ struct CardsView_Previews: PreviewProvider {
 struct CardsDataView<Content> : View where Content : View {
     @StateObject var page1: Page = .first()
     @State private var isShowingDetailView = false
+    @State private var selectedCard: MGCard? = nil
     
     private var sort: CardsViewSort
     private var display: CardsViewDisplay
@@ -176,16 +177,21 @@ struct CardsDataView<Content> : View where Content : View {
                     switch sort {
                     case .collectorNumber:
                         ForEach(viewModel.cards) { card in
+                            let tap = TapGesture()
+                                .onEnded { _ in
+                                    self.selectedCard = nil
+                                }
+                            
                             switch display {
                             case .imageCarousel,
                                  .imageGrid:
                                 EmptyView()
                             case .list:
                                 CardListRowView(card: card)
-                                    .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
+                                    .gesture(tap)
                             case .summary:
                                 CardSummaryRowView(card: card)
-                                    .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
+                                    .gesture(tap)
                                     .listRowSeparator(.hidden)
                                     .padding(.bottom)
                             }
@@ -199,16 +205,21 @@ struct CardsDataView<Content> : View where Content : View {
                         ForEach(viewModel.sections, id: \.name) { section in
                             Section(header: Text(section.name)) {
                                 ForEach(section.objects as? [MGCard] ?? []) { card in
+                                    let tap = TapGesture()
+                                        .onEnded { _ in
+                                            self.selectedCard = card
+                                        }
+                                    
                                     switch display {
                                     case .imageCarousel,
                                          .imageGrid:
                                         EmptyView()
                                     case .list:
                                         CardListRowView(card: card)
-                                            .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
+                                            .gesture(tap)
                                     case .summary:
                                         CardSummaryRowView(card: card)
-                                            .background(NavigationLink("", destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)).opacity(0))
+                                            .gesture(tap)
                                             .listRowSeparator(.hidden)
                                             .padding(.bottom)
                                     }
@@ -218,6 +229,9 @@ struct CardsDataView<Content> : View where Content : View {
                     }
                 }
                     .listStyle(.plain)
+                    .sheet(item: $selectedCard) { selectedCard in
+                        CardView(newID: selectedCard.newIDCopy, cardsViewModel: viewModel)
+                    }
             }
             
         }

@@ -12,6 +12,7 @@ import SDWebImageSwiftUI
 struct CardImageRowView: View {
     @State var degrees : Double = 0
     @State var url : URL?
+    @State private var isShowingCard = false
     private let card: MGCard
     private let style: CardImageRowPriceStyle
     private let viewModel: CardsViewModel?
@@ -24,41 +25,43 @@ struct CardImageRowView: View {
     
     var body: some View {
         VStack(spacing: 2) {
-            ZStack {
-                let webImage = WebImage(url: url)
-                    .resizable()
-                    .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
-                    .indicator(.activity)
-                    .transition(.fade(duration: 0.5))
-                    .aspectRatio(contentMode: .fill)
-                    .cornerRadius(10)
-                    .clipped()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.clear, lineWidth: 0)
-                    )
-                
-                if card.layout?.name == "Flip" ||
-                    card.layout?.name == "Planar" ||
-                    card.layout?.name == "Split" {
-                    webImage
-                        .rotationEffect(Angle(degrees: degrees))
-                } else if card.layout?.name == "Art Series" ||
-                    card.layout?.name == "Double Faced Token" ||
-                    card.layout?.name == "Modal Dfc" ||
-                    card.layout?.name == "Transform" {
-                    webImage
-                        .rotation3DEffect(.degrees(degrees), axis: (x: 0, y: 0, z: 0))
-                } else {
-                    webImage
+            let tap = TapGesture()
+                .onEnded { _ in
+                    self.isShowingCard.toggle()
                 }
-                
-                if let viewModel = viewModel {
-                    NavigationLink(destination: CardView(newID: card.newIDCopy, cardsViewModel: viewModel)) {
-                        Rectangle()
-                            .hidden()
+            
+            let webImage = WebImage(url: url)
+                .resizable()
+                .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
+                .indicator(.activity)
+                .transition(.fade(duration: 0.5))
+                .aspectRatio(contentMode: .fill)
+                .cornerRadius(10)
+                .clipped()
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.clear, lineWidth: 0)
+                )
+                .gesture(tap)
+                .sheet(isPresented: $isShowingCard) {
+                    if let viewModel = viewModel {
+                        CardView(newID: card.newIDCopy, cardsViewModel: viewModel)
                     }
                 }
+            
+            if card.layout?.name == "Flip" ||
+                card.layout?.name == "Planar" ||
+                card.layout?.name == "Split" {
+                webImage
+                    .rotationEffect(Angle(degrees: degrees))
+            } else if card.layout?.name == "Art Series" ||
+                card.layout?.name == "Double Faced Token" ||
+                card.layout?.name == "Modal Dfc" ||
+                card.layout?.name == "Transform" {
+                webImage
+                    .rotation3DEffect(.degrees(degrees), axis: (x: 0, y: 0, z: 0))
+            } else {
+                webImage
             }
             CardImageRowPriceView(card: card, style: style, degrees: $degrees, url: $url)
         }
