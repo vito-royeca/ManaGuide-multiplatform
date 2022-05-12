@@ -12,24 +12,16 @@ import SDWebImageSwiftUI
 struct CardImageRowView: View {
     @State var degrees : Double = 0
     @State var url : URL?
-    @State private var isShowingCard = false
     private let card: MGCard
     private let style: CardImageRowPriceStyle
-    private let viewModel: CardsViewModel?
     
-    init(card: MGCard, style: CardImageRowPriceStyle, viewModel: CardsViewModel?) {
+    init(card: MGCard, style: CardImageRowPriceStyle) {
         self.card = card
         self.style = style
-        self.viewModel = viewModel
     }
     
     var body: some View {
         VStack(spacing: 2) {
-            let tap = TapGesture()
-                .onEnded { _ in
-                    self.isShowingCard.toggle()
-                }
-            
             let webImage = WebImage(url: url)
                 .resizable()
                 .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
@@ -42,12 +34,6 @@ struct CardImageRowView: View {
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(Color.clear, lineWidth: 0)
                 )
-                .gesture(tap)
-                .sheet(isPresented: $isShowingCard) {
-                    if let viewModel = viewModel {
-                        CardView(newID: card.newIDCopy, cardsViewModel: viewModel)
-                    }
-                }
             
             if card.layout?.name == "Flip" ||
                 card.layout?.name == "Planar" ||

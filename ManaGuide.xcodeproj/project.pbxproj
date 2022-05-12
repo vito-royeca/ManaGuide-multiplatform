@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B34024F2824CAF200AC2705 /* ASCollectionView in Frameworks */ = {isa = PBXBuildFile; productRef = 8B34024E2824CAF200AC2705 /* ASCollectionView */; };
 		8B41B74E2812144E00AECF85 /* Tests_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B74D2812144E00AECF85 /* Tests_iOS.swift */; };
 		8B41B7502812144E00AECF85 /* Tests_iOSLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B74F2812144E00AECF85 /* Tests_iOSLaunchTests.swift */; };
 		8B41B75A2812144F00AECF85 /* Tests_macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B7592812144F00AECF85 /* Tests_macOS.swift */; };
@@ -64,6 +65,8 @@
 		8B41B84B28126F9600AECF85 /* SearchPathsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84928126F9600AECF85 /* SearchPathsView.swift */; };
 		8B41B84F28126FC900AECF85 /* BusyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84D28126FC900AECF85 /* BusyView.swift */; };
 		8B41B85028126FC900AECF85 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84E28126FC900AECF85 /* ErrorView.swift */; };
+		8B42C4CF282C8B0A0040503F /* CardsStoreSeeAllView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B42C4CE282C8B090040503F /* CardsStoreSeeAllView.swift */; };
+		8B42C4D0282C8B0A0040503F /* CardsStoreSeeAllView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B42C4CE282C8B090040503F /* CardsStoreSeeAllView.swift */; };
 		8B75CA1E28130B2500597662 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA1D28130B2500597662 /* SDWebImageSwiftUI */; };
 		8B75CA2128130B4700597662 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA2028130B4700597662 /* SwiftUIPager */; };
 		8B75CA2428130B8900597662 /* Kanna in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA2328130B8900597662 /* Kanna */; };
@@ -88,6 +91,11 @@
 		8B75CA4E28162C2E00597662 /* SideNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B75CA4C28162C2E00597662 /* SideNavigationView.swift */; };
 		8B75CA502816327F00597662 /* NewsFeedRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B75CA4F2816327F00597662 /* NewsFeedRowView.swift */; };
 		8B75CA512816327F00597662 /* NewsFeedRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B75CA4F2816327F00597662 /* NewsFeedRowView.swift */; };
+		8B75CA542816EE6C00597662 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA532816EE6C00597662 /* SwiftUIX */; };
+		8B75CA582824BFA700597662 /* CardsStoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B75CA572824BFA700597662 /* CardsStoreView.swift */; };
+		8B75CA592824BFA700597662 /* CardsStoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B75CA572824BFA700597662 /* CardsStoreView.swift */; };
+		8B75CA5B2824C0E200597662 /* CardsStoreViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B75CA5A2824C0E200597662 /* CardsStoreViews.swift */; };
+		8B75CA5C2824C0E200597662 /* CardsStoreViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B75CA5A2824C0E200597662 /* CardsStoreViews.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -152,10 +160,13 @@
 		8B41B84928126F9600AECF85 /* SearchPathsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchPathsView.swift; sourceTree = "<group>"; };
 		8B41B84D28126FC900AECF85 /* BusyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusyView.swift; sourceTree = "<group>"; };
 		8B41B84E28126FC900AECF85 /* ErrorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
+		8B42C4CE282C8B090040503F /* CardsStoreSeeAllView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsStoreSeeAllView.swift; sourceTree = "<group>"; };
 		8B75CA35281310F000597662 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8B75CA4A28162BDD00597662 /* TabNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigationView.swift; sourceTree = "<group>"; };
 		8B75CA4C28162C2E00597662 /* SideNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideNavigationView.swift; sourceTree = "<group>"; };
 		8B75CA4F2816327F00597662 /* NewsFeedRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsFeedRowView.swift; sourceTree = "<group>"; };
+		8B75CA572824BFA700597662 /* CardsStoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsStoreView.swift; sourceTree = "<group>"; };
+		8B75CA5A2824C0E200597662 /* CardsStoreViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsStoreViews.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,12 +177,14 @@
 				8B75CA2D28130C2A00597662 /* ManaKit in Frameworks */,
 				8B75CA2428130B8900597662 /* Kanna in Frameworks */,
 				8B75CA2A28130C0600597662 /* FeedKit in Frameworks */,
+				8B75CA542816EE6C00597662 /* SwiftUIX in Frameworks */,
 				8B75CA2128130B4700597662 /* SwiftUIPager in Frameworks */,
 				8B75CA1E28130B2500597662 /* SDWebImageSwiftUI in Frameworks */,
 				8B75CA3228130ECC00597662 /* FirebaseCrashlytics in Frameworks */,
 				8B75CA3428130ECC00597662 /* FirebaseDatabase in Frameworks */,
 				8B75CA3028130ECC00597662 /* FirebaseAuth in Frameworks */,
 				8B75CA2728130BD100597662 /* BetterSafariView in Frameworks */,
+				8B34024F2824CAF200AC2705 /* ASCollectionView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,6 +241,7 @@
 				8B75CA35281310F000597662 /* GoogleService-Info.plist */,
 				8B41B7AB2812588500AECF85 /* Card */,
 				8B41B7A52812588500AECF85 /* Cards */,
+				8B75CA552824BED100597662 /* CardsStore */,
 				8B41B7952812585300AECF85 /* Common Views */,
 				8B41B84328126F3000AECF85 /* Experimental */,
 				8B41B83A28126ED600AECF85 /* News */,
@@ -397,6 +411,16 @@
 			path = Navigation;
 			sourceTree = "<group>";
 		};
+		8B75CA552824BED100597662 /* CardsStore */ = {
+			isa = PBXGroup;
+			children = (
+				8B75CA572824BFA700597662 /* CardsStoreView.swift */,
+				8B75CA5A2824C0E200597662 /* CardsStoreViews.swift */,
+				8B42C4CE282C8B090040503F /* CardsStoreSeeAllView.swift */,
+			);
+			path = CardsStore;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -423,6 +447,8 @@
 				8B75CA2F28130ECC00597662 /* FirebaseAuth */,
 				8B75CA3128130ECC00597662 /* FirebaseCrashlytics */,
 				8B75CA3328130ECC00597662 /* FirebaseDatabase */,
+				8B75CA532816EE6C00597662 /* SwiftUIX */,
+				8B34024E2824CAF200AC2705 /* ASCollectionView */,
 			);
 			productName = "ManaGuide (iOS)";
 			productReference = 8B41B73C2812144E00AECF85 /* Mana Guide.app */;
@@ -534,6 +560,8 @@
 				8B75CA2828130C0600597662 /* XCRemoteSwiftPackageReference "FeedKit" */,
 				8B75CA2B28130C2A00597662 /* XCRemoteSwiftPackageReference "ManaKit" */,
 				8B75CA2E28130ECC00597662 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				8B75CA522816EE6C00597662 /* XCRemoteSwiftPackageReference "SwiftUIX" */,
+				8B75CA562824BF3E00597662 /* XCRemoteSwiftPackageReference "ASCollectionView" */,
 			);
 			productRefGroup = 8B41B73D2812144E00AECF85 /* Products */;
 			projectDirPath = "";
@@ -588,7 +616,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B75CA5B2824C0E200597662 /* CardsStoreViews.swift in Sources */,
 				8B41B83728126E9900AECF85 /* SearchViewModel.swift in Sources */,
+				8B42C4CF282C8B0A0040503F /* CardsStoreSeeAllView.swift in Sources */,
 				8B41B7BF2812588500AECF85 /* CardSummaryRowView.swift in Sources */,
 				8B41B7C52812588500AECF85 /* CardsView.swift in Sources */,
 				8B41B83F28126ED700AECF85 /* NewsAPIManager.swift in Sources */,
@@ -604,6 +634,7 @@
 				8B41B783281257D300AECF85 /* ContentView.swift in Sources */,
 				8B75CA502816327F00597662 /* NewsFeedRowView.swift in Sources */,
 				8B41B7E32812588500AECF85 /* SetView.swift in Sources */,
+				8B75CA582824BFA700597662 /* CardsStoreView.swift in Sources */,
 				8B75CA4D28162C2E00597662 /* SideNavigationView.swift in Sources */,
 				8B41B791281257F600AECF85 /* SetsView.swift in Sources */,
 				8B41B83628126E9900AECF85 /* SearchView.swift in Sources */,
@@ -637,6 +668,8 @@
 				8B41B79E2812585300AECF85 /* View+Extras.swift in Sources */,
 				8B41B7D02812588500AECF85 /* CardView.swift in Sources */,
 				8B41B794281257F600AECF85 /* SetRowView.swift in Sources */,
+				8B42C4D0282C8B0A0040503F /* CardsStoreSeeAllView.swift in Sources */,
+				8B75CA592824BFA700597662 /* CardsStoreView.swift in Sources */,
 				8B41B784281257D300AECF85 /* ContentView.swift in Sources */,
 				8B41B7E42812588500AECF85 /* SetView.swift in Sources */,
 				8B41B792281257F600AECF85 /* SetsView.swift in Sources */,
@@ -647,6 +680,7 @@
 				8B41B7A02812585300AECF85 /* WebView.swift in Sources */,
 				8B41B790281257F600AECF85 /* SetsViewModel.swift in Sources */,
 				8B41B7DE2812588500AECF85 /* SetViewModel.swift in Sources */,
+				8B75CA5C2824C0E200597662 /* CardsStoreViews.swift in Sources */,
 				8B41B79C2812585300AECF85 /* SearchNavigation.swift in Sources */,
 				8B41B7C22812588500AECF85 /* CardImageRowView.swift in Sources */,
 				8B75CA4E28162C2E00597662 /* SideNavigationView.swift in Sources */,
@@ -803,6 +837,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 43CD66539H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ManaGuide--iOS--Info.plist";
@@ -833,6 +868,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 43CD66539H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ManaGuide--iOS--Info.plist";
@@ -1093,9 +1129,30 @@
 				minimumVersion = 8.0.0;
 			};
 		};
+		8B75CA522816EE6C00597662 /* XCRemoteSwiftPackageReference "SwiftUIX" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftUIX/SwiftUIX.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.2;
+			};
+		};
+		8B75CA562824BF3E00597662 /* XCRemoteSwiftPackageReference "ASCollectionView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apptekstudios/ASCollectionView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8B34024E2824CAF200AC2705 /* ASCollectionView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B75CA562824BF3E00597662 /* XCRemoteSwiftPackageReference "ASCollectionView" */;
+			productName = ASCollectionView;
+		};
 		8B75CA1D28130B2500597662 /* SDWebImageSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8B75CA1C28130B2500597662 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
@@ -1180,6 +1237,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8B75CA2E28130ECC00597662 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseDatabase;
+		};
+		8B75CA532816EE6C00597662 /* SwiftUIX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B75CA522816EE6C00597662 /* XCRemoteSwiftPackageReference "SwiftUIX" */;
+			productName = SwiftUIX;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

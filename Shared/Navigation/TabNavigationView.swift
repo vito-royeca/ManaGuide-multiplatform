@@ -18,16 +18,16 @@ struct TabNavigationView: View {
     
     var body: some View {
         TabView(selection: $selection) {
-            NavigationView {
-                NewsView()
-            }
-                .navigationViewStyle(.stack)
-                .tabItem {
-                    Image(systemName: "newspaper")
-                    Text("News")
-                }
-                .tag(TabItem.news)
-                .accentColor(Color.accentColor)
+//            NavigationView {
+//                NewsView()
+//            }
+//                .navigationViewStyle(.stack)
+//                .tabItem {
+//                    Image(systemName: "newspaper")
+//                    Text("News")
+//                }
+//                .tag(TabItem.news)
+//                .accentColor(Color.accentColor)
 
             SetsView()
                 .navigationViewStyle(.stack)

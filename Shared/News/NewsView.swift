@@ -11,10 +11,6 @@ import FeedKit
 import SDWebImageSwiftUI
 
 struct NewsView: View {
-    #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    #endif
-    
     @StateObject var viewModel = NewsViewModel()
     @State private var currentFeed: FeedItem? = nil
     @State private var showingSafariView = false

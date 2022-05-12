@@ -15,22 +15,23 @@ struct ContentView: View {
     #endif
     
     var body: some View {
-        #if os(iOS)
-        if horizontalSizeClass == .compact {
+//        #if os(iOS)
+//        if horizontalSizeClass == .compact {
             TabNavigationView()
                 .environment(\.horizontalSizeClass, horizontalSizeClass)
-        } else {
-            SideNavigationView()
-                .environment(\.horizontalSizeClass, horizontalSizeClass)
-        }
-        #else
-        SideNavigationView()
-        #endif
+//        } else {
+//            SideNavigationView()
+//                .environment(\.horizontalSizeClass, horizontalSizeClass)
+//        }
+//        #else
+//        SideNavigationView()
+//        #endif
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .previewInterfaceOrientation(.landscapeRight)
     }
 }

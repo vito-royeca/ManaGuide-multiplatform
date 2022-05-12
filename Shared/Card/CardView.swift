@@ -10,14 +10,15 @@ import SwiftUI
 import ManaKit
 import SDWebImage
 import SDWebImageSwiftUI
+import SwiftUIX
 
 struct CardView: View {
-    @ObservedObject var cardsViewModel: CardsViewModel
+    @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: CardViewModel
+    @State private var isShowingShareSheet = false
     
-    init(newID: String, cardsViewModel: CardsViewModel) {
+    init(newID: String) {
         _viewModel = StateObject(wrappedValue: CardViewModel(newID: newID))
-        self.cardsViewModel = cardsViewModel
     }
     
     var body: some View {
@@ -38,65 +39,83 @@ struct CardView: View {
     }
     
     var bodyData: some View {
-        GeometryReader { geometry in
-            List {
-                if let card = viewModel.card {
+        List {
+            if let card = viewModel.card {
+                Section {
+                    CardImageRowView(card: card, style: .oneLine)
+                }
+                
+                if let prices = card.prices?.allObjects as? [MGCardPrice] {
                     Section {
-                        CardImageRowView(card: card, style: .oneLine, viewModel: nil)
+                        CardPricingInfoView(prices: prices)
                     }
-                    
-                    if let prices = card.prices?.allObjects as? [MGCardPrice] {
+                }
+                
+                if let faces = card.sortedFaces {
+                    ForEach(faces) { face in
                         Section {
-                            CardPricingInfoView(prices: prices)
+                            CardCommonInfoView(card: face)
                         }
-                    }
-                    
-                    if let faces = card.sortedFaces {
-                        ForEach(faces) { face in
-                            Section {
-                                CardCommonInfoView(card: face)
-                            }
-                        }
-                    } else {
-                        Section {
-                            CardCommonInfoView(card: card)
-                        }
-                    }
-                    
-                    Section {
-                        CardOtherInfoView(card: card)
-                    }
-                    Section {
-                        CardExtraInfoView(card: card, cardsViewModel: cardsViewModel)
                     }
                 } else {
-                    EmptyView()
-                }
-            }
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItemGroup(placement: .navigationBarTrailing) {
-                        Button(action: {
-                            action()
-                        }) {
-                            Image(systemName: "square.and.arrow.up")
-                                .renderingMode(.original)
-                                .foregroundColor(Color.accentColor)
-                        }
+                    Section {
+                        CardCommonInfoView(card: card)
                     }
                 }
-            
+                
+                Section {
+                    CardOtherInfoView(card: card)
+                }
+                Section {
+                    CardExtraInfoView(card: card)
+                }
+            } else {
+                EmptyView()
+            }
         }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    Button(action: {
+                        self.presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "xmark")
+                            .renderingMode(.original)
+                            .foregroundColor(Color.accentColor)
+                    }
+                }
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        self.isShowingShareSheet.toggle()
+                    }) {
+                        Image(systemName: "square.and.arrow.up")
+                            .renderingMode(.original)
+                            .foregroundColor(Color.accentColor)
+                    }
+                }
+            }
+            .sheet(isPresented: $isShowingShareSheet, onDismiss: {
+                print("Dismiss")
+            }, content: {
+                let itemSource = CardViewItemSource(card: viewModel.card!)
+                
+                AppActivityView(activityItems: [itemSource])
+                    .excludeActivityTypes([])
+                    .onCancel { }
+                    .onComplete { result in
+                        return
+                    }
+            })
     }
     
-    func action() {
+    func shareAction() {
         guard let card = viewModel.card else {
             return
         }
         
         let itemSource = CardViewItemSource(card: card)
         let activityVC = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
-        
+
         let connectedScenes = UIApplication.shared.connectedScenes
             .filter({ $0.activationState == .foregroundActive })
             .compactMap({ $0 as? UIWindowScene })
@@ -168,8 +187,8 @@ struct CardView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             let model = SetViewModel(setCode: "isd", languageCode: "en")
-            CardView(newID: "isd_en_51",
-                     cardsViewModel: model)
+            CardView(newID: "isd_en_51"/*,
+                     cardsViewModel: model*/)
                 .onAppear {
                     model.fetchData()
                 }
@@ -404,7 +423,6 @@ struct CardOtherInfoView: View {
 
 struct CardExtraInfoView: View {
     @Environment(\.colorScheme) var colorScheme
-    @ObservedObject var cardsViewModel: CardsViewModel
     @State var isColorsExpanded         = true
     @State var isComponentPartsExpanded = false
     @State var isFrameEffectsExpanded   = true
@@ -416,9 +434,8 @@ struct CardExtraInfoView: View {
     
     var card: MGCard
     
-    init(card: MGCard, cardsViewModel: CardsViewModel) {
+    init(card: MGCard) {
         self.card = card
-        self.cardsViewModel = cardsViewModel
     }
     
     var body: some View {
@@ -441,7 +458,7 @@ struct CardExtraInfoView: View {
                                 Text(name)
                                     .font(.headline)
                                 CardListRowView(card: part)
-                                    .background(NavigationLink("", destination: CardView(newID: newIDCopy, cardsViewModel: cardsViewModel)).opacity(0))
+                                    .background(NavigationLink("", destination: CardView(newID: newIDCopy)).opacity(0))
                             }
                         } else {
                             EmptyView()
@@ -474,7 +491,7 @@ struct CardExtraInfoView: View {
                 DisclosureGroup("Other Languages: \(otherLanguages.count)", isExpanded: $isOtherLanguagesExpanded) {
                     ForEach(otherLanguages) { otherLanguage in
                         CardListRowView(card: otherLanguage)
-                            .background(NavigationLink("", destination: CardView(newID: otherLanguage.newIDCopy, cardsViewModel: cardsViewModel)).opacity(0))
+                            .background(NavigationLink("", destination: CardView(newID: otherLanguage.newIDCopy)).opacity(0))
                     }
                 }
                     .accentColor(Color.accentColor)
@@ -484,7 +501,7 @@ struct CardExtraInfoView: View {
                 DisclosureGroup("Other Printings: \(otherPrintings.count)", isExpanded: $isOtherPrintingsExpanded) {
                     ForEach(otherPrintings) { otherPrinting in
                         CardListRowView(card: otherPrinting)
-                            .background(NavigationLink("", destination: CardView(newID: otherPrinting.newIDCopy, cardsViewModel: cardsViewModel)).opacity(0))
+                            .background(NavigationLink("", destination: CardView(newID: otherPrinting.newIDCopy)).opacity(0))
                     }
                 }
                     .accentColor(Color.accentColor)
@@ -510,7 +527,7 @@ struct CardExtraInfoView: View {
                 DisclosureGroup("Variations: \(variations.count)", isExpanded: $isVariationsExpanded) {
                     ForEach(variations) { variation in
                         CardListRowView(card: variation)
-                            .background(NavigationLink("", destination: CardView(newID: variation.newIDCopy, cardsViewModel: cardsViewModel)).opacity(0))
+                            .background(NavigationLink("", destination: CardView(newID: variation.newIDCopy)).opacity(0))
                     }
                 }
                     .accentColor(Color.accentColor)

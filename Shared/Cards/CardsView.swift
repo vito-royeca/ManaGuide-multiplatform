@@ -11,6 +11,9 @@ import SDWebImageSwiftUI
 import SwiftUIPager
 
 struct CardsView<Content> : View where Content : View {
+    
+    // MARK: - Variables
+    
     @StateObject var viewModel: CardsViewModel
     @State private var showingSort = false
     @State private var showingDisplay = false
@@ -93,28 +96,23 @@ struct CardsView_Previews: PreviewProvider {
                 EmptyView()
             }
         }
+        .previewInterfaceOrientation(.landscapeLeft)
     }
 }
 
 // MARK: - CardsDataView
 
 struct CardsDataView<Content> : View where Content : View {
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
     @StateObject var page1: Page = .first()
-    @State private var isShowingDetailView = false
     @State private var selectedCard: MGCard? = nil
     
     private var sort: CardsViewSort
     private var display: CardsViewDisplay
     private var viewModel: CardsViewModel
     private var content: Content
-    
-    private let carouselConfig = [
-        GridItem()
-    ]
-    private let gridConfig = [
-        GridItem(),
-        GridItem()
-    ]
     
     init(sort: CardsViewSort, display: CardsViewDisplay, viewModel: CardsViewModel, @ViewBuilder content: @escaping () -> Content) {
         self.sort = sort
@@ -124,53 +122,41 @@ struct CardsDataView<Content> : View where Content : View {
     }
     
     var body: some View {
-        GeometryReader { geometryReader in
-            if display == .imageCarousel {
-                ScrollView {
-                    let width = min(geometryReader.size.height, geometryReader.size.width)
-                    let height = geometryReader.size.height
-                    
-                    content
-                        .padding()
-                    Pager(page: page1,
-                          data: viewModel.cards,
-                          id: \.newIDCopy) { card in
-                        CardImageRowView(card: card, style: .oneLine, viewModel: viewModel)
-                    }
-                        .itemSpacing(10)
-                        .itemAspectRatio(0.8, alignment: .start(50))
-                        .pagingPriority(.high)
-                        .frame(width: width, height: height)
-                }
-                
-            } else if display == .imageGrid {
-                ScrollView() {
-                    content
-                        .padding()
-                    LazyVGrid(columns: gridConfig, spacing: 10, pinnedViews: [.sectionHeaders]) {
-                        switch sort {
-                        case .collectorNumber:
-                            ForEach(viewModel.cards) { card in
-                                CardImageRowView(card: card, style: .twoLines, viewModel: viewModel)
-                            }
-                        case .name,
-                             .rarity,
-                             .setName,
-                             .setReleaseDate,
-                             .type:
-                            ForEach(viewModel.sections, id: \.name) { section in
-                                Section(header: stickyHeaderView(section.name)) {
-                                    ForEach(section.objects as? [MGCard] ?? []) { card in
-                                        CardImageRowView(card: card, style: .twoLines, viewModel: viewModel)
-                                   }
-                               }
-                           }
-                       }
-                   }
-                    .padding()
-                }
-
-            } else {
+        #if os(iOS)
+        if horizontalSizeClass == .compact {
+            listView
+        } else {
+            gridView
+        }
+        #else
+        gridView
+        #endif
+    }
+    
+    func stickyHeaderView(_ text: String) -> some View {
+        VStack(alignment: .leading) {
+            Text(text)
+                .foregroundColor(Color.gray)
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+                .background(Color(UIColor.systemBackground))
+                .multilineTextAlignment(.leading)
+            
+        }
+    }
+    
+    // MARK: - listView
+    
+    var listView: some View {
+        GeometryReader { geometryProxy in
+            switch display {
+            case .imageCarousel:
+                let width = min(geometryProxy.size.height, geometryProxy.size.width)
+                let height = geometryProxy.size.height
+                listCarouselView(width: width, height: height)
+            case .imageGrid:
+                listImageView()
+            default:
                 List {
                     content
                         .listRowSeparator(.hidden)
@@ -179,13 +165,10 @@ struct CardsDataView<Content> : View where Content : View {
                         ForEach(viewModel.cards) { card in
                             let tap = TapGesture()
                                 .onEnded { _ in
-                                    self.selectedCard = nil
+                                    self.selectedCard = card
                                 }
-                            
+
                             switch display {
-                            case .imageCarousel,
-                                 .imageGrid:
-                                EmptyView()
                             case .list:
                                 CardListRowView(card: card)
                                     .gesture(tap)
@@ -194,6 +177,8 @@ struct CardsDataView<Content> : View where Content : View {
                                     .gesture(tap)
                                     .listRowSeparator(.hidden)
                                     .padding(.bottom)
+                            default:
+                                EmptyView()
                             }
                         }
 
@@ -209,11 +194,8 @@ struct CardsDataView<Content> : View where Content : View {
                                         .onEnded { _ in
                                             self.selectedCard = card
                                         }
-                                    
+
                                     switch display {
-                                    case .imageCarousel,
-                                         .imageGrid:
-                                        EmptyView()
                                     case .list:
                                         CardListRowView(card: card)
                                             .gesture(tap)
@@ -222,6 +204,8 @@ struct CardsDataView<Content> : View where Content : View {
                                             .gesture(tap)
                                             .listRowSeparator(.hidden)
                                             .padding(.bottom)
+                                    default:
+                                        EmptyView()
                                     }
                                 }
                             }
@@ -230,24 +214,241 @@ struct CardsDataView<Content> : View where Content : View {
                 }
                     .listStyle(.plain)
                     .sheet(item: $selectedCard) { selectedCard in
-                        CardView(newID: selectedCard.newIDCopy, cardsViewModel: viewModel)
+                        NavigationView {
+                            CardView(newID: selectedCard.newIDCopy)
+                        }
                     }
             }
-            
         }
     }
     
-    func stickyHeaderView(_ text: String) -> some View {
-        VStack(alignment: .leading) {
-            Text(text)
-                .foregroundColor(Color.gray)
-                .font(.headline)
-                .frame(maxWidth: .infinity)
-                .background(Color(UIColor.systemBackground))
-                .multilineTextAlignment(.leading)
-            
+    func listCarouselView(width: CGFloat, height: CGFloat) -> some View {
+        ScrollView {
+            content
+                .padding()
+            Pager(page: page1,
+                  data: viewModel.cards,
+                  id: \.newIDCopy) { card in
+                CardImageRowView(card: card, style: .oneLine)
+            }
+                .itemSpacing(10)
+                .itemAspectRatio(0.8, alignment: .start(50))
+                .pagingPriority(.high)
+                .frame(width: width, height: height)
         }
     }
+    
+    func listImageView() -> some View {
+        ScrollView() {
+            content
+                .padding()
+            LazyVGrid(columns: [GridItem](repeating: GridItem(), count: 2), spacing: 10, pinnedViews: [.sectionHeaders]) {
+                switch sort {
+                case .collectorNumber:
+                    ForEach(viewModel.cards) { card in
+                        CardImageRowView(card: card, style: .twoLines)
+                    }
+                case .name,
+                     .rarity,
+                     .setName,
+                     .setReleaseDate,
+                     .type:
+                    ForEach(viewModel.sections, id: \.name) { section in
+                        Section(header: stickyHeaderView(section.name)) {
+                            ForEach(section.objects as? [MGCard] ?? []) { card in
+                                CardImageRowView(card: card, style: .twoLines)
+                           }
+                       }
+                   }
+               }
+           }
+              .padding()
+        }
+    }
+    
+    // MARK: - gridView
+
+    var gridView: some View {
+        GeometryReader { geometryProxy in
+            switch display {
+            case .imageCarousel:
+                let width = geometryProxy.size.width
+                let height = geometryProxy.size.height * 0.8
+                gridCarouselView(width: width, height: height)
+            case .imageGrid:
+                let width = geometryProxy.size.width
+                let height = geometryProxy.size.height / 3
+                gridImageView(width: width, height: height)
+            default:
+                List {
+                    content
+                        .listRowSeparator(.hidden)
+                    switch sort {
+                    case .collectorNumber:
+                        ForEach(viewModel.cards) { card in
+                            let tap = TapGesture()
+                                .onEnded { _ in
+                                    self.selectedCard = nil
+                                }
+
+                            switch display {
+                            case .list:
+                                CardListRowView(card: card)
+                                    .gesture(tap)
+                            case .summary:
+                                CardSummaryRowView(card: card)
+                                    .gesture(tap)
+                                    .listRowSeparator(.hidden)
+                                    .padding(.bottom)
+                            default:
+                                EmptyView()
+                            }
+                        }
+
+                    case .name,
+                         .rarity,
+                         .setName,
+                         .setReleaseDate,
+                         .type:
+                        ForEach(viewModel.sections, id: \.name) { section in
+                            Section(header: Text(section.name)) {
+                                switch display {
+                                case .list:
+                                    gridListView(cards: section.objects as? [MGCard] ?? [])
+                                case .summary:
+                                    let width = geometryProxy.size.width
+                                    let height = geometryProxy.size.height / 3
+                                    let cards = section.objects as? [MGCard] ?? []
+
+                                    gridSummaryView(cards: cards, width: width, height: height)
+                                default:
+                                    EmptyView()
+                                }
+                            }
+                        }
+                    }
+                }
+                    .listStyle(.plain)
+                    .sheet(item: $selectedCard) { selectedCard in
+                        NavigationView {
+                            CardView(newID: selectedCard.newIDCopy)
+                        }
+                    }
+            }
+        }
+    }
+    
+    func gridCarouselView(width: CGFloat, height: CGFloat) -> some View {
+        return ScrollView {
+            content
+                .padding()
+            Pager(page: page1,
+                  data: viewModel.cards,
+                  id: \.newIDCopy) { card in
+                CardImageRowView(card: card, style: .oneLine)
+            }
+                  .preferredItemSize(CGSize(width: width * 0.25, height: height))
+//                .itemAspectRatio(0.6)
+                .itemSpacing(20)
+                .alignment(.start(20))
+                .pagingPriority(.high)
+                .frame(width: width, height: height)
+        }
+    }
+    
+    func gridImageView(width: CGFloat, height: CGFloat) -> some View {
+        List {
+            content
+                .listRowSeparator(.hidden)
+            switch sort {
+            case .collectorNumber:
+                gridListView(cards: viewModel.cards)
+            case .name,
+                 .rarity,
+                 .setName,
+                 .setReleaseDate,
+                 .type:
+                ForEach(viewModel.sections, id: \.name) { section in
+                    Section(header: Text(section.name)) {
+                        ForEach(section.objects as? [MGCard] ?? []) { card in
+                            CardImageRowView(card: card, style: .twoLines)
+                       }
+                    }
+                }
+            }
+        }
+            .listStyle(.plain)
+            .sheet(item: $selectedCard) { selectedCard in
+                NavigationView {
+                    CardView(newID: selectedCard.newIDCopy)
+                }
+            }
+        
+//        ScrollView() {
+//            content
+//                .padding()
+//            LazyVGrid(columns: [GridItem](repeating: GridItem(), count: 4), spacing: 10, pinnedViews: [.sectionHeaders]) {
+//                switch sort {
+//                case .collectorNumber:
+//                    ForEach(viewModel.cards) { card in
+//                        CardImageRowView(card: card, style: .twoLines, viewModel: viewModel)
+//                    }
+//                case .name,
+//                     .rarity,
+//                     .setName,
+//                     .setReleaseDate,
+//                     .type:
+//                    ForEach(viewModel.sections, id: \.name) { section in
+//                        Section(header: stickyHeaderView(section.name)) {
+//                            ForEach(section.objects as? [MGCard] ?? []) { card in
+//                                CardImageRowView(card: card, style: .twoLines, viewModel: viewModel)
+//                           }
+//                       }
+//                   }
+//               }
+//           }
+//            .padding()
+//        }
+    }
+    
+    func gridListView(cards: [MGCard]) -> some View {
+        ScrollView() {
+            LazyVGrid(columns: [GridItem](repeating: GridItem(), count: 3), spacing: 10, pinnedViews: [.sectionHeaders]) {
+                ForEach(cards) { card in
+                    let tap = TapGesture()
+                        .onEnded { _ in
+                            self.selectedCard = card
+                        }
+                    CardListRowView(card: card)
+                        .gesture(tap)
+
+                }
+           }
+               .padding()
+        }
+            .listRowSeparator(.hidden)
+    }
+    
+    func gridSummaryView(cards: [MGCard], width: CGFloat, height: CGFloat) -> some View {
+        Pager(page: .first(),
+              data: cards,
+              id: \.newIDCopy) { card in
+            let tap = TapGesture()
+                .onEnded { _ in
+                    self.selectedCard = card
+                }
+            CardSummaryRowView(card: card)
+                .gesture(tap)
+        }
+            .alignment(.start(1))
+            .itemSpacing(10)
+            .itemAspectRatio(2.0)
+            .pagingPriority(.high)
+            .frame(width: width, height: height)
+            .listRowSeparator(.hidden)
+    }
+    
+    
 }
 
 // MARK: - Action Sheets

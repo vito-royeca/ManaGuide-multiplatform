@@ -19,7 +19,7 @@ struct SetView: View {
     }
     
     var body: some View {
-        CardsView(viewModel: viewModel) {
+        CardsStoreView(viewModel: viewModel) {
             if let set = viewModel.set {
                 VStack(spacing: 0) {
                     SetRowView(set: set)
@@ -54,6 +54,7 @@ struct SetView_Previews: PreviewProvider {
         NavigationView {
             SetView(setCode: "isd", languageCode: "en")
         }
+        .previewInterfaceOrientation(.landscapeLeft)
     }
 }
 

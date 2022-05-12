@@ -50,7 +50,7 @@ class CardViewModel: NSObject, ObservableObject {
     }
 }
 
-// MARK: - Legacy Methods
+// MARK: - Legacy Code
 /*
 
  // MARK: Enums
