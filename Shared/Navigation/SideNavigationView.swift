@@ -11,7 +11,7 @@ struct SideNavigationView: View {
     enum SideItem {
         case news
         case sets
-        case search
+        case cards
     }
     
     @State private var selection: SideItem? = .news
@@ -33,10 +33,10 @@ struct SideNavigationView: View {
                     Label("Sets", systemImage: "rectangle.3.group")
                 }
                 
-                NavigationLink(tag: SideItem.search, selection: $selection) {
-                    SearchView()
+                NavigationLink(tag: SideItem.cards, selection: $selection) {
+                    CardsView()
                 } label: {
-                    Label("Search", systemImage: "magnifyingglass")
+                    Label("Cards", systemImage: "lanyardcard")
                 }
             }
 

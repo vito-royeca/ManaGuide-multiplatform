@@ -1,5 +1,5 @@
 //
-//  SearchViewModel.swift
+//  CardsSearchViewModel.swift
 //  ManaGuide
 //
 //  Created by Vito Royeca on 3/21/22.
@@ -9,7 +9,7 @@ import CoreData
 import SwiftUI
 import ManaKit
 
-class SearchViewModel: CardsViewModel {
+class CardsSearchViewModel: CardsViewModel {
     
     // MARK: - Variables
 
@@ -125,7 +125,7 @@ class SearchViewModel: CardsViewModel {
 
 // MARK: - NSFetchedResultsControllerDelegate
 
-extension SearchViewModel: NSFetchedResultsControllerDelegate {
+extension CardsSearchViewModel: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         guard let cards = controller.fetchedObjects as? [MGCard] else {
             return
@@ -137,7 +137,7 @@ extension SearchViewModel: NSFetchedResultsControllerDelegate {
 
 // MARK: - NSFetchRequest
 
-extension SearchViewModel {
+extension CardsSearchViewModel {
     func defaultFetchRequest(query: String) -> NSFetchRequest<MGCard> {
         let predicate = NSPredicate(format: "newID != nil AND newID != '' AND collectorNumber != nil AND language.code = %@ AND name CONTAINS[cd] %@", "en", query)
         

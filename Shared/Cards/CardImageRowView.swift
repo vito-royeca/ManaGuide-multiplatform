@@ -21,13 +21,14 @@ struct CardImageRowView: View {
     }
     
     var body: some View {
-        VStack(spacing: 2) {
+        
+        VStack(alignment: .center, spacing: 2) {
             let webImage = WebImage(url: url)
                 .resizable()
                 .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
                 .indicator(.activity)
                 .transition(.fade(duration: 0.5))
-                .aspectRatio(contentMode: .fill)
+                .aspectRatio(contentMode: .fit)
                 .cornerRadius(10)
                 .clipped()
                 .overlay(
@@ -54,6 +55,7 @@ struct CardImageRowView: View {
             .onAppear {
                 url = card.imageURL(for: .png)
             }
+        
     }
 }
 

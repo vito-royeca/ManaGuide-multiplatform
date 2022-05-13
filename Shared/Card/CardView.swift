@@ -13,6 +13,10 @@ import SDWebImageSwiftUI
 import SwiftUIX
 
 struct CardView: View {
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
+    
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: CardViewModel
     @State private var isShowingShareSheet = false
@@ -30,7 +34,16 @@ struct CardView: View {
                     viewModel.fetchData()
                 }
             } else {
-                bodyData
+//                bodyData
+                #if os(iOS)
+                if horizontalSizeClass == .compact {
+                    compactView
+                } else {
+                    regularView
+                }
+                #else
+                regularView
+                #endif
             }
         }
             .onAppear {
@@ -38,7 +51,7 @@ struct CardView: View {
             }
     }
     
-    var bodyData: some View {
+    var compactView: some View {
         List {
             if let card = viewModel.card {
                 Section {
@@ -98,7 +111,7 @@ struct CardView: View {
                 print("Dismiss")
             }, content: {
                 let itemSource = CardViewItemSource(card: viewModel.card!)
-                
+
                 AppActivityView(activityItems: [itemSource])
                     .excludeActivityTypes([])
                     .onCancel { }
@@ -108,6 +121,77 @@ struct CardView: View {
             })
     }
     
+    var regularView: some View {
+        HStack(alignment: .top) {
+            if let card = viewModel.card {
+                CardImageRowView(card: card, style: .oneLine)
+                    .padding()
+
+                List {
+                    if let prices = card.prices?.allObjects as? [MGCardPrice] {
+                        Section {
+                            CardPricingInfoView(prices: prices)
+                        }
+                    }
+                    
+                    if let faces = card.sortedFaces {
+                        ForEach(faces) { face in
+                            Section {
+                                CardCommonInfoView(card: face)
+                            }
+                        }
+                    } else {
+                        Section {
+                            CardCommonInfoView(card: card)
+                        }
+                    }
+                    
+                    Section {
+                        CardOtherInfoView(card: card)
+                    }
+                    Section {
+                        CardExtraInfoView(card: card)
+                    }
+                }
+            } else {
+                EmptyView()
+            }
+        }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    Button(action: {
+                        self.presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "xmark")
+                            .renderingMode(.original)
+                            .foregroundColor(Color.accentColor)
+                    }
+                }
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        self.isShowingShareSheet.toggle()
+                    }) {
+                        Image(systemName: "square.and.arrow.up")
+                            .renderingMode(.original)
+                            .foregroundColor(Color.accentColor)
+                    }
+                }
+            }
+            .sheet(isPresented: $isShowingShareSheet, onDismiss: {
+                print("Dismiss")
+            }, content: {
+                let itemSource = CardViewItemSource(card: viewModel.card!)
+
+                AppActivityView(activityItems: [itemSource])
+                    .excludeActivityTypes([])
+                    .onCancel { }
+                    .onComplete { result in
+                        return
+                    }
+            })
+    }
+
     func shareAction() {
         guard let card = viewModel.card else {
             return

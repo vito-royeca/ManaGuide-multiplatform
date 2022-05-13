@@ -159,21 +159,24 @@ struct CardsStoreDataView : View {
 
         array.append(contentsOf: cardsViewModel.sections.map { (section) -> ASCollectionViewSection<Int> in
             let sectionID = cardsViewModel.sections.firstIndex{$0 === section} ?? 0
-            var data = (section.objects as? [MGCard] ?? [])
+            let cards = (section.objects as? [MGCard] ?? [])
+            var clippedCards = [MGCard]()
             
-            if data.count > 20 {
-                data = data.dropLast(data.count - 20)
+            if cards.count > 20 {
+                clippedCards = cards.dropLast(cards.count - 20)
+            } else {
+                clippedCards = cards
             }
             
             return ASCollectionViewSection(
                 id: sectionID,
-                data: data) { card, _ in
+                data: clippedCards) { card, _ in
                     let tap = TapGesture()
                         .onEnded { _ in
                             self.selectedCard = card
                         }
 
-                    if data.count < 3 {
+                    if clippedCards.count < 3 {
                         CardsStoreLargeView(card: card)
                             .gesture(tap)
                     } else {
@@ -193,7 +196,7 @@ struct CardsStoreDataView : View {
                         ASSelfSizingConfig(canExceedCollectionWidth: false)
                     }
                     .sectionHeader {
-                        header(sectionID: sectionID,  title: section.name, cards: data)
+                        header(sectionID: sectionID,  title: section.name, cards: cards)
                     }
         })
         
@@ -223,7 +226,7 @@ struct CardsStoreDataView : View {
     }
 }
 
-// MARK: - Layout
+// MARK: - Layouts
 
 extension CardsStoreDataView {
     var layout: ASCollectionLayout<Int> {
@@ -251,7 +254,6 @@ extension CardsStoreDataView {
     }
     
     var layoutContent: ASCollectionLayoutSection {
-        
         ASCollectionLayoutSection { environment in
             var height = CGFloat(120)
             if let set = set {
@@ -457,108 +459,3 @@ extension CardsStoreDataView {
     }
 }
 
-class AlignedFlowLayout: UICollectionViewFlowLayout
-{
-    override init()
-    {
-        super.init()
-    }
-
-    @available(*, unavailable)
-    required init?(coder: NSCoder)
-    {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool
-    {
-        true
-    }
-
-    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]?
-    {
-        let attributes = super.layoutAttributesForElements(in: rect)
-
-        attributes?.forEach
-        { layoutAttribute in
-            switch layoutAttribute.representedElementCategory
-            {
-            case .cell:
-                layoutAttributesForItem(at: layoutAttribute.indexPath).map { layoutAttribute.frame = $0.frame }
-            default: break
-            }
-        }
-
-        return attributes
-    }
-
-    private var leftEdge: CGFloat
-    {
-        guard let insets = collectionView?.adjustedContentInset
-        else
-        {
-            return sectionInset.left
-        }
-        return insets.left + sectionInset.left
-    }
-
-    private var contentWidth: CGFloat?
-    {
-        guard let collectionViewWidth = collectionView?.frame.size.width,
-            let insets = collectionView?.adjustedContentInset
-        else
-        {
-            return nil
-        }
-        return collectionViewWidth - insets.left - insets.right - sectionInset.left - sectionInset.right
-    }
-
-    override var collectionViewContentSize: CGSize
-    {
-        CGSize(width: contentWidth ?? super.collectionViewContentSize.width, height: super.collectionViewContentSize.height)
-    }
-
-    fileprivate func isFrame(for firstItemAttributes: UICollectionViewLayoutAttributes, inSameLineAsFrameFor secondItemAttributes: UICollectionViewLayoutAttributes) -> Bool
-    {
-        guard let lineWidth = contentWidth
-        else
-        {
-            return false
-        }
-        let firstItemFrame = firstItemAttributes.frame
-        let lineFrame = CGRect(
-            x: leftEdge,
-            y: firstItemFrame.origin.y,
-            width: lineWidth,
-            height: firstItemFrame.size.height)
-        return lineFrame.intersects(secondItemAttributes.frame)
-    }
-
-    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes?
-    {
-        guard let attributes = super.layoutAttributesForItem(at: indexPath)
-        else
-        {
-            return nil
-        }
-        guard
-            indexPath.item > 0,
-            let previousAttributes = layoutAttributesForItem(at: IndexPath(item: indexPath.item - 1, section: indexPath.section))
-        else
-        {
-            attributes.frame.origin.x = leftEdge // first item of the section should always be left aligned
-            return attributes
-        }
-
-        if isFrame(for: attributes, inSameLineAsFrameFor: previousAttributes)
-        {
-            attributes.frame.origin.x = previousAttributes.frame.maxX + minimumInteritemSpacing
-        }
-        else
-        {
-            attributes.frame.origin.x = leftEdge
-        }
-
-        return attributes
-    }
-}

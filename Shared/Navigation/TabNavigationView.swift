@@ -11,7 +11,7 @@ struct TabNavigationView: View {
     enum TabItem {
         case news
         case sets
-        case search
+        case cards
     }
     
     @State private var selection: TabItem = .news
@@ -38,13 +38,13 @@ struct TabNavigationView: View {
                 .tag(TabItem.sets)
                 .accentColor(Color.accentColor)
 
-            SearchView()
+            CardsView()
                 .navigationViewStyle(.stack)
                 .tabItem {
-                    Image(systemName: "magnifyingglass")
-                    Text("Search")
+                    Image(systemName: "lanyardcard")
+                    Text("Cards")
                 }
-                .tag(TabItem.search)
+                .tag(TabItem.cards)
                 .accentColor(Color.accentColor)
         }
             .accentColor(Color.accentColor)
