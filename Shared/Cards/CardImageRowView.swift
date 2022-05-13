@@ -108,10 +108,10 @@ struct CardImageRowPriceView: View {
                 }
             }
                 .padding(5)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.secondary, lineWidth: 1)
-                )
+//                .overlay(
+//                    RoundedRectangle(cornerRadius: 10)
+//                        .stroke(Color.secondary, lineWidth: 1)
+//                )
         } else {
             HStack {
                 VStack(alignment: .leading) {
@@ -140,10 +140,10 @@ struct CardImageRowPriceView: View {
                     }
             }
                 .padding(5)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.secondary, lineWidth: 1)
-                )
+//                .overlay(
+//                    RoundedRectangle(cornerRadius: 10)
+//                        .stroke(Color.secondary, lineWidth: 1)
+//                )
         }
     }
 }

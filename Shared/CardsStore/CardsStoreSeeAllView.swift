@@ -37,7 +37,7 @@ struct CardsStoreSeeAllView: View {
                         self.selectedCard = card
                     }
 
-                CardsStoreViewLarge(card: card)
+                CardsStoreLargeView(card: card)
                     .gesture(tap)
             }
         }
@@ -59,7 +59,7 @@ struct CardsStoreSeeAllView: View {
                         .onEnded { _ in
                             self.selectedCard = card
                         }
-                    CardsStoreViewLarge(card: card)
+                    CardsStoreLargeView(card: card)
                         .gesture(tap)
 
                 }

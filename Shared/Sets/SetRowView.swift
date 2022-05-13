@@ -17,15 +17,14 @@ struct SetRowView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
+        VStack(alignment: .leading, spacing: 2) {
+            HStack(spacing: 10) {
                 Text(set.keyrune2Unicode)
                     .scaledToFit()
                     .font(Font.custom("Keyrune", size: 30))
                 Text(set.name ?? "")
                     .font(.headline)
             }
-            Spacer()
             HStack {
                 Text("Code: \(set.code)")
                     .font(.subheadline)
@@ -38,7 +37,6 @@ struct SetRowView: View {
                     .foregroundColor(Color.gray)
                     .multilineTextAlignment(.trailing)
             }
-            Spacer()
             Text("Release Date: \(set.displayReleaseDate ?? "")")
                 .font(.subheadline)
                 .foregroundColor(Color.gray)

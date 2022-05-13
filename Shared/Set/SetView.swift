@@ -19,31 +19,22 @@ struct SetView: View {
     }
     
     var body: some View {
-        CardsStoreView(viewModel: viewModel) {
-            if let set = viewModel.set {
-                VStack(spacing: 0) {
-                    SetRowView(set: set)
-                    SetLanguagesView(set: set, viewModel: viewModel)
-                }
-            } else {
-                EmptyView()
-            }
-        }
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    VStack {
-                        if let set = viewModel.set,
-                           let logoImage = set.logoImage {
-                            Image(uiImage: logoImage)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .clipped()
-                        } else {
-                            EmptyView()
-                        }
-                    }
-                }
-             }
+        CardsStoreView(set: viewModel.set, setViewModel: viewModel, cardsViewModel: viewModel)
+//            .toolbar {
+//                ToolbarItem(placement: .principal) {
+//                    VStack {
+//                        if let set = viewModel.set,
+//                           let logoImage = set.logoImage {
+//                            Image(uiImage: logoImage)
+//                                .resizable()
+//                                .aspectRatio(contentMode: .fit)
+//                                .clipped()
+//                        } else {
+//                            EmptyView()
+//                        }
+//                    }
+//                }
+//             }
              .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -61,24 +52,20 @@ struct SetView_Previews: PreviewProvider {
 // MARK: - SetLanguagesView
 
 struct SetLanguagesView: View {
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
+    
     @ObservedObject var viewModel: SetViewModel
     private var set: MGSet
-    private let columns = [
-        GridItem(),
-        GridItem(),
-        GridItem(),
-        GridItem(),
-        GridItem(),
-        GridItem()
-    ]
-    
+        
     init(set: MGSet, viewModel: SetViewModel) {
         self.set = set
         self.viewModel = viewModel
     }
     
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 10) {
+        LazyVGrid(columns: columns(), spacing: 10) {
             Image("language")
                 .resizable()
                 .frame(width: 20, height: 20)
@@ -97,5 +84,17 @@ struct SetLanguagesView: View {
                 }
             }
         }
+    }
+    
+    func columns() -> [GridItem] {
+        #if os(iOS)
+        if horizontalSizeClass == .compact {
+            return [GridItem](repeating: GridItem(), count: 6)
+        } else {
+            return [GridItem](repeating: GridItem(), count: 12)
+        }
+        #else
+        return [GridItem](repeating: GridItem(), count: 12)
+        #endif
     }
 }

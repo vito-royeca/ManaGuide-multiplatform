@@ -128,11 +128,7 @@ struct SetsDataView: View {
                 }
             }
     }
-}
 
-// MARK: - Action Sheets
-
-extension SetsDataView {
     var sortActionSheet: ActionSheet {
         ActionSheet(
             title: Text("Sort by"),

@@ -9,7 +9,31 @@ import SwiftUI
 import ManaKit
 import SDWebImageSwiftUI
 
-struct CardsStoreViewFeature: View {
+struct CardsStoreHeaderView: View {
+    private let set: MGSet
+    private let viewModel: SetViewModel
+
+    init(set: MGSet, viewModel: SetViewModel) {
+        self.set = set
+        self.viewModel = viewModel
+    }
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            if let logoImage = set.logoImage {
+                Image(uiImage: logoImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .clipped()
+            }
+            SetRowView(set: set)
+            SetLanguagesView(set: set, viewModel: viewModel)
+        }
+            .padding(EdgeInsets(top: 0, leading: 0, bottom: 20, trailing: 0))
+    }
+}
+
+struct CardsStoreFeatureView: View {
     private let font: ManaKit.Font
     private let card: MGCard
     
@@ -47,7 +71,7 @@ struct CardsStoreViewFeature: View {
     }
 }
 
-struct CardsStoreViewLarge: View {
+struct CardsStoreLargeView: View {
     private let font: ManaKit.Font
     private let card: MGCard
     
@@ -86,7 +110,7 @@ struct CardsStoreViewLarge: View {
     }
 }
 
-struct CardsStoreViewCompact: View {
+struct CardsStoreCompactView: View {
     private let font: ManaKit.Font
     private let card: MGCard
     
@@ -158,13 +182,13 @@ struct NumberView_Previews: PreviewProvider {
         
         Group {
             if let card = viewModel.card {
-                CardsStoreViewFeature(card: card)
+                CardsStoreFeatureView(card: card)
                     .previewLayout(.fixed(width: 400, height: 300))
 
-                CardsStoreViewLarge(card: card)
+                CardsStoreLargeView(card: card)
                     .previewLayout(.fixed(width: 400, height: 125))
 
-                CardsStoreViewCompact(card: card)
+                CardsStoreCompactView(card: card)
                     .previewLayout(.fixed(width: 400, height: 83))
             } else {
                 Text("Loading...")
