@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "mb1_en_386_art_crop.jpg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
