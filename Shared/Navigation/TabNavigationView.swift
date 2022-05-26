@@ -18,16 +18,15 @@ struct TabNavigationView: View {
     
     var body: some View {
         TabView(selection: $selection) {
-//            NavigationView {
-//                NewsView()
-//            }
-//                .navigationViewStyle(.stack)
-//                .tabItem {
-//                    Image(systemName: "newspaper")
-//                    Text("News")
-//                }
-//                .tag(TabItem.news)
-//                .accentColor(Color.accentColor)
+            NavigationView {
+                NewsView()
+            }
+                .navigationViewStyle(.stack)
+                .tabItem {
+                    Image(systemName: "newspaper")
+                    Text("News")
+                }
+                .tag(TabItem.news)
 
             SetsView()
                 .navigationViewStyle(.stack)
@@ -36,7 +35,6 @@ struct TabNavigationView: View {
                     Text("Sets")
                 }
                 .tag(TabItem.sets)
-                .accentColor(Color.accentColor)
 
             CardsView()
                 .navigationViewStyle(.stack)
@@ -45,9 +43,7 @@ struct TabNavigationView: View {
                     Text("Cards")
                 }
                 .tag(TabItem.cards)
-                .accentColor(Color.accentColor)
         }
-            .accentColor(Color.accentColor)
     }
 }
 

@@ -18,7 +18,6 @@ struct CardsStoreView: View {
     @State private var showingSort = false
     @State private var showingDisplay = false
     @AppStorage("cardsSort") private var sort = CardsViewSort.name
-    @AppStorage("cardsDisplay") private var display = CardsViewDisplay.list
 
     // MARK: - Initializers
     
@@ -44,13 +43,12 @@ struct CardsStoreView: View {
         }
             .onAppear {
                 cardsViewModel.sort = sort
-                cardsViewModel.display = display
                 cardsViewModel.fetchData()
             }
     }
     
     var bodyData: some View {
-        CardsStoreDataView(sort: sort, display: display, set: set, setViewModel: setViewModel, cardsViewModel: cardsViewModel)
+        CardsStoreDataView(sort: sort, set: set, setViewModel: setViewModel, cardsViewModel: cardsViewModel)
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button(action: {
@@ -118,14 +116,12 @@ struct CardsStoreDataView : View {
     
     @State private var selectedCard: MGCard? = nil
     private var sort: CardsViewSort
-    private var display: CardsViewDisplay
     private var set: MGSet?
     private var setViewModel: SetViewModel?
     private var cardsViewModel: CardsViewModel
     
-    init(sort: CardsViewSort, display: CardsViewDisplay, set: MGSet?, setViewModel: SetViewModel?, cardsViewModel: CardsViewModel) {
+    init(sort: CardsViewSort, set: MGSet?, setViewModel: SetViewModel?, cardsViewModel: CardsViewModel) {
         self.sort = sort
-        self.display = display
         self.set = set
         self.setViewModel = setViewModel
         self.cardsViewModel = cardsViewModel
@@ -208,19 +204,8 @@ struct CardsStoreDataView : View {
             Text(title)
                 .font(.title)
             Spacer()
-            
-            if sectionID % 3 == 0 {
-                if cards.count > 2 {
-                    NavigationLink("See all", destination: CardsStoreSeeAllView(title: title, cards: cards))
-                }
-            } else if sectionID % 3 == 1  {
-                if cards.count > 4 {
-                    NavigationLink("See all", destination: CardsStoreSeeAllView(title: title, cards: cards))
-                }
-            } else {
-                if cards.count > 6 {
-                    NavigationLink("See all", destination: CardsStoreSeeAllView(title: title, cards: cards))
-                }
+            if cards.count >= 10 {
+                NavigationLink("See all", destination: CardsStoreSeeAllView(title: title, cards: cards))
             }
         }
     }
@@ -285,10 +270,10 @@ extension CardsStoreDataView {
 
             let nestedGroup = NSCollectionLayoutGroup.horizontal(
                 layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(0.9 / columnsToFit),
+                    widthDimension: .fractionalWidth(0.95 / columnsToFit),
                     heightDimension: .absolute(height)),
                 subitems: [itemsGroup])
-            nestedGroup.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 8, bottom: 10, trailing: 8)
+            nestedGroup.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
 
             let section = NSCollectionLayoutSection(group: nestedGroup)
             section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)

@@ -18,8 +18,8 @@ struct CardView: View {
     #endif
     
     @Environment(\.presentationMode) var presentationMode
-    @StateObject var viewModel: CardViewModel
     @State private var isShowingShareSheet = false
+    @StateObject var viewModel: CardViewModel
     
     init(newID: String) {
         _viewModel = StateObject(wrappedValue: CardViewModel(newID: newID))
@@ -34,7 +34,6 @@ struct CardView: View {
                     viewModel.fetchData()
                 }
             } else {
-//                bodyData
                 #if os(iOS)
                 if horizontalSizeClass == .compact {
                     compactView
@@ -86,38 +85,11 @@ struct CardView: View {
                 EmptyView()
             }
         }
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItemGroup(placement: .navigationBarLeading) {
-                    Button(action: {
-                        self.presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "xmark")
-                            .renderingMode(.original)
-                            .foregroundColor(Color.accentColor)
-                    }
-                }
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        self.isShowingShareSheet.toggle()
-                    }) {
-                        Image(systemName: "square.and.arrow.up")
-                            .renderingMode(.original)
-                            .foregroundColor(Color.accentColor)
-                    }
-                }
+                CardToolbar(presentationMode: presentationMode, isShowingShareSheet: $isShowingShareSheet)
             }
-            .sheet(isPresented: $isShowingShareSheet, onDismiss: {
-                print("Dismiss")
-            }, content: {
-                let itemSource = CardViewItemSource(card: viewModel.card!)
-
-                AppActivityView(activityItems: [itemSource])
-                    .excludeActivityTypes([])
-                    .onCancel { }
-                    .onComplete { result in
-                        return
-                    }
+            .sheet(isPresented: $isShowingShareSheet, content: {
+                activityView
             })
     }
     
@@ -157,41 +129,25 @@ struct CardView: View {
                 EmptyView()
             }
         }
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItemGroup(placement: .navigationBarLeading) {
-                    Button(action: {
-                        self.presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "xmark")
-                            .renderingMode(.original)
-                            .foregroundColor(Color.accentColor)
-                    }
-                }
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        self.isShowingShareSheet.toggle()
-                    }) {
-                        Image(systemName: "square.and.arrow.up")
-                            .renderingMode(.original)
-                            .foregroundColor(Color.accentColor)
-                    }
-                }
+                CardToolbar(presentationMode: presentationMode, isShowingShareSheet: $isShowingShareSheet)
             }
-            .sheet(isPresented: $isShowingShareSheet, onDismiss: {
-                print("Dismiss")
-            }, content: {
-                let itemSource = CardViewItemSource(card: viewModel.card!)
-
-                AppActivityView(activityItems: [itemSource])
-                    .excludeActivityTypes([])
-                    .onCancel { }
-                    .onComplete { result in
-                        return
-                    }
+            .sheet(isPresented: $isShowingShareSheet, content: {
+                activityView
             })
     }
 
+    var activityView: some View {
+        let itemSource = CardViewItemSource(card: viewModel.card!)
+
+        return AppActivityView(activityItems: [itemSource])
+            .excludeActivityTypes([])
+            .onCancel { }
+            .onComplete { result in
+                return
+            }
+    }
+    
     func shareAction() {
         guard let card = viewModel.card else {
             return
@@ -206,6 +162,38 @@ struct CardView: View {
         let window = connectedScenes.first?.windows.first { $0.isKeyWindow }
 
         window?.rootViewController?.present(activityVC, animated: true, completion: nil)
+    }
+}
+
+// MARK: - CardToolbar
+struct CardToolbar: ToolbarContent {
+    @Binding var presentationMode: PresentationMode
+    @Binding var isShowingShareSheet: Bool
+    
+    init(presentationMode: Binding<PresentationMode>, isShowingShareSheet: Binding<Bool>) {
+        _presentationMode = presentationMode
+        _isShowingShareSheet = isShowingShareSheet
+    }
+    
+    var body: some ToolbarContent {
+        ToolbarItemGroup(placement: .navigationBarLeading) {
+            Button(action: {
+                isShowingShareSheet.toggle()
+            }) {
+                Image(systemName: "square.and.arrow.up")
+                    .renderingMode(.original)
+                    .foregroundColor(Color.accentColor)
+            }
+        }
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+            Button(action: {
+                $presentationMode.wrappedValue.dismiss()
+            }) {
+                Image(systemName: "xmark")
+                    .renderingMode(.original)
+                    .foregroundColor(Color.accentColor)
+            }
+        }
     }
 }
 
@@ -271,12 +259,12 @@ struct CardView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             let model = SetViewModel(setCode: "isd", languageCode: "en")
-            CardView(newID: "isd_en_51"/*,
-                     cardsViewModel: model*/)
+            CardView(newID: "isd_en_51")
                 .onAppear {
                     model.fetchData()
                 }
         }
+        .previewInterfaceOrientation(.landscapeLeft)
     }
 }
 

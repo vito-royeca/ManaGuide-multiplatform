@@ -10,82 +10,14 @@ import SwiftUI
 import ManaKit
 
 struct SetsView: View {
-    @StateObject var viewModel = SetsViewModel()
-    @State var query: String?
-    @State var scopeSelection: Int = 0
-    
-    var body: some View {
-        SearchNavigation(query: $query,
-                         scopeSelection: $scopeSelection,
-                         isBusy: $viewModel.isBusy,
-                         delegate: self) {
-            SetsDataView(viewModel: viewModel)
-                .navigationBarTitle("Sets")
-                .modifier(SectionIndex(sections: viewModel.sections, sectionIndexTitles: viewModel.sectionIndexTitles))
-        }
-    }
-}
-
-// MARK: - Previews
-
-struct SetsView_Previews: PreviewProvider {
-    static var previews: some View {
-        SetsView()
-    }
-}
-
-// MARK: - SearchNavigation
-
-extension SetsView: SearchNavigationDelegate {
-    var options: [SearchNavigationOptionKey : Any]? {
-        return [
-            .automaticallyShowsSearchBar: true,
-            .obscuresBackgroundDuringPresentation: true,
-            .hidesNavigationBarDuringPresentation: true,
-            .hidesSearchBarWhenScrolling: false,
-            .placeholder: "Search for Magic sets...",
-            .showsBookmarkButton: false,
-//            .scopeButtonTitles: ["All", "Bookmarked", "Seen"],
-//            .scopeBarButtonTitleTextAttributes: [NSAttributedString.Key.font: UIFont.dckxRegularText],
-//            .searchTextFieldFont: UIFont.dckxRegularText
-         ]
-    }
-    
-    func search() {
-        guard let query = query,
-            query.count >= 3 else {
-            return
-        }
-        
-        viewModel.query = query
-        viewModel.scopeSelection = scopeSelection
-        viewModel.fetchLocalData()
-    }
-    
-    func scope() {
-        
-    }
-    
-    func cancel() {
-        query =  nil
-        viewModel.query = query
-        viewModel.fetchLocalData()
-    }
-}
-
-struct SetsDataView: View {
-    @StateObject var viewModel: SetsViewModel
-    @State private var showingSort = false
     @AppStorage("setsSort") private var sort = SetsViewSort.releaseDate
     
-    // MARK: - Initializers
-    
-    init(viewModel: SetsViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
-    }
+    @StateObject var viewModel = SetsViewModel()
+    @State private var showingSort = false
+    @State var query = ""
     
     var body: some View {
-        Group {
+        NavigationView {
             if viewModel.isBusy {
                 BusyView()
             } else if viewModel.isFailed {
@@ -99,6 +31,12 @@ struct SetsDataView: View {
             .onAppear {
                 viewModel.sort = sort
                 viewModel.fetchData()
+            }
+            .onChange(of: query) { _ in
+                search()
+            }
+            .onSubmit(of: .search) {
+                search()
             }
     }
     
@@ -114,6 +52,8 @@ struct SetsDataView: View {
             }
         }
             .listStyle(.plain)
+            .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search for Magic sets...")
+            .modifier(SectionIndex(sections: viewModel.sections, sectionIndexTitles: viewModel.sectionIndexTitles))
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button(action: {
@@ -127,8 +67,10 @@ struct SetsDataView: View {
                         .foregroundColor(Color.accentColor)
                 }
             }
+            .navigationBarTitle("Sets")
+            
     }
-
+    
     var sortActionSheet: ActionSheet {
         ActionSheet(
             title: Text("Sort by"),
@@ -152,4 +94,19 @@ struct SetsDataView: View {
             ]
         )
     }
+    
+    func search() {
+        viewModel.query = query
+        viewModel.fetchLocalData()
+    }
 }
+
+// MARK: - Previews
+
+struct SetsView_Previews: PreviewProvider {
+    static var previews: some View {
+        SetsView()
+            .previewInterfaceOrientation(.landscapeRight)
+    }
+}
+

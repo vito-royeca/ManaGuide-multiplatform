@@ -44,45 +44,40 @@ class NewsViewModel: NSObject, ObservableObject {
         isFailed = false
 
         let group = DispatchGroup()
-        let date = Date()
         var newFeeds = [FeedItem]()
         var failed = false
         
         for (_, value) in feedSource {
             if let url = URL(string: value) {
-                group.enter()
-            
                 let parser = FeedParser(URL: url)
+                
+                group.enter()
                 parser.parseAsync(queue: DispatchQueue.global(qos: .userInitiated)) { (result) in
-                    group.leave()
-                    
                     switch result {
                     case .success(let feed):
                         switch feed {
                         case let .atom(feed):
-                            newFeeds.append(contentsOf: feed.feedItems().sorted(by: { ($0.datePublished ?? date) > ($1.datePublished ?? date) }))
+                            newFeeds.append(contentsOf: feed.feedItems())
                         case let .rss(feed):
-                            newFeeds.append(contentsOf: feed.feedItems().sorted(by: { ($0.datePublished ?? date) > ($1.datePublished ?? date) }))
+                            newFeeds.append(contentsOf: feed.feedItems())
                         case let .json(feed):
-                            newFeeds.append(contentsOf: feed.feedItems().sorted(by: { ($0.datePublished ?? date) > ($1.datePublished ?? date) }))
+                            newFeeds.append(contentsOf: feed.feedItems())
                         }
                     case .failure(let error):
                         failed = true
                         print(error)
                     }
+                    
+                    group.leave()
                 }
             }
         }
         
         group.notify(queue: DispatchQueue.main, execute: {
+            let date = Date()
             newFeeds = newFeeds.sorted(by: { ($0.datePublished ?? date) > ($1.datePublished ?? date) })
-            newFeeds = newFeeds.count >= self.maxFeeds ? Array(newFeeds.prefix(upTo: self.maxFeeds)) : newFeeds
+            newFeeds = newFeeds.count >= self.maxFeeds ? newFeeds.dropLast(newFeeds.count - self.maxFeeds) : newFeeds
             
-    //        print(date)
-    //        for feed in limitedFeeds {
-    //            print("\(newFeed.datePublished ?? Date()): \(newFeed.datePublishedString ?? "")")
-    //        }
-
             self.lastUpdated = Date()
             self.feeds = newFeeds
             self.isBusy.toggle()

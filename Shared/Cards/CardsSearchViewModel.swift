@@ -84,26 +84,13 @@ class CardsSearchViewModel: CardsViewModel {
     
     override var sectionIndexTitles: [String] {
         get {
-            switch display {
-            case .imageCarousel:
-                return []
-            case .imageGrid,
-                 .list,
-                 .summary:
-                switch sort {
-                case .collectorNumber:
-                    return []
-                case .name:
-                    return frc.sectionIndexTitles
-                case .rarity:
-                    return frc.sectionIndexTitles
-                case .setName:
-                    return frc.sectionIndexTitles
-                case .setReleaseDate:
-                    return []
-                case .type:
-                    return frc.sectionIndexTitles
-                }
+            switch sort {
+            case .name:
+                return frc.sectionIndexTitles
+            case .rarity:
+                return frc.sectionIndexTitles
+            case .type:
+                return frc.sectionIndexTitles
             }
         }
     }

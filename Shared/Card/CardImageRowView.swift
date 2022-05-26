@@ -54,8 +54,7 @@ struct CardImageRowView: View {
         }
             .onAppear {
                 url = card.imageURL(for: .png)
-            }
-        
+            }        
     }
 }
 

@@ -24,7 +24,9 @@ struct BusyView: View {
                 .progressViewStyle(.circular)
                 .padding()
             Image(imageName)
+                .resizable()
                 .aspectRatio(contentMode: .fit)
+                .cornerRadius(16)
                 .clipped()
             Spacer()
         }

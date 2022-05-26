@@ -18,17 +18,17 @@ struct SideNavigationView: View {
     
     var body: some View {
         NavigationView {
-            let initialView = SetsView()
+            let initialView = NewsView()
             
             List {
-//                NavigationLink(tag: SideItem.news, selection: $selection) {
-//                    initialView
-//                } label: {
-//                    Label("News", systemImage: "newspaper")
-//                }
+                NavigationLink(tag: SideItem.news, selection: $selection) {
+                    initialView
+                } label: {
+                    Label("News", systemImage: "newspaper")
+                }
                 
                 NavigationLink(tag: SideItem.sets, selection: $selection) {
-                    initialView
+                    SetsView()
                 } label: {
                     Label("Sets", systemImage: "rectangle.3.group")
                 }
@@ -43,7 +43,7 @@ struct SideNavigationView: View {
             initialView
             
         }
-            .navigationTitle("Mana Guide")
+            .navigationBarTitle("Mana Guide")
     }
 }
 

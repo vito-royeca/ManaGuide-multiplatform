@@ -33,47 +33,6 @@ struct FeedItem: Identifiable {
     
     var author: String?
     
-    var datePublishedString: String? {
-        get {
-            if let datePublished = datePublished {
-                let datePublishedComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: datePublished)
-                let todayComponents = Calendar.current.dateComponents([.year, .month, .day], from: Date())
-                
-                if todayComponents.year ==  datePublishedComponents.year &&
-                   todayComponents.month ==  datePublishedComponents.month &&
-                   todayComponents.day ==  datePublishedComponents.day {
-                    
-                    let hours = datePublishedComponents.hour ?? 0
-                    let minutes = datePublishedComponents.minute ?? 0
-                    var timeString = ""
-                    
-                    if hours < 1 {
-                        if minutes >= 1 && minutes < 10 {
-                            formatter.dateFormat = "m"
-                        } else if minutes >= 10 && minutes < 60 {
-                            formatter.dateFormat = "mm"
-                        }
-                        timeString = "mins ago"
-                    } else {
-                        if hours >= 1 && hours < 10 {
-                            formatter.dateFormat = "H"
-                        } else {
-                            formatter.dateFormat = "HH"
-                        }
-                        timeString = "hrs ago"
-                    }
-                    
-                    return "\(formatter.string(from: datePublished)) \(timeString)"
-                } else {
-                    formatter.dateFormat = "MMM d"
-                    return formatter.string(from: datePublished)
-                }
-            }
-            
-            return nil
-        }
-    }
-    
     func parseImage(from html: String) -> String? {
         do {
             let doc = try Kanna.HTML(html: html, encoding: .utf8)

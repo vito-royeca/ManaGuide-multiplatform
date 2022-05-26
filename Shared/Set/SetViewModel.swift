@@ -83,13 +83,6 @@ class SetViewModel: CardsViewModel {
             var sortDescriptors = [NSSortDescriptor]()
 
             switch sort {
-            case .collectorNumber:
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
-                if languageCode == "en" {
-                    sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
-                } else {
-                    sortDescriptors.append(NSSortDescriptor(key: "printedName", ascending: true))
-                }
             case .name:
                 if languageCode == "en" {
                     sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
@@ -99,22 +92,6 @@ class SetViewModel: CardsViewModel {
                 sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
             case .rarity:
                 sortDescriptors.append(NSSortDescriptor(key: "rarity.name", ascending: true))
-                if languageCode == "en" {
-                    sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
-                } else {
-                    sortDescriptors.append(NSSortDescriptor(key: "printedName", ascending: true))
-                }
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
-            case .setName:
-                sortDescriptors.append(NSSortDescriptor(key: "set.name", ascending: true))
-                if languageCode == "en" {
-                    sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
-                } else {
-                    sortDescriptors.append(NSSortDescriptor(key: "printedName", ascending: true))
-                }
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
-            case .setReleaseDate:
-                sortDescriptors.append(NSSortDescriptor(key: "set.releaseDate", ascending: false))
                 if languageCode == "en" {
                     sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
                 } else {
@@ -137,34 +114,21 @@ class SetViewModel: CardsViewModel {
     
     override var sectionIndexTitles: [String] {
         get {
-            switch display {
-            case .imageCarousel:
-                return []
-            case .imageGrid,
-                 .list,
-                 .summary:
-                switch sort {
-                case .collectorNumber:
+            switch sort {
+            case .name:
+                if languageCode == "ja" ||
+                    languageCode == "ko" ||
+                    languageCode == "ru" ||
+                    languageCode == "zhs" ||
+                    languageCode == "zht" {
                     return []
-                case .name:
-                    if languageCode == "ja" ||
-                        languageCode == "ko" ||
-                        languageCode == "ru" ||
-                        languageCode == "zhs" ||
-                        languageCode == "zht" {
-                        return []
-                    } else {
-                        return frc.sectionIndexTitles
-                    }
-                case .rarity:
-                    return frc.sectionIndexTitles
-                case .setName:
-                    return frc.sectionIndexTitles
-                case .setReleaseDate:
-                    return []
-                case .type:
+                } else {
                     return frc.sectionIndexTitles
                 }
+            case .rarity:
+                return frc.sectionIndexTitles
+            case .type:
+                return frc.sectionIndexTitles
             }
         }
     }

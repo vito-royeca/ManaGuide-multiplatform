@@ -16,18 +16,13 @@ struct CardsView: View {
     @State var query: String?
     @State var scopeSelection: Int = 0
     
-    init() {
-        UITableView.appearance().allowsSelection = false
-        UITableViewCell.appearance().selectionStyle = .none
-    }
-    
     var body: some View {
         SearchNavigation(query: $query,
                          scopeSelection: $scopeSelection,
                          isBusy: $viewModel.isBusy,
                          delegate: self) {
             CardsStoreView(set: nil, setViewModel: nil, cardsViewModel: viewModel)
-                .navigationTitle("Search")
+                .navigationBarTitle("Cards")
         }
     }
 }

@@ -60,7 +60,7 @@ struct NewsFeedRowView: View {
                 
                 HStack {
                     let authorString = item.author != nil ? " \u{2022} \(item.author ?? "")" : ""
-                    Text("\(item.datePublishedString ?? "")\(authorString)")
+                    Text("\(item.datePublished?.elapsedTime() ?? "")\(authorString)")
                         .font(.footnote)
                         .foregroundColor(.secondary)
                     Spacer()
@@ -75,6 +75,7 @@ struct NewsFeedRowView: View {
                 }
                     .padding(5)
             }
+            Spacer()
         }
             .cornerRadius(10)
             .overlay(

@@ -20,21 +20,6 @@ struct SetView: View {
     
     var body: some View {
         CardsStoreView(set: viewModel.set, setViewModel: viewModel, cardsViewModel: viewModel)
-//            .toolbar {
-//                ToolbarItem(placement: .principal) {
-//                    VStack {
-//                        if let set = viewModel.set,
-//                           let logoImage = set.logoImage {
-//                            Image(uiImage: logoImage)
-//                                .resizable()
-//                                .aspectRatio(contentMode: .fit)
-//                                .clipped()
-//                        } else {
-//                            EmptyView()
-//                        }
-//                    }
-//                }
-//             }
              .navigationBarTitleDisplayMode(.inline)
     }
 }

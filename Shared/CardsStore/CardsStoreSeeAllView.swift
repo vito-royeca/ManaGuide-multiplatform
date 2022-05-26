@@ -20,16 +20,16 @@ struct CardsStoreSeeAllView: View {
     var body: some View {
         #if os(iOS)
         if horizontalSizeClass == .compact {
-            compactListView
+            compactView
         } else {
-            listView
+            regularView
         }
         #else
-        listView
+        regularView
         #endif
     }
     
-    var compactListView: some View {
+    var compactView: some View {
         List {
             ForEach(cards) { card in
                 let tap = TapGesture()
@@ -51,7 +51,7 @@ struct CardsStoreSeeAllView: View {
             .navigationBarTitle(title)
     }
     
-    var listView: some View {
+    var regularView: some View {
         ScrollView() {
             LazyVGrid(columns: [GridItem](repeating: GridItem(), count: 3), spacing: 10, pinnedViews: []) {
                 ForEach(cards) { card in

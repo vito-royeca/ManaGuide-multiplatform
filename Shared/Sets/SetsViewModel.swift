@@ -24,6 +24,7 @@ class SetsViewModel: NSObject, ObservableObject {
     
     // MARK: - Published Variables
     @Published var sets = [MGSet]()
+    @Published var filteredSets = [MGSet]()
     @Published var sections = [NSFetchedResultsSectionInfo]()
     @Published var isBusy = false
     @Published var isFailed = false
@@ -31,15 +32,12 @@ class SetsViewModel: NSObject, ObservableObject {
     // MARK: - Variables
     var dataAPI: API
     var sort: SetsViewSort = .releaseDate
-    var query: String?
-    var scopeSelection: Int
+    var query = ""
     private var frc: NSFetchedResultsController<MGSet>
     
     // MARK: - Initializers
     init(dataAPI: API = ManaKit.shared) {
         self.dataAPI = dataAPI
-        query = ""
-        scopeSelection = 0
         frc = NSFetchedResultsController()
         
         super.init()
@@ -79,9 +77,12 @@ class SetsViewModel: NSObject, ObservableObject {
         
         do {
             try frc.performFetch()
-            sets = frc.fetchedObjects ?? []
+            if query.isEmpty {
+                sets = frc.fetchedObjects ?? []
+            } else {
+                filteredSets = frc.fetchedObjects ?? []
+            }
             sections = frc.sections ?? []
-//            updateSectionIndexTitles()
         } catch {
             print(error)
             isFailed = true
@@ -156,12 +157,17 @@ extension SetsViewModel: NSFetchedResultsControllerDelegate {
 // MARK: - NSFetchRequest
 
 extension SetsViewModel {
-    func defaultFetchRequest(query: String?) -> NSFetchRequest<MGSet> {
+    func defaultFetchRequest(query: String) -> NSFetchRequest<MGSet> {
         var predicate = NSPredicate(format: "parent = nil")
         
-        if let query = query,
-           !query.isEmpty {
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@", query, query)])
+        if !query.isEmpty {
+            if query.count <= 2 {
+                predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
+                                                                                NSPredicate(format: "name BEGINSWITH[cd] %@ OR code BEGINSWITH[cd] %@", query, query)])
+            } else {
+                predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
+                                                                                NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@", query, query)])
+            }
         }
         
         let request: NSFetchRequest<MGSet> = MGSet.fetchRequest()

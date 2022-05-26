@@ -11,14 +11,12 @@ import FeedKit
 import SDWebImageSwiftUI
 
 struct NewsView: View {
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
+    
     @StateObject var viewModel = NewsViewModel()
     @State private var currentFeed: FeedItem? = nil
-    @State private var showingSafariView = false
-    
-    init() {
-        UITableView.appearance().allowsSelection = false
-        UITableViewCell.appearance().selectionStyle = .none
-    }
     
     var body: some View {
         Group {
@@ -29,7 +27,15 @@ struct NewsView: View {
                     viewModel.fetchData()
                 }
             } else {
-                bodyData
+                #if os(iOS)
+                if horizontalSizeClass == .compact {
+                    compactView
+                } else {
+                    regularView
+                }
+                #else
+                regularView
+                #endif
             }
         }
             .onAppear {
@@ -37,33 +43,77 @@ struct NewsView: View {
             }
     }
 
-    var bodyData: some View {
+    func safariView(with url: URL) -> SafariView {
+        return SafariView(
+            url: url,
+            configuration: SafariView.Configuration(
+                entersReaderIfAvailable: true,
+                barCollapsingEnabled: true)
+            )
+                .preferredBarAccentColor(.clear)
+                .preferredControlAccentColor(.accentColor)
+                .dismissButtonStyle(.close)
+    }
+    
+    var compactView: some View {
         List {
             ForEach(viewModel.feeds, id:\.id) { feed in
-                if let url = URL(string: feed.url ?? "") {
-                    let tap = TapGesture()
-                        .onEnded { _ in
-                            showingSafariView.toggle()
-                        }
-                    
-                    NewsFeedRowView(item: feed)
-                        .safariView(isPresented: $showingSafariView) {
-                            SafariView(
-                                url: url,
-                                configuration: SafariView.Configuration(
-                                    entersReaderIfAvailable: true,
-                                    barCollapsingEnabled: true
-                                )
-                            )
-                        }
-                        .gesture(tap)
-                        .listRowSeparator(.hidden)
-                        .padding(.bottom)
-                }
+                let tap = TapGesture()
+                    .onEnded { _ in
+                        currentFeed = feed
+                    }
+                
+                NewsFeedRowView(item: feed)
+                    .gesture(tap)
+                    .listRowSeparator(.hidden)
+                    .padding(.bottom)
+                
             }
         }
             .listStyle(.plain)
-            .navigationTitle("News")
+            .safariView(item: $currentFeed) { currentFeed in
+                SafariView(
+                    url: URL(string: currentFeed.url ?? "")!,
+                    configuration: SafariView.Configuration(
+                        entersReaderIfAvailable: false,
+                        barCollapsingEnabled: true)
+                    )
+                        .preferredBarAccentColor(.clear)
+                        .preferredControlAccentColor(.accentColor)
+                        .dismissButtonStyle(.close)
+            }
+            .navigationBarTitle("News")
+    }
+    
+    var regularView: some View {
+        ScrollView() {
+            LazyVGrid(columns: [GridItem](repeating: GridItem(.flexible()), count: 2), pinnedViews: []) {
+                ForEach(viewModel.feeds, id:\.id) { feed in
+                    let tap = TapGesture()
+                        .onEnded { _ in
+                            currentFeed = feed
+                        }
+
+                    NewsFeedRowView(item: feed)
+                        .frame(height: 200)
+                        .padding()
+                        .gesture(tap)
+                }
+            }
+                .safariView(item: $currentFeed) { currentFeed in
+                    SafariView(
+                        url: URL(string: currentFeed.url ?? "")!,
+                        configuration: SafariView.Configuration(
+                            entersReaderIfAvailable: false,
+                            barCollapsingEnabled: true)
+                        )
+                            .preferredBarAccentColor(.clear)
+                            .preferredControlAccentColor(.accentColor)
+                            .dismissButtonStyle(.close)
+                }
+                .padding()
+                .navigationBarTitle("News")
+        }
     }
 }
 
