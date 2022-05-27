@@ -28,6 +28,7 @@ class Tests_iOS: XCTestCase {
         app.launch()
 
         // Use XCTAssert and related functions to verify your tests produce the correct results.
+        
     }
 
     func testLaunchPerformance() throws {
@@ -37,5 +38,36 @@ class Tests_iOS: XCTestCase {
                 XCUIApplication().launch()
             }
         }
+    }
+    
+    func testScreenshots() {
+        // Use recording to get started writing UI tests.
+        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        let app = XCUIApplication()
+        setupSnapshot(app)
+        app.launch()
+
+        let tabBar = XCUIApplication().tabBars["Tab Bar"]
+
+        tabBar.buttons["News"].tap()
+        sleep(4)
+        snapshot("01News")
+
+        tabBar.buttons["Sets"].tap()
+        sleep(4)
+        snapshot("02Sets")
+
+        let tablesQuery = app.tables
+
+        tablesQuery.cells.element(boundBy: 0).tap()
+        sleep(4)
+        snapshot("03Set")
+
+        let collectionsQuery = app.collectionViews
+
+        collectionsQuery.cells.element(boundBy: 1).tap()
+        collectionsQuery.cells.element(boundBy: 1).swipeUp()
+        sleep(4)
+        snapshot("04Card")
     }
 }
