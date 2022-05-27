@@ -59,7 +59,7 @@ struct CardsStoreView: View {
                         .actionSheet(isPresented: $showingSort) {
                             sortActionSheet
                         }
-                        .foregroundColor(Color.accentColor)
+                        .foregroundColor(.accentColor)
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsStoreViewSort)) { (output) in

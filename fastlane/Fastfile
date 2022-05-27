@@ -20,7 +20,7 @@ platform :ios do
   	capture_screenshots(
         reinstall_app: true,
         clear_previous_screenshots: true)
-  	frameit(white: true)
+  	frameit
     deliver
   end
 

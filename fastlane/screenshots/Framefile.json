@@ -1,7 +1,7 @@
 {
   "default": {
     "title": {
-      "font": "../../../ManaKit/ManaKit/Assets/fonts/beleren-bold-webfont.ttf",
+      "font": "../../../ManaKit/Sources/ManaKit/Resources/fonts/beleren-bold-webfont.ttf",
       "color": "#F92D51"
     },
     "background": "./background.jpg",

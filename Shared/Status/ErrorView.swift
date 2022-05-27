@@ -49,7 +49,7 @@ struct ErrorView: View {
                                 .stroke(Color.accentColor, lineWidth: 1)
                         )
                 }
-                    .foregroundColor(Color.accentColor)
+                    .foregroundColor(.accentColor)
                 Spacer()
             }
         }

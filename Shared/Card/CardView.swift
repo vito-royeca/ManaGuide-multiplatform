@@ -182,7 +182,6 @@ struct CardToolbar: ToolbarContent {
             }) {
                 Image(systemName: "square.and.arrow.up")
                     .renderingMode(.original)
-                    .foregroundColor(Color.accentColor)
             }
         }
         ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -191,7 +190,6 @@ struct CardToolbar: ToolbarContent {
             }) {
                 Image(systemName: "xmark")
                     .renderingMode(.original)
-                    .foregroundColor(Color.accentColor)
             }
         }
     }

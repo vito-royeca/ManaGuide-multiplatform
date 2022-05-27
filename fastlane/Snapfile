@@ -4,10 +4,14 @@ scheme("Tests iOS")
 
 # A list of devices you want to take the screenshots from
  devices([
-   "iPhone 8 Plus",
-   "iPhone 11 Pro Max",
-   "iPad Pro (11-inch) (3rd generation)",
-   "iPad Pro (12.9-inch) (5th generation)"
+  "iPhone 11 Pro Max",          #6.5in
+  "iPhone 11 Pro",              #5.8in
+  "iPhone 8 Plus",              #5.5in
+  "iPhone SE (3rd generation)", #4.7in
+  "iPad Pro (12.9-inch) (5th generation)", #12.9in
+  "iPad Pro (11-inch) (3rd generation)",   #11in
+  "iPad Air (3rd generation)",             #10.5in
+  "iPad (6th generation)"                  #9.7in  
  ])
 
  languages([
