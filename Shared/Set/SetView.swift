@@ -65,7 +65,7 @@ struct SetLanguagesView: View {
                         viewModel.fetchData()
                     })
                         .buttonStyle(PlainButtonStyle())
-                        .foregroundColor(Color.accentColor)
+                        .foregroundColor(.accentColor)
                 }
             }
         }

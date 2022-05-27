@@ -16,24 +16,31 @@ struct BusyView: View {
     }
     
     var body: some View {
-        VStack {
-            Spacer()
-            Text("Loading...")
-                .font(Font.custom(ManaKit.Fonts.magic2015.name, size: 30))
-            ProgressView()
-                .progressViewStyle(.circular)
-                .padding()
-            Image(imageName)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .cornerRadius(16)
-                .clipped()
-            Spacer()
-        }
-            .onAppear {
-                let random = Int.random(in: 1..<21)
-                imageName = "busy\(random < 10 ? "0" : "")\(random)"
+        GeometryReader { proxy in
+            VStack(spacing: 20) {
+                Spacer()
+                Text("Loading...")
+                    .font(Font.custom(ManaKit.Fonts.magic2015.name, size: 30))
+                ProgressView()
+                    .progressViewStyle(.circular)
+                    .padding()
+                HStack {
+                    Spacer()
+                    Image(imageName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: proxy.size.width * 0.8, alignment: .center)
+                        .cornerRadius(16)
+                        .clipped()
+                        .onAppear {
+                            let random = Int.random(in: 1..<21)
+                            imageName = "busy\(random < 10 ? "0" : "")\(random)"
+                        }
+                    Spacer()
+                }
+                Spacer()
             }
+        }
     }
 }
 

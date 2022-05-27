@@ -18,17 +18,25 @@ struct ErrorView: View {
     }
     
     var body: some View {
-        GeometryReader { reader in
-            VStack {
+        GeometryReader { proxy in
+            VStack(spacing: 20) {
                 Spacer()
                 Text("An error has occured.")
                     .font(Font.custom(ManaKit.Fonts.magic2015.name, size: 30))
-                Spacer()
-                Image(imageName)
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: reader.size.width)
-                    .clipped()
-                Spacer()
+                HStack {
+                    Spacer()
+                    Image(imageName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: proxy.size.width * 0.8, alignment: .center)
+                        .cornerRadius(16)
+                        .clipped()
+                        .onAppear {
+                            let random = Int.random(in: 1..<14)
+                            imageName = "failure\(random < 10 ? "0" : "")\(random)"
+                        }
+                    Spacer()
+                }
                 Button(action: {
                     retryAction()
                 }) {
@@ -41,13 +49,9 @@ struct ErrorView: View {
                                 .stroke(Color.accentColor, lineWidth: 1)
                         )
                 }
-                    .foregroundColor(Color.accentColor)
+                    .foregroundColor(.accentColor)
                 Spacer()
             }
-                .onAppear {
-                    let random = Int.random(in: 1..<14)
-                    imageName = "failure\(random < 10 ? "0" : "")\(random)"
-                }
         }
     }
 }

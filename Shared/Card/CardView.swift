@@ -182,7 +182,6 @@ struct CardToolbar: ToolbarContent {
             }) {
                 Image(systemName: "square.and.arrow.up")
                     .renderingMode(.original)
-                    .foregroundColor(Color.accentColor)
             }
         }
         ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -191,7 +190,6 @@ struct CardToolbar: ToolbarContent {
             }) {
                 Image(systemName: "xmark")
                     .renderingMode(.original)
-                    .foregroundColor(Color.accentColor)
             }
         }
     }
@@ -292,7 +290,6 @@ struct CardPricingInfoView: View {
                                normal: prices.filter({ !$0.isFoil }).map{ $0.high}.first ?? 0,
                                foil: prices.filter({ $0.isFoil }).map{ $0.high}.first ?? 0)
         }
-            .accentColor(Color.accentColor)
     }
 }
 
@@ -497,7 +494,7 @@ struct CardExtraInfoView: View {
     @Environment(\.colorScheme) var colorScheme
     @State var isColorsExpanded         = true
     @State var isComponentPartsExpanded = false
-    @State var isFrameEffectsExpanded   = true
+    @State var isFrameEffectsExpanded   = false
     @State var isLegalitiesExpanded     = false
     @State var isOtherLanguagesExpanded = false
     @State var isOtherPrintingsExpanded = false
@@ -517,7 +514,6 @@ struct CardExtraInfoView: View {
                 ColorRowView(title: "Color Identities", colors: card.sortedColorIdentities)
                 ColorRowView(title: "Color Indicators", colors: card.sortedColorIndicators)
             }
-                .accentColor(Color.accentColor)
             
             if let componentParts = card.sortedComponentParts {
                 DisclosureGroup("Component Parts: \(componentParts.count)", isExpanded: $isComponentPartsExpanded) {
@@ -537,7 +533,6 @@ struct CardExtraInfoView: View {
                         }
                     }
                 }
-                    .accentColor(Color.accentColor)
             }
 
             if let frameEffects = card.sortedFrameEffects {
@@ -546,7 +541,6 @@ struct CardExtraInfoView: View {
                         Text(frameEffect.name ?? " ")
                     }
                 }
-                    .accentColor(Color.accentColor)
             }
 
             if let formatLegalities = card.sortedFormatLegalities {
@@ -556,7 +550,6 @@ struct CardExtraInfoView: View {
                                         subtitle: formatLegality.legality?.name ?? " ")
                     }
                 }
-                    .accentColor(Color.accentColor)
             }
 
             if let otherLanguages = card.sortedOtherLanguages {
@@ -566,7 +559,6 @@ struct CardExtraInfoView: View {
                             .background(NavigationLink("", destination: CardView(newID: otherLanguage.newIDCopy)).opacity(0))
                     }
                 }
-                    .accentColor(Color.accentColor)
             }
 
             if let otherPrintings = card.sortedOtherPrintings {
@@ -576,7 +568,6 @@ struct CardExtraInfoView: View {
                             .background(NavigationLink("", destination: CardView(newID: otherPrinting.newIDCopy)).opacity(0))
                     }
                 }
-                    .accentColor(Color.accentColor)
             }
 
             if let rulings = card.sortedRulings {
@@ -592,7 +583,6 @@ struct CardExtraInfoView: View {
                         }
                     }
                 }
-                    .accentColor(Color.accentColor)
             }
 
             if let variations = card.sortedVariations {
@@ -602,7 +592,6 @@ struct CardExtraInfoView: View {
                             .background(NavigationLink("", destination: CardView(newID: variation.newIDCopy)).opacity(0))
                     }
                 }
-                    .accentColor(Color.accentColor)
             }
         }
     }

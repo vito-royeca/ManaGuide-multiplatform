@@ -192,7 +192,7 @@ struct CardImageRowButtonView: View {
             }) {
                 Image(systemName: imageName)
                     .renderingMode(.original)
-                    .foregroundColor(Color.accentColor)
+                    .foregroundColor(.accentColor)
             }
 //                .frame(width: 20, height: 20)
 //                .background(

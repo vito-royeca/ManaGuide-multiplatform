@@ -64,7 +64,7 @@ struct SetsView: View {
                         .actionSheet(isPresented: $showingSort) {
                             sortActionSheet
                         }
-                        .foregroundColor(Color.accentColor)
+                        .foregroundColor(.accentColor)
                 }
             }
             .navigationBarTitle("Sets")

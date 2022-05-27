@@ -79,7 +79,7 @@ struct NewsView: View {
                         barCollapsingEnabled: true)
                     )
                         .preferredBarAccentColor(.clear)
-                        .preferredControlAccentColor(.accentColor)
+//                        .preferredControlAccentColor(.accentColor)
                         .dismissButtonStyle(.close)
             }
             .navigationBarTitle("News")
@@ -108,7 +108,7 @@ struct NewsView: View {
                             barCollapsingEnabled: true)
                         )
                             .preferredBarAccentColor(.clear)
-                            .preferredControlAccentColor(.accentColor)
+//                            .preferredControlAccentColor(.accentColor)
                             .dismissButtonStyle(.close)
                 }
                 .padding()
