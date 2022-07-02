@@ -36,7 +36,7 @@ struct CardsStoreView: View {
                 BusyView()
             } else if cardsViewModel.isFailed {
                 ErrorView {
-                    cardsViewModel.fetchData()
+                    cardsViewModel.fetchRemoteData()
                 }
             } else {
                 bodyData
@@ -44,7 +44,7 @@ struct CardsStoreView: View {
         }
             .onAppear {
                 cardsViewModel.sort = sort
-                cardsViewModel.fetchData()
+                cardsViewModel.fetchRemoteData()
             }
     }
     

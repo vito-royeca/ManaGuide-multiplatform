@@ -92,7 +92,7 @@ class SetsViewModel: ViewModel {
     
     // MARK: - Methods
     
-    override func fetchData() {
+    override func fetchRemoteData() {
         guard !isBusy && data.isEmpty else {
             return
         }

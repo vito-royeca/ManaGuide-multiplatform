@@ -22,7 +22,7 @@ struct SetsView: View {
                 BusyView()
             } else if viewModel.isFailed {
                 ErrorView {
-                    viewModel.fetchData()
+                    viewModel.fetchRemoteData()
                 }
             } else {
                 bodyData
@@ -30,7 +30,7 @@ struct SetsView: View {
         }
             .onAppear {
                 viewModel.sort = sort
-                viewModel.fetchData()
+                viewModel.fetchRemoteData()
             }
             .onChange(of: query) { _ in
                 search()

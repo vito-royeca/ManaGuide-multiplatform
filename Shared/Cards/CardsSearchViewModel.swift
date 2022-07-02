@@ -31,7 +31,7 @@ class CardsSearchViewModel: CardsViewModel {
     
     // MARK: - Methods
 
-    override func fetchData() {
+    override func fetchRemoteData() {
         if !willFetch() {
             return
         }

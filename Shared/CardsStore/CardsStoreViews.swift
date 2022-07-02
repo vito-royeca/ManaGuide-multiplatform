@@ -196,7 +196,7 @@ struct NumberView_Previews: PreviewProvider {
             }
         }
             .onAppear {
-                viewModel.fetchData()
+                viewModel.fetchRemoteData()
             }
     }
 }

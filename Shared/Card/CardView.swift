@@ -33,7 +33,7 @@ struct CardView: View {
                 BusyView()
             } else if viewModel.isFailed {
                 ErrorView {
-                    viewModel.fetchData()
+                    viewModel.fetchRemoteData()
                 }
             } else {
                 #if os(iOS)
@@ -48,7 +48,7 @@ struct CardView: View {
             }
         }
             .onAppear {
-                viewModel.fetchData()
+                viewModel.fetchRemoteData()
             }
     }
     
@@ -159,7 +159,7 @@ struct CardView: View {
                     let newCard = relatedCards[pageNumber]
                     viewModel.card = nil
                     viewModel.newID = newCard.newIDCopy
-                    viewModel.fetchData()
+                    viewModel.fetchRemoteData()
                     
                 })
                 .itemSpacing(10)
@@ -297,7 +297,7 @@ struct CardView_Previews: PreviewProvider {
             
             CardView(newID: "isd_en_51", relatedCards: model.data)
                 .onAppear {
-                    model.fetchData()
+                    model.fetchRemoteData()
                 }
         }
         .previewInterfaceOrientation(.portraitUpsideDown)

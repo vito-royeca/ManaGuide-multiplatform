@@ -40,7 +40,7 @@ class ViewModel: NSObject, ObservableObject {
     
     // MARK: - Methods
     
-    func fetchData() { }
+    func fetchRemoteData() { }
     func fetchLocalData() { }
     
     func find<T: MGEntity>(_ entity: T.Type, id: NSManagedObjectID) -> T? {

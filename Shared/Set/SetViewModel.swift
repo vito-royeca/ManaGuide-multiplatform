@@ -57,7 +57,7 @@ class SetViewModel: CardsViewModel {
 
     // MARK: - Methods
     
-    override func fetchData() {
+    override func fetchRemoteData() {
         guard !isBusy && data.isEmpty else {
             return
         }

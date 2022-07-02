@@ -34,7 +34,7 @@ struct SetLanguagesView: View {
                     Button(language.displayCode ?? "", action: {
                         viewModel.languageCode = language.code ?? ""
                         viewModel.data.removeAll()
-                        viewModel.fetchData()
+                        viewModel.fetchRemoteData()
                     })
                         .buttonStyle(PlainButtonStyle())
                         .foregroundColor(.accentColor)
