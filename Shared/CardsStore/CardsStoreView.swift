@@ -149,7 +149,7 @@ struct CardsStoreDataView : View {
         var array = [ASCollectionViewSection<Int>]()
 
         if let set = set,
-            let viewModel = setViewModel,
+           let viewModel = setViewModel,
            let setObject = viewModel.find(MGSet.self, id: set) {
             array.append(ASCollectionViewSection(id: -1) {
                 CardsStoreHeaderView(set: setObject, viewModel: viewModel)
@@ -198,7 +198,7 @@ struct CardsStoreDataView : View {
                         ASSelfSizingConfig(canExceedCollectionWidth: false)
                     }
                     .sectionHeader {
-                        header(sectionID: sectionID,  title: section.name, cards: cardsViewModel.data)
+                        header(sectionID: sectionID,  title: section.name, cards: cards.map({ $0.objectID }))
                     }
         })
         
@@ -249,6 +249,7 @@ extension CardsStoreDataView {
             var height = CGFloat(120)
             if let set = set,
                let setObject = setViewModel?.find(MGSet.self, id: set) {
+                
                 if let _ = setObject.logoURL {
                     height += 100
                 }

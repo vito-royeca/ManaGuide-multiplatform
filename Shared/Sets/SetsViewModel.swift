@@ -125,6 +125,7 @@ class SetsViewModel: ViewModel {
         
         do {
             try frc.performFetch()
+
             if query.isEmpty {
                 data = (frc.fetchedObjects ?? []).map({ $0.objectID })
             } else {
@@ -137,8 +138,6 @@ class SetsViewModel: ViewModel {
             data.removeAll()
         }
     }
-    
-    
 }
 
 // MARK: - NSFetchedResultsControllerDelegate

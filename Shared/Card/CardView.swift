@@ -55,20 +55,22 @@ struct CardView: View {
     var compactView: some View {
         GeometryReader { proxy in
             List {
-                if let card = viewModel.card {
+                if let card = viewModel.card,
+                   let cardObject = viewModel.find(MGCard.self, id: card) {
+
                     Section {
                         let width = proxy.size.width * 0.7
                         let height = proxy.size.height * 0.7
                         carouselView(card: card, width: width, height: height)
                     }
                     
-                    if let prices = card.prices?.allObjects as? [MGCardPrice] {
+                    if let prices = cardObject.prices?.allObjects as? [MGCardPrice] {
                         Section {
                             CardPricingInfoView(prices: prices)
                         }
                     }
                     
-                    if let faces = card.sortedFaces {
+                    if let faces = cardObject.sortedFaces {
                         ForEach(faces) { face in
                             Section {
                                 CardCommonInfoView(card: face)
@@ -76,15 +78,15 @@ struct CardView: View {
                         }
                     } else {
                         Section {
-                            CardCommonInfoView(card: card)
+                            CardCommonInfoView(card: cardObject)
                         }
                     }
                     
                     Section {
-                        CardOtherInfoView(card: card)
+                        CardOtherInfoView(card: cardObject)
                     }
                     Section {
-                        CardExtraInfoView(card: card)
+                        CardExtraInfoView(card: cardObject)
                     }
                 } else {
                     EmptyView()
@@ -101,21 +103,26 @@ struct CardView: View {
     
     var regularView: some View {
         HStack(alignment: .top) {
-            if let card = viewModel.card {
+            if let card = viewModel.card,
+               let cardObject = viewModel.find(MGCard.self, id: card) {
+
                 GeometryReader { proxy in
                     let width = proxy.size.width * 0.7
-                    let height = proxy.size.height * 0.7
-                    carouselView(card: card, width: width, height: height)
+                    let height = proxy.size.height * 0.5
+                    
+                    List {
+                        carouselView(card: card, width: width, height: height)
+                        
+                        if let prices = cardObject.prices?.allObjects as? [MGCardPrice] {
+                            Section {
+                                CardPricingInfoView(prices: prices)
+                            }
+                        }
+                    }
                 }
 
                 List {
-                    if let prices = card.prices?.allObjects as? [MGCardPrice] {
-                        Section {
-                            CardPricingInfoView(prices: prices)
-                        }
-                    }
-                    
-                    if let faces = card.sortedFaces {
+                    if let faces = cardObject.sortedFaces {
                         ForEach(faces) { face in
                             Section {
                                 CardCommonInfoView(card: face)
@@ -123,15 +130,15 @@ struct CardView: View {
                         }
                     } else {
                         Section {
-                            CardCommonInfoView(card: card)
+                            CardCommonInfoView(card: cardObject)
                         }
                     }
                     
                     Section {
-                        CardOtherInfoView(card: card)
+                        CardOtherInfoView(card: cardObject)
                     }
                     Section {
-                        CardExtraInfoView(card: card)
+                        CardExtraInfoView(card: cardObject)
                     }
                 }
             } else {
@@ -146,21 +153,22 @@ struct CardView: View {
             })
     }
 
-    func carouselView(card: MGCard, width: CGFloat, height: CGFloat) -> some View {
+    func carouselView(card: NSManagedObjectID, width: CGFloat, height: CGFloat) -> some View {
         return ScrollView {
-            let relatedCards = viewModel.find(MGCard.self, ids: viewModel.relatedCards)
-            
-            Pager(page: Page.withIndex(relatedCards.firstIndex(of: card) ?? 0),
-                  data: relatedCards,
-                  id: \.newIDCopy) { card in
-                CardImageRowView(card: card, style: .oneLine)
+            Pager(page: Page.withIndex(viewModel.relatedCards.firstIndex(of: card) ?? 0),
+                  data: viewModel.relatedCards) { card in
+                if let cardObject = viewModel.find(MGCard.self, id: card) {
+                    CardImageRowView(card: cardObject, style: .oneLine)
+                }
             }
                 .onPageChanged({ pageNumber in
-                    let newCard = relatedCards[pageNumber]
-                    viewModel.card = nil
-                    viewModel.newID = newCard.newIDCopy
-                    viewModel.fetchRemoteData()
+                    let card = viewModel.relatedCards[pageNumber]
                     
+                    if let cardObject = viewModel.find(MGCard.self, id: card) {
+                        viewModel.card = nil
+                        viewModel.newID = cardObject.newIDCopy
+                        viewModel.fetchRemoteData()
+                    }
                 })
                 .itemSpacing(10)
                 .itemAspectRatio(0.8)
@@ -173,8 +181,9 @@ struct CardView: View {
     var activityView: some View {
         var itemSources = [UIActivityItemSource]()
         
-        if let card = viewModel.card {
-            itemSources.append(CardViewItemSource(card: card))
+        if let card = viewModel.card,
+           let cardObject = viewModel.find(MGCard.self, id: card) {
+            itemSources.append(CardViewItemSource(card: cardObject))
         }
 
         return AppActivityView(activityItems: itemSources)
@@ -186,11 +195,12 @@ struct CardView: View {
     }
     
     func shareAction() {
-        guard let card = viewModel.card else {
+        guard let card = viewModel.card,
+           let cardObject = viewModel.find(MGCard.self, id: card) else {
             return
         }
         
-        let itemSource = CardViewItemSource(card: card)
+        let itemSource = CardViewItemSource(card: cardObject)
         let activityVC = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
 
         let connectedScenes = UIApplication.shared.connectedScenes
@@ -248,7 +258,6 @@ class CardViewItemSource: NSObject, UIActivityItemSource {
     }
     
     func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
-        
         return card.displayName ?? ""
     }
     
@@ -294,8 +303,8 @@ struct CardView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             let model = SetViewModel(setCode: "isd", languageCode: "en")
-            
-            CardView(newID: "isd_en_51", relatedCards: model.data)
+            let relatedCards = model.data
+            CardView(newID: "isd_en_51", relatedCards: relatedCards)
                 .onAppear {
                     model.fetchRemoteData()
                 }

@@ -11,11 +11,12 @@ import SwiftUI
 import ManaKit
 
 class CardViewModel: ViewModel {
-    @Published var card: MGCard?
-    var relatedCards: [NSManagedObjectID]
+    @Published var card: NSManagedObjectID?
     
     // MARK: - Variables
+    
     var newID: String
+    var relatedCards: [NSManagedObjectID]
     var dataAPI: API
     
     // MARK: - Initializers
@@ -41,7 +42,7 @@ class CardViewModel: ViewModel {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 switch result {
                 case .success(let card):
-                    self.card = card
+                    self.card = card?.objectID
                 case .failure(let error):
                     print(error)
                     self.isFailed = true

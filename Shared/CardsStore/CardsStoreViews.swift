@@ -182,14 +182,15 @@ struct NumberView_Previews: PreviewProvider {
         let viewModel = CardViewModel(newID: "isd_en_51", relatedCards: [])
         
         Group {
-            if let card = viewModel.card {
-                CardsStoreFeatureView(card: card)
+            if let card = viewModel.card,
+               let cardObject = viewModel.find(MGCard.self, id: card) {
+                CardsStoreFeatureView(card: cardObject)
                     .previewLayout(.fixed(width: 400, height: 300))
 
-                CardsStoreLargeView(card: card)
+                CardsStoreLargeView(card: cardObject)
                     .previewLayout(.fixed(width: 400, height: 125))
 
-                CardsStoreCompactView(card: card)
+                CardsStoreCompactView(card: cardObject)
                     .previewLayout(.fixed(width: 400, height: 83))
             } else {
                 Text("Loading...")
