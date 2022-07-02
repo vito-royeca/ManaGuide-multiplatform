@@ -5,6 +5,7 @@
 //  Created by Vito Royeca on 5/11/22.
 //
 
+import CoreData
 import SwiftUI
 import ManaKit
 
@@ -13,9 +14,10 @@ struct CardsStoreSeeAllView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
     
-    @State private var selectedCard: MGCard? = nil
+    @State private var selectedCard: NSManagedObjectID? = nil
     let title: String
-    let cards: [MGCard]
+    let cards: [NSManagedObjectID]
+    let viewModel = ViewModel()
     
     var body: some View {
         #if os(iOS)
@@ -37,14 +39,20 @@ struct CardsStoreSeeAllView: View {
                         self.selectedCard = card
                     }
 
-                CardsStoreLargeView(card: card)
-                    .gesture(tap)
+                if let card = viewModel.find(MGCard.self, id: card) {
+                    CardsStoreLargeView(card: card)
+                        .gesture(tap)
+                }
             }
         }
             .listStyle(.plain)
             .sheet(item: $selectedCard) { selectedCard in
                 NavigationView {
-                    CardView(newID: selectedCard.newIDCopy)
+                    if let card = viewModel.find(MGCard.self, id: selectedCard) {
+                        CardView(newID: card.newIDCopy, relatedCards: cards)
+                    } else {
+                        EmptyView()
+                    }
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -59,15 +67,21 @@ struct CardsStoreSeeAllView: View {
                         .onEnded { _ in
                             self.selectedCard = card
                         }
-                    CardsStoreLargeView(card: card)
-                        .gesture(tap)
-
+                    
+                    if let card = viewModel.find(MGCard.self, id: card) {
+                        CardsStoreLargeView(card: card)
+                            .gesture(tap)
+                    }
                 }
             }
                 .padding()
                 .sheet(item: $selectedCard) { selectedCard in
                     NavigationView {
-                        CardView(newID: selectedCard.newIDCopy)
+                        if let card = viewModel.find(MGCard.self, id: selectedCard) {
+                            CardView(newID: card.newIDCopy, relatedCards: cards)
+                        } else {
+                            EmptyView()
+                        }
                     }
                 }
                 .navigationBarTitleDisplayMode(.inline)

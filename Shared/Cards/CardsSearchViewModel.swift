@@ -36,7 +36,7 @@ class CardsSearchViewModel: CardsViewModel {
             return
         }
         
-        guard !isBusy && cards.isEmpty else {
+        guard !isBusy && data.isEmpty else {
             return
         }
         
@@ -52,7 +52,7 @@ class CardsSearchViewModel: CardsViewModel {
                 case .failure(let error):
                     print(error)
                     self.isFailed = true
-                    self.cards.removeAll()
+                    self.data.removeAll()
                 }
                 
                 self.isBusy.toggle()
@@ -73,12 +73,12 @@ class CardsSearchViewModel: CardsViewModel {
         
         do {
             try frc.performFetch()
-            cards = frc.fetchedObjects ?? []
+            data = (frc.fetchedObjects ?? []).map({ $0.objectID })
             sections = frc.sections ?? []
         } catch {
             print(error)
             isFailed = true
-            cards.removeAll()
+            data.removeAll()
         }
     }
     
@@ -118,7 +118,7 @@ extension CardsSearchViewModel: NSFetchedResultsControllerDelegate {
             return
         }
 
-        self.cards = cards
+        data = cards.map({ $0.objectID })
     }
 }
 

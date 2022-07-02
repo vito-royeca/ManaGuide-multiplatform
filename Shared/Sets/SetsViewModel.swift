@@ -20,16 +20,10 @@ enum SetsViewSort: String {
 
 // MARK: - SetsViewModel
 
-class SetsViewModel: NSObject, ObservableObject {
+class SetsViewModel: ViewModel {
     
-    // MARK: - Published Variables
-    @Published var sets = [MGSet]()
-    @Published var filteredSets = [MGSet]()
-    @Published var sections = [NSFetchedResultsSectionInfo]()
-    @Published var isBusy = false
-    @Published var isFailed = false
-
     // MARK: - Variables
+    
     var dataAPI: API
     var sort: SetsViewSort = .releaseDate
     var query = ""
@@ -43,54 +37,9 @@ class SetsViewModel: NSObject, ObservableObject {
         super.init()
     }
     
-    // MARK: - Methods
-    func fetchData() {
-        guard !isBusy && sets.isEmpty else {
-            return
-        }
-        
-        isBusy.toggle()
-        isFailed = false
-        
-        dataAPI.fetchSets(completion: { result in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                switch result {
-                case .success:
-                    self.fetchLocalData()
-                case .failure(let error):
-                    print(error)
-                    self.isFailed = true
-                    self.sets.removeAll()
-                }
-                
-                self.isBusy.toggle()
-            }
-        })
-    }
+    // MARK: - Variables
     
-    func fetchLocalData() {
-        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(query: query),
-                                         managedObjectContext: ManaKit.shared.viewContext,
-                                         sectionNameKeyPath: sectionNameKeyPath,
-                                         cacheName: nil)
-        frc.delegate = self
-        
-        do {
-            try frc.performFetch()
-            if query.isEmpty {
-                sets = frc.fetchedObjects ?? []
-            } else {
-                filteredSets = frc.fetchedObjects ?? []
-            }
-            sections = frc.sections ?? []
-        } catch {
-            print(error)
-            isFailed = true
-            sets.removeAll()
-        }
-    }
-    
-    var sortDescriptors: [NSSortDescriptor] {
+    override var sortDescriptors: [NSSortDescriptor] {
         get {
             var sortDescriptors = [NSSortDescriptor]()
             
@@ -111,7 +60,7 @@ class SetsViewModel: NSObject, ObservableObject {
         }
     }
     
-    var sectionNameKeyPath: String? {
+    override var sectionNameKeyPath: String? {
         get {
             var keyPath: String?
             
@@ -128,7 +77,7 @@ class SetsViewModel: NSObject, ObservableObject {
         }
     }
     
-    var sectionIndexTitles: [String] {
+    override var sectionIndexTitles: [String] {
         get {
             switch sort {
             case .name:
@@ -140,6 +89,56 @@ class SetsViewModel: NSObject, ObservableObject {
             }
         }
     }
+    
+    // MARK: - Methods
+    
+    override func fetchData() {
+        guard !isBusy && data.isEmpty else {
+            return
+        }
+        
+        isBusy.toggle()
+        isFailed = false
+        
+        dataAPI.fetchSets(completion: { result in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                switch result {
+                case .success:
+                    self.fetchLocalData()
+                case .failure(let error):
+                    print(error)
+                    self.isFailed = true
+                    self.data.removeAll()
+                }
+                
+                self.isBusy.toggle()
+            }
+        })
+    }
+    
+    override func fetchLocalData() {
+        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(query: query),
+                                         managedObjectContext: ManaKit.shared.viewContext,
+                                         sectionNameKeyPath: sectionNameKeyPath,
+                                         cacheName: nil)
+        frc.delegate = self
+        
+        do {
+            try frc.performFetch()
+            if query.isEmpty {
+                data = (frc.fetchedObjects ?? []).map({ $0.objectID })
+            } else {
+                filteredData = (frc.fetchedObjects ?? []).map({ $0.objectID })
+            }
+            sections = frc.sections ?? []
+        } catch {
+            print(error)
+            isFailed = true
+            data.removeAll()
+        }
+    }
+    
+    
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
@@ -150,7 +149,7 @@ extension SetsViewModel: NSFetchedResultsControllerDelegate {
             return
         }
 
-        self.sets = sets
+        data = sets.map({ $0.objectID })
     }
 }
 

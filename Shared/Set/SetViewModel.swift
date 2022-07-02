@@ -13,7 +13,8 @@ import ManaKit
 class SetViewModel: CardsViewModel {
 
     // MARK: - Published Variables
-    @Published private(set) var set: MGSet?
+    
+    @Published private(set) var set: NSManagedObjectID?
     
     // MARK: - Variables
     var setCode: String
@@ -31,9 +32,33 @@ class SetViewModel: CardsViewModel {
         super.init()
     }
     
+    // MARK: - Variables
+    
+    override var sectionIndexTitles: [String] {
+        get {
+            switch sort {
+            case .name:
+                if languageCode == "ja" ||
+                    languageCode == "ko" ||
+                    languageCode == "ru" ||
+                    languageCode == "zhs" ||
+                    languageCode == "zht" {
+                    return []
+                } else {
+                    return frc.sectionIndexTitles
+                }
+            case .rarity:
+                return frc.sectionIndexTitles
+            case .type:
+                return frc.sectionIndexTitles
+            }
+        }
+    }
+
     // MARK: - Methods
+    
     override func fetchData() {
-        guard !isBusy && cards.isEmpty else {
+        guard !isBusy && data.isEmpty else {
             return
         }
         
@@ -46,13 +71,13 @@ class SetViewModel: CardsViewModel {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 switch result {
                 case .success(let set):
-                    self.set = set
+                    self.set = set?.objectID
                     self.fetchLocalData()
                 case .failure(let error):
                     print(error)
                     self.isFailed = true
                     self.set = nil
-                    self.cards.removeAll()
+                    self.data.removeAll()
                 }
                 
                 self.isBusy.toggle()
@@ -69,12 +94,12 @@ class SetViewModel: CardsViewModel {
         
         do {
             try frc.performFetch()
-            cards = frc.fetchedObjects ?? []
+            data = (frc.fetchedObjects ?? []).map({ $0.objectID })
             sections = frc.sections ?? []
         } catch {
             print(error)
             isFailed = true
-            cards.removeAll()
+            data.removeAll()
         }
     }
     
@@ -111,27 +136,6 @@ class SetViewModel: CardsViewModel {
             return sortDescriptors
         }
     }
-    
-    override var sectionIndexTitles: [String] {
-        get {
-            switch sort {
-            case .name:
-                if languageCode == "ja" ||
-                    languageCode == "ko" ||
-                    languageCode == "ru" ||
-                    languageCode == "zhs" ||
-                    languageCode == "zht" {
-                    return []
-                } else {
-                    return frc.sectionIndexTitles
-                }
-            case .rarity:
-                return frc.sectionIndexTitles
-            case .type:
-                return frc.sectionIndexTitles
-            }
-        }
-    }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
@@ -142,7 +146,7 @@ extension SetViewModel: NSFetchedResultsControllerDelegate {
             return
         }
         
-        self.cards = cards
+        data = cards.map({ $0.objectID })
     }
 }
 

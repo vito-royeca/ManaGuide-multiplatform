@@ -58,7 +58,7 @@ extension CardsView: SearchNavigationDelegate {
         
         viewModel.query = query
         viewModel.scopeSelection = scopeSelection
-        viewModel.cards.removeAll()
+        viewModel.data.removeAll()
         viewModel.fetchData()
     }
     

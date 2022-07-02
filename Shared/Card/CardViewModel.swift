@@ -10,22 +10,25 @@ import CoreData
 import SwiftUI
 import ManaKit
 
-class CardViewModel: NSObject, ObservableObject {
+class CardViewModel: ViewModel {
     @Published var card: MGCard?
-    @Published var isBusy = false
-    @Published var isFailed = false
+    var relatedCards: [NSManagedObjectID]
     
     // MARK: - Variables
     var newID: String
     var dataAPI: API
     
     // MARK: - Initializers
-    init(newID: String, dataAPI: API = ManaKit.shared) {
+    
+    init(newID: String, relatedCards: [NSManagedObjectID], dataAPI: API = ManaKit.shared) {
         self.newID = newID
+        self.relatedCards = relatedCards
         self.dataAPI = dataAPI
     }
 
-    func fetchData() {
+    // MARK: - Methods
+    
+    override func fetchData() {
         guard !isBusy && card == nil else {
             return
         }
