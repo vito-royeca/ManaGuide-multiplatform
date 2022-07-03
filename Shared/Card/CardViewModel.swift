@@ -39,7 +39,7 @@ class CardViewModel: ViewModel {
 
         dataAPI.fetchCard(newID: newID,
                          completion: { result in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 switch result {
                 case .success(let card):
                     self.card = card?.objectID

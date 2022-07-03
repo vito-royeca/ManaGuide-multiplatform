@@ -40,7 +40,7 @@ class TabTestViewModel: NSObject, ObservableObject {
                 newTabTests.append(TabTest(id: "\(i)", date: Date()))
             }
                     
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
                 self.tabTests = newTabTests
                 self.isBusy.toggle()
             })

@@ -68,7 +68,7 @@ class SetViewModel: CardsViewModel {
         dataAPI.fetchSet(code: setCode,
                          languageCode: languageCode,
                          completion: { result in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 switch result {
                 case .success(let set):
                     self.set = set?.objectID
