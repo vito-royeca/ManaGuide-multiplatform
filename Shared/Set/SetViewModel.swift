@@ -62,27 +62,37 @@ class SetViewModel: CardsViewModel {
             return
         }
         
-        isBusy.toggle()
-        isFailed = false
+        if dataAPI.willFetchSet(code: setCode, languageCode: languageCode) {
+            isBusy.toggle()
+            isFailed = false
 
-        dataAPI.fetchSet(code: setCode,
-                         languageCode: languageCode,
-                         completion: { result in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                switch result {
-                case .success(let set):
-                    self.set = set?.objectID
-                    self.fetchLocalData()
-                case .failure(let error):
-                    print(error)
-                    self.isFailed = true
-                    self.set = nil
-                    self.data.removeAll()
+            dataAPI.fetchSet(code: setCode,
+                             languageCode: languageCode,
+                             completion: { result in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    switch result {
+                    case .success(let set):
+                        self.set = set?.objectID
+                        self.fetchLocalData()
+                    case .failure(let error):
+                        print(error)
+                        self.isFailed = true
+                        self.set = nil
+                        self.data.removeAll()
+                    }
+                    
+                    self.isBusy.toggle()
                 }
-                
-                self.isBusy.toggle()
-            }
-        })
+            })
+        } else {
+            set = ManaKit.shared.find(MGSet.self,
+                                      properties: nil,
+                                      predicate: NSPredicate(format: "code == %@", setCode),
+                                      sortDescriptors: nil,
+                                      createIfNotFound: false,
+                                      context: ManaKit.shared.viewContext)?.first?.objectID
+            fetchLocalData()
+        }
     }
     
     override func fetchLocalData() {

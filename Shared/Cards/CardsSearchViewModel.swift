@@ -40,24 +40,28 @@ class CardsSearchViewModel: CardsViewModel {
             return
         }
         
-        isBusy.toggle()
-        isFailed = false
+        if dataAPI.willFetchCards(query: query!) {
+            isBusy.toggle()
+            isFailed = false
 
-        dataAPI.fetchCards(query: query!,
-                           completion: { result in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                switch result {
-                case .success:
-                    self.fetchLocalData()
-                case .failure(let error):
-                    print(error)
-                    self.isFailed = true
-                    self.data.removeAll()
+            dataAPI.fetchCards(query: query!,
+                               completion: { result in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    switch result {
+                    case .success:
+                        self.fetchLocalData()
+                    case .failure(let error):
+                        print(error)
+                        self.isFailed = true
+                        self.data.removeAll()
+                    }
+                    
+                    self.isBusy.toggle()
                 }
-                
-                self.isBusy.toggle()
-            }
-        })
+            })
+        } else {
+            fetchLocalData()
+        }
     }
     
     override func fetchLocalData() {

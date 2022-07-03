@@ -33,24 +33,33 @@ class CardViewModel: ViewModel {
         guard !isBusy && card == nil else {
             return
         }
-        
-        isBusy.toggle()
-        isFailed = false
 
-        dataAPI.fetchCard(newID: newID,
-                         completion: { result in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                switch result {
-                case .success(let card):
-                    self.card = card?.objectID
-                case .failure(let error):
-                    print(error)
-                    self.isFailed = true
-                    self.card = nil
+        if dataAPI.willFetchCard(newID: newID) {
+            isBusy.toggle()
+            isFailed = false
+
+            dataAPI.fetchCard(newID: newID,
+                             completion: { result in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    switch result {
+                    case .success(let card):
+                        self.card = card?.objectID
+                    case .failure(let error):
+                        print(error)
+                        self.isFailed = true
+                        self.card = nil
+                    }
+                    self.isBusy.toggle()
                 }
-                self.isBusy.toggle()
-            }
-        })
+            })
+        } else {
+            self.card = ManaKit.shared.find(MGCard.self,
+                                            properties: nil,
+                                            predicate: NSPredicate(format: "newID == %@", newID),
+                                            sortDescriptors: nil,
+                                            createIfNotFound: false,
+                                            context: ManaKit.shared.viewContext)?.first?.objectID
+        }
     }
 }
 
