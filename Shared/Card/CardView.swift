@@ -54,10 +54,9 @@ struct CardView: View {
     
     var compactView: some View {
         GeometryReader { proxy in
-            List {
-                if let card = viewModel.card,
-                   let cardObject = viewModel.find(MGCard.self, id: card) {
-
+            if let card = viewModel.card,
+               let cardObject = viewModel.find(MGCard.self, id: card) {
+                List {
                     Section {
                         let width = proxy.size.width * 0.7
                         let height = proxy.size.height * 0.7
@@ -88,25 +87,26 @@ struct CardView: View {
                     Section {
                         CardExtraInfoView(card: cardObject)
                     }
-                } else {
-                    EmptyView()
                 }
+                    .navigationBarTitle(Text(cardObject.displayName ?? ""))
+                    .toolbar {
+                        CardToolbar(presentationMode: presentationMode, isShowingShareSheet: $isShowingShareSheet)
+                    }
+                    .sheet(isPresented: $isShowingShareSheet, content: {
+                        activityView
+                    })
+            } else {
+                EmptyView()
             }
-                .toolbar {
-                    CardToolbar(presentationMode: presentationMode, isShowingShareSheet: $isShowingShareSheet)
-                }
-                .sheet(isPresented: $isShowingShareSheet, content: {
-                    activityView
-                })
         }
     }
     
     var regularView: some View {
-        HStack(alignment: .top) {
+        GeometryReader { proxy in
             if let card = viewModel.card,
                let cardObject = viewModel.find(MGCard.self, id: card) {
-
-                GeometryReader { proxy in
+                
+                HStack(alignment: .top) {
                     let width = proxy.size.width * 0.7
                     let height = proxy.size.height * 0.5
                     
@@ -119,38 +119,41 @@ struct CardView: View {
                             }
                         }
                     }
-                }
+                
 
-                List {
-                    if let faces = cardObject.sortedFaces {
-                        ForEach(faces) { face in
+                    List {
+                        if let faces = cardObject.sortedFaces {
+                            ForEach(faces) { face in
+                                Section {
+                                    CardCommonInfoView(card: face)
+                                }
+                            }
+                        } else {
                             Section {
-                                CardCommonInfoView(card: face)
+                                CardCommonInfoView(card: cardObject)
                             }
                         }
-                    } else {
+                        
                         Section {
-                            CardCommonInfoView(card: cardObject)
+                            CardOtherInfoView(card: cardObject)
+                        }
+                        Section {
+                            CardExtraInfoView(card: cardObject)
                         }
                     }
                     
-                    Section {
-                        CardOtherInfoView(card: cardObject)
-                    }
-                    Section {
-                        CardExtraInfoView(card: cardObject)
-                    }
                 }
+                    .navigationBarTitle(Text(cardObject.displayName ?? ""))
+                    .toolbar {
+                        CardToolbar(presentationMode: presentationMode, isShowingShareSheet: $isShowingShareSheet)
+                    }
+                    .sheet(isPresented: $isShowingShareSheet, content: {
+                        activityView
+                    })
             } else {
                 EmptyView()
             }
         }
-            .toolbar {
-                CardToolbar(presentationMode: presentationMode, isShowingShareSheet: $isShowingShareSheet)
-            }
-            .sheet(isPresented: $isShowingShareSheet, content: {
-                activityView
-            })
     }
 
     func carouselView(card: NSManagedObjectID, width: CGFloat, height: CGFloat) -> some View {
@@ -373,14 +376,13 @@ enum CardTextRowViewStyle {
 
 struct CardCommonInfoView: View {
     @Environment(\.colorScheme) var colorScheme
-    @State var isTypesExpanded = false
+    @State var isPrintedTextExpanded = true
+    @State var isOracleTextExpanded = true
     let cmcFormatter = NumberFormatter()
     var card: MGCard
-    private let font: ManaKit.Font
     
     init(card: MGCard) {
         self.card = card
-        font = card.nameFont
         
         cmcFormatter.minimumFractionDigits = 0
         cmcFormatter.maximumFractionDigits = 2
@@ -388,14 +390,6 @@ struct CardCommonInfoView: View {
     }
     
     var body: some View {
-        HStack {
-            Text("Name")
-                .font(.headline)
-            Spacer()
-            Text(card.displayName ?? "")
-                .font(Font.custom(font.name, size: font.size))
-        }
-
         HStack {
             Text("Mana Cost")
                 .font(.headline)
@@ -445,27 +439,19 @@ struct CardCommonInfoView: View {
 
         if let printedText = card.printedText,
            !printedText.isEmpty {
-            VStack(alignment: .leading) {
-                Text("Printed Text")
-                    .font(.headline)
-                Spacer()
+            DisclosureGroup("Printed Text", isExpanded: $isPrintedTextExpanded) {
                 AttributedText(
                     addColor(to: NSAttributedString(symbol: printedText, pointSize: 16), colorScheme: colorScheme)
                 )
-                    .font(.subheadline)
             }
         }
 
         if let oracleText = card.oracleText,
            !oracleText.isEmpty {
-            VStack(alignment: .leading) {
-                Text("Oracle Text")
-                    .font(.headline)
-                Spacer()
+            DisclosureGroup("Oracle Text", isExpanded: $isOracleTextExpanded) {
                 AttributedText(
                     addColor(to: NSAttributedString(symbol: oracleText, pointSize: 16), colorScheme: colorScheme)
                 )
-                    .font(.subheadline)
             }
         }
         
