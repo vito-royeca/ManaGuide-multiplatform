@@ -5,6 +5,7 @@
 //  Created by Vito Royeca on 5/5/22.
 //
 
+import CoreData
 import SwiftUI
 import ManaKit
 import SDWebImageSwiftUI
@@ -74,7 +75,7 @@ struct CardsStoreFeatureView: View {
 struct CardsStoreLargeView: View {
     private let font: ManaKit.Font
     private let card: MGCard
-    
+
     init(card: MGCard) {
         self.card = card
         font = card.nameFont
@@ -178,24 +179,25 @@ struct CardsStorePriceView: View {
 
 struct NumberView_Previews: PreviewProvider {
     static var previews: some View {
-        let viewModel = CardViewModel(newID: "isd_en_51")
+        let viewModel = CardViewModel(newID: "isd_en_51", relatedCards: [])
         
         Group {
-            if let card = viewModel.card {
-                CardsStoreFeatureView(card: card)
+            if let card = viewModel.card,
+               let cardObject = viewModel.find(MGCard.self, id: card) {
+                CardsStoreFeatureView(card: cardObject)
                     .previewLayout(.fixed(width: 400, height: 300))
 
-                CardsStoreLargeView(card: card)
+                CardsStoreLargeView(card: cardObject)
                     .previewLayout(.fixed(width: 400, height: 125))
 
-                CardsStoreCompactView(card: card)
+                CardsStoreCompactView(card: cardObject)
                     .previewLayout(.fixed(width: 400, height: 83))
             } else {
                 Text("Loading...")
             }
         }
             .onAppear {
-                viewModel.fetchData()
+                viewModel.fetchRemoteData()
             }
     }
 }

@@ -21,14 +21,13 @@ struct CardImageRowView: View {
     }
     
     var body: some View {
-        
         VStack(alignment: .center, spacing: 2) {
             let webImage = WebImage(url: url)
                 .resizable()
                 .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
                 .indicator(.activity)
                 .transition(.fade(duration: 0.5))
-                .aspectRatio(contentMode: .fit)
+                .aspectRatio(contentMode: .fill)
                 .cornerRadius(10)
                 .clipped()
                 .overlay(
@@ -109,10 +108,6 @@ struct CardImageRowPriceView: View {
                 }
             }
                 .padding(5)
-//                .overlay(
-//                    RoundedRectangle(cornerRadius: 10)
-//                        .stroke(Color.secondary, lineWidth: 1)
-//                )
         } else {
             HStack {
                 VStack(alignment: .leading) {
@@ -141,10 +136,6 @@ struct CardImageRowPriceView: View {
                     }
             }
                 .padding(5)
-//                .overlay(
-//                    RoundedRectangle(cornerRadius: 10)
-//                        .stroke(Color.secondary, lineWidth: 1)
-//                )
         }
     }
 }
@@ -194,14 +185,6 @@ struct CardImageRowButtonView: View {
                     .renderingMode(.original)
                     .foregroundColor(.accentColor)
             }
-//                .frame(width: 20, height: 20)
-//                .background(
-//                    RoundedRectangle(cornerRadius: 50, style: .continuous).fill(Color.white)
-//                )
-//                .overlay(
-//                    RoundedRectangle(cornerRadius: 50, style: .continuous)
-//                        .strokeBorder(Color.black, lineWidth: 1)
-//                )
                 .buttonStyle(PlainButtonStyle())
         } else {
             EmptyView()

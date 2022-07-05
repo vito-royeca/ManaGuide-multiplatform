@@ -21,7 +21,7 @@ struct ManaGuideApp: App {
         ManaKit.shared.configure(apiURL: "http://managuideapp.com")
         ManaKit.shared.setupResources()
         
-//        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(Color.accentColor)
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(Color.accentColor)
     }
     
     var body: some Scene {

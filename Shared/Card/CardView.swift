@@ -5,11 +5,13 @@
 //  Created by Vito Royeca on 3/21/22.
 //
 
+import CoreData
 import LinkPresentation
 import SwiftUI
 import ManaKit
 import SDWebImage
 import SDWebImageSwiftUI
+import SwiftUIPager
 import SwiftUIX
 
 struct CardView: View {
@@ -21,8 +23,8 @@ struct CardView: View {
     @State private var isShowingShareSheet = false
     @StateObject var viewModel: CardViewModel
     
-    init(newID: String) {
-        _viewModel = StateObject(wrappedValue: CardViewModel(newID: newID))
+    init(newID: String, relatedCards: [NSManagedObjectID]) {
+        _viewModel = StateObject(wrappedValue: CardViewModel(newID: newID, relatedCards: relatedCards))
     }
     
     var body: some View {
@@ -31,7 +33,7 @@ struct CardView: View {
                 BusyView()
             } else if viewModel.isFailed {
                 ErrorView {
-                    viewModel.fetchData()
+                    viewModel.fetchRemoteData()
                 }
             } else {
                 #if os(iOS)
@@ -46,67 +48,28 @@ struct CardView: View {
             }
         }
             .onAppear {
-                viewModel.fetchData()
+                viewModel.fetchRemoteData()
             }
     }
     
     var compactView: some View {
-        List {
-            if let card = viewModel.card {
-                Section {
-                    CardImageRowView(card: card, style: .oneLine)
-                }
-                
-                if let prices = card.prices?.allObjects as? [MGCardPrice] {
-                    Section {
-                        CardPricingInfoView(prices: prices)
-                    }
-                }
-                
-                if let faces = card.sortedFaces {
-                    ForEach(faces) { face in
-                        Section {
-                            CardCommonInfoView(card: face)
-                        }
-                    }
-                } else {
-                    Section {
-                        CardCommonInfoView(card: card)
-                    }
-                }
-                
-                Section {
-                    CardOtherInfoView(card: card)
-                }
-                Section {
-                    CardExtraInfoView(card: card)
-                }
-            } else {
-                EmptyView()
-            }
-        }
-            .toolbar {
-                CardToolbar(presentationMode: presentationMode, isShowingShareSheet: $isShowingShareSheet)
-            }
-            .sheet(isPresented: $isShowingShareSheet, content: {
-                activityView
-            })
-    }
-    
-    var regularView: some View {
-        HStack(alignment: .top) {
-            if let card = viewModel.card {
-                CardImageRowView(card: card, style: .oneLine)
-                    .padding()
-
+        GeometryReader { proxy in
+            if let card = viewModel.card,
+               let cardObject = viewModel.find(MGCard.self, id: card) {
                 List {
-                    if let prices = card.prices?.allObjects as? [MGCardPrice] {
+                    Section {
+                        let width = proxy.size.width * 0.7
+                        let height = proxy.size.height * 0.7
+                        carouselView(card: card, width: width, height: height)
+                    }
+                    
+                    if let prices = cardObject.prices?.allObjects as? [MGCardPrice] {
                         Section {
                             CardPricingInfoView(prices: prices)
                         }
                     }
                     
-                    if let faces = card.sortedFaces {
+                    if let faces = cardObject.sortedFaces {
                         ForEach(faces) { face in
                             Section {
                                 CardCommonInfoView(card: face)
@@ -114,33 +77,119 @@ struct CardView: View {
                         }
                     } else {
                         Section {
-                            CardCommonInfoView(card: card)
+                            CardCommonInfoView(card: cardObject)
                         }
                     }
                     
                     Section {
-                        CardOtherInfoView(card: card)
+                        CardOtherInfoView(card: cardObject)
                     }
                     Section {
-                        CardExtraInfoView(card: card)
+                        CardExtraInfoView(card: cardObject)
                     }
                 }
+                    .navigationBarTitle(Text(cardObject.displayName ?? ""))
+                    .toolbar {
+                        CardToolbar(presentationMode: presentationMode, isShowingShareSheet: $isShowingShareSheet)
+                    }
+                    .sheet(isPresented: $isShowingShareSheet, content: {
+                        activityView
+                    })
             } else {
                 EmptyView()
             }
         }
-            .toolbar {
-                CardToolbar(presentationMode: presentationMode, isShowingShareSheet: $isShowingShareSheet)
+    }
+    
+    var regularView: some View {
+        GeometryReader { proxy in
+            if let card = viewModel.card,
+               let cardObject = viewModel.find(MGCard.self, id: card) {
+                
+                HStack(alignment: .top) {
+                    let width = proxy.size.width * 0.7
+                    let height = proxy.size.height * 0.5
+                    
+                    List {
+                        carouselView(card: card, width: width, height: height)
+                        
+                        if let prices = cardObject.prices?.allObjects as? [MGCardPrice] {
+                            Section {
+                                CardPricingInfoView(prices: prices)
+                            }
+                        }
+                    }
+                
+
+                    List {
+                        if let faces = cardObject.sortedFaces {
+                            ForEach(faces) { face in
+                                Section {
+                                    CardCommonInfoView(card: face)
+                                }
+                            }
+                        } else {
+                            Section {
+                                CardCommonInfoView(card: cardObject)
+                            }
+                        }
+                        
+                        Section {
+                            CardOtherInfoView(card: cardObject)
+                        }
+                        Section {
+                            CardExtraInfoView(card: cardObject)
+                        }
+                    }
+                    
+                }
+                    .navigationBarTitle(Text(cardObject.displayName ?? ""))
+                    .toolbar {
+                        CardToolbar(presentationMode: presentationMode, isShowingShareSheet: $isShowingShareSheet)
+                    }
+                    .sheet(isPresented: $isShowingShareSheet, content: {
+                        activityView
+                    })
+            } else {
+                EmptyView()
             }
-            .sheet(isPresented: $isShowingShareSheet, content: {
-                activityView
-            })
+        }
     }
 
+    func carouselView(card: NSManagedObjectID, width: CGFloat, height: CGFloat) -> some View {
+        return ScrollView {
+            Pager(page: Page.withIndex(viewModel.relatedCards.firstIndex(of: card) ?? 0),
+                  data: viewModel.relatedCards) { card in
+                if let cardObject = viewModel.find(MGCard.self, id: card) {
+                    CardImageRowView(card: cardObject, style: .oneLine)
+                }
+            }
+                .onPageChanged({ pageNumber in
+                    let card = viewModel.relatedCards[pageNumber]
+                    
+                    if let cardObject = viewModel.find(MGCard.self, id: card) {
+                        viewModel.card = nil
+                        viewModel.newID = cardObject.newIDCopy
+                        viewModel.fetchRemoteData()
+                    }
+                })
+                .itemSpacing(10)
+                .itemAspectRatio(0.8)
+                .interactive(scale: 0.8)
+                .pagingPriority(.high)
+                .frame(height: height)
+        }
+    }
+    
     var activityView: some View {
-        let itemSource = CardViewItemSource(card: viewModel.card!)
+        var itemSources = [UIActivityItemSource]()
+        
+        if let card = viewModel.card,
+           let cardObject = viewModel.find(MGCard.self, id: card) {
+            itemSources.append(CardViewItemSource(card: cardObject))
+        }
 
-        return AppActivityView(activityItems: [itemSource])
+        return AppActivityView(activityItems: itemSources)
             .excludeActivityTypes([])
             .onCancel { }
             .onComplete { result in
@@ -149,11 +198,12 @@ struct CardView: View {
     }
     
     func shareAction() {
-        guard let card = viewModel.card else {
+        guard let card = viewModel.card,
+           let cardObject = viewModel.find(MGCard.self, id: card) else {
             return
         }
         
-        let itemSource = CardViewItemSource(card: card)
+        let itemSource = CardViewItemSource(card: cardObject)
         let activityVC = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
 
         let connectedScenes = UIApplication.shared.connectedScenes
@@ -211,7 +261,6 @@ class CardViewItemSource: NSObject, UIActivityItemSource {
     }
     
     func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
-        
         return card.displayName ?? ""
     }
     
@@ -257,12 +306,13 @@ struct CardView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             let model = SetViewModel(setCode: "isd", languageCode: "en")
-            CardView(newID: "isd_en_51")
+            let relatedCards = model.data
+            CardView(newID: "isd_en_51", relatedCards: relatedCards)
                 .onAppear {
-                    model.fetchData()
+                    model.fetchRemoteData()
                 }
         }
-        .previewInterfaceOrientation(.landscapeLeft)
+        .previewInterfaceOrientation(.portraitUpsideDown)
     }
 }
 
@@ -326,14 +376,13 @@ enum CardTextRowViewStyle {
 
 struct CardCommonInfoView: View {
     @Environment(\.colorScheme) var colorScheme
-    @State var isTypesExpanded = false
+    @State var isPrintedTextExpanded = true
+    @State var isOracleTextExpanded = true
     let cmcFormatter = NumberFormatter()
     var card: MGCard
-    private let font: ManaKit.Font
     
     init(card: MGCard) {
         self.card = card
-        font = card.nameFont
         
         cmcFormatter.minimumFractionDigits = 0
         cmcFormatter.maximumFractionDigits = 2
@@ -341,14 +390,6 @@ struct CardCommonInfoView: View {
     }
     
     var body: some View {
-        HStack {
-            Text("Name")
-                .font(.headline)
-            Spacer()
-            Text(card.displayName ?? "")
-                .font(Font.custom(font.name, size: font.size))
-        }
-
         HStack {
             Text("Mana Cost")
                 .font(.headline)
@@ -398,27 +439,19 @@ struct CardCommonInfoView: View {
 
         if let printedText = card.printedText,
            !printedText.isEmpty {
-            VStack(alignment: .leading) {
-                Text("Printed Text")
-                    .font(.headline)
-                Spacer()
+            DisclosureGroup("Printed Text", isExpanded: $isPrintedTextExpanded) {
                 AttributedText(
                     addColor(to: NSAttributedString(symbol: printedText, pointSize: 16), colorScheme: colorScheme)
                 )
-                    .font(.subheadline)
             }
         }
 
         if let oracleText = card.oracleText,
            !oracleText.isEmpty {
-            VStack(alignment: .leading) {
-                Text("Oracle Text")
-                    .font(.headline)
-                Spacer()
+            DisclosureGroup("Oracle Text", isExpanded: $isOracleTextExpanded) {
                 AttributedText(
                     addColor(to: NSAttributedString(symbol: oracleText, pointSize: 16), colorScheme: colorScheme)
                 )
-                    .font(.subheadline)
             }
         }
         
@@ -492,7 +525,7 @@ struct CardOtherInfoView: View {
 
 struct CardExtraInfoView: View {
     @Environment(\.colorScheme) var colorScheme
-    @State var isColorsExpanded         = true
+    @State var isColorsExpanded         = false
     @State var isComponentPartsExpanded = false
     @State var isFrameEffectsExpanded   = false
     @State var isLegalitiesExpanded     = false
@@ -526,7 +559,7 @@ struct CardExtraInfoView: View {
                                 Text(name)
                                     .font(.headline)
                                 CardListRowView(card: part)
-                                    .background(NavigationLink("", destination: CardView(newID: newIDCopy)).opacity(0))
+                                    .background(NavigationLink("", destination: CardView(newID: newIDCopy, relatedCards: [])).opacity(0))
                             }
                         } else {
                             EmptyView()
@@ -556,7 +589,7 @@ struct CardExtraInfoView: View {
                 DisclosureGroup("Other Languages: \(otherLanguages.count)", isExpanded: $isOtherLanguagesExpanded) {
                     ForEach(otherLanguages) { otherLanguage in
                         CardListRowView(card: otherLanguage)
-                            .background(NavigationLink("", destination: CardView(newID: otherLanguage.newIDCopy)).opacity(0))
+                            .background(NavigationLink("", destination: CardView(newID: otherLanguage.newIDCopy, relatedCards: [])).opacity(0))
                     }
                 }
             }
@@ -565,7 +598,7 @@ struct CardExtraInfoView: View {
                 DisclosureGroup("Other Printings: \(otherPrintings.count)", isExpanded: $isOtherPrintingsExpanded) {
                     ForEach(otherPrintings) { otherPrinting in
                         CardListRowView(card: otherPrinting)
-                            .background(NavigationLink("", destination: CardView(newID: otherPrinting.newIDCopy)).opacity(0))
+                            .background(NavigationLink("", destination: CardView(newID: otherPrinting.newIDCopy, relatedCards: [])).opacity(0))
                     }
                 }
             }
@@ -589,7 +622,7 @@ struct CardExtraInfoView: View {
                 DisclosureGroup("Variations: \(variations.count)", isExpanded: $isVariationsExpanded) {
                     ForEach(variations) { variation in
                         CardListRowView(card: variation)
-                            .background(NavigationLink("", destination: CardView(newID: variation.newIDCopy)).opacity(0))
+                            .background(NavigationLink("", destination: CardView(newID: variation.newIDCopy, relatedCards: [])).opacity(0))
                     }
                 }
             }

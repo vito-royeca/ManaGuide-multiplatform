@@ -19,20 +19,13 @@ enum CardsViewSort: String {
 
 // MARK: - CardsViewModel
 
-class CardsViewModel: NSObject, ObservableObject {
-
-    // MARK: - Published Variables
-
-    @Published var cards = [MGCard]()
-    @Published var sections = [NSFetchedResultsSectionInfo]()
-    @Published var isBusy = false
-    @Published var isFailed = false
+class CardsViewModel: ViewModel {
 
     // MARK: - Variables
 
     var sort: CardsViewSort = .name
     
-    var sortDescriptors: [NSSortDescriptor] {
+    override var sortDescriptors: [NSSortDescriptor] {
         get {
             var sortDescriptors = [NSSortDescriptor]()
             
@@ -54,7 +47,7 @@ class CardsViewModel: NSObject, ObservableObject {
         }
     }
     
-    var sectionNameKeyPath: String? {
+    override var sectionNameKeyPath: String? {
         get {
             var keyPath: String?
             
@@ -70,15 +63,4 @@ class CardsViewModel: NSObject, ObservableObject {
             return keyPath
         }
     }
-    
-    var sectionIndexTitles: [String] {
-        get {
-            return []
-        }
-    }
-    
-    // MARK: - Methods
-    
-    func fetchData() { }
-    func fetchLocalData() { }
 }

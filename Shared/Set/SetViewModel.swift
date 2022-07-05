@@ -13,7 +13,8 @@ import ManaKit
 class SetViewModel: CardsViewModel {
 
     // MARK: - Published Variables
-    @Published private(set) var set: MGSet?
+    
+    @Published private(set) var set: NSManagedObjectID?
     
     // MARK: - Variables
     var setCode: String
@@ -31,33 +32,67 @@ class SetViewModel: CardsViewModel {
         super.init()
     }
     
+    // MARK: - Variables
+    
+    override var sectionIndexTitles: [String] {
+        get {
+            switch sort {
+            case .name:
+                if languageCode == "ja" ||
+                    languageCode == "ko" ||
+                    languageCode == "ru" ||
+                    languageCode == "zhs" ||
+                    languageCode == "zht" {
+                    return []
+                } else {
+                    return frc.sectionIndexTitles
+                }
+            case .rarity:
+                return frc.sectionIndexTitles
+            case .type:
+                return frc.sectionIndexTitles
+            }
+        }
+    }
+
     // MARK: - Methods
-    override func fetchData() {
-        guard !isBusy && cards.isEmpty else {
+    
+    override func fetchRemoteData() {
+        guard !isBusy && data.isEmpty else {
             return
         }
         
-        isBusy.toggle()
-        isFailed = false
+        if dataAPI.willFetchSet(code: setCode, languageCode: languageCode) {
+            isBusy.toggle()
+            isFailed = false
 
-        dataAPI.fetchSet(code: setCode,
-                         languageCode: languageCode,
-                         completion: { result in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                switch result {
-                case .success(let set):
-                    self.set = set
-                    self.fetchLocalData()
-                case .failure(let error):
-                    print(error)
-                    self.isFailed = true
-                    self.set = nil
-                    self.cards.removeAll()
+            dataAPI.fetchSet(code: setCode,
+                             languageCode: languageCode,
+                             completion: { result in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    switch result {
+                    case .success(let set):
+                        self.set = set?.objectID
+                        self.fetchLocalData()
+                    case .failure(let error):
+                        print(error)
+                        self.isFailed = true
+                        self.set = nil
+                        self.data.removeAll()
+                    }
+                    
+                    self.isBusy.toggle()
                 }
-                
-                self.isBusy.toggle()
-            }
-        })
+            })
+        } else {
+            set = ManaKit.shared.find(MGSet.self,
+                                      properties: nil,
+                                      predicate: NSPredicate(format: "code == %@", setCode),
+                                      sortDescriptors: nil,
+                                      createIfNotFound: false,
+                                      context: ManaKit.shared.viewContext)?.first?.objectID
+            fetchLocalData()
+        }
     }
     
     override func fetchLocalData() {
@@ -69,12 +104,12 @@ class SetViewModel: CardsViewModel {
         
         do {
             try frc.performFetch()
-            cards = frc.fetchedObjects ?? []
+            data = (frc.fetchedObjects ?? []).map({ $0.objectID })
             sections = frc.sections ?? []
         } catch {
             print(error)
             isFailed = true
-            cards.removeAll()
+            data.removeAll()
         }
     }
     
@@ -111,27 +146,6 @@ class SetViewModel: CardsViewModel {
             return sortDescriptors
         }
     }
-    
-    override var sectionIndexTitles: [String] {
-        get {
-            switch sort {
-            case .name:
-                if languageCode == "ja" ||
-                    languageCode == "ko" ||
-                    languageCode == "ru" ||
-                    languageCode == "zhs" ||
-                    languageCode == "zht" {
-                    return []
-                } else {
-                    return frc.sectionIndexTitles
-                }
-            case .rarity:
-                return frc.sectionIndexTitles
-            case .type:
-                return frc.sectionIndexTitles
-            }
-        }
-    }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
@@ -142,7 +156,7 @@ extension SetViewModel: NSFetchedResultsControllerDelegate {
             return
         }
         
-        self.cards = cards
+        data = cards.map({ $0.objectID })
     }
 }
 

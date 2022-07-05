@@ -6,13 +6,14 @@
 //
 
 import SwiftUI
+import CoreData
 import ASCollectionView
 import ManaKit
 
 struct CardsStoreView: View {
     
     // MARK: - Variables
-    var set: MGSet?
+    var set: NSManagedObjectID?
     var setViewModel: SetViewModel?
     @StateObject var cardsViewModel: CardsViewModel
     @State private var showingSort = false
@@ -21,7 +22,7 @@ struct CardsStoreView: View {
 
     // MARK: - Initializers
     
-    init(set: MGSet?, setViewModel: SetViewModel?, cardsViewModel: CardsViewModel) {
+    init(set: NSManagedObjectID?, setViewModel: SetViewModel?, cardsViewModel: CardsViewModel) {
         self.set = set
         self.setViewModel = setViewModel
         _cardsViewModel = StateObject(wrappedValue: cardsViewModel)
@@ -35,7 +36,7 @@ struct CardsStoreView: View {
                 BusyView()
             } else if cardsViewModel.isFailed {
                 ErrorView {
-                    cardsViewModel.fetchData()
+                    cardsViewModel.fetchRemoteData()
                 }
             } else {
                 bodyData
@@ -43,7 +44,7 @@ struct CardsStoreView: View {
         }
             .onAppear {
                 cardsViewModel.sort = sort
-                cardsViewModel.fetchData()
+                cardsViewModel.fetchRemoteData()
             }
     }
     
@@ -114,13 +115,13 @@ struct CardsStoreDataView : View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
     
-    @State private var selectedCard: MGCard? = nil
+    @State private var selectedCard: NSManagedObjectID? = nil
     private var sort: CardsViewSort
-    private var set: MGSet?
+    private var set: NSManagedObjectID?
     private var setViewModel: SetViewModel?
     private var cardsViewModel: CardsViewModel
     
-    init(sort: CardsViewSort, set: MGSet?, setViewModel: SetViewModel?, cardsViewModel: CardsViewModel) {
+    init(sort: CardsViewSort, set: NSManagedObjectID?, setViewModel: SetViewModel?, cardsViewModel: CardsViewModel) {
         self.sort = sort
         self.set = set
         self.setViewModel = setViewModel
@@ -134,8 +135,12 @@ struct CardsStoreDataView : View {
             .shouldAttemptToMaintainScrollPositionOnOrientationChange(maintainPosition: false)
             .edgesIgnoringSafeArea(.all)
             .sheet(item: $selectedCard) { selectedCard in
-                NavigationView {
-                    CardView(newID: selectedCard.newIDCopy)
+                if let card = cardsViewModel.find(MGCard.self, id: selectedCard) {
+                    NavigationView {
+                        CardView(newID: card.newIDCopy, relatedCards: cardsViewModel.data)
+                    }
+                } else {
+                    EmptyView()
                 }
             }
     }
@@ -144,9 +149,10 @@ struct CardsStoreDataView : View {
         var array = [ASCollectionViewSection<Int>]()
 
         if let set = set,
-            let viewModel = setViewModel {
+           let viewModel = setViewModel,
+           let setObject = viewModel.find(MGSet.self, id: set) {
             array.append(ASCollectionViewSection(id: -1) {
-                CardsStoreHeaderView(set: set, viewModel: viewModel)
+                CardsStoreHeaderView(set: setObject, viewModel: viewModel)
             }
                 .selfSizingConfig { _ in
                     ASSelfSizingConfig(canExceedCollectionWidth: false)
@@ -169,7 +175,7 @@ struct CardsStoreDataView : View {
                 data: clippedCards) { card, _ in
                     let tap = TapGesture()
                         .onEnded { _ in
-                            self.selectedCard = card
+                            self.selectedCard = card.objectID
                         }
 
                     if clippedCards.count < 3 {
@@ -192,14 +198,14 @@ struct CardsStoreDataView : View {
                         ASSelfSizingConfig(canExceedCollectionWidth: false)
                     }
                     .sectionHeader {
-                        header(sectionID: sectionID,  title: section.name, cards: cards)
+                        header(sectionID: sectionID,  title: section.name, cards: cards.map({ $0.objectID }))
                     }
         })
         
         return array
     }
     
-    func header(sectionID: Int, title: String, cards: [MGCard]) -> some View {
+    func header(sectionID: Int, title: String, cards: [NSManagedObjectID]) -> some View {
         HStack {
             Text(title)
                 .font(.title)
@@ -241,11 +247,13 @@ extension CardsStoreDataView {
     var layoutContent: ASCollectionLayoutSection {
         ASCollectionLayoutSection { environment in
             var height = CGFloat(120)
-            if let set = set {
-                if let _ = set.logoURL {
+            if let set = set,
+               let setObject = setViewModel?.find(MGSet.self, id: set) {
+                
+                if let _ = setObject.logoURL {
                     height += 100
                 }
-                if let sortedLanguages = set.sortedLanguages {
+                if let sortedLanguages = setObject.sortedLanguages {
                     if sortedLanguages.count > 6 {
                         #if os(iOS)
                         if horizontalSizeClass == .compact {

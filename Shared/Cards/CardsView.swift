@@ -58,8 +58,8 @@ extension CardsView: SearchNavigationDelegate {
         
         viewModel.query = query
         viewModel.scopeSelection = scopeSelection
-        viewModel.cards.removeAll()
-        viewModel.fetchData()
+        viewModel.data.removeAll()
+        viewModel.fetchRemoteData()
     }
     
     func scope() {

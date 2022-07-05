@@ -10,43 +10,56 @@ import CoreData
 import SwiftUI
 import ManaKit
 
-class CardViewModel: NSObject, ObservableObject {
-    @Published var card: MGCard?
-    @Published var isBusy = false
-    @Published var isFailed = false
+class CardViewModel: ViewModel {
+    @Published var card: NSManagedObjectID?
     
     // MARK: - Variables
+    
     var newID: String
+    var relatedCards: [NSManagedObjectID]
     var dataAPI: API
     
     // MARK: - Initializers
-    init(newID: String, dataAPI: API = ManaKit.shared) {
+    
+    init(newID: String, relatedCards: [NSManagedObjectID], dataAPI: API = ManaKit.shared) {
         self.newID = newID
+        self.relatedCards = relatedCards
         self.dataAPI = dataAPI
     }
 
-    func fetchData() {
+    // MARK: - Methods
+    
+    override func fetchRemoteData() {
         guard !isBusy && card == nil else {
             return
         }
-        
-        isBusy.toggle()
-        isFailed = false
 
-        dataAPI.fetchCard(newID: newID,
-                         completion: { result in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                switch result {
-                case .success(let card):
-                    self.card = card
-                case .failure(let error):
-                    print(error)
-                    self.isFailed = true
-                    self.card = nil
+        if dataAPI.willFetchCard(newID: newID) {
+            isBusy.toggle()
+            isFailed = false
+
+            dataAPI.fetchCard(newID: newID,
+                             completion: { result in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    switch result {
+                    case .success(let card):
+                        self.card = card?.objectID
+                    case .failure(let error):
+                        print(error)
+                        self.isFailed = true
+                        self.card = nil
+                    }
+                    self.isBusy.toggle()
                 }
-                self.isBusy.toggle()
-            }
-        })
+            })
+        } else {
+            self.card = ManaKit.shared.find(MGCard.self,
+                                            properties: nil,
+                                            predicate: NSPredicate(format: "newID == %@", newID),
+                                            sortDescriptors: nil,
+                                            createIfNotFound: false,
+                                            context: ManaKit.shared.viewContext)?.first?.objectID
+        }
     }
 }
 

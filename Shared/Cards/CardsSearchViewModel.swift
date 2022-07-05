@@ -31,33 +31,37 @@ class CardsSearchViewModel: CardsViewModel {
     
     // MARK: - Methods
 
-    override func fetchData() {
+    override func fetchRemoteData() {
         if !willFetch() {
             return
         }
         
-        guard !isBusy && cards.isEmpty else {
+        guard !isBusy && data.isEmpty else {
             return
         }
         
-        isBusy.toggle()
-        isFailed = false
+        if dataAPI.willFetchCards(query: query!) {
+            isBusy.toggle()
+            isFailed = false
 
-        dataAPI.fetchCards(query: query!,
-                           completion: { result in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                switch result {
-                case .success:
-                    self.fetchLocalData()
-                case .failure(let error):
-                    print(error)
-                    self.isFailed = true
-                    self.cards.removeAll()
+            dataAPI.fetchCards(query: query!,
+                               completion: { result in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    switch result {
+                    case .success:
+                        self.fetchLocalData()
+                    case .failure(let error):
+                        print(error)
+                        self.isFailed = true
+                        self.data.removeAll()
+                    }
+                    
+                    self.isBusy.toggle()
                 }
-                
-                self.isBusy.toggle()
-            }
-        })
+            })
+        } else {
+            fetchLocalData()
+        }
     }
     
     override func fetchLocalData() {
@@ -73,12 +77,12 @@ class CardsSearchViewModel: CardsViewModel {
         
         do {
             try frc.performFetch()
-            cards = frc.fetchedObjects ?? []
+            data = (frc.fetchedObjects ?? []).map({ $0.objectID })
             sections = frc.sections ?? []
         } catch {
             print(error)
             isFailed = true
-            cards.removeAll()
+            data.removeAll()
         }
     }
     
@@ -118,7 +122,7 @@ extension CardsSearchViewModel: NSFetchedResultsControllerDelegate {
             return
         }
 
-        self.cards = cards
+        data = cards.map({ $0.objectID })
     }
 }
 
