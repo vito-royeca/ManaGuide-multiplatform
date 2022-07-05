@@ -242,21 +242,21 @@
 		8B41B7342812144D00AECF85 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				8B75CA35281310F000597662 /* GoogleService-Info.plist */,
+				8B41B7372812144E00AECF85 /* Assets.xcassets */,
 				8B41B7AB2812588500AECF85 /* Card */,
 				8B41B7A52812588500AECF85 /* Cards */,
 				8B75CA552824BED100597662 /* CardsStore */,
 				8B41B7952812585300AECF85 /* Common Views */,
+				8B41B79A2812585300AECF85 /* Constants.swift */,
 				8B41B84328126F3000AECF85 /* Experimental */,
 				8BAC9E42282F4011008848D8 /* Extensions */,
-				8B41B83A28126ED600AECF85 /* News */,
+				8B75CA35281310F000597662 /* GoogleService-Info.plist */,
+				8B41B7352812144D00AECF85 /* ManaGuideApp.swift */,
 				8B75CA49281627B500597662 /* Navigation */,
+				8B41B83A28126ED600AECF85 /* News */,
 				8B41B7B72812588500AECF85 /* Set */,
 				8B41B785281257F600AECF85 /* Sets */,
 				8B41B84C28126FC900AECF85 /* Status */,
-				8B41B79A2812585300AECF85 /* Constants.swift */,
-				8B41B7352812144D00AECF85 /* ManaGuideApp.swift */,
-				8B41B7372812144E00AECF85 /* Assets.xcassets */,
 				8BCE600C2870029C00389713 /* ViewModel.swift */,
 			);
 			path = Shared;
@@ -845,7 +845,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 300;
+				CURRENT_PROJECT_VERSION = 310;
 				DEVELOPMENT_TEAM = 43CD66539H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -860,7 +860,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.0;
+				MARKETING_VERSION = 3.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jovitoroyeca.ManaGuide;
 				PRODUCT_NAME = "Mana Guide";
 				SDKROOT = iphoneos;
@@ -876,7 +876,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 300;
+				CURRENT_PROJECT_VERSION = 310;
 				DEVELOPMENT_TEAM = 43CD66539H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -891,7 +891,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.0;
+				MARKETING_VERSION = 3.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jovitoroyeca.ManaGuide;
 				PRODUCT_NAME = "Mana Guide";
 				SDKROOT = iphoneos;

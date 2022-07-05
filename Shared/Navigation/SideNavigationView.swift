@@ -21,11 +21,11 @@ struct SideNavigationView: View {
             let initialView = NewsView()
             
             List {
-//                NavigationLink(tag: SideItem.news, selection: $selection) {
-//                    initialView
-//                } label: {
-//                    Label("News", systemImage: "newspaper")
-//                }
+                NavigationLink(tag: SideItem.news, selection: $selection) {
+                    initialView
+                } label: {
+                    Label("News", systemImage: "newspaper")
+                }
                 
                 NavigationLink(tag: SideItem.sets, selection: $selection) {
                     SetsView()
