@@ -58,5 +58,4 @@ class ViewModel: NSObject, ObservableObject {
         
         return array
     }
-    
 }

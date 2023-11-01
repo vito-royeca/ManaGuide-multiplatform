@@ -11,26 +11,14 @@ import ManaKit
 import SDWebImageSwiftUI
 
 struct CardsStoreHeaderView: View {
-    private let set: MGSet
-    private let viewModel: SetViewModel
+    @ObservedObject var viewModel: SetViewModel
 
-    init(set: MGSet, viewModel: SetViewModel) {
-        self.set = set
-        self.viewModel = viewModel
-    }
-    
     var body: some View {
-        VStack(spacing: 0) {
-            if let logoImage = set.logoImage {
-                Image(uiImage: logoImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .clipped()
+        VStack(spacing: 10) {
+            if let set = viewModel.setObject {
+                SetRowView(set: set)
             }
-            SetRowView(set: set)
-            SetLanguagesView(set: set, viewModel: viewModel)
         }
-            .padding(EdgeInsets(top: 0, leading: 0, bottom: 20, trailing: 0))
     }
 }
 
@@ -177,7 +165,7 @@ struct CardsStorePriceView: View {
     }
 }
 
-struct NumberView_Previews: PreviewProvider {
+struct CardStoreViews_Previews: PreviewProvider {
     static var previews: some View {
         let viewModel = CardViewModel(newID: "isd_en_51", relatedCards: [])
         
@@ -193,7 +181,7 @@ struct NumberView_Previews: PreviewProvider {
                 CardsStoreCompactView(card: cardObject)
                     .previewLayout(.fixed(width: 400, height: 83))
             } else {
-                Text("Loading...")
+                Text("Card not found")
             }
         }
             .onAppear {

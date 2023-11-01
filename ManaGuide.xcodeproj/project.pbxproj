@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		583684B82AF1FFF400DFE9EB /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 583684B72AF1FFF400DFE9EB /* SwiftUIIntrospect */; };
+		583684BA2AF1FFF400DFE9EB /* SwiftUIIntrospect-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 583684B92AF1FFF400DFE9EB /* SwiftUIIntrospect-Dynamic */; };
+		583684BC2AF1FFF400DFE9EB /* SwiftUIIntrospect-Static in Frameworks */ = {isa = PBXBuildFile; productRef = 583684BB2AF1FFF400DFE9EB /* SwiftUIIntrospect-Static */; };
+		583684BF2AF200AE00DFE9EB /* ScalingHeaderScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = 583684BE2AF200AE00DFE9EB /* ScalingHeaderScrollView */; };
+		583684C12AF21C0600DFE9EB /* SetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583684C02AF21C0600DFE9EB /* SetHeaderView.swift */; };
+		583684C22AF21C0600DFE9EB /* SetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583684C02AF21C0600DFE9EB /* SetHeaderView.swift */; };
 		8B34024F2824CAF200AC2705 /* ASCollectionView in Frameworks */ = {isa = PBXBuildFile; productRef = 8B34024E2824CAF200AC2705 /* ASCollectionView */; };
 		8B3695502845296200D1F544 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 8B36954F2845296200D1F544 /* SwiftUIPager */; };
 		8B41B74E2812144E00AECF85 /* Tests_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B74D2812144E00AECF85 /* Tests_iOS.swift */; };
@@ -40,7 +46,6 @@
 		8B41B84228126ED700AECF85 /* NewsMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B83E28126ED700AECF85 /* NewsMap.swift */; };
 		8B41B84628126F3000AECF85 /* TabTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84428126F3000AECF85 /* TabTestView.swift */; };
 		8B41B84728126F3000AECF85 /* TabTestViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84528126F3000AECF85 /* TabTestViewModel.swift */; };
-		8B41B84A28126F9600AECF85 /* FullscreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84828126F9600AECF85 /* FullscreenView.swift */; };
 		8B41B84B28126F9600AECF85 /* SearchPathsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84928126F9600AECF85 /* SearchPathsView.swift */; };
 		8B41B84F28126FC900AECF85 /* BusyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84D28126FC900AECF85 /* BusyView.swift */; };
 		8B41B85028126FC900AECF85 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84E28126FC900AECF85 /* ErrorView.swift */; };
@@ -83,8 +88,6 @@
 		8BCE60112870066500389713 /* CardsStoreViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCE600F2870066500389713 /* CardsStoreViews.swift */; };
 		8BCE6013287006B900389713 /* CardsStoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCE6012287006B900389713 /* CardsStoreView.swift */; };
 		8BCE6014287006B900389713 /* CardsStoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCE6012287006B900389713 /* CardsStoreView.swift */; };
-		8BCE60162870097F00389713 /* SetLanguagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCE60152870097F00389713 /* SetLanguagesView.swift */; };
-		8BCE60172870097F00389713 /* SetLanguagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCE60152870097F00389713 /* SetLanguagesView.swift */; };
 		8BCE601928700C7000389713 /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCE601828700C7000389713 /* CardViewModel.swift */; };
 		8BCE601A28700C7000389713 /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCE601828700C7000389713 /* CardViewModel.swift */; };
 		8BCE601C2870101B00389713 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCE601B2870101B00389713 /* CardView.swift */; };
@@ -119,6 +122,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		583684C02AF21C0600DFE9EB /* SetHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetHeaderView.swift; sourceTree = "<group>"; };
 		8B41B7352812144D00AECF85 /* ManaGuideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManaGuideApp.swift; sourceTree = "<group>"; };
 		8B41B7372812144E00AECF85 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8B41B73C2812144E00AECF85 /* Mana Guide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mana Guide.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -130,7 +134,6 @@
 		8B41B7552812144F00AECF85 /* Tests macOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Tests macOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B41B7592812144F00AECF85 /* Tests_macOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests_macOS.swift; sourceTree = "<group>"; };
 		8B41B75B2812144F00AECF85 /* Tests_macOSLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests_macOSLaunchTests.swift; sourceTree = "<group>"; };
-		8B41B7812812578600AECF85 /* FeedKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FeedKit; path = ../../../OSS/FeedKit; sourceTree = "<group>"; };
 		8B41B782281257D300AECF85 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8B41B788281257F600AECF85 /* SetsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetsViewModel.swift; sourceTree = "<group>"; };
 		8B41B789281257F600AECF85 /* SetsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetsView.swift; sourceTree = "<group>"; };
@@ -147,7 +150,6 @@
 		8B41B83E28126ED700AECF85 /* NewsMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsMap.swift; sourceTree = "<group>"; };
 		8B41B84428126F3000AECF85 /* TabTestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabTestView.swift; sourceTree = "<group>"; };
 		8B41B84528126F3000AECF85 /* TabTestViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabTestViewModel.swift; sourceTree = "<group>"; };
-		8B41B84828126F9600AECF85 /* FullscreenView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FullscreenView.swift; sourceTree = "<group>"; };
 		8B41B84928126F9600AECF85 /* SearchPathsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchPathsView.swift; sourceTree = "<group>"; };
 		8B41B84D28126FC900AECF85 /* BusyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusyView.swift; sourceTree = "<group>"; };
 		8B41B84E28126FC900AECF85 /* ErrorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
@@ -164,7 +166,6 @@
 		8BCE600C2870029C00389713 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		8BCE600F2870066500389713 /* CardsStoreViews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardsStoreViews.swift; sourceTree = "<group>"; };
 		8BCE6012287006B900389713 /* CardsStoreView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardsStoreView.swift; sourceTree = "<group>"; };
-		8BCE60152870097F00389713 /* SetLanguagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetLanguagesView.swift; sourceTree = "<group>"; };
 		8BCE601828700C7000389713 /* CardViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewModel.swift; sourceTree = "<group>"; };
 		8BCE601B2870101B00389713 /* CardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		8BCE601E2870108200389713 /* CardImageRowView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardImageRowView.swift; sourceTree = "<group>"; };
@@ -182,14 +183,18 @@
 				8B75CA2D28130C2A00597662 /* ManaKit in Frameworks */,
 				8B75CA2428130B8900597662 /* Kanna in Frameworks */,
 				8B3695502845296200D1F544 /* SwiftUIPager in Frameworks */,
+				583684B82AF1FFF400DFE9EB /* SwiftUIIntrospect in Frameworks */,
 				8B75CA2A28130C0600597662 /* FeedKit in Frameworks */,
+				583684BA2AF1FFF400DFE9EB /* SwiftUIIntrospect-Dynamic in Frameworks */,
 				8B75CA542816EE6C00597662 /* SwiftUIX in Frameworks */,
 				8B75CA1E28130B2500597662 /* SDWebImageSwiftUI in Frameworks */,
 				8B75CA3228130ECC00597662 /* FirebaseCrashlytics in Frameworks */,
+				583684BC2AF1FFF400DFE9EB /* SwiftUIIntrospect-Static in Frameworks */,
 				8B75CA3428130ECC00597662 /* FirebaseDatabase in Frameworks */,
 				8B75CA3028130ECC00597662 /* FirebaseAuth in Frameworks */,
 				8B75CA2728130BD100597662 /* BetterSafariView in Frameworks */,
 				8B34024F2824CAF200AC2705 /* ASCollectionView in Frameworks */,
+				583684BF2AF200AE00DFE9EB /* ScalingHeaderScrollView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -229,7 +234,6 @@
 			children = (
 				8B41B82E281268A000AECF85 /* ManaGuide--iOS--Info.plist */,
 				8B41B7EA281263B000AECF85 /* README.md */,
-				8B41B7802812578600AECF85 /* Packages */,
 				8B41B7342812144D00AECF85 /* Shared */,
 				8B41B7432812144E00AECF85 /* macOS */,
 				8B41B74C2812144E00AECF85 /* Tests iOS */,
@@ -300,20 +304,11 @@
 			path = "Tests macOS";
 			sourceTree = "<group>";
 		};
-		8B41B7802812578600AECF85 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				8B41B7812812578600AECF85 /* FeedKit */,
-			);
-			name = Packages;
-			sourceTree = "<group>";
-		};
 		8B41B785281257F600AECF85 /* Sets */ = {
 			isa = PBXGroup;
 			children = (
 				8B41B788281257F600AECF85 /* SetsViewModel.swift */,
 				8B41B789281257F600AECF85 /* SetsView.swift */,
-				8B41B78A281257F600AECF85 /* SetRowView.swift */,
 			);
 			path = Sets;
 			sourceTree = "<group>";
@@ -355,7 +350,8 @@
 			children = (
 				8BCE6003287000B700389713 /* SetView.swift */,
 				8BCE6004287000B700389713 /* SetViewModel.swift */,
-				8BCE60152870097F00389713 /* SetLanguagesView.swift */,
+				8B41B78A281257F600AECF85 /* SetRowView.swift */,
+				583684C02AF21C0600DFE9EB /* SetHeaderView.swift */,
 			);
 			path = Set;
 			sourceTree = "<group>";
@@ -375,7 +371,6 @@
 		8B41B84328126F3000AECF85 /* Experimental */ = {
 			isa = PBXGroup;
 			children = (
-				8B41B84828126F9600AECF85 /* FullscreenView.swift */,
 				8B41B84928126F9600AECF85 /* SearchPathsView.swift */,
 				8B41B84428126F3000AECF85 /* TabTestView.swift */,
 				8B41B84528126F3000AECF85 /* TabTestViewModel.swift */,
@@ -455,6 +450,10 @@
 				8B75CA532816EE6C00597662 /* SwiftUIX */,
 				8B34024E2824CAF200AC2705 /* ASCollectionView */,
 				8B36954F2845296200D1F544 /* SwiftUIPager */,
+				583684B72AF1FFF400DFE9EB /* SwiftUIIntrospect */,
+				583684B92AF1FFF400DFE9EB /* SwiftUIIntrospect-Dynamic */,
+				583684BB2AF1FFF400DFE9EB /* SwiftUIIntrospect-Static */,
+				583684BE2AF200AE00DFE9EB /* ScalingHeaderScrollView */,
 			);
 			productName = "ManaGuide (iOS)";
 			productReference = 8B41B73C2812144E00AECF85 /* Mana Guide.app */;
@@ -567,6 +566,8 @@
 				8B75CA522816EE6C00597662 /* XCRemoteSwiftPackageReference "SwiftUIX" */,
 				8B75CA562824BF3E00597662 /* XCRemoteSwiftPackageReference "ASCollectionView" */,
 				8B36954E2845296100D1F544 /* XCRemoteSwiftPackageReference "SwiftUIPager" */,
+				583684B62AF1FFF400DFE9EB /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
+				583684BD2AF200AE00DFE9EB /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */,
 			);
 			productRefGroup = 8B41B73D2812144E00AECF85 /* Products */;
 			projectDirPath = "";
@@ -623,7 +624,6 @@
 			files = (
 				8B41B83F28126ED700AECF85 /* NewsAPIManager.swift in Sources */,
 				8BCE602828701B2800389713 /* CardsView.swift in Sources */,
-				8B41B84A28126F9600AECF85 /* FullscreenView.swift in Sources */,
 				8B41B7A32812585300AECF85 /* Constants.swift in Sources */,
 				8B41B85028126FC900AECF85 /* ErrorView.swift in Sources */,
 				8B41B84F28126FC900AECF85 /* BusyView.swift in Sources */,
@@ -632,7 +632,6 @@
 				8B41B84128126ED700AECF85 /* NewsViewModel.swift in Sources */,
 				8B41B793281257F600AECF85 /* SetRowView.swift in Sources */,
 				8BCE601F2870108200389713 /* CardImageRowView.swift in Sources */,
-				8BCE60162870097F00389713 /* SetLanguagesView.swift in Sources */,
 				8BCE600A287000DE00389713 /* CardsViewModel.swift in Sources */,
 				8B68987F28724F8D003837F1 /* TextViewWrapper.swift in Sources */,
 				8B41B783281257D300AECF85 /* ContentView.swift in Sources */,
@@ -647,6 +646,7 @@
 				8BCE601928700C7000389713 /* CardViewModel.swift in Sources */,
 				8B41B84728126F3000AECF85 /* TabTestViewModel.swift in Sources */,
 				8B41B79F2812585300AECF85 /* WebView.swift in Sources */,
+				583684C12AF21C0600DFE9EB /* SetHeaderView.swift in Sources */,
 				8BCE602B28701B4800389713 /* CardsSearchViewModel.swift in Sources */,
 				8BCE60102870066500389713 /* CardsStoreViews.swift in Sources */,
 				8B41B84228126ED700AECF85 /* NewsMap.swift in Sources */,
@@ -677,6 +677,7 @@
 				8BCE6026287012C200389713 /* CardsStoreSeeAllView.swift in Sources */,
 				8BCE601D2870101B00389713 /* CardView.swift in Sources */,
 				8BCE600E2870029C00389713 /* ViewModel.swift in Sources */,
+				583684C22AF21C0600DFE9EB /* SetHeaderView.swift in Sources */,
 				8BCE602928701B2800389713 /* CardsView.swift in Sources */,
 				8B41B792281257F600AECF85 /* SetsView.swift in Sources */,
 				8BCE60112870066500389713 /* CardsStoreViews.swift in Sources */,
@@ -690,7 +691,6 @@
 				8B41B79C2812585300AECF85 /* SearchNavigation.swift in Sources */,
 				8BCE6014287006B900389713 /* CardsStoreView.swift in Sources */,
 				8B68988028724F8D003837F1 /* TextViewWrapper.swift in Sources */,
-				8BCE60172870097F00389713 /* SetLanguagesView.swift in Sources */,
 				8B75CA4E28162C2E00597662 /* SideNavigationView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -855,7 +855,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -886,7 +886,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1082,6 +1082,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		583684B62AF1FFF400DFE9EB /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/swiftui-introspect.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.1;
+			};
+		};
+		583684BD2AF200AE00DFE9EB /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/ScalingHeaderScrollView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.4;
+			};
+		};
 		8B36954E2845296100D1F544 /* XCRemoteSwiftPackageReference "SwiftUIPager" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/fermoya/SwiftUIPager.git";
@@ -1157,6 +1173,26 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		583684B72AF1FFF400DFE9EB /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 583684B62AF1FFF400DFE9EB /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
+			productName = SwiftUIIntrospect;
+		};
+		583684B92AF1FFF400DFE9EB /* SwiftUIIntrospect-Dynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 583684B62AF1FFF400DFE9EB /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
+			productName = "SwiftUIIntrospect-Dynamic";
+		};
+		583684BB2AF1FFF400DFE9EB /* SwiftUIIntrospect-Static */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 583684B62AF1FFF400DFE9EB /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
+			productName = "SwiftUIIntrospect-Static";
+		};
+		583684BE2AF200AE00DFE9EB /* ScalingHeaderScrollView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 583684BD2AF200AE00DFE9EB /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */;
+			productName = ScalingHeaderScrollView;
+		};
 		8B34024E2824CAF200AC2705 /* ASCollectionView */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8B75CA562824BF3E00597662 /* XCRemoteSwiftPackageReference "ASCollectionView" */;
