@@ -14,6 +14,7 @@ struct SetsView: View {
     
     @StateObject var viewModel = SetsViewModel()
     @State private var showingSort = false
+    @State private var selectedSet: MGSet?
     @State var query = ""
     
     var body: some View {
@@ -46,12 +47,17 @@ struct SetsView: View {
                 Section(header: Text(section.name)) {
                     OutlineGroup(section.objects as? [MGSet] ?? [], children: \.sortedChildren) { set in
                         SetRowView(set: set)
-                            .background(NavigationLink("", destination: SetView(setCode: set.code, languageCode: "en")).opacity(0))
+                            .onTapGesture {
+                                selectedSet = set
+                            }
                     }
                 }
             }
         }
             .listStyle(.plain)
+            .fullScreenCover(item: $selectedSet) { set in
+                SetView(setCode: set.code, languageCode: "en")
+            }
             .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search for Magic sets...")
             .modifier(SectionIndex(sections: viewModel.sections, sectionIndexTitles: viewModel.sectionIndexTitles))
             .toolbar {
@@ -69,7 +75,10 @@ struct SetsView: View {
             }
             .navigationBarTitle("Sets")
             
+            
     }
+    
+    
     
     var sortActionSheet: ActionSheet {
         ActionSheet(

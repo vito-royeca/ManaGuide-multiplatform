@@ -13,7 +13,6 @@ import ManaKit
 struct CardsStoreView: View {
     
     // MARK: - Variables
-    var set: NSManagedObjectID?
     var setViewModel: SetViewModel?
     @StateObject var cardsViewModel: CardsViewModel
     @State private var showingSort = false
@@ -22,8 +21,7 @@ struct CardsStoreView: View {
 
     // MARK: - Initializers
     
-    init(set: NSManagedObjectID?, setViewModel: SetViewModel?, cardsViewModel: CardsViewModel) {
-        self.set = set
+    init(setViewModel: SetViewModel?, cardsViewModel: CardsViewModel) {
         self.setViewModel = setViewModel
         _cardsViewModel = StateObject(wrappedValue: cardsViewModel)
     }
@@ -49,7 +47,7 @@ struct CardsStoreView: View {
     }
     
     var bodyData: some View {
-        CardsStoreDataView(sort: sort, set: set, setViewModel: setViewModel, cardsViewModel: cardsViewModel)
+        CardsStoreDataView(sort: sort, setViewModel: setViewModel, cardsViewModel: cardsViewModel)
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button(action: {
@@ -103,8 +101,8 @@ extension NSNotification {
 
 struct CardsStoreView_Previews: PreviewProvider {
     static var previews: some View {
-        CardsStoreView(set: nil, setViewModel: nil, cardsViewModel: SetViewModel(setCode: "snc", languageCode: "en"))
-            .previewInterfaceOrientation(.landscapeLeft)
+        CardsStoreView(setViewModel: nil, cardsViewModel: SetViewModel(setCode: "snc", languageCode: "en"))
+//            .previewInterfaceOrientation(.landscapeRight)
     }
 }
 
@@ -117,13 +115,11 @@ struct CardsStoreDataView : View {
     
     @State private var selectedCard: NSManagedObjectID? = nil
     private var sort: CardsViewSort
-    private var set: NSManagedObjectID?
     private var setViewModel: SetViewModel?
     private var cardsViewModel: CardsViewModel
     
-    init(sort: CardsViewSort, set: NSManagedObjectID?, setViewModel: SetViewModel?, cardsViewModel: CardsViewModel) {
+    init(sort: CardsViewSort, setViewModel: SetViewModel?, cardsViewModel: CardsViewModel) {
         self.sort = sort
-        self.set = set
         self.setViewModel = setViewModel
         self.cardsViewModel = cardsViewModel
     }
@@ -148,14 +144,12 @@ struct CardsStoreDataView : View {
     var sections: [ASCollectionViewSection<Int>] {
         var array = [ASCollectionViewSection<Int>]()
 
-        if let set = set,
-           let viewModel = setViewModel,
-           let setObject = viewModel.find(MGSet.self, id: set) {
+        if let viewModel = setViewModel {
             array.append(ASCollectionViewSection(id: -1) {
-                CardsStoreHeaderView(set: setObject, viewModel: viewModel)
+                CardsStoreHeaderView(viewModel: viewModel)
             }
                 .selfSizingConfig { _ in
-                    ASSelfSizingConfig(canExceedCollectionWidth: false)
+                    ASSelfSizingConfig(canExceedCollectionWidth: true)
                 })
         }
 
@@ -247,10 +241,9 @@ extension CardsStoreDataView {
     var layoutContent: ASCollectionLayoutSection {
         ASCollectionLayoutSection { environment in
             var height = CGFloat(120)
-            if let set = set,
-               let setObject = setViewModel?.find(MGSet.self, id: set) {
+            if let setObject = setViewModel?.setObject {
                 
-                if let _ = setObject.logoURL {
+                if let _ = setObject.smallLogoURL {
                     height += 100
                 }
                 if let sortedLanguages = setObject.sortedLanguages {

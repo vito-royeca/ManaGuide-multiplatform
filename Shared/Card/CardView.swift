@@ -59,7 +59,7 @@ struct CardView: View {
                 List {
                     Section {
                         let width = proxy.size.width * 0.7
-                        let height = proxy.size.height * 0.7
+                        let height = proxy.size.height * 0.65
                         carouselView(card: card, width: width, height: height)
                     }
                     
@@ -88,10 +88,13 @@ struct CardView: View {
                         CardExtraInfoView(card: cardObject)
                     }
                 }
-                    .navigationBarTitle(Text(cardObject.displayName ?? ""))
+                    .navigationBarTitle(Text(cardObject.displayName ?? "")
+                        .font(Font.custom("Keyrune", size: 30)))
+                    .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         CardToolbar(presentationMode: presentationMode, isShowingShareSheet: $isShowingShareSheet)
                     }
+                    
                     .sheet(isPresented: $isShowingShareSheet, content: {
                         activityView
                     })
@@ -157,7 +160,7 @@ struct CardView: View {
     }
 
     func carouselView(card: NSManagedObjectID, width: CGFloat, height: CGFloat) -> some View {
-        return ScrollView {
+//        return ScrollView {
             Pager(page: Page.withIndex(viewModel.relatedCards.firstIndex(of: card) ?? 0),
                   data: viewModel.relatedCards) { card in
                 if let cardObject = viewModel.find(MGCard.self, id: card) {
@@ -173,12 +176,13 @@ struct CardView: View {
                         viewModel.fetchRemoteData()
                     }
                 })
+                
                 .itemSpacing(10)
                 .itemAspectRatio(0.8)
                 .interactive(scale: 0.8)
                 .pagingPriority(.high)
                 .frame(height: height)
-        }
+//        }
     }
     
     var activityView: some View {
@@ -552,9 +556,10 @@ struct CardExtraInfoView: View {
                 DisclosureGroup("Component Parts: \(componentParts.count)", isExpanded: $isComponentPartsExpanded) {
                     ForEach(componentParts) { componentPart in
                         if let part = componentPart.part,
-                           let newIDCopy = part.newIDCopy,
-                           let component = componentPart.component,
-                           let name = component.name {
+                           let component = componentPart.component {
+
+                            let newIDCopy = part.newIDCopy
+                            let name = component.name
                             VStack(alignment: .leading) {
                                 Text(name)
                                     .font(.headline)

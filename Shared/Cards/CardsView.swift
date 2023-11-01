@@ -21,7 +21,7 @@ struct CardsView: View {
                          scopeSelection: $scopeSelection,
                          isBusy: $viewModel.isBusy,
                          delegate: self) {
-            CardsStoreView(set: nil, setViewModel: nil, cardsViewModel: viewModel)
+            CardsStoreView(setViewModel: nil, cardsViewModel: viewModel)
                 .navigationBarTitle("Cards")
         }
     }

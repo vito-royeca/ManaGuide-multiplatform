@@ -89,7 +89,7 @@ class SetViewModel: CardsViewModel {
                                       properties: nil,
                                       predicate: NSPredicate(format: "code == %@", setCode),
                                       sortDescriptors: nil,
-                                      createIfNotFound: false,
+                                      createIfNotFound: true,
                                       context: ManaKit.shared.viewContext)?.first?.objectID
             fetchLocalData()
         }
@@ -171,6 +171,30 @@ extension SetViewModel {
         request.sortDescriptors = sortDescriptors
 
         return request
+    }
+}
+
+extension SetViewModel {
+    func commonLanguages() -> [MGLanguage] {
+        let codes = ["en", "es", "fr", "de", "it", "pt", "ja", "ko", "ru", "zhs", "zht"]
+        let predicate = NSPredicate(format: "code IN %@", codes)
+        let languages = ManaKit.shared.find(MGLanguage.self,
+                                            properties: nil,
+                                            predicate: predicate,
+                                            sortDescriptors: [NSSortDescriptor(key: "code", ascending: true)],
+                                            createIfNotFound: true,
+                                            context: ManaKit.shared.viewContext)  ?? []
+        return languages
+    }
+    
+    var setObject: MGSet? {
+        get {
+            if let set = set {
+                find(MGSet.self, id: set)
+            } else {
+                nil
+            }
+        }
     }
 }
 
