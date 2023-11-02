@@ -57,7 +57,8 @@ struct SetRowView: View {
 }
 
 #Preview {
-    let viewModel = SetViewModel(setCode: "lea", languageCode: "en")
+    let viewModel = SetViewModel(setCode: "lea",
+                                 languageCode: "en")
     viewModel.fetchRemoteData()
     
     return VStack {

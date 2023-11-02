@@ -34,11 +34,13 @@ struct CardsStoreFeatureView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(card.displayName ?? "")
-                .font(Font.custom(font.name, size: font.size))
+                .font(Font.custom(font.name,
+                                  size: font.size))
                 .lineLimit(1)
             HStack {
                 Text(card.displayKeyrune)
-                    .font(Font.custom("Keyrune", size: 20))
+                    .font(Font.custom("Keyrune",
+                                      size: 20))
                     .foregroundColor(Color(card.keyruneColor))
                 Text("\u{2022} #\(card.collectorNumber ?? "") \u{2022} \(card.rarity?.name ?? "") \u{2022} \(card.language?.displayCode ?? "")")
                     .font(.footnote)
@@ -51,7 +53,9 @@ struct CardsStoreFeatureView: View {
                 .indicator(.activity)
                 .transition(.fade(duration: 0.5))
                 .aspectRatio(contentMode: .fill)
-                .frame(width: 280, height: 200, alignment: .center)
+                .frame(width: 280,
+                       height: 200,
+                       alignment: .center)
                 .cornerRadius(16)
                 .clipped()
             Spacer()
@@ -77,7 +81,9 @@ struct CardsStoreLargeView: View {
                 .indicator(.activity)
                 .transition(.fade(duration: 0.5))
                 .aspectRatio(contentMode: .fill)
-                .frame(width: 80, height: 80, alignment: .center)
+                .frame(width: 80,
+                       height: 80,
+                       alignment: .center)
                 .cornerRadius(16)
                 .clipped()
             VStack(alignment: .leading) {
@@ -116,7 +122,9 @@ struct CardsStoreCompactView: View {
                 .indicator(.activity)
                 .transition(.fade(duration: 0.5))
                 .aspectRatio(contentMode: .fill)
-                .frame(width: 60, height: 60, alignment: .center)
+                .frame(width: 60,
+                       height: 60,
+                       alignment: .center)
                 .cornerRadius(16)
                 .clipped()
             VStack(alignment: .leading) {
@@ -165,27 +173,27 @@ struct CardsStorePriceView: View {
     }
 }
 
-struct CardStoreViews_Previews: PreviewProvider {
-    static var previews: some View {
-        let viewModel = CardViewModel(newID: "isd_en_51", relatedCards: [])
-        
-        Group {
-            if let card = viewModel.card,
-               let cardObject = viewModel.find(MGCard.self, id: card) {
-                CardsStoreFeatureView(card: cardObject)
-                    .previewLayout(.fixed(width: 400, height: 300))
+// MARK: - Previews
+#Preview {
+    let viewModel = CardViewModel(newID: "isd_en_51", relatedCards: [])
+    viewModel.fetchRemoteData()
 
-                CardsStoreLargeView(card: cardObject)
-                    .previewLayout(.fixed(width: 400, height: 125))
+    return Group {
+        if let card = viewModel.card,
+           let cardObject = viewModel.find(MGCard.self, id: card) {
+            CardsStoreFeatureView(card: cardObject)
+                .previewLayout(.fixed(width: 400,
+                                      height: 300))
 
-                CardsStoreCompactView(card: cardObject)
-                    .previewLayout(.fixed(width: 400, height: 83))
-            } else {
-                Text("Card not found")
-            }
+            CardsStoreLargeView(card: cardObject)
+                .previewLayout(.fixed(width: 400,
+                                      height: 125))
+
+            CardsStoreCompactView(card: cardObject)
+                .previewLayout(.fixed(width: 400,
+                                      height: 83))
+        } else {
+            Text("Card not found")
         }
-            .onAppear {
-                viewModel.fetchRemoteData()
-            }
     }
 }

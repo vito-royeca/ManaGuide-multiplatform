@@ -34,7 +34,8 @@ struct CardListRowView: View {
                     
                     VStack(alignment: .leading) {
                         Text(card.displayName ?? "")
-                            .font(Font.custom(font.name, size: font.size))
+                            .font(Font.custom(font.name,
+                                              size: font.size))
                         Spacer()
                         HStack {
                             Text(card.displayKeyrune)
@@ -62,8 +63,16 @@ struct CardListRowView: View {
     }
 }
 
-struct CardListRowView_Previews: PreviewProvider {
-    static var previews: some View {
-        Text("card not found")
+#Preview {
+    let model = CardViewModel(newID: "isd_en_51",
+                              relatedCards: [])
+    model.fetchRemoteData()
+    
+    return List {
+        if let card = model.cardObject {
+            CardListRowView(card: card)
+        } else {
+            Text("Loading...")
+        }
     }
 }

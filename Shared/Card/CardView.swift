@@ -23,8 +23,10 @@ struct CardView: View {
     @State private var isShowingShareSheet = false
     @StateObject var viewModel: CardViewModel
     
-    init(newID: String, relatedCards: [NSManagedObjectID]) {
-        _viewModel = StateObject(wrappedValue: CardViewModel(newID: newID, relatedCards: relatedCards))
+    init(newID: String,
+         relatedCards: [NSManagedObjectID]) {
+        _viewModel = StateObject(wrappedValue: CardViewModel(newID: newID,
+                                                             relatedCards: relatedCards))
     }
     
     var body: some View {
@@ -47,9 +49,9 @@ struct CardView: View {
                 #endif
             }
         }
-            .onAppear {
-                viewModel.fetchRemoteData()
-            }
+        .onAppear {
+            viewModel.fetchRemoteData()
+        }
     }
     
     var compactView: some View {
@@ -60,7 +62,9 @@ struct CardView: View {
                     Section {
                         let width = proxy.size.width * 0.7
                         let height = proxy.size.height * 0.65
-                        carouselView(card: card, width: width, height: height)
+                        carouselView(card: card,
+                                     width: width,
+                                     height: height)
                     }
                     
                     if let prices = cardObject.prices?.allObjects as? [MGCardPrice] {
@@ -89,12 +93,13 @@ struct CardView: View {
                     }
                 }
                     .navigationBarTitle(Text(cardObject.displayName ?? "")
-                        .font(Font.custom("Keyrune", size: 30)))
+                                            .font(Font.custom("Keyrune",
+                                                              size: 30)))
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
-                        CardToolbar(presentationMode: presentationMode, isShowingShareSheet: $isShowingShareSheet)
+                        CardToolbar(presentationMode: presentationMode,
+                                    isShowingShareSheet: $isShowingShareSheet)
                     }
-                    
                     .sheet(isPresented: $isShowingShareSheet, content: {
                         activityView
                     })
@@ -114,7 +119,9 @@ struct CardView: View {
                     let height = proxy.size.height * 0.5
                     
                     List {
-                        carouselView(card: card, width: width, height: height)
+                        carouselView(card: card,
+                                     width: width,
+                                     height: height)
                         
                         if let prices = cardObject.prices?.allObjects as? [MGCardPrice] {
                             Section {
@@ -123,7 +130,6 @@ struct CardView: View {
                         }
                     }
                 
-
                     List {
                         if let faces = cardObject.sortedFaces {
                             ForEach(faces) { face in
@@ -148,11 +154,12 @@ struct CardView: View {
                 }
                     .navigationBarTitle(Text(cardObject.displayName ?? ""))
                     .toolbar {
-                        CardToolbar(presentationMode: presentationMode, isShowingShareSheet: $isShowingShareSheet)
+                        CardToolbar(presentationMode: presentationMode,
+                                    isShowingShareSheet: $isShowingShareSheet)
                     }
-                    .sheet(isPresented: $isShowingShareSheet, content: {
+                    .sheet(isPresented: $isShowingShareSheet) {
                         activityView
-                    })
+                    }
             } else {
                 EmptyView()
             }
@@ -163,20 +170,22 @@ struct CardView: View {
 //        return ScrollView {
             Pager(page: Page.withIndex(viewModel.relatedCards.firstIndex(of: card) ?? 0),
                   data: viewModel.relatedCards) { card in
-                if let cardObject = viewModel.find(MGCard.self, id: card) {
-                    CardImageRowView(card: cardObject, style: .oneLine)
+                if let cardObject = viewModel.find(MGCard.self,
+                                                   id: card) {
+                    CardImageRowView(card: cardObject,
+                                     style: .oneLine)
                 }
             }
                 .onPageChanged({ pageNumber in
                     let card = viewModel.relatedCards[pageNumber]
                     
-                    if let cardObject = viewModel.find(MGCard.self, id: card) {
+                    if let cardObject = viewModel.find(MGCard.self,
+                                                       id: card) {
                         viewModel.card = nil
                         viewModel.newID = cardObject.newIDCopy
                         viewModel.fetchRemoteData()
                     }
                 })
-                
                 .itemSpacing(10)
                 .itemAspectRatio(0.8)
                 .interactive(scale: 0.8)
@@ -189,7 +198,8 @@ struct CardView: View {
         var itemSources = [UIActivityItemSource]()
         
         if let card = viewModel.card,
-           let cardObject = viewModel.find(MGCard.self, id: card) {
+           let cardObject = viewModel.find(MGCard.self,
+                                           id: card) {
             itemSources.append(CardViewItemSource(card: cardObject))
         }
 
@@ -203,12 +213,14 @@ struct CardView: View {
     
     func shareAction() {
         guard let card = viewModel.card,
-           let cardObject = viewModel.find(MGCard.self, id: card) else {
+           let cardObject = viewModel.find(MGCard.self,
+                                           id: card) else {
             return
         }
         
         let itemSource = CardViewItemSource(card: cardObject)
-        let activityVC = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
+        let activityVC = UIActivityViewController(activityItems: [itemSource],
+                                                  applicationActivities: nil)
 
         let connectedScenes = UIApplication.shared.connectedScenes
             .filter({ $0.activationState == .foregroundActive })
@@ -224,7 +236,8 @@ struct CardToolbar: ToolbarContent {
     @Binding var presentationMode: PresentationMode
     @Binding var isShowingShareSheet: Bool
     
-    init(presentationMode: Binding<PresentationMode>, isShowingShareSheet: Binding<Bool>) {
+    init(presentationMode: Binding<PresentationMode>,
+         isShowingShareSheet: Binding<Bool>) {
         _presentationMode = presentationMode
         _isShowingShareSheet = isShowingShareSheet
     }
@@ -268,7 +281,8 @@ class CardViewItemSource: NSObject, UIActivityItemSource {
         return card.displayName ?? ""
     }
     
-    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
+    func activityViewController(_ activityViewController: UIActivityViewController,
+                                itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
         
         guard let url = card.imageURL(for: .png),
            let image = SDImageCache.shared.imageFromCache(forKey: url.absoluteString) else {
@@ -278,11 +292,14 @@ class CardViewItemSource: NSObject, UIActivityItemSource {
         return image
     }
     
-    func activityViewController(_ activityViewController: UIActivityViewController, subjectForActivityType activityType: UIActivity.ActivityType?) -> String {
+    func activityViewController(_ activityViewController: UIActivityViewController,
+                                subjectForActivityType activityType: UIActivity.ActivityType?) -> String {
         return card.displayName ?? ""
     }
     
-    func activityViewController(_ activityViewController: UIActivityViewController, thumbnailImageForActivityType activityType: UIActivity.ActivityType?, suggestedSize size: CGSize) -> UIImage? {
+    func activityViewController(_ activityViewController: UIActivityViewController,
+                                thumbnailImageForActivityType activityType: UIActivity.ActivityType?,
+                                suggestedSize size: CGSize) -> UIImage? {
         guard let url = card.imageURL(for: .artCrop),
            let image = SDImageCache.shared.imageFromCache(forKey: url.absoluteString) else {
             return nil
@@ -306,18 +323,11 @@ class CardViewItemSource: NSObject, UIActivityItemSource {
 
 // MARK: - Previews
 
-struct CardView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            let model = SetViewModel(setCode: "isd", languageCode: "en")
-            let relatedCards = model.data
-            CardView(newID: "isd_en_51", relatedCards: relatedCards)
-                .onAppear {
-                    model.fetchRemoteData()
-                }
-        }
-        .previewInterfaceOrientation(.portraitUpsideDown)
+#Preview {
+    return NavigationView {
+        CardView(newID: "isd_en_51", relatedCards: [])
     }
+    .previewInterfaceOrientation(.portraitUpsideDown)
 }
 
 // MARK: - CardPricingInfoView

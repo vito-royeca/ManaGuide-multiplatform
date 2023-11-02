@@ -45,11 +45,15 @@ struct CardImageRowView: View {
                 card.layout?.name == "Modal Dfc" ||
                 card.layout?.name == "Transform" {
                 webImage
-                    .rotation3DEffect(.degrees(degrees), axis: (x: 0, y: 0, z: 0))
+                    .rotation3DEffect(.degrees(degrees),
+                                      axis: (x: 0, y: 0, z: 0))
             } else {
                 webImage
             }
-            CardImageRowPriceView(card: card, style: style, degrees: $degrees, url: $url)
+            CardImageRowPriceView(card: card,
+                                  style: style,
+                                  degrees: $degrees,
+                                  url: $url)
         }
             .onAppear {
                 url = card.imageURL(for: .png)
@@ -59,9 +63,17 @@ struct CardImageRowView: View {
 
 // MARK: - Previews
 
-struct CardImageRowView_Previews: PreviewProvider {
-    static var previews: some View {
-        Text("card not found")
+#Preview {
+    let viewModel = CardViewModel(newID: "lea_en_131", relatedCards: [])
+    viewModel.fetchRemoteData()
+
+    return List {
+        if let card = viewModel.cardObject {
+            CardImageRowView(card: card,
+                             style: .twoLines)
+        } else {
+            Text("Loading...")
+        }
     }
 }
 
@@ -75,7 +87,10 @@ struct CardImageRowPriceView: View {
     @Binding var degrees : Double
     @Binding var url : URL?
     
-    init(card: MGCard, style: CardImageRowPriceStyle, degrees: Binding<Double>, url: Binding<URL?>) {
+    init(card: MGCard,
+         style: CardImageRowPriceStyle,
+         degrees: Binding<Double>,
+         url: Binding<URL?>) {
         self.card = card
         self.style = style
         _degrees = degrees
@@ -95,7 +110,9 @@ struct CardImageRowPriceView: View {
                         .foregroundColor(Color.blue)
                         .multilineTextAlignment(.trailing)
                     Spacer()
-                    CardImageRowButtonView(card: card, degrees: $degrees, url: $url)
+                    CardImageRowButtonView(card: card,
+                                           degrees: $degrees,
+                                           url: $url)
                     Spacer()
                     Text("Foil")
                         .font(.footnote)
@@ -121,7 +138,9 @@ struct CardImageRowPriceView: View {
                     
                 }
                 Spacer()
-                CardImageRowButtonView(card: card, degrees: $degrees, url: $url)
+                CardImageRowButtonView(card: card,
+                                       degrees: $degrees,
+                                       url: $url)
                 Spacer()
                 VStack {
                     Text(card.displayNormalPrice)
@@ -148,7 +167,9 @@ struct CardImageRowButtonView: View {
     private var url1: URL?
     private var url2: URL?
     
-    init(card: MGCard, degrees: Binding<Double>, url: Binding<URL?>) {
+    init(card: MGCard,
+         degrees: Binding<Double>,
+         url: Binding<URL?>) {
         self.card = card
         _degrees = degrees
         _url = url
@@ -185,7 +206,7 @@ struct CardImageRowButtonView: View {
                     .renderingMode(.original)
                     .foregroundColor(.accentColor)
             }
-                .buttonStyle(PlainButtonStyle())
+            .buttonStyle(PlainButtonStyle())
         } else {
             EmptyView()
         }

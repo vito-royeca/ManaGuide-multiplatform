@@ -130,7 +130,9 @@ extension CardsSearchViewModel: NSFetchedResultsControllerDelegate {
 
 extension CardsSearchViewModel {
     func defaultFetchRequest(query: String) -> NSFetchRequest<MGCard> {
-        let predicate = NSPredicate(format: "newID != nil AND newID != '' AND collectorNumber != nil AND language.code = %@ AND name CONTAINS[cd] %@", "en", query)
+        let predicate = NSPredicate(format: "newID != nil AND newID != '' AND collectorNumber != nil AND language.code = %@ AND name CONTAINS[cd] %@",
+                                    "en",
+                                    query)
         
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
         request.sortDescriptors = sortDescriptors

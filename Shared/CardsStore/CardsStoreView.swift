@@ -47,7 +47,9 @@ struct CardsStoreView: View {
     }
     
     var bodyData: some View {
-        CardsStoreDataView(sort: sort, setViewModel: setViewModel, cardsViewModel: cardsViewModel)
+        CardsStoreDataView(sort: sort,
+                           setViewModel: setViewModel,
+                           cardsViewModel: cardsViewModel)
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button(action: {
@@ -73,17 +75,20 @@ struct CardsStoreView: View {
                 .default(Text("\(sort == .name ? "\u{2713}" : "") Name")) {
                     sort = .name
                     cardsViewModel.sort = .name
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort, object: nil)
+                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
+                                                    object: nil)
                 },
                 .default(Text("\(sort == .rarity ? "\u{2713}" : "") Rarity")) {
                     sort = .rarity
                     cardsViewModel.sort = .rarity
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort, object: nil)
+                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
+                                                    object: nil)
                 },
                 .default(Text("\(sort == .type ? "\u{2713}" : "") Type")) {
                     sort = .type
                     cardsViewModel.sort = .type
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort, object: nil)
+                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
+                                                    object: nil)
                 },
                 .cancel(Text("Cancel"))
             ]
@@ -99,11 +104,14 @@ extension NSNotification {
 
 // MARK: - Previews
 
-struct CardsStoreView_Previews: PreviewProvider {
-    static var previews: some View {
-        CardsStoreView(setViewModel: nil, cardsViewModel: SetViewModel(setCode: "snc", languageCode: "en"))
+#Preview {
+    let cardsViewModel = SetViewModel(setCode: "snc",
+                                      languageCode: "en")
+    cardsViewModel.fetchRemoteData()
+
+    return CardsStoreView(setViewModel: nil,
+                   cardsViewModel: cardsViewModel)
 //            .previewInterfaceOrientation(.landscapeRight)
-    }
 }
 
 // MARK: - CardsStoreDataView
@@ -118,7 +126,9 @@ struct CardsStoreDataView : View {
     private var setViewModel: SetViewModel?
     private var cardsViewModel: CardsViewModel
     
-    init(sort: CardsViewSort, setViewModel: SetViewModel?, cardsViewModel: CardsViewModel) {
+    init(sort: CardsViewSort,
+         setViewModel: SetViewModel?,
+         cardsViewModel: CardsViewModel) {
         self.sort = sort
         self.setViewModel = setViewModel
         self.cardsViewModel = cardsViewModel
@@ -127,13 +137,18 @@ struct CardsStoreDataView : View {
     var body: some View {
         ASCollectionView(sections: self.sections)
             .layout(self.layout)
-            .contentInsets(.init(top: 10, left: 0, bottom: 10, right: 0))
+            .contentInsets(.init(top: 10,
+                                 left: 0,
+                                 bottom: 10,
+                                 right: 0))
             .shouldAttemptToMaintainScrollPositionOnOrientationChange(maintainPosition: false)
             .edgesIgnoringSafeArea(.all)
             .sheet(item: $selectedCard) { selectedCard in
-                if let card = cardsViewModel.find(MGCard.self, id: selectedCard) {
+                if let card = cardsViewModel.find(MGCard.self,
+                                                  id: selectedCard) {
                     NavigationView {
-                        CardView(newID: card.newIDCopy, relatedCards: cardsViewModel.data)
+                        CardView(newID: card.newIDCopy,
+                                 relatedCards: cardsViewModel.data)
                     }
                 } else {
                     EmptyView()
@@ -192,20 +207,26 @@ struct CardsStoreDataView : View {
                         ASSelfSizingConfig(canExceedCollectionWidth: false)
                     }
                     .sectionHeader {
-                        header(sectionID: sectionID,  title: section.name, cards: cards.map({ $0.objectID }))
+                        header(sectionID: sectionID,
+                               title: section.name,
+                               cards: cards.map({ $0.objectID }))
                     }
         })
         
         return array
     }
     
-    func header(sectionID: Int, title: String, cards: [NSManagedObjectID]) -> some View {
+    func header(sectionID: Int,
+                title: String,
+                cards: [NSManagedObjectID]) -> some View {
         HStack {
             Text(title)
                 .font(.title)
             Spacer()
             if cards.count >= 10 {
-                NavigationLink("See all", destination: CardsStoreSeeAllView(title: title, cards: cards))
+                NavigationLink("See all",
+                               destination: CardsStoreSeeAllView(title: title,
+                                                                 cards: cards))
             }
         }
     }
@@ -215,7 +236,8 @@ struct CardsStoreDataView : View {
 
 extension CardsStoreDataView {
     var layout: ASCollectionLayout<Int> {
-        ASCollectionLayout(scrollDirection: .vertical, interSectionSpacing: 20) { sectionID in
+        ASCollectionLayout(scrollDirection: .vertical,
+                           interSectionSpacing: 20) { sectionID in
             if sectionID == -1 {
                 return layoutContent
             } else {
@@ -258,26 +280,27 @@ extension CardsStoreDataView {
             }
             
             let columnsToFit = CGFloat(1)
-            let item = NSCollectionLayoutItem(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .fractionalHeight(1.0)))
+            let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                 heightDimension: .fractionalHeight(1.0)))
 
-            let itemsGroup = NSCollectionLayoutGroup.horizontal(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(height)),
-                subitem: item, count: 1)
+            let itemsGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                                   heightDimension: .absolute(height)),
+                                                                subitem: item,
+                                                                count: 1)
 
-            let nestedGroup = NSCollectionLayoutGroup.horizontal(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(0.95 / columnsToFit),
-                    heightDimension: .absolute(height)),
-                subitems: [itemsGroup])
-            nestedGroup.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+            let nestedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.95 / columnsToFit),
+                                                                                                    heightDimension: .absolute(height)),
+                                                                 subitems: [itemsGroup])
+            nestedGroup.contentInsets = NSDirectionalEdgeInsets(top: 10,
+                                                                leading: 10,
+                                                                bottom: 10,
+                                                                trailing: 10)
 
             let section = NSCollectionLayoutSection(group: nestedGroup)
-            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
+            section.contentInsets = NSDirectionalEdgeInsets(top: 0,
+                                                            leading: 20,
+                                                            bottom: 0,
+                                                            trailing: 20)
             section.orthogonalScrollingBehavior = .groupPaging
             section.visibleItemsInvalidationHandler = { _, _, _ in } // If this isn't defined, there is a bug in UICVCompositional Layout that will fail to update sizes of cells
             return section
@@ -287,36 +310,35 @@ extension CardsStoreDataView {
     var layoutFeature: ASCollectionLayoutSection {
         ASCollectionLayoutSection { environment in
             let columnsToFit = floor(environment.container.effectiveContentSize.width / 320)
-            let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1.0),
-                heightDimension: .fractionalHeight(1.0)))
+            let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                 heightDimension: .fractionalHeight(1.0)))
 
-            let itemsGroup = NSCollectionLayoutGroup.vertical(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(0.8 / columnsToFit),
-                    heightDimension: .absolute(280)),
-                subitem: item, count: 1)
+            let itemsGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.8 / columnsToFit),
+                                                                                                 heightDimension: .absolute(280)),
+                                                              subitem: item, count: 1)
             
-            let nestedGroup = NSCollectionLayoutGroup.horizontal(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(0.9 / columnsToFit),
-                    heightDimension: .absolute(280)),
-                subitems: [itemsGroup])
-            nestedGroup.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 8, bottom: 10, trailing: 8)
+            let nestedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9 / columnsToFit),
+                                                                                                    heightDimension: .absolute(280)),
+                                                                 subitems: [itemsGroup])
+            nestedGroup.contentInsets = NSDirectionalEdgeInsets(top: 10,
+                                                                leading: 8,
+                                                                bottom: 10,
+                                                                trailing: 8)
 
-            let header = NSCollectionLayoutBoundarySupplementaryItem(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(34)),
-                elementKind: UICollectionView.elementKindSectionHeader,
-                alignment: .top)
+            let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                                        heightDimension: .absolute(34)),
+                                                                     elementKind: UICollectionView.elementKindSectionHeader,
+                                                                     alignment: .top)
             header.contentInsets.leading = nestedGroup.contentInsets.leading
             header.contentInsets.trailing = nestedGroup.contentInsets.trailing
             
             let section = NSCollectionLayoutSection(group: itemsGroup)
             section.interGroupSpacing = 20
             section.boundarySupplementaryItems = [header]
-            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
+            section.contentInsets = NSDirectionalEdgeInsets(top: 0,
+                                                            leading: 20,
+                                                            bottom: 0,
+                                                            trailing: 20)
             section.orthogonalScrollingBehavior = .groupPaging
             section.visibleItemsInvalidationHandler = { _, _, _ in } // If this isn't defined, there is a bug in UICVCompositional Layout that will fail to update sizes of cells
 
@@ -327,36 +349,35 @@ extension CardsStoreDataView {
     var layoutLarge: ASCollectionLayoutSection {
         ASCollectionLayoutSection { environment in
             let columnsToFit = floor(environment.container.effectiveContentSize.width / 320)
-            let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1.0),
-                heightDimension: .fractionalHeight(1.0)))
+            let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                 heightDimension: .fractionalHeight(1.0)))
 
-            let itemsGroup = NSCollectionLayoutGroup.vertical(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .fractionalHeight(1.0)),
-                subitem: item, count: 2)
+            let itemsGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                                 heightDimension: .fractionalHeight(1.0)),
+                                                              subitem: item, count: 2)
             itemsGroup.interItemSpacing = .fixed(10)
 
-            let nestedGroup = NSCollectionLayoutGroup.horizontal(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(0.9 / columnsToFit),
-                    heightDimension: .absolute(180)),
-                subitems: [itemsGroup])
-            nestedGroup.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 8, bottom: 10, trailing: 8)
+            let nestedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9 / columnsToFit),
+                                                                                                    heightDimension: .absolute(180)),
+                                                                 subitems: [itemsGroup])
+            nestedGroup.contentInsets = NSDirectionalEdgeInsets(top: 10,
+                                                                leading: 8,
+                                                                bottom: 10,
+                                                                trailing: 8)
 
-            let header = NSCollectionLayoutBoundarySupplementaryItem(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(34)),
-                elementKind: UICollectionView.elementKindSectionHeader,
-                alignment: .top)
+            let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                                        heightDimension: .absolute(34)),
+                                                                     elementKind: UICollectionView.elementKindSectionHeader,
+                                                                     alignment: .top)
             header.contentInsets.leading = nestedGroup.contentInsets.leading
             header.contentInsets.trailing = nestedGroup.contentInsets.trailing
 
             let section = NSCollectionLayoutSection(group: nestedGroup)
             section.boundarySupplementaryItems = [header]
-            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
+            section.contentInsets = NSDirectionalEdgeInsets(top: 0,
+                                                            leading: 20,
+                                                            bottom: 0,
+                                                            trailing: 20)
             section.orthogonalScrollingBehavior = .groupPaging
             section.visibleItemsInvalidationHandler = { _, _, _ in } // If this isn't defined, there is a bug in UICVCompositional Layout that will fail to update sizes of cells
 
@@ -367,36 +388,36 @@ extension CardsStoreDataView {
     func layoutLargeFew(itemCount: Int) -> ASCollectionLayoutSection {
         return ASCollectionLayoutSection { environment in
             let columnsToFit = floor(environment.container.effectiveContentSize.width / 320)
-            let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1.0),
-                heightDimension: .fractionalHeight(1.0)))
+            let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                 heightDimension: .fractionalHeight(1.0)))
 
-            let itemsGroup = NSCollectionLayoutGroup.vertical(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .fractionalHeight(1.0)),
-                subitem: item, count: itemCount)
+            let itemsGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                                 heightDimension: .fractionalHeight(1.0)),
+                                                              subitem: item,
+                                                              count: itemCount)
             itemsGroup.interItemSpacing = .fixed(10)
 
-            let nestedGroup = NSCollectionLayoutGroup.horizontal(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(0.9 / columnsToFit),
-                    heightDimension: .absolute(CGFloat(itemCount * 90))),
-                subitems: [itemsGroup])
-            nestedGroup.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 8, bottom: 10, trailing: 8)
+            let nestedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9 / columnsToFit),
+                                                                                                    heightDimension: .absolute(CGFloat(itemCount * 90))),
+                                                                 subitems: [itemsGroup])
+            nestedGroup.contentInsets = NSDirectionalEdgeInsets(top: 10,
+                                                                leading: 8,
+                                                                bottom: 10,
+                                                                trailing: 8)
 
-            let header = NSCollectionLayoutBoundarySupplementaryItem(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(34)),
-                elementKind: UICollectionView.elementKindSectionHeader,
-                alignment: .top)
+            let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                                        heightDimension: .absolute(34)),
+                                                                     elementKind: UICollectionView.elementKindSectionHeader,
+                                                                     alignment: .top)
             header.contentInsets.leading = nestedGroup.contentInsets.leading
             header.contentInsets.trailing = nestedGroup.contentInsets.trailing
 
             let section = NSCollectionLayoutSection(group: nestedGroup)
             section.boundarySupplementaryItems = [header]
-            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
+            section.contentInsets = NSDirectionalEdgeInsets(top: 0,
+                                                            leading: 20,
+                                                            bottom: 0,
+                                                            trailing: 20)
             section.orthogonalScrollingBehavior = .groupPaging
             section.visibleItemsInvalidationHandler = { _, _, _ in } // If this isn't defined, there is a bug in UICVCompositional Layout that will fail to update sizes of cells
 
@@ -407,36 +428,35 @@ extension CardsStoreDataView {
     var layoutCompact: ASCollectionLayoutSection {
         ASCollectionLayoutSection { environment in
             let columnsToFit = floor(environment.container.effectiveContentSize.width / 320)
-            let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1.0),
-                heightDimension: .fractionalHeight(1.0)))
+            let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                 heightDimension: .fractionalHeight(1.0)))
 
-            let itemsGroup = NSCollectionLayoutGroup.vertical(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .fractionalHeight(1.0)),
-                subitem: item, count: 3)
+            let itemsGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                                 heightDimension: .fractionalHeight(1.0)),
+                                                              subitem: item, count: 3)
             itemsGroup.interItemSpacing = .fixed(10)
 
-            let nestedGroup = NSCollectionLayoutGroup.horizontal(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(0.9 / columnsToFit),
-                    heightDimension: .absolute(240)),
-                subitems: [itemsGroup])
-            nestedGroup.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 8, bottom: 10, trailing: 8)
+            let nestedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9 / columnsToFit),
+                                                                                                    heightDimension: .absolute(240)),
+                                                                 subitems: [itemsGroup])
+            nestedGroup.contentInsets = NSDirectionalEdgeInsets(top: 10,
+                                                                leading: 8,
+                                                                bottom: 10,
+                                                                trailing: 8)
 
-            let header = NSCollectionLayoutBoundarySupplementaryItem(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(34)),
-                elementKind: UICollectionView.elementKindSectionHeader,
-                alignment: .top)
+            let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                                        heightDimension: .absolute(34)),
+                                                                     elementKind: UICollectionView.elementKindSectionHeader,
+                                                                     alignment: .top)
             header.contentInsets.leading = nestedGroup.contentInsets.leading
             header.contentInsets.trailing = nestedGroup.contentInsets.trailing
 
             let section = NSCollectionLayoutSection(group: nestedGroup)
             section.boundarySupplementaryItems = [header]
-            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
+            section.contentInsets = NSDirectionalEdgeInsets(top: 0,
+                                                            leading: 20,
+                                                            bottom: 0,
+                                                            trailing: 20)
             section.orthogonalScrollingBehavior = .groupPaging
             section.visibleItemsInvalidationHandler = { _, _, _ in } // If this isn't defined, there is a bug in UICVCompositional Layout that will fail to update sizes of cells
 
@@ -444,4 +464,3 @@ extension CardsStoreDataView {
         }
     }
 }
-

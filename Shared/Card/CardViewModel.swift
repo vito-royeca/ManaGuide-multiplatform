@@ -21,7 +21,9 @@ class CardViewModel: ViewModel {
     
     // MARK: - Initializers
     
-    init(newID: String, relatedCards: [NSManagedObjectID], dataAPI: API = ManaKit.shared) {
+    init(newID: String,
+         relatedCards: [NSManagedObjectID],
+         dataAPI: API = ManaKit.shared) {
         self.newID = newID
         self.relatedCards = relatedCards
         self.dataAPI = dataAPI
@@ -59,6 +61,18 @@ class CardViewModel: ViewModel {
                                             sortDescriptors: nil,
                                             createIfNotFound: false,
                                             context: ManaKit.shared.viewContext)?.first?.objectID
+        }
+    }
+}
+
+extension CardViewModel {
+    var cardObject: MGCard? {
+        get {
+            if let card = card {
+                find(MGCard.self, id: card)
+            } else {
+                nil
+            }
         }
     }
 }

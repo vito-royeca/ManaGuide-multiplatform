@@ -31,16 +31,24 @@ class CardsViewModel: ViewModel {
             
             switch sort {
             case .name:
-                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
             case .rarity:
-                sortDescriptors.append(NSSortDescriptor(key: "rarity.name", ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "rarity.name",
+                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
             case .type:
-                sortDescriptors.append(NSSortDescriptor(key: "type.name", ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "type.name",
+                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
             }
             
             return sortDescriptors

@@ -23,7 +23,9 @@ struct NewsFeedRowView: View {
                             .indicator(.activity)
                             .transition(.fade(duration: 0.5))
                             .aspectRatio(contentMode: .fill)
-                            .frame(width: 100, height: 100, alignment: .center)
+                            .frame(width: 100,
+                                   height: 100,
+                                   alignment: .center)
                             .cornerRadius(10)
                             .clipped()
                     } else {
@@ -39,7 +41,9 @@ struct NewsFeedRowView: View {
                                     .indicator(.activity)
                                     .transition(.fade(duration: 0.5))
                                     .aspectRatio(contentMode: .fill)
-                                    .frame(width: 30, height: 30, alignment: .center)
+                                    .frame(width: 30,
+                                           height: 30,
+                                           alignment: .center)
                                     .clipped()
                             } else {
                                 EmptyView()

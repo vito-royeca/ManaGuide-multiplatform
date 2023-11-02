@@ -16,7 +16,8 @@ struct SetView: View {
     @State var progress: CGFloat = 0
     
     init(setCode: String, languageCode: String) {
-        _viewModel = StateObject(wrappedValue: SetViewModel(setCode: setCode, languageCode: languageCode))
+        _viewModel = StateObject(wrappedValue: SetViewModel(setCode: setCode,
+                                                            languageCode: languageCode))
         
 //        UITableView.appearance().allowsSelection = false
 //        UITableViewCell.appearance().selectionStyle = .none
@@ -41,7 +42,8 @@ struct SetView: View {
         ScalingHeaderScrollView {
             ZStack {
                 Color.white.edgesIgnoringSafeArea(.all)
-                SetHeaderView(viewModel: viewModel, progress: $progress)
+                SetHeaderView(viewModel: viewModel,
+                              progress: $progress)
                     .frame(height: 200)
                     .padding(.top, 50)
             }
@@ -60,7 +62,8 @@ struct SetView: View {
                     //                        self.selectedCard = card
                 }
             
-            if let card = viewModel.find(MGCard.self, id: card) {
+            if let card = viewModel.find(MGCard.self,
+                                         id: card) {
                 CardsStoreLargeView(card: card)
                     .gesture(tap)
             }
@@ -69,7 +72,8 @@ struct SetView: View {
 
     var listView: some View {
         List {
-            SetHeaderView(viewModel: viewModel, progress: $progress)
+            SetHeaderView(viewModel: viewModel,
+                          progress: $progress)
                 .listRowSeparator(.hidden)
             contentView
         }
@@ -112,33 +116,12 @@ struct SetView: View {
     }
 }
 
-struct CircleButtonStyle: ButtonStyle {
-
-    var imageName: String
-    var foreground = Color.black
-    var background = Color.white
-    var width: CGFloat = 40
-    var height: CGFloat = 40
-
-    func makeBody(configuration: Configuration) -> some View {
-        Circle()
-            .fill(background)
-            .overlay(Image(systemName: imageName)
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(foreground)
-                        .padding(12))
-            .frame(width: width, height: height)
-    }
-}
-
 // MARK: - Previews
-struct SetView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            SetView(setCode: "twho", languageCode: "en")
-        }
-//            .previewInterfaceOrientation(.landscapeLeft)
+
+#Preview {
+    NavigationView {
+        SetView(setCode: "twho", languageCode: "en")
     }
+//        .previewInterfaceOrientation(.landscapeLeft)
 }
 

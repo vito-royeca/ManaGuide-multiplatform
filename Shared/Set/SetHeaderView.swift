@@ -9,7 +9,7 @@ import SwiftUI
 import ManaKit
 import SDWebImageSwiftUI
 
-    struct SetHeaderView: View {
+struct SetHeaderView: View {
     @ObservedObject var viewModel: SetViewModel
     @Binding var progress: CGFloat
 
@@ -62,8 +62,10 @@ import SDWebImageSwiftUI
 }
 
 #Preview {
-    let viewModel = SetViewModel(setCode: "who", languageCode: "en")
+    let viewModel = SetViewModel(setCode: "who",
+                                 languageCode: "en")
     viewModel.fetchRemoteData()
     
-    return SetHeaderView(viewModel: viewModel, progress: .constant(0))
+    return SetHeaderView(viewModel: viewModel,
+                         progress: .constant(0))
 }
