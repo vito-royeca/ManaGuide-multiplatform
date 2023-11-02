@@ -167,31 +167,29 @@ struct CardView: View {
     }
 
     func carouselView(card: NSManagedObjectID, width: CGFloat, height: CGFloat) -> some View {
-//        return ScrollView {
-            Pager(page: Page.withIndex(viewModel.relatedCards.firstIndex(of: card) ?? 0),
-                  data: viewModel.relatedCards) { card in
+        Pager(page: Page.withIndex(viewModel.relatedCards.firstIndex(of: card) ?? 0),
+              data: viewModel.relatedCards) { card in
+            if let cardObject = viewModel.find(MGCard.self,
+                                               id: card) {
+                CardImageRowView(card: cardObject,
+                                 style: .oneLine)
+            }
+        }
+            .onPageChanged({ pageNumber in
+                let card = viewModel.relatedCards[pageNumber]
+                
                 if let cardObject = viewModel.find(MGCard.self,
                                                    id: card) {
-                    CardImageRowView(card: cardObject,
-                                     style: .oneLine)
+                    viewModel.card = nil
+                    viewModel.newID = cardObject.newIDCopy
+                    viewModel.fetchRemoteData()
                 }
-            }
-                .onPageChanged({ pageNumber in
-                    let card = viewModel.relatedCards[pageNumber]
-                    
-                    if let cardObject = viewModel.find(MGCard.self,
-                                                       id: card) {
-                        viewModel.card = nil
-                        viewModel.newID = cardObject.newIDCopy
-                        viewModel.fetchRemoteData()
-                    }
-                })
-                .itemSpacing(10)
-                .itemAspectRatio(0.8)
-                .interactive(scale: 0.8)
-                .pagingPriority(.high)
-                .frame(height: height)
-//        }
+            })
+            .itemSpacing(10)
+            .itemAspectRatio(0.8)
+            .interactive(scale: 0.8)
+            .pagingPriority(.high)
+            .frame(height: height)
     }
     
     var activityView: some View {

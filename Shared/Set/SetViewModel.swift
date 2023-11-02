@@ -68,8 +68,7 @@ class SetViewModel: CardsViewModel {
             isFailed = false
 
             dataAPI.fetchSet(code: setCode,
-                             languageCode: languageCode,
-                             completion: { result in
+                             languageCode: languageCode) { result in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     switch result {
                     case .success(let set):
@@ -84,7 +83,7 @@ class SetViewModel: CardsViewModel {
                     
                     self.isBusy.toggle()
                 }
-            })
+            }
         } else {
             set = ManaKit.shared.find(MGSet.self,
                                       properties: nil,

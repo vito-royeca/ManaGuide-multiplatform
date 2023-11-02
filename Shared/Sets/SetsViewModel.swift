@@ -108,7 +108,7 @@ class SetsViewModel: ViewModel {
             isBusy.toggle()
             isFailed = false
             
-            dataAPI.fetchSets(completion: { result in
+            dataAPI.fetchSets { result in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     switch result {
                     case .success:
@@ -121,7 +121,7 @@ class SetsViewModel: ViewModel {
                     
                     self.isBusy.toggle()
                 }
-            })
+            }
         } else {
             fetchLocalData()
         }

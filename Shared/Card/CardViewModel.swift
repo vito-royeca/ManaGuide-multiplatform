@@ -40,8 +40,7 @@ class CardViewModel: ViewModel {
             isBusy.toggle()
             isFailed = false
 
-            dataAPI.fetchCard(newID: newID,
-                             completion: { result in
+            dataAPI.fetchCard(newID: newID) { result in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     switch result {
                     case .success(let card):
@@ -53,7 +52,7 @@ class CardViewModel: ViewModel {
                     }
                     self.isBusy.toggle()
                 }
-            })
+            }
         } else {
             self.card = ManaKit.shared.find(MGCard.self,
                                             properties: nil,

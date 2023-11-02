@@ -44,8 +44,7 @@ class CardsSearchViewModel: CardsViewModel {
             isBusy.toggle()
             isFailed = false
 
-            dataAPI.fetchCards(query: query!,
-                               completion: { result in
+            dataAPI.fetchCards(query: query!) { result in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     switch result {
                     case .success:
@@ -58,7 +57,7 @@ class CardsSearchViewModel: CardsViewModel {
                     
                     self.isBusy.toggle()
                 }
-            })
+            }
         } else {
             fetchLocalData()
         }
