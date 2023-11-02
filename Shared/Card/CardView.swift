@@ -245,17 +245,17 @@ struct CardToolbar: ToolbarContent {
     var body: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarLeading) {
             Button(action: {
-                isShowingShareSheet.toggle()
+                $presentationMode.wrappedValue.dismiss()
             }) {
-                Image(systemName: "square.and.arrow.up")
+                Image(systemName: "xmark")
                     .renderingMode(.original)
             }
         }
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             Button(action: {
-                $presentationMode.wrappedValue.dismiss()
+                isShowingShareSheet.toggle()
             }) {
-                Image(systemName: "xmark")
+                Image(systemName: "square.and.arrow.up")
                     .renderingMode(.original)
             }
         }

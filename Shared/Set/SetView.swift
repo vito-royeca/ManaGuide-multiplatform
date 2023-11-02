@@ -16,6 +16,7 @@ struct SetView: View {
     @StateObject var viewModel: SetViewModel
     @State private var progress: CGFloat = 0
     @State private var showingSort = false
+    @State private var selectedCard: MGCard?
     
     init(setCode: String, languageCode: String) {
         _viewModel = StateObject(wrappedValue: SetViewModel(setCode: setCode,
@@ -65,19 +66,22 @@ struct SetView: View {
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsStoreViewSort)) { (output) in
             viewModel.fetchLocalData()
         }
+        .sheet(item: $selectedCard) { card in
+            NavigationView {
+                CardView(newID: card.newIDCopy,
+                         relatedCards: viewModel.data)
+            }
+        }
     }
     
     var contentView: some View {
         ForEach(viewModel.data) { card in
-            let tap = TapGesture()
-                .onEnded { _ in
-                    //                        self.selectedCard = card
-                }
-            
             if let card = viewModel.find(MGCard.self,
                                          id: card) {
                 CardsStoreLargeView(card: card)
-                    .gesture(tap)
+                    .onTapGesture {
+                        selectedCard = card
+                    }
             }
         }
     }
