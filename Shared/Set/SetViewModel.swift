@@ -49,9 +49,7 @@ class SetViewModel: CardsViewModel {
                 } else {
                     return frc.sectionIndexTitles
                 }
-            case .rarity:
-                return frc.sectionIndexTitles
-            case .type:
+            case .collectorNumber, .rarity, .type:
                 return frc.sectionIndexTitles
             }
         }
@@ -132,6 +130,18 @@ class SetViewModel: CardsViewModel {
                 }
                 sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
                                                         ascending: true))
+
+            case .collectorNumber:
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
+                if languageCode == "en" {
+                    sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                            ascending: true))
+                } else {
+                    sortDescriptors.append(NSSortDescriptor(key: "printedName",
+                                                            ascending: true))
+                }
+
             case .rarity:
                 sortDescriptors.append(NSSortDescriptor(key: "rarity.name",
                                                         ascending: true))
@@ -144,6 +154,7 @@ class SetViewModel: CardsViewModel {
                 }
                 sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
                                                         ascending: true))
+
             case .type:
                 sortDescriptors.append(NSSortDescriptor(key: "type.name",
                                                         ascending: true))

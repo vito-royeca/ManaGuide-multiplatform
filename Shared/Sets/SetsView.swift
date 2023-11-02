@@ -59,7 +59,8 @@ struct SetsView: View {
                 SetView(setCode: set.code, languageCode: "en")
             }
             .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search for Magic sets...")
-            .modifier(SectionIndex(sections: viewModel.sections, sectionIndexTitles: viewModel.sectionIndexTitles))
+            .modifier(SectionIndex(sections: viewModel.sections,
+                                   sectionIndexTitles: viewModel.sectionIndexTitles))
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button(action: {

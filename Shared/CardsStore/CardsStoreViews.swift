@@ -87,8 +87,15 @@ struct CardsStoreLargeView: View {
                 .cornerRadius(16)
                 .clipped()
             VStack(alignment: .leading) {
-                Text(card.displayName ?? "")
-                    .font(Font.custom(font.name, size: font.size))
+                HStack {
+                    Text(card.displayName ?? "")
+                        .font(Font.custom(font.name, size: font.size))
+                    AttributedText(
+                        NSAttributedString(symbol: card.displayManaCost,
+                                           pointSize: 16)
+                    )
+                        .multilineTextAlignment(.trailing)
+                }
                 HStack {
                     Text(card.displayKeyrune)
                         .font(Font.custom("Keyrune", size: 20))
@@ -175,7 +182,7 @@ struct CardsStorePriceView: View {
 
 // MARK: - Previews
 #Preview {
-    let viewModel = CardViewModel(newID: "isd_en_51", relatedCards: [])
+    let viewModel = CardViewModel(newID: "isd_en_176", relatedCards: [])
     viewModel.fetchRemoteData()
 
     return Group {

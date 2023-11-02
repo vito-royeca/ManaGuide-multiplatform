@@ -409,7 +409,8 @@ struct CardCommonInfoView: View {
                 .font(.headline)
             Spacer()
             AttributedText(
-                NSAttributedString(symbol: card.manaCost ?? " ", pointSize: 16)
+                NSAttributedString(symbol: card.displayManaCost,
+                                   pointSize: 16)
             )
                 .multilineTextAlignment(.trailing)
         }

@@ -91,6 +91,8 @@ class CardsSearchViewModel: CardsViewModel {
             switch sort {
             case .name:
                 return frc.sectionIndexTitles
+            case .collectorNumber:
+                return frc.sectionIndexTitles
             case .rarity:
                 return frc.sectionIndexTitles
             case .type:
