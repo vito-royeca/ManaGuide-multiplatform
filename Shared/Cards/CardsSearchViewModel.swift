@@ -31,6 +31,7 @@ class CardsSearchViewModel: CardsViewModel {
     
     // MARK: - Methods
 
+    @MainActor
     override func fetchRemoteData() {
         if !willFetch() {
             return
@@ -44,19 +45,15 @@ class CardsSearchViewModel: CardsViewModel {
             isBusy.toggle()
             isFailed = false
 
-            dataAPI.fetchCards(query: query!) { result in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    switch result {
-                    case .success:
-                        self.fetchLocalData()
-                    case .failure(let error):
-                        print(error)
-                        self.isFailed = true
-                        self.data.removeAll()
-                    }
-                    
-                    self.isBusy.toggle()
+            Task {
+                do {
+                    try await dataAPI.fetchCards(query: query!)
+                    fetchLocalData()
+                } catch {
+                    isFailed = true
+                    data.removeAll()
                 }
+                isBusy.toggle()
             }
         } else {
             fetchLocalData()

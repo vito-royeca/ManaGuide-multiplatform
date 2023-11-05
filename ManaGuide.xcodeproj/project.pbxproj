@@ -13,6 +13,10 @@
 		583684BF2AF200AE00DFE9EB /* ScalingHeaderScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = 583684BE2AF200AE00DFE9EB /* ScalingHeaderScrollView */; };
 		583684C12AF21C0600DFE9EB /* SetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583684C02AF21C0600DFE9EB /* SetHeaderView.swift */; };
 		583684C22AF21C0600DFE9EB /* SetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583684C02AF21C0600DFE9EB /* SetHeaderView.swift */; };
+		5858F41D2AF772C30067919E /* CardOtherPrintingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5858F41C2AF772C30067919E /* CardOtherPrintingsView.swift */; };
+		5858F41E2AF772C30067919E /* CardOtherPrintingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5858F41C2AF772C30067919E /* CardOtherPrintingsView.swift */; };
+		5858F4202AF7758C0067919E /* CardOtherPrintingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5858F41F2AF7758C0067919E /* CardOtherPrintingsViewModel.swift */; };
+		5858F4212AF7758C0067919E /* CardOtherPrintingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5858F41F2AF7758C0067919E /* CardOtherPrintingsViewModel.swift */; };
 		8B34024F2824CAF200AC2705 /* ASCollectionView in Frameworks */ = {isa = PBXBuildFile; productRef = 8B34024E2824CAF200AC2705 /* ASCollectionView */; };
 		8B3695502845296200D1F544 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 8B36954F2845296200D1F544 /* SwiftUIPager */; };
 		8B41B74E2812144E00AECF85 /* Tests_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B74D2812144E00AECF85 /* Tests_iOS.swift */; };
@@ -121,6 +125,8 @@
 
 /* Begin PBXFileReference section */
 		583684C02AF21C0600DFE9EB /* SetHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetHeaderView.swift; sourceTree = "<group>"; };
+		5858F41C2AF772C30067919E /* CardOtherPrintingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardOtherPrintingsView.swift; sourceTree = "<group>"; };
+		5858F41F2AF7758C0067919E /* CardOtherPrintingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardOtherPrintingsViewModel.swift; sourceTree = "<group>"; };
 		8B41B7352812144D00AECF85 /* ManaGuideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManaGuideApp.swift; sourceTree = "<group>"; };
 		8B41B7372812144E00AECF85 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8B41B73C2812144E00AECF85 /* Mana Guide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mana Guide.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -337,6 +343,8 @@
 				8BCE601E2870108200389713 /* CardImageRowView.swift */,
 				8BCE601B2870101B00389713 /* CardView.swift */,
 				8BCE601828700C7000389713 /* CardViewModel.swift */,
+				5858F41C2AF772C30067919E /* CardOtherPrintingsView.swift */,
+				5858F41F2AF7758C0067919E /* CardOtherPrintingsViewModel.swift */,
 			);
 			path = Card;
 			sourceTree = "<group>";
@@ -620,6 +628,7 @@
 				8BCE602828701B2800389713 /* CardsView.swift in Sources */,
 				8B41B7A32812585300AECF85 /* Constants.swift in Sources */,
 				8B41B85028126FC900AECF85 /* ErrorView.swift in Sources */,
+				5858F41D2AF772C30067919E /* CardOtherPrintingsView.swift in Sources */,
 				8B41B84F28126FC900AECF85 /* BusyView.swift in Sources */,
 				8B41B79D2812585300AECF85 /* View+Extras.swift in Sources */,
 				8BCE600D2870029C00389713 /* ViewModel.swift in Sources */,
@@ -645,6 +654,7 @@
 				8B41B84228126ED700AECF85 /* NewsMap.swift in Sources */,
 				8B41B78F281257F600AECF85 /* SetsViewModel.swift in Sources */,
 				8B41B84028126ED700AECF85 /* NewsView.swift in Sources */,
+				5858F4202AF7758C0067919E /* CardOtherPrintingsViewModel.swift in Sources */,
 				8BCE6007287000B700389713 /* SetViewModel.swift in Sources */,
 				8B41B84B28126F9600AECF85 /* SearchPathsView.swift in Sources */,
 				8BCE6025287012C200389713 /* CardsStoreSeeAllView.swift in Sources */,
@@ -668,6 +678,7 @@
 				8BCE60202870108200389713 /* CardImageRowView.swift in Sources */,
 				8BCE6026287012C200389713 /* CardsStoreSeeAllView.swift in Sources */,
 				8BCE601D2870101B00389713 /* CardView.swift in Sources */,
+				5858F4212AF7758C0067919E /* CardOtherPrintingsViewModel.swift in Sources */,
 				8BCE600E2870029C00389713 /* ViewModel.swift in Sources */,
 				583684C22AF21C0600DFE9EB /* SetHeaderView.swift in Sources */,
 				8BCE602928701B2800389713 /* CardsView.swift in Sources */,
@@ -680,6 +691,7 @@
 				8BCE6006287000B700389713 /* SetView.swift in Sources */,
 				8BCE602C28701B4800389713 /* CardsSearchViewModel.swift in Sources */,
 				8B41B790281257F600AECF85 /* SetsViewModel.swift in Sources */,
+				5858F41E2AF772C30067919E /* CardOtherPrintingsView.swift in Sources */,
 				8B41B79C2812585300AECF85 /* SearchNavigation.swift in Sources */,
 				8BCE6014287006B900389713 /* CardsStoreView.swift in Sources */,
 				8B68988028724F8D003837F1 /* TextViewWrapper.swift in Sources */,

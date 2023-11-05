@@ -609,10 +609,17 @@ struct CardExtraInfoView: View {
             }
 
             if let otherPrintings = card.sortedOtherPrintings {
-                DisclosureGroup("Other Printings: \(otherPrintings.count)", isExpanded: $isOtherPrintingsExpanded) {
+                DisclosureGroup("Other Printings:", isExpanded: $isOtherPrintingsExpanded) {
                     ForEach(otherPrintings) { otherPrinting in
                         CardListRowView(card: otherPrinting)
                             .background(NavigationLink("", destination: CardView(newID: otherPrinting.newIDCopy, relatedCards: [])).opacity(0))
+                    }
+                    if card.sortedOtherPrintings?.count ?? 0 >= 10 {
+                        NavigationLink {
+                            Text("High")
+                        } label: {
+                            Text("View All")
+                        }
                     }
                 }
             }

@@ -40,6 +40,7 @@ class ViewModel: NSObject, ObservableObject {
     
     // MARK: - Methods
     
+    @MainActor
     func fetchRemoteData() { }
     func fetchLocalData() { }
     

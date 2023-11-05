@@ -57,6 +57,7 @@ class SetViewModel: CardsViewModel {
 
     // MARK: - Methods
     
+    @MainActor
     override func fetchRemoteData() {
         guard !isBusy && data.isEmpty else {
             return
@@ -67,22 +68,17 @@ class SetViewModel: CardsViewModel {
             isBusy.toggle()
             isFailed = false
 
-            dataAPI.fetchSet(code: setCode,
-                             languageCode: languageCode) { result in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    switch result {
-                    case .success(let set):
-                        self.set = set?.objectID
-                        self.fetchLocalData()
-                    case .failure(let error):
-                        print(error)
-                        self.isFailed = true
-                        self.set = nil
-                        self.data.removeAll()
-                    }
-                    
-                    self.isBusy.toggle()
+            Task {
+                do {
+                    set = try await dataAPI.fetchSet(code: setCode,
+                                                     languageCode: languageCode)?.objectID
+                    fetchLocalData()
+                } catch {
+                    self.isFailed = true
+                    self.set = nil
+                    self.data.removeAll()
                 }
+                isBusy.toggle()
             }
         } else {
             set = ManaKit.shared.find(MGSet.self,
