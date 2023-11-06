@@ -11,26 +11,20 @@ import ManaKit
 struct CardImageRowView: View {
     @State var degrees : Double = 0
     @State var url : URL?
-    private let card: MGCard
-    private let style: CardImageRowPriceStyle
-    
-    init(card: MGCard, style: CardImageRowPriceStyle) {
-        self.card = card
-        self.style = style
-    }
+    let card: MGCard
     
     var body: some View {
         VStack(alignment: .center, spacing: 2) {
-            let imageView = AsyncImage(url: url) { phase in
+            let imageView = CacheAsyncImage(url: url) { phase in
                 if let image = phase.image {
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
+                        .aspectRatio(contentMode: .fit)
                         .clipped()
                 } else {
                     Image(uiImage: ManaKit.shared.image(name: .cardBack)!)
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
+                        .aspectRatio(contentMode: .fit)
                         .clipped()
                 }
             }
@@ -52,10 +46,9 @@ struct CardImageRowView: View {
                 imageView
             }
 
-            CardImageRowPriceView(card: card,
-                                  style: style,
-                                  degrees: $degrees,
-                                  url: $url)
+            CardImageRowButtonView(card: card,
+                                   degrees: $degrees,
+                                   url: $url)
         }
             .onAppear {
                 url = card.imageURL(for: .png)
@@ -71,92 +64,9 @@ struct CardImageRowView: View {
 
     return List {
         if let card = viewModel.cardObject {
-            CardImageRowView(card: card,
-                             style: .twoLines)
+            CardImageRowView(card: card)
         } else {
             Text("Loading...")
-        }
-    }
-}
-
-enum CardImageRowPriceStyle {
-    case oneLine, twoLines
-}
-
-struct CardImageRowPriceView: View {
-    private let card: MGCard
-    private let style: CardImageRowPriceStyle
-    @Binding var degrees : Double
-    @Binding var url : URL?
-    
-    init(card: MGCard,
-         style: CardImageRowPriceStyle,
-         degrees: Binding<Double>,
-         url: Binding<URL?>) {
-        self.card = card
-        self.style = style
-        _degrees = degrees
-        _url = url
-    }
-    
-    var body: some View {
-        if style == .oneLine {
-            VStack {
-                HStack {
-                    Text("Normal")
-                        .font(.footnote)
-                        .foregroundColor(Color.blue)
-                    Spacer()
-                    Text(card.displayNormalPrice)
-                        .font(.footnote)
-                        .foregroundColor(Color.blue)
-                        .multilineTextAlignment(.trailing)
-                    Spacer()
-                    CardImageRowButtonView(card: card,
-                                           degrees: $degrees,
-                                           url: $url)
-                    Spacer()
-                    Text("Foil")
-                        .font(.footnote)
-                        .foregroundColor(Color.green)
-                    Spacer()
-                    Text(card.displayFoilPrice)
-                        .font(.footnote)
-                        .foregroundColor(Color.green)
-                        .multilineTextAlignment(.trailing)
-                }
-            }
-                .padding(5)
-        } else {
-            HStack {
-                VStack(alignment: .leading) {
-                    Text("Normal")
-                        .font(.footnote)
-                        .foregroundColor(Color.blue)
-                    Spacer()
-                    Text("Foil")
-                        .font(.footnote)
-                        .foregroundColor(Color.green)
-                    
-                }
-                Spacer()
-                CardImageRowButtonView(card: card,
-                                       degrees: $degrees,
-                                       url: $url)
-                Spacer()
-                VStack {
-                    Text(card.displayNormalPrice)
-                        .font(.footnote)
-                        .foregroundColor(Color.blue)
-                        .multilineTextAlignment(.trailing)
-                    Spacer()
-                    Text(card.displayFoilPrice)
-                        .font(.footnote)
-                        .foregroundColor(Color.green)
-                        .multilineTextAlignment(.trailing)
-                    }
-            }
-                .padding(5)
         }
     }
 }

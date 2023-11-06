@@ -57,7 +57,7 @@ struct CardsStoreFeatureView: View {
 //                       alignment: .center)
 //                .cornerRadius(16)
 //                .clipped()
-            AsyncImage(url: card.imageURL(for: .artCrop)) { phase in
+            CacheAsyncImage(url: card.imageURL(for: .artCrop)) { phase in
                 if let image = phase.image {
                     image
                         .resizable()
@@ -85,7 +85,7 @@ struct CardsStoreLargeView: View {
     
     var body: some View {
         HStack(alignment: .top) {
-            AsyncImage(url: card.imageURL(for: .artCrop)) { phase in
+            CacheAsyncImage(url: card.imageURL(for: .artCrop)) { phase in
                 if let image = phase.image {
                     image
                         .resizable()
@@ -143,7 +143,7 @@ struct CardsStoreCompactView: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            AsyncImage(url: card.imageURL(for: .artCrop)) { phase in
+            CacheAsyncImage(url: card.imageURL(for: .artCrop)) { phase in
                 if let image = phase.image {
                     image
                         .resizable()

@@ -21,7 +21,7 @@ struct CardListRowView: View {
         VStack {
             VStack(alignment: .leading) {
                 HStack(spacing: 20) {
-                    AsyncImage(url: card.imageURL(for: .artCrop)) { phase in
+                    CacheAsyncImage(url: card.imageURL(for: .artCrop)) { phase in
                         if let image = phase.image {
                             image
                                 .resizable()

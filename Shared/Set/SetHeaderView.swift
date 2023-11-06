@@ -17,7 +17,7 @@ struct SetHeaderView: View {
             VStack {
                 if let set = viewModel.setObject {
                     if let logoUrl = set.bigLogoURL {
-                        AsyncImage(url: logoUrl) { phase in
+                        CacheAsyncImage(url: logoUrl) { phase in
                             if let image = phase.image {
                                 image
                                     .resizable()

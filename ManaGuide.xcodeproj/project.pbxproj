@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5828109F2AF89F4D0000749C /* CacheAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5828109E2AF89F4D0000749C /* CacheAsyncImage.swift */; };
+		582810A02AF89F4D0000749C /* CacheAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5828109E2AF89F4D0000749C /* CacheAsyncImage.swift */; };
 		583684B82AF1FFF400DFE9EB /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 583684B72AF1FFF400DFE9EB /* SwiftUIIntrospect */; };
 		583684BA2AF1FFF400DFE9EB /* SwiftUIIntrospect-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 583684B92AF1FFF400DFE9EB /* SwiftUIIntrospect-Dynamic */; };
 		583684BC2AF1FFF400DFE9EB /* SwiftUIIntrospect-Static in Frameworks */ = {isa = PBXBuildFile; productRef = 583684BB2AF1FFF400DFE9EB /* SwiftUIIntrospect-Static */; };
@@ -122,6 +124,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5828109E2AF89F4D0000749C /* CacheAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheAsyncImage.swift; sourceTree = "<group>"; };
 		583684C02AF21C0600DFE9EB /* SetHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetHeaderView.swift; sourceTree = "<group>"; };
 		5858F41C2AF772C30067919E /* CardOtherPrintingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardOtherPrintingsView.swift; sourceTree = "<group>"; };
 		5858F41F2AF7758C0067919E /* CardOtherPrintingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardOtherPrintingsViewModel.swift; sourceTree = "<group>"; };
@@ -372,6 +375,7 @@
 			isa = PBXGroup;
 			children = (
 				8B41B84928126F9600AECF85 /* SearchPathsView.swift */,
+				5828109E2AF89F4D0000749C /* CacheAsyncImage.swift */,
 			);
 			path = Experimental;
 			sourceTree = "<group>";
@@ -646,6 +650,7 @@
 				8BCE60102870066500389713 /* CardsStoreViews.swift in Sources */,
 				8B41B84228126ED700AECF85 /* NewsMap.swift in Sources */,
 				8B41B78F281257F600AECF85 /* SetsViewModel.swift in Sources */,
+				5828109F2AF89F4D0000749C /* CacheAsyncImage.swift in Sources */,
 				8B41B84028126ED700AECF85 /* NewsView.swift in Sources */,
 				5858F4202AF7758C0067919E /* CardOtherPrintingsViewModel.swift in Sources */,
 				8BCE6007287000B700389713 /* SetViewModel.swift in Sources */,
@@ -665,6 +670,7 @@
 				8B75CA512816327F00597662 /* NewsFeedRowView.swift in Sources */,
 				8B41B7A42812585300AECF85 /* Constants.swift in Sources */,
 				8B41B79E2812585300AECF85 /* View+Extras.swift in Sources */,
+				582810A02AF89F4D0000749C /* CacheAsyncImage.swift in Sources */,
 				8BCE601A28700C7000389713 /* CardViewModel.swift in Sources */,
 				8B41B794281257F600AECF85 /* SetRowView.swift in Sources */,
 				8B41B784281257D300AECF85 /* ContentView.swift in Sources */,

@@ -15,7 +15,7 @@ struct NewsFeedRowView: View {
         VStack {
             VStack(alignment: .leading) {
                 HStack(alignment: .top, spacing: 20) {
-                    AsyncImage(url: URL(string: item.image ?? "")) { phase in
+                    CacheAsyncImage(url: URL(string: item.image ?? "")) { phase in
                         if let image = phase.image {
                             image
                                 .resizable()
@@ -30,7 +30,7 @@ struct NewsFeedRowView: View {
                 
                     VStack(alignment: .leading) {
                         HStack {
-                            AsyncImage(url: URL(string: item.channelImage ?? "")) { phase in
+                            CacheAsyncImage(url: URL(string: item.channelImage ?? "")) { phase in
                                 if let image = phase.image {
                                     image
                                         .resizable()

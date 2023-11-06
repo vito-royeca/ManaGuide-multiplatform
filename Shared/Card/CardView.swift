@@ -59,7 +59,7 @@ struct CardView: View {
                 List {
                     Section {
                         let width = proxy.size.width * 0.7
-                        let height = proxy.size.height * 0.65
+                        let height = proxy.size.height * 0.5
                         carouselView(card: card,
                                      width: width,
                                      height: height)
@@ -167,8 +167,7 @@ struct CardView: View {
               data: viewModel.relatedCards) { card in
             if let cardObject = viewModel.find(MGCard.self,
                                                id: card) {
-                CardImageRowView(card: cardObject,
-                                 style: .oneLine)
+                CardImageRowView(card: cardObject)
             }
         }
             .onPageChanged({ pageNumber in
@@ -180,7 +179,7 @@ struct CardView: View {
                     viewModel.fetchRemoteData()
                 }
             })
-            .itemSpacing(10)
+            .itemSpacing(0.8)
             .itemAspectRatio(0.8)
             .interactive(scale: 0.8)
             .pagingPriority(.high)
@@ -372,7 +371,7 @@ struct CardPricingRowView: View {
                 Text("Normal \(normal > 0 ? String(format: "$%.2f", normal) : "\u{2014}")")
 //                    .font(.subheadline)
                     .foregroundColor(Color.blue)
-                Spacer()
+//                Spacer()
                 Text("Foil \(foil > 0 ? String(format: "$%.2f", foil) : "\u{2014}")")
 //                    .font(.subheadline)
                     .foregroundColor(Color.green)
