@@ -7,7 +7,6 @@
 
 import SwiftUI
 import ManaKit
-import SDWebImageSwiftUI
 
 struct CardImageRowView: View {
     @State var degrees : Double = 0
@@ -22,34 +21,37 @@ struct CardImageRowView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 2) {
-            let webImage = WebImage(url: url)
-                .resizable()
-                .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
-                .indicator(.activity)
-                .transition(.fade(duration: 0.5))
-                .aspectRatio(contentMode: .fill)
-                .cornerRadius(10)
-                .clipped()
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.clear, lineWidth: 0)
-                )
+            let imageView = AsyncImage(url: url) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipped()
+                } else {
+                    Image(uiImage: ManaKit.shared.image(name: .cardBack)!)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipped()
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             
             if card.layout?.name == "Flip" ||
                 card.layout?.name == "Planar" ||
                 card.layout?.name == "Split" {
-                webImage
+                imageView
                     .rotationEffect(Angle(degrees: degrees))
             } else if card.layout?.name == "Art Series" ||
                 card.layout?.name == "Double Faced Token" ||
                 card.layout?.name == "Modal Dfc" ||
                 card.layout?.name == "Transform" {
-                webImage
+                imageView
                     .rotation3DEffect(.degrees(degrees),
                                       axis: (x: 0, y: 0, z: 0))
             } else {
-                webImage
+                imageView
             }
+
             CardImageRowPriceView(card: card,
                                   style: style,
                                   degrees: $degrees,
@@ -64,7 +66,7 @@ struct CardImageRowView: View {
 // MARK: - Previews
 
 #Preview {
-    let viewModel = CardViewModel(newID: "lea_en_131", relatedCards: [])
+    let viewModel = CardViewModel(newID: "isd_en_51", relatedCards: [])
     viewModel.fetchRemoteData()
 
     return List {

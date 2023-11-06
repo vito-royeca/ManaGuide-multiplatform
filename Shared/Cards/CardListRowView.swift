@@ -7,7 +7,6 @@
 
 import SwiftUI
 import ManaKit
-import SDWebImageSwiftUI
 
 struct CardListRowView: View {
     private let font: ManaKit.Font
@@ -22,16 +21,23 @@ struct CardListRowView: View {
         VStack {
             VStack(alignment: .leading) {
                 HStack(spacing: 20) {
-                    WebImage(url: card.imageURL(for: .artCrop))
-                        .resizable()
-                        .placeholder(Image(uiImage: ManaKit.shared.image(name: .cropBack)!))
-                        .indicator(.activity)
-                        .transition(.fade(duration: 0.5))
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 60, height: 60, alignment: .center)
-                        .cornerRadius(5)
-                        .clipped()
-                    
+                    AsyncImage(url: card.imageURL(for: .artCrop)) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .clipped()
+                        } else {
+                            Image(uiImage: ManaKit.shared.image(name: .cropBack)!)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .clipped()
+                        }
+                    }
+                    .frame(width: 60,
+                           height: 60)
+                    .clipShape(RoundedRectangle(cornerRadius: 5))
+
                     VStack(alignment: .leading) {
                         Text(card.displayName ?? "")
                             .font(Font.custom(font.name,

@@ -75,8 +75,6 @@ struct SetsView: View {
                 }
             }
             .navigationBarTitle("Sets")
-            
-            
     }
     
     

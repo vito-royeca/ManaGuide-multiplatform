@@ -9,8 +9,6 @@ import CoreData
 import LinkPresentation
 import SwiftUI
 import ManaKit
-import SDWebImage
-import SDWebImageSwiftUI
 import SwiftUIPager
 import SwiftUIX
 
@@ -92,9 +90,7 @@ struct CardView: View {
                         CardExtraInfoView(card: cardObject)
                     }
                 }
-                    .navigationBarTitle(Text(cardObject.displayName ?? "")
-                                            .font(Font.custom("Keyrune",
-                                                              size: 30)))
+                    .navigationBarTitle(Text(cardObject.displayName ?? ""))
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         CardToolbar(presentationMode: presentationMode,
@@ -180,7 +176,6 @@ struct CardView: View {
                 
                 if let cardObject = viewModel.find(MGCard.self,
                                                    id: card) {
-                    viewModel.card = nil
                     viewModel.newID = cardObject.newIDCopy
                     viewModel.fetchRemoteData()
                 }
@@ -269,10 +264,11 @@ class CardViewItemSource: NSObject, UIActivityItemSource {
         self.card = card
         super.init()
         
-        if let url = card.imageURL(for: .artCrop),
-           SDImageCache.shared.imageFromCache(forKey: url.absoluteString) == nil {
-            SDWebImageDownloader.shared.downloadImage(with: url)
-        }
+        // MARK: FIXME
+//        if let url = card.imageURL(for: .artCrop),
+//           SDImageCache.shared.imageFromCache(forKey: url.absoluteString) == nil {
+//            SDWebImageDownloader.shared.downloadImage(with: url)
+//        }
     }
     
     func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
@@ -281,13 +277,15 @@ class CardViewItemSource: NSObject, UIActivityItemSource {
     
     func activityViewController(_ activityViewController: UIActivityViewController,
                                 itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
+        // MARK: FIXME
+//        guard let url = card.imageURL(for: .png),
+//           let image = SDImageCache.shared.imageFromCache(forKey: url.absoluteString) else {
+//            return nil
+//        }
+//        
+//        return image
         
-        guard let url = card.imageURL(for: .png),
-           let image = SDImageCache.shared.imageFromCache(forKey: url.absoluteString) else {
-            return nil
-        }
-        
-        return image
+        return nil
     }
     
     func activityViewController(_ activityViewController: UIActivityViewController,
@@ -298,21 +296,24 @@ class CardViewItemSource: NSObject, UIActivityItemSource {
     func activityViewController(_ activityViewController: UIActivityViewController,
                                 thumbnailImageForActivityType activityType: UIActivity.ActivityType?,
                                 suggestedSize size: CGSize) -> UIImage? {
-        guard let url = card.imageURL(for: .artCrop),
-           let image = SDImageCache.shared.imageFromCache(forKey: url.absoluteString) else {
-            return nil
-        }
-        
-        return image
+        // MARK: FIXME
+//        guard let url = card.imageURL(for: .artCrop),
+//           let image = SDImageCache.shared.imageFromCache(forKey: url.absoluteString) else {
+//            return nil
+//        }
+//        
+//        return image
+        return nil
     }
     
     func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
         let metadata = LPLinkMetadata()
         
-        if let url = card.imageURL(for: .artCrop),
-           let image = SDImageCache.shared.imageFromCache(forKey: url.absoluteString) {
-            metadata.iconProvider = NSItemProvider(object: image)
-        }
+        // MARK: FIXME
+//        if let url = card.imageURL(for: .artCrop),
+//           let image = SDImageCache.shared.imageFromCache(forKey: url.absoluteString) {
+//            metadata.iconProvider = NSItemProvider(object: image)
+//        }
         metadata.title = card.displayName ?? ""
         
         return metadata
@@ -323,7 +324,7 @@ class CardViewItemSource: NSObject, UIActivityItemSource {
 
 #Preview {
     return NavigationView {
-        CardView(newID: "isd_en_51", relatedCards: [])
+        CardView(newID: "rvr_en_273", relatedCards: [])
     }
     .previewInterfaceOrientation(.portraitUpsideDown)
 }
@@ -335,10 +336,10 @@ struct CardPricingInfoView: View {
     var prices: [MGCardPrice]
     
     var body: some View {
-        DisclosureGroup("TCGPlayer Prices", isExpanded: $isPricingExpanded) {
-            CardPricingRowView(title: "Market",
-                               normal: prices.filter({ !$0.isFoil }).map{ $0.market}.first ?? 0,
-                               foil: prices.filter({ $0.isFoil }).map{ $0.market}.first ?? 0)
+        CardPricingRowView(title: "Market Price",
+                           normal: prices.filter({ !$0.isFoil }).map{ $0.market}.first ?? 0,
+                           foil: prices.filter({ $0.isFoil }).map{ $0.market}.first ?? 0)
+        DisclosureGroup("All TCGPlayer Prices", isExpanded: $isPricingExpanded) {
             CardPricingRowView(title: "Direct Low",
                                normal: prices.filter({ !$0.isFoil }).map{ $0.directLow}.first ?? 0,
                                foil: prices.filter({ $0.isFoil }).map{ $0.directLow}.first ?? 0)
@@ -365,15 +366,15 @@ struct CardPricingRowView: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(.headline)
+//                .font(.headline)
             Spacer()
             VStack(alignment: .trailing) {
                 Text("Normal \(normal > 0 ? String(format: "$%.2f", normal) : "\u{2014}")")
-                    .font(.subheadline)
+//                    .font(.subheadline)
                     .foregroundColor(Color.blue)
                 Spacer()
                 Text("Foil \(foil > 0 ? String(format: "$%.2f", foil) : "\u{2014}")")
-                    .font(.subheadline)
+//                    .font(.subheadline)
                     .foregroundColor(Color.green)
             }
         }
@@ -388,8 +389,8 @@ enum CardTextRowViewStyle {
 
 struct CardCommonInfoView: View {
     @Environment(\.colorScheme) var colorScheme
-    @State var isPrintedTextExpanded = true
-    @State var isOracleTextExpanded = true
+    @State var isPrintedTextExpanded = false
+    @State var isOracleTextExpanded = false
     let cmcFormatter = NumberFormatter()
     var card: MGCard
     
@@ -404,7 +405,7 @@ struct CardCommonInfoView: View {
     var body: some View {
         HStack {
             Text("Mana Cost")
-                .font(.headline)
+//                .font(.headline)
             Spacer()
             AttributedText(
                 NSAttributedString(symbol: card.displayManaCost,
@@ -415,27 +416,27 @@ struct CardCommonInfoView: View {
         
         HStack {
             Text("Converted Mana Cost")
-                .font(.headline)
+//                .font(.headline)
             Spacer()
             Text(cmcFormatter.string(from: card.cmc as NSNumber) ?? " ")
-                .font(.subheadline)
+//                .font(.subheadline)
         }
         
         HStack {
             Text("Type")
-                .font(.headline)
+//                .font(.headline)
             Spacer()
             Text(card.displayTypeLine ?? "")
-                .font(.subheadline)
+//                .font(.subheadline)
         }
         
         if let displayPowerToughness = card.displayPowerToughness {
             HStack {
                 Text("Power/Toughness")
-                    .font(.headline)
+//                    .font(.headline)
                 Spacer()
                 Text(displayPowerToughness)
-                    .font(.subheadline)
+//                    .font(.subheadline)
             }
         }
         
@@ -443,10 +444,10 @@ struct CardCommonInfoView: View {
            !loyalty.isEmpty {
             HStack {
                 Text("Loyalty")
-                    .font(.headline)
+//                    .font(.headline)
                 Spacer()
                 Text(loyalty)
-                    .font(.subheadline)
+//                    .font(.subheadline)
             }
         }
 
@@ -463,7 +464,9 @@ struct CardCommonInfoView: View {
            !oracleText.isEmpty {
             DisclosureGroup("Oracle Text", isExpanded: $isOracleTextExpanded) {
                 AttributedText(
-                    addColor(to: NSAttributedString(symbol: oracleText, pointSize: 16), colorScheme: colorScheme)
+                    addColor(to: NSAttributedString(symbol: oracleText,
+                                                    pointSize: 16),
+                             colorScheme: colorScheme)
                 )
             }
         }
@@ -472,10 +475,10 @@ struct CardCommonInfoView: View {
            !flavorText.isEmpty {
             VStack(alignment: .leading) {
                 Text("Flavor Text")
-                    .font(.headline)
+//                    .font(.headline)
                 Spacer()
                 Text(flavorText)
-                    .font(.subheadline)
+//                    .font(.subheadline)
                     .italic()
             }
         }
@@ -497,7 +500,7 @@ struct CardOtherInfoView: View {
             
             HStack {
                 Text("Set Symbol")
-                    .font(.headline)
+//                    .font(.headline)
                 Spacer()
                 Text(card.displayKeyrune)
                     .scaledToFit()
@@ -608,22 +611,6 @@ struct CardExtraInfoView: View {
                 }
             }
 
-            if let otherPrintings = card.sortedOtherPrintings {
-                DisclosureGroup("Other Printings:", isExpanded: $isOtherPrintingsExpanded) {
-                    ForEach(otherPrintings) { otherPrinting in
-                        CardListRowView(card: otherPrinting)
-                            .background(NavigationLink("", destination: CardView(newID: otherPrinting.newIDCopy, relatedCards: [])).opacity(0))
-                    }
-                    if card.sortedOtherPrintings?.count ?? 0 >= 10 {
-                        NavigationLink {
-                            Text("High")
-                        } label: {
-                            Text("View All")
-                        }
-                    }
-                }
-            }
-
             if let rulings = card.sortedRulings {
                 DisclosureGroup("Rulings: \(rulings.count)", isExpanded: $isRulingsExpanded) {
                     ForEach(rulings) { ruling in
@@ -645,6 +632,36 @@ struct CardExtraInfoView: View {
                         CardListRowView(card: variation)
                             .background(NavigationLink("", destination: CardView(newID: variation.newIDCopy, relatedCards: [])).opacity(0))
                     }
+                }
+            }
+            
+            if let otherPrintings = card.sortedOtherPrintings {
+                CardOtherPrintingsListView(card: card, otherPrintings: otherPrintings)
+            }
+        }
+    }
+}
+
+// MARK: - CardPricingInfoView
+
+struct CardOtherPrintingsListView: View {
+    @State var isExpanded = false
+    var card: MGCard
+    var otherPrintings: [MGCard]
+
+    var body: some View {
+        DisclosureGroup("Other Printings", isExpanded: $isExpanded) {
+            ForEach(otherPrintings) { otherPrinting in
+                CardListRowView(card: otherPrinting)
+                    .background(NavigationLink("", destination: CardView(newID: otherPrinting.newIDCopy,
+                                                                         relatedCards: [])).opacity(0))
+            }
+            if otherPrintings.count >= 10 {
+                NavigationLink {
+                    CardOtherPrintingsView(newID: card.newIDCopy,
+                                           languageCode: card.language?.code ?? "en")
+                } label: {
+                    Text("View All")
                 }
             }
         }
@@ -670,7 +687,7 @@ struct ColorRowView: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(.headline)
+//                .font(.headline)
             Spacer()
             if let colorSymbols = colorSymbols {
                 AttributedText(
@@ -700,18 +717,18 @@ struct CardTextRowView: View {
         case .horizontal:
             HStack {
                 Text(subtitle)
-                    .font(.headline)
+//                    .font(.headline)
                 Spacer()
                 Text(title)
-                    .font(.subheadline)
+//                    .font(.subheadline)
             }
         case .vertical:
             VStack(alignment: .leading) {
                 Text(subtitle)
-                    .font(.headline)
+//                    .font(.headline)
                 Spacer()
                 Text(title)
-                    .font(.subheadline)
+//                    .font(.subheadline)
             }
         }
     }

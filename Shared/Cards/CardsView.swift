@@ -9,7 +9,6 @@ import SwiftUI
 
 import SwiftUI
 import ManaKit
-import SDWebImageSwiftUI
 
 struct CardsView: View {
     @StateObject var viewModel = CardsSearchViewModel()

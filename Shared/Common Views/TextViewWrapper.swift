@@ -25,49 +25,51 @@ struct TextViewWrapper: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: TextView, context: Context) {
-        uiView.attributedText = attributedText
-        uiView.maxLayoutWidth = maxLayoutWidth
-        
-        uiView.textContainer.maximumNumberOfLines = context.environment.lineLimit ?? 0
-        uiView.textContainer.lineBreakMode = NSLineBreakMode(context.environment.truncationMode)
-        
-        switch context.environment.font ?? .body {
-        case .largeTitle:
-            uiView.font = UIFont.preferredFont(forTextStyle: .largeTitle)
-        case .title:
-            uiView.font = UIFont.preferredFont(forTextStyle: .title1)
-        case .title2:
-            uiView.font = UIFont.preferredFont(forTextStyle: .title2)
-        case .title3:
-            uiView.font = UIFont.preferredFont(forTextStyle: .title3)
-        case .headline:
-            uiView.font = UIFont.preferredFont(forTextStyle: .headline)
-        case .subheadline:
-            uiView.font = UIFont.preferredFont(forTextStyle: .subheadline)
-        case .callout:
-            uiView.font = UIFont.preferredFont(forTextStyle: .callout)
-        case .caption:
-            uiView.font = UIFont.preferredFont(forTextStyle: .caption1)
-        case .caption2:
-            uiView.font = UIFont.preferredFont(forTextStyle: .caption2)
-        case .footnote:
-            uiView.font = UIFont.preferredFont(forTextStyle: .footnote)
-        case .body:
-            fallthrough
-        default:
-            uiView.font = UIFont.preferredFont(forTextStyle: .body)
+        DispatchQueue.main.async {
+            uiView.attributedText = attributedText
+            uiView.maxLayoutWidth = maxLayoutWidth
+            
+            uiView.textContainer.maximumNumberOfLines = context.environment.lineLimit ?? 0
+            uiView.textContainer.lineBreakMode = NSLineBreakMode(context.environment.truncationMode)
+            
+            switch context.environment.font ?? .body {
+            case .largeTitle:
+                uiView.font = UIFont.preferredFont(forTextStyle: .largeTitle)
+            case .title:
+                uiView.font = UIFont.preferredFont(forTextStyle: .title1)
+            case .title2:
+                uiView.font = UIFont.preferredFont(forTextStyle: .title2)
+            case .title3:
+                uiView.font = UIFont.preferredFont(forTextStyle: .title3)
+            case .headline:
+                uiView.font = UIFont.preferredFont(forTextStyle: .headline)
+            case .subheadline:
+                uiView.font = UIFont.preferredFont(forTextStyle: .subheadline)
+            case .callout:
+                uiView.font = UIFont.preferredFont(forTextStyle: .callout)
+            case .caption:
+                uiView.font = UIFont.preferredFont(forTextStyle: .caption1)
+            case .caption2:
+                uiView.font = UIFont.preferredFont(forTextStyle: .caption2)
+            case .footnote:
+                uiView.font = UIFont.preferredFont(forTextStyle: .footnote)
+            case .body:
+                fallthrough
+            default:
+                uiView.font = UIFont.preferredFont(forTextStyle: .body)
+            }
+            
+            switch context.environment.multilineTextAlignment {
+            case .leading:
+                uiView.textAlignment = .left
+            case .center:
+                uiView.textAlignment = .center
+            case .trailing:
+                uiView.textAlignment = .right
+            }
+            
+            textViewStore.didUpdateTextView(uiView)
         }
-        
-        switch context.environment.multilineTextAlignment {
-        case .leading:
-            uiView.textAlignment = .left
-        case .center:
-            uiView.textAlignment = .center
-        case .trailing:
-            uiView.textAlignment = .right
-        }
-        
-        textViewStore.didUpdateTextView(uiView)
     }
 }
 
@@ -115,7 +117,7 @@ final class TextViewStore: ObservableObject {
     @Published private(set) var height: CGFloat?
     
     func didUpdateTextView(_ textView: TextView) {
-        height = textView.intrinsicContentSize.height
+        self.height = textView.intrinsicContentSize.height
     }
 }
 
@@ -135,7 +137,7 @@ struct AttributedText: View {
                 textViewStore: textViewStore
             )
         }
-            .frame(height: textViewStore.height)
+            .frame(height: textViewStore.height ?? 10)
     }
 }
 

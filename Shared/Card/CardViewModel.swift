@@ -33,7 +33,7 @@ class CardViewModel: ViewModel {
     
     @MainActor
     override func fetchRemoteData() {
-        guard !isBusy && card == nil else {
+        guard !isBusy /*&& card == nil*/ else {
             return
         }
 

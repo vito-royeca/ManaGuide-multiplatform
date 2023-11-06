@@ -7,7 +7,6 @@
 
 import SwiftUI
 import BetterSafariView
-import SDWebImageSwiftUI
 
 struct NewsFeedRowView: View {
     var item: FeedItem
@@ -16,38 +15,34 @@ struct NewsFeedRowView: View {
         VStack {
             VStack(alignment: .leading) {
                 HStack(alignment: .top, spacing: 20) {
-                    if let link = item.image,
-                       let url = URL(string: link) {
-                        WebImage(url: url)
-                            .resizable()
-                            .indicator(.activity)
-                            .transition(.fade(duration: 0.5))
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 100,
-                                   height: 100,
-                                   alignment: .center)
-                            .cornerRadius(10)
-                            .clipped()
-                    } else {
-                        EmptyView()
+                    AsyncImage(url: URL(string: item.image ?? "")) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .clipped()
+                        } else {
+                            EmptyView()
+                        }
                     }
+                    .frame(width: 100,
+                           height: 100)
                 
                     VStack(alignment: .leading) {
                         HStack {
-                            if let link = item.channelImage,
-                               let url = URL(string: link) {
-                                WebImage(url: url)
-                                    .resizable()
-                                    .indicator(.activity)
-                                    .transition(.fade(duration: 0.5))
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 30,
-                                           height: 30,
-                                           alignment: .center)
-                                    .clipped()
-                            } else {
-                                EmptyView()
+                            AsyncImage(url: URL(string: item.channelImage ?? "")) { phase in
+                                if let image = phase.image {
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .clipped()
+                                } else {
+                                    EmptyView()
+                                }
                             }
+                            .frame(width: 30,
+                                   height: 30)
+                            
                             Text(item.channel ?? "")
                                 .font(.subheadline)
                         }

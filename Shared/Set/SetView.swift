@@ -7,7 +7,6 @@
 
 import SwiftUI
 import ManaKit
-import SDWebImageSwiftUI
 import ScalingHeaderScrollView
 
 struct SetView: View {
@@ -24,9 +23,6 @@ struct SetView: View {
     }
     
     var body: some View {
-//        CardsStoreView(set: viewModel.set, setViewModel: viewModel, cardsViewModel: viewModel)
-//             .navigationBarTitleDisplayMode(.inline)
-        
         Group {
             if viewModel.isBusy {
                 BusyView()
@@ -153,8 +149,8 @@ struct SetView: View {
 
 #Preview {
     NavigationView {
-        SetView(setCode: "isd", languageCode: "en")
+        SetView(setCode: "dgm", languageCode: "en")
     }
-//        .previewInterfaceOrientation(.landscapeLeft)
+        .previewInterfaceOrientation(.landscapeLeft)
 }
 

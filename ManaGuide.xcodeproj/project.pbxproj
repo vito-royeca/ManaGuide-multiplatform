@@ -54,7 +54,6 @@
 		8B68987F28724F8D003837F1 /* TextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B68987E28724F8D003837F1 /* TextViewWrapper.swift */; };
 		8B68988028724F8D003837F1 /* TextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B68987E28724F8D003837F1 /* TextViewWrapper.swift */; };
 		8B6CAF6C284043DC0073E8FE /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6CAF6B284043DC0073E8FE /* SnapshotHelper.swift */; };
-		8B75CA1E28130B2500597662 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA1D28130B2500597662 /* SDWebImageSwiftUI */; };
 		8B75CA2428130B8900597662 /* Kanna in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA2328130B8900597662 /* Kanna */; };
 		8B75CA2728130BD100597662 /* BetterSafariView in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA2628130BD100597662 /* BetterSafariView */; };
 		8B75CA2A28130C0600597662 /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA2928130C0600597662 /* FeedKit */; };
@@ -64,7 +63,6 @@
 		8B75CA3428130ECC00597662 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA3328130ECC00597662 /* FirebaseDatabase */; };
 		8B75CA36281310F000597662 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B75CA35281310F000597662 /* GoogleService-Info.plist */; };
 		8B75CA37281310F000597662 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B75CA35281310F000597662 /* GoogleService-Info.plist */; };
-		8B75CA3A281311E000597662 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA39281311E000597662 /* SDWebImageSwiftUI */; };
 		8B75CA3E281311E000597662 /* Kanna in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA3D281311E000597662 /* Kanna */; };
 		8B75CA40281311E000597662 /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA3F281311E000597662 /* FeedKit */; };
 		8B75CA42281311E000597662 /* ManaKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA41281311E000597662 /* ManaKit */; };
@@ -189,7 +187,6 @@
 				8B75CA2A28130C0600597662 /* FeedKit in Frameworks */,
 				583684BA2AF1FFF400DFE9EB /* SwiftUIIntrospect-Dynamic in Frameworks */,
 				8B75CA542816EE6C00597662 /* SwiftUIX in Frameworks */,
-				8B75CA1E28130B2500597662 /* SDWebImageSwiftUI in Frameworks */,
 				8B75CA3228130ECC00597662 /* FirebaseCrashlytics in Frameworks */,
 				583684BC2AF1FFF400DFE9EB /* SwiftUIIntrospect-Static in Frameworks */,
 				8B75CA3428130ECC00597662 /* FirebaseDatabase in Frameworks */,
@@ -208,7 +205,6 @@
 				8B75CA44281311E000597662 /* FirebaseAuth in Frameworks */,
 				8B75CA42281311E000597662 /* ManaKit in Frameworks */,
 				8B75CA46281311E000597662 /* FirebaseCrashlytics in Frameworks */,
-				8B75CA3A281311E000597662 /* SDWebImageSwiftUI in Frameworks */,
 				8B75CA48281311E000597662 /* FirebaseDatabase in Frameworks */,
 				8B75CA40281311E000597662 /* FeedKit in Frameworks */,
 			);
@@ -441,7 +437,6 @@
 			);
 			name = "ManaGuide (iOS)";
 			packageProductDependencies = (
-				8B75CA1D28130B2500597662 /* SDWebImageSwiftUI */,
 				8B75CA2328130B8900597662 /* Kanna */,
 				8B75CA2628130BD100597662 /* BetterSafariView */,
 				8B75CA2928130C0600597662 /* FeedKit */,
@@ -475,7 +470,6 @@
 			);
 			name = "ManaGuide (macOS)";
 			packageProductDependencies = (
-				8B75CA39281311E000597662 /* SDWebImageSwiftUI */,
 				8B75CA3D281311E000597662 /* Kanna */,
 				8B75CA3F281311E000597662 /* FeedKit */,
 				8B75CA41281311E000597662 /* ManaKit */,
@@ -559,7 +553,6 @@
 			);
 			mainGroup = 8B41B72F2812144D00AECF85;
 			packageReferences = (
-				8B75CA1C28130B2500597662 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				8B75CA2228130B8900597662 /* XCRemoteSwiftPackageReference "Kanna" */,
 				8B75CA2528130BD100597662 /* XCRemoteSwiftPackageReference "BetterSafariView" */,
 				8B75CA2828130C0600597662 /* XCRemoteSwiftPackageReference "FeedKit" */,
@@ -1110,14 +1103,6 @@
 				kind = branch;
 			};
 		};
-		8B75CA1C28130B2500597662 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		8B75CA2228130B8900597662 /* XCRemoteSwiftPackageReference "Kanna" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tid-kijyun/Kanna.git";
@@ -1207,11 +1192,6 @@
 			package = 8B36954E2845296100D1F544 /* XCRemoteSwiftPackageReference "SwiftUIPager" */;
 			productName = SwiftUIPager;
 		};
-		8B75CA1D28130B2500597662 /* SDWebImageSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8B75CA1C28130B2500597662 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
-			productName = SDWebImageSwiftUI;
-		};
 		8B75CA2328130B8900597662 /* Kanna */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8B75CA2228130B8900597662 /* XCRemoteSwiftPackageReference "Kanna" */;
@@ -1246,11 +1226,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8B75CA2E28130ECC00597662 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseDatabase;
-		};
-		8B75CA39281311E000597662 /* SDWebImageSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8B75CA1C28130B2500597662 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
-			productName = SDWebImageSwiftUI;
 		};
 		8B75CA3D281311E000597662 /* Kanna */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -7,7 +7,6 @@
 
 import SwiftUI
 import ManaKit
-import SDWebImageSwiftUI
 
 struct SetHeaderView: View {
     @ObservedObject var viewModel: SetViewModel
@@ -18,10 +17,17 @@ struct SetHeaderView: View {
             VStack {
                 if let set = viewModel.setObject {
                     if let logoUrl = set.bigLogoURL {
-                        WebImage(url: logoUrl)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(maxHeight: 100)
+                        AsyncImage(url: logoUrl) { phase in
+                            if let image = phase.image {
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .clipped()
+                            } else {
+                                EmptyView()
+                            }
+                        }
+                        .frame(maxHeight: 100)
                     }
                     SetRowView(set: set)
                 }

@@ -7,7 +7,6 @@
 
 import SwiftUI
 import ManaKit
-import SDWebImageSwiftUI
 
 struct SetRowView: View {
     @ObservedObject var set: MGSet

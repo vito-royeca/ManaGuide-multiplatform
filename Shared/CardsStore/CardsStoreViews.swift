@@ -8,7 +8,6 @@
 import CoreData
 import SwiftUI
 import ManaKit
-import SDWebImageSwiftUI
 
 struct CardsStoreHeaderView: View {
     @ObservedObject var viewModel: SetViewModel
@@ -47,17 +46,34 @@ struct CardsStoreFeatureView: View {
                     .foregroundColor(.secondary)
                 Spacer()
             }
-            WebImage(url: card.imageURL(for: .artCrop))
-                .resizable()
-                .placeholder(Image(uiImage: ManaKit.shared.image(name: .cropBack)!))
-                .indicator(.activity)
-                .transition(.fade(duration: 0.5))
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 280,
-                       height: 200,
-                       alignment: .center)
-                .cornerRadius(16)
-                .clipped()
+//            WebImage(url: card.imageURL(for: .artCrop))
+//                .resizable()
+//                .placeholder(Image(uiImage: ManaKit.shared.image(name: .cropBack)!))
+//                .indicator(.activity)
+//                .transition(.fade(duration: 0.5))
+//                .aspectRatio(contentMode: .fill)
+//                .frame(width: 280,
+//                       height: 200,
+//                       alignment: .center)
+//                .cornerRadius(16)
+//                .clipped()
+            AsyncImage(url: card.imageURL(for: .artCrop)) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipped()
+                } else {
+                    Image(uiImage: ManaKit.shared.image(name: .cropBack)!)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipped()
+                }
+            }
+            .frame(width: 280,
+                   height: 200)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+
             Spacer()
             CardsStorePriceView(card: card)
         }
@@ -65,31 +81,35 @@ struct CardsStoreFeatureView: View {
 }
 
 struct CardsStoreLargeView: View {
-    private let font: ManaKit.Font
-    private let card: MGCard
-
-    init(card: MGCard) {
-        self.card = card
-        font = card.nameFont
-    }
+    @State var card: MGCard
     
     var body: some View {
         HStack(alignment: .top) {
-            WebImage(url: card.imageURL(for: .artCrop))
-                .resizable()
-                .placeholder(Image(uiImage: ManaKit.shared.image(name: .cropBack)!))
-                .indicator(.activity)
-                .transition(.fade(duration: 0.5))
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 80,
-                       height: 80,
-                       alignment: .center)
-                .cornerRadius(16)
-                .clipped()
+            AsyncImage(url: card.imageURL(for: .artCrop)) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipped()
+                } else {
+                    Image(uiImage: ManaKit.shared.image(name: .cropBack)!)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipped()
+                }
+            }
+            .frame(width: 80,
+                   height: 80)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            
             VStack(alignment: .leading) {
-                HStack {
-                    Text(card.displayName ?? "")
-                        .font(Font.custom(font.name, size: font.size))
+                ZStack {
+                    HStack {
+                        let font = card.nameFont
+                        Text(card.displayName ?? "")
+                            .font(Font.custom(font.name, size: font.size))
+                        Spacer()
+                    }
                     AttributedText(
                         NSAttributedString(symbol: card.displayManaCost,
                                            pointSize: 16)
@@ -123,17 +143,23 @@ struct CardsStoreCompactView: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            WebImage(url: card.imageURL(for: .artCrop))
-                .resizable()
-                .placeholder(Image(uiImage: ManaKit.shared.image(name: .cropBack)!))
-                .indicator(.activity)
-                .transition(.fade(duration: 0.5))
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 60,
-                       height: 60,
-                       alignment: .center)
-                .cornerRadius(16)
-                .clipped()
+            AsyncImage(url: card.imageURL(for: .artCrop)) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipped()
+                } else {
+                    Image(uiImage: ManaKit.shared.image(name: .cropBack)!)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipped()
+                }
+            }
+            .frame(width: 60,
+                   height: 60)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+
             VStack(alignment: .leading) {
                 Text(card.displayName ?? "")
                     .font(Font.custom(font.name, size: font.size))

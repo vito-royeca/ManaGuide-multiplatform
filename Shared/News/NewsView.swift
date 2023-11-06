@@ -8,7 +8,6 @@
 import SwiftUI
 import BetterSafariView
 import FeedKit
-import SDWebImageSwiftUI
 
 struct NewsView: View {
     #if os(iOS)
