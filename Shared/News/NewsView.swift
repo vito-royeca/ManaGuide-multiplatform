@@ -8,7 +8,6 @@
 import SwiftUI
 import BetterSafariView
 import FeedKit
-import SDWebImageSwiftUI
 
 struct NewsView: View {
     #if os(iOS)
@@ -44,15 +43,13 @@ struct NewsView: View {
     }
 
     func safariView(with url: URL) -> SafariView {
-        return SafariView(
-            url: url,
-            configuration: SafariView.Configuration(
-                entersReaderIfAvailable: true,
-                barCollapsingEnabled: true)
-            )
-                .preferredBarAccentColor(.clear)
-                .preferredControlAccentColor(.accentColor)
-                .dismissButtonStyle(.close)
+        let config = SafariView.Configuration(entersReaderIfAvailable: true,
+                                              barCollapsingEnabled: true)
+        return SafariView(url: url,
+                          configuration: config)
+            .preferredBarAccentColor(.clear)
+            .preferredControlAccentColor(.accentColor)
+            .dismissButtonStyle(.close)
     }
     
     var compactView: some View {
@@ -72,22 +69,22 @@ struct NewsView: View {
         }
             .listStyle(.plain)
             .safariView(item: $currentFeed) { currentFeed in
-                SafariView(
-                    url: URL(string: currentFeed.url ?? "")!,
-                    configuration: SafariView.Configuration(
-                        entersReaderIfAvailable: false,
-                        barCollapsingEnabled: true)
-                    )
-                        .preferredBarAccentColor(.clear)
-//                        .preferredControlAccentColor(.accentColor)
-                        .dismissButtonStyle(.close)
+                let config = SafariView.Configuration(entersReaderIfAvailable: false,
+                                                      barCollapsingEnabled: true)
+                return SafariView(url: URL(string: currentFeed.url ?? "")!,
+                                  configuration: config)
+                    .preferredBarAccentColor(.clear)
+//                    .preferredControlAccentColor(.accentColor)
+                    .dismissButtonStyle(.close)
             }
             .navigationBarTitle("News")
     }
     
     var regularView: some View {
         ScrollView() {
-            LazyVGrid(columns: [GridItem](repeating: GridItem(.flexible()), count: 2), pinnedViews: []) {
+            LazyVGrid(columns: [GridItem](repeating: GridItem(.flexible()),
+                                          count: 2),
+                      pinnedViews: []) {
                 ForEach(viewModel.feeds, id:\.id) { feed in
                     let tap = TapGesture()
                         .onEnded { _ in
@@ -101,15 +98,13 @@ struct NewsView: View {
                 }
             }
                 .safariView(item: $currentFeed) { currentFeed in
-                    SafariView(
-                        url: URL(string: currentFeed.url ?? "")!,
-                        configuration: SafariView.Configuration(
-                            entersReaderIfAvailable: false,
-                            barCollapsingEnabled: true)
-                        )
-                            .preferredBarAccentColor(.clear)
-//                            .preferredControlAccentColor(.accentColor)
-                            .dismissButtonStyle(.close)
+                    let config = SafariView.Configuration(entersReaderIfAvailable: false,
+                                                          barCollapsingEnabled: true)
+                    return SafariView(url: URL(string: currentFeed.url ?? "")!,
+                               configuration: config)
+                        .preferredBarAccentColor(.clear)
+//                        .preferredControlAccentColor(.accentColor)
+                        .dismissButtonStyle(.close)
                 }
                 .padding()
                 .navigationBarTitle("News")
@@ -119,10 +114,8 @@ struct NewsView: View {
 
 // MARK: - Previous
 
-struct NewsView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            NewsView()
-        }
+#Preview {
+    return NavigationView {
+        NewsView()
     }
 }

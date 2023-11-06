@@ -40,14 +40,17 @@ class ViewModel: NSObject, ObservableObject {
     
     // MARK: - Methods
     
+    @MainActor
     func fetchRemoteData() { }
     func fetchLocalData() { }
     
-    func find<T: MGEntity>(_ entity: T.Type, id: NSManagedObjectID) -> T? {
+    func find<T: MGEntity>(_ entity: T.Type,
+                           id: NSManagedObjectID) -> T? {
         return ManaKit.shared.viewContext.object(with: id) as? T
     }
     
-    func find<T: MGEntity>(_ entity: T.Type, ids: [NSManagedObjectID]) -> [T] {
+    func find<T: MGEntity>(_ entity: T.Type,
+                           ids: [NSManagedObjectID]) -> [T] {
         var array = [T]()
         
         for id in ids {

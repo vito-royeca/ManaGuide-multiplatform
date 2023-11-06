@@ -20,9 +20,9 @@ class NewsViewModel: NSObject, ObservableObject {
     
     let feedSource = [
         "MTG Goldfish": "https://www.mtggoldfish.com/feed.rss",
-        "WotC": "https://magic.wizards.com/en/rss/rss.xml",
+//        "WotC": "https://magic.wizards.com/en/rss/rss.xml",
         "MTGAzone": "https://mtgazone.com/feed/",
-        "ChannelFireBall": "https://strategy.channelfireball.com/all-strategy/feed/",
+//        "ChannelFireBall": "https://strategy.channelfireball.com/all-strategy/feed/",
         "HotC": "https://www.hipstersofthecoast.com/feed/",
         "Pure MTGO": "https://puremtgo.com/rss.xml",
         "FacetoFace": "https://magic.facetofacegames.com/feed/",
@@ -30,7 +30,7 @@ class NewsViewModel: NSObject, ObservableObject {
         "EDHREC": "https://edhrec.com/articles//feed",
         "Card Kingdom Blog": "https://blog.cardkingdom.com/feed/",
         "SCG": "https://articles.starcitygames.com/feed/",
-        "Draftism": "https://draftsim.com//feed"
+        "Draftism": "https://draftsim.com//feed",
     ]
     let maxFeeds = 20
     var lastUpdated: Date?

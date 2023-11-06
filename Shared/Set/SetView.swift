@@ -7,41 +7,49 @@
 
 import SwiftUI
 import ManaKit
-import SDWebImageSwiftUI
 import ScalingHeaderScrollView
 
 struct SetView: View {
     @Environment(\.presentationMode) var presentationMode
+    @AppStorage("cardsSort") private var sort = CardsViewSort.name
     @StateObject var viewModel: SetViewModel
-    @State var progress: CGFloat = 0
+    @State private var progress: CGFloat = 0
+    @State private var showingSort = false
+    @State private var selectedCard: MGCard?
     
     init(setCode: String, languageCode: String) {
-        _viewModel = StateObject(wrappedValue: SetViewModel(setCode: setCode, languageCode: languageCode))
-        
-//        UITableView.appearance().allowsSelection = false
-//        UITableViewCell.appearance().selectionStyle = .none
+        _viewModel = StateObject(wrappedValue: SetViewModel(setCode: setCode,
+                                                            languageCode: languageCode))
     }
     
     var body: some View {
-//        CardsStoreView(set: viewModel.set, setViewModel: viewModel, cardsViewModel: viewModel)
-//             .navigationBarTitleDisplayMode(.inline)
-        
-//        listView
-        ZStack {
-            scalingHeaderView
-                .onAppear {
+        Group {
+            if viewModel.isBusy {
+                BusyView()
+            } else if viewModel.isFailed {
+                ErrorView {
                     viewModel.fetchRemoteData()
                 }
-            topButtons
+            } else {
+                ZStack {
+                    scalingHeaderView
+                    topButtons
+                }
+                .ignoresSafeArea()
+            }
         }
-        .ignoresSafeArea()
+        .onAppear {
+            viewModel.sort = sort
+            viewModel.fetchRemoteData()
+        }
     }
     
     var scalingHeaderView: some View {
         ScalingHeaderScrollView {
             ZStack {
                 Color.white.edgesIgnoringSafeArea(.all)
-                SetHeaderView(viewModel: viewModel, progress: $progress)
+                SetHeaderView(viewModel: viewModel,
+                              progress: $progress)
                     .frame(height: 200)
                     .padding(.top, 50)
             }
@@ -51,40 +59,29 @@ struct SetView: View {
         }
         .collapseProgress($progress)
         .allowsHeaderCollapse()
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsStoreViewSort)) { (output) in
+            viewModel.fetchLocalData()
+        }
+        .sheet(item: $selectedCard) { card in
+            NavigationView {
+                CardView(newID: card.newIDCopy,
+                         relatedCards: viewModel.data)
+            }
+        }
     }
     
     var contentView: some View {
         ForEach(viewModel.data) { card in
-            let tap = TapGesture()
-                .onEnded { _ in
-                    //                        self.selectedCard = card
-                }
-            
-            if let card = viewModel.find(MGCard.self, id: card) {
+            if let card = viewModel.find(MGCard.self,
+                                         id: card) {
                 CardsStoreLargeView(card: card)
-                    .gesture(tap)
+                    .onTapGesture {
+                        selectedCard = card
+                    }
             }
         }
     }
 
-    var listView: some View {
-        List {
-            SetHeaderView(viewModel: viewModel, progress: $progress)
-                .listRowSeparator(.hidden)
-            contentView
-        }
-            .listStyle(.plain)
-//            .sheet(item: $selectedCard) { selectedCard in
-//                NavigationView {
-//                    if let card = viewModel.find(MGCard.self, id: selectedCard) {
-//                        CardView(newID: card.newIDCopy, relatedCards: cards)
-//                    } else {
-//                        EmptyView()
-//                    }
-//                }
-//            }
-    }
-    
     private var topButtons: some View {
         VStack {
             HStack {
@@ -98,10 +95,13 @@ struct SetView: View {
                     .foregroundColor(.accentColor)
                 Spacer()
                 Button(action: {
-
+                    showingSort.toggle()
                 }) {
-                    Image(systemName: "ellipsis")
+                    Image(systemName: "arrow.up.arrow.down")
                 }
+                    .actionSheet(isPresented: $showingSort) {
+                        sortActionSheet
+                    }
                     .padding(.top, 50)
                     .padding(.trailing, 17)
                     .foregroundColor(.accentColor)
@@ -110,35 +110,47 @@ struct SetView: View {
         }
         .ignoresSafeArea()
     }
-}
-
-struct CircleButtonStyle: ButtonStyle {
-
-    var imageName: String
-    var foreground = Color.black
-    var background = Color.white
-    var width: CGFloat = 40
-    var height: CGFloat = 40
-
-    func makeBody(configuration: Configuration) -> some View {
-        Circle()
-            .fill(background)
-            .overlay(Image(systemName: imageName)
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(foreground)
-                        .padding(12))
-            .frame(width: width, height: height)
+    
+    private var sortActionSheet: ActionSheet {
+        ActionSheet(
+            title: Text("Sort by"),
+            buttons: [
+                .default(Text("\(sort == .name ? "\u{2713}" : "") Name")) {
+                    sort = .name
+                    viewModel.sort = .name
+                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
+                                                    object: nil)
+                },
+                .default(Text("\(sort == .collectorNumber ? "\u{2713}" : "") Collector Number")) {
+                    sort = .collectorNumber
+                    viewModel.sort = .collectorNumber
+                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
+                                                    object: nil)
+                },
+                .default(Text("\(sort == .rarity ? "\u{2713}" : "") Rarity")) {
+                    sort = .rarity
+                    viewModel.sort = .rarity
+                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
+                                                    object: nil)
+                },
+                .default(Text("\(sort == .type ? "\u{2713}" : "") Type")) {
+                    sort = .type
+                    viewModel.sort = .type
+                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
+                                                    object: nil)
+                },
+                .cancel(Text("Cancel"))
+            ]
+        )
     }
 }
 
 // MARK: - Previews
-struct SetView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            SetView(setCode: "twho", languageCode: "en")
-        }
-//            .previewInterfaceOrientation(.landscapeLeft)
+
+#Preview {
+    NavigationView {
+        SetView(setCode: "isd", languageCode: "en")
     }
+        .previewInterfaceOrientation(.landscapeLeft)
 }
 

@@ -7,9 +7,8 @@
 
 import SwiftUI
 import ManaKit
-import SDWebImageSwiftUI
 
-    struct SetHeaderView: View {
+struct SetHeaderView: View {
     @ObservedObject var viewModel: SetViewModel
     @Binding var progress: CGFloat
 
@@ -18,10 +17,17 @@ import SDWebImageSwiftUI
             VStack {
                 if let set = viewModel.setObject {
                     if let logoUrl = set.bigLogoURL {
-                        WebImage(url: logoUrl)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(maxHeight: 100)
+                        CacheAsyncImage(url: logoUrl) { phase in
+                            if let image = phase.image {
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .clipped()
+                            } else {
+                                EmptyView()
+                            }
+                        }
+                        .frame(maxHeight: 100)
                     }
                     SetRowView(set: set)
                 }
@@ -62,8 +68,10 @@ import SDWebImageSwiftUI
 }
 
 #Preview {
-    let viewModel = SetViewModel(setCode: "who", languageCode: "en")
+    let viewModel = SetViewModel(setCode: "who",
+                                 languageCode: "en")
     viewModel.fetchRemoteData()
     
-    return SetHeaderView(viewModel: viewModel, progress: .constant(0))
+    return SetHeaderView(viewModel: viewModel,
+                         progress: .constant(0))
 }

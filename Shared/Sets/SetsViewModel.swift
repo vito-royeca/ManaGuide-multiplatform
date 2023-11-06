@@ -45,15 +45,22 @@ class SetsViewModel: ViewModel {
             
             switch sort {
             case .name:
-                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "releaseDate", ascending: false))
+                sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "releaseDate",
+                                                        ascending: false))
             case .releaseDate:
-                sortDescriptors.append(NSSortDescriptor(key: "releaseDate", ascending: false))
-                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "releaseDate",
+                                                        ascending: false))
+                sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                        ascending: true))
             case .type:
-                sortDescriptors.append(NSSortDescriptor(key: "setType.name", ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "releaseDate", ascending: false))
-                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "setType.name",
+                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "releaseDate",
+                                                        ascending: false))
+                sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                        ascending: true))
             }
             
             return sortDescriptors
@@ -92,6 +99,7 @@ class SetsViewModel: ViewModel {
     
     // MARK: - Methods
     
+    @MainActor
     override func fetchRemoteData() {
         guard !isBusy && data.isEmpty else {
             return
@@ -101,20 +109,16 @@ class SetsViewModel: ViewModel {
             isBusy.toggle()
             isFailed = false
             
-            dataAPI.fetchSets(completion: { result in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    switch result {
-                    case .success:
-                        self.fetchLocalData()
-                    case .failure(let error):
-                        print(error)
-                        self.isFailed = true
-                        self.data.removeAll()
-                    }
-                    
-                    self.isBusy.toggle()
+            Task {
+                do {
+                    try await dataAPI.fetchSets()
+                    fetchLocalData()
+                } catch {
+                    self.isFailed = true
+                    self.data.removeAll()
                 }
-            })
+                isBusy.toggle()
+            }
         } else {
             fetchLocalData()
         }
@@ -165,10 +169,14 @@ extension SetsViewModel {
         if !query.isEmpty {
             if query.count <= 2 {
                 predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
-                                                                                NSPredicate(format: "name BEGINSWITH[cd] %@ OR code BEGINSWITH[cd] %@", query, query)])
+                                                                                NSPredicate(format: "name BEGINSWITH[cd] %@ OR code BEGINSWITH[cd] %@",
+                                                                                            query,
+                                                                                            query)])
             } else {
                 predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
-                                                                                NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@", query, query)])
+                                                                                NSPredicate(format: "name CONTAINS[cd] %@ OR code CONTAINS[cd] %@",
+                                                                                            query,
+                                                                                            query)])
             }
         }
         

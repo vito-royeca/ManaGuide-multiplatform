@@ -20,7 +20,8 @@ struct BusyView: View {
             VStack(spacing: 20) {
                 Spacer()
                 Text("Loading...")
-                    .font(Font.custom(ManaKit.Fonts.magic2015.name, size: 30))
+                    .font(Font.custom(ManaKit.Fonts.magic2015.name,
+                                      size: 30))
                 ProgressView()
                     .progressViewStyle(.circular)
                     .padding()
@@ -29,7 +30,8 @@ struct BusyView: View {
                     Image(imageName)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: proxy.size.width * 0.8, alignment: .center)
+                        .frame(width: proxy.size.width * 0.8,
+                               alignment: .center)
                         .cornerRadius(16)
                         .clipped()
                         .onAppear {

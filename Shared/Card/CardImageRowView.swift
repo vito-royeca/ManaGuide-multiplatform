@@ -7,49 +7,48 @@
 
 import SwiftUI
 import ManaKit
-import SDWebImageSwiftUI
 
 struct CardImageRowView: View {
     @State var degrees : Double = 0
     @State var url : URL?
-    private let card: MGCard
-    private let style: CardImageRowPriceStyle
-    
-    init(card: MGCard, style: CardImageRowPriceStyle) {
-        self.card = card
-        self.style = style
-    }
+    let card: MGCard
     
     var body: some View {
         VStack(alignment: .center, spacing: 2) {
-            let webImage = WebImage(url: url)
-                .resizable()
-                .placeholder(Image(uiImage: ManaKit.shared.image(name: .cardBack)!))
-                .indicator(.activity)
-                .transition(.fade(duration: 0.5))
-                .aspectRatio(contentMode: .fill)
-                .cornerRadius(10)
-                .clipped()
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.clear, lineWidth: 0)
-                )
+            let imageView = CacheAsyncImage(url: url) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .clipped()
+                } else {
+                    Image(uiImage: ManaKit.shared.image(name: .cardBack)!)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .clipped()
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             
             if card.layout?.name == "Flip" ||
                 card.layout?.name == "Planar" ||
                 card.layout?.name == "Split" {
-                webImage
+                imageView
                     .rotationEffect(Angle(degrees: degrees))
             } else if card.layout?.name == "Art Series" ||
                 card.layout?.name == "Double Faced Token" ||
                 card.layout?.name == "Modal Dfc" ||
                 card.layout?.name == "Transform" {
-                webImage
-                    .rotation3DEffect(.degrees(degrees), axis: (x: 0, y: 0, z: 0))
+                imageView
+                    .rotation3DEffect(.degrees(degrees),
+                                      axis: (x: 0, y: 0, z: 0))
             } else {
-                webImage
+                imageView
             }
-            CardImageRowPriceView(card: card, style: style, degrees: $degrees, url: $url)
+
+            CardImageRowButtonView(card: card,
+                                   degrees: $degrees,
+                                   url: $url)
         }
             .onAppear {
                 url = card.imageURL(for: .png)
@@ -59,83 +58,15 @@ struct CardImageRowView: View {
 
 // MARK: - Previews
 
-struct CardImageRowView_Previews: PreviewProvider {
-    static var previews: some View {
-        Text("card not found")
-    }
-}
+#Preview {
+    let viewModel = CardViewModel(newID: "isd_en_51", relatedCards: [])
+    viewModel.fetchRemoteData()
 
-enum CardImageRowPriceStyle {
-    case oneLine, twoLines
-}
-
-struct CardImageRowPriceView: View {
-    private let card: MGCard
-    private let style: CardImageRowPriceStyle
-    @Binding var degrees : Double
-    @Binding var url : URL?
-    
-    init(card: MGCard, style: CardImageRowPriceStyle, degrees: Binding<Double>, url: Binding<URL?>) {
-        self.card = card
-        self.style = style
-        _degrees = degrees
-        _url = url
-    }
-    
-    var body: some View {
-        if style == .oneLine {
-            VStack {
-                HStack {
-                    Text("Normal")
-                        .font(.footnote)
-                        .foregroundColor(Color.blue)
-                    Spacer()
-                    Text(card.displayNormalPrice)
-                        .font(.footnote)
-                        .foregroundColor(Color.blue)
-                        .multilineTextAlignment(.trailing)
-                    Spacer()
-                    CardImageRowButtonView(card: card, degrees: $degrees, url: $url)
-                    Spacer()
-                    Text("Foil")
-                        .font(.footnote)
-                        .foregroundColor(Color.green)
-                    Spacer()
-                    Text(card.displayFoilPrice)
-                        .font(.footnote)
-                        .foregroundColor(Color.green)
-                        .multilineTextAlignment(.trailing)
-                }
-            }
-                .padding(5)
+    return List {
+        if let card = viewModel.cardObject {
+            CardImageRowView(card: card)
         } else {
-            HStack {
-                VStack(alignment: .leading) {
-                    Text("Normal")
-                        .font(.footnote)
-                        .foregroundColor(Color.blue)
-                    Spacer()
-                    Text("Foil")
-                        .font(.footnote)
-                        .foregroundColor(Color.green)
-                    
-                }
-                Spacer()
-                CardImageRowButtonView(card: card, degrees: $degrees, url: $url)
-                Spacer()
-                VStack {
-                    Text(card.displayNormalPrice)
-                        .font(.footnote)
-                        .foregroundColor(Color.blue)
-                        .multilineTextAlignment(.trailing)
-                    Spacer()
-                    Text(card.displayFoilPrice)
-                        .font(.footnote)
-                        .foregroundColor(Color.green)
-                        .multilineTextAlignment(.trailing)
-                    }
-            }
-                .padding(5)
+            Text("Loading...")
         }
     }
 }
@@ -148,7 +79,9 @@ struct CardImageRowButtonView: View {
     private var url1: URL?
     private var url2: URL?
     
-    init(card: MGCard, degrees: Binding<Double>, url: Binding<URL?>) {
+    init(card: MGCard,
+         degrees: Binding<Double>,
+         url: Binding<URL?>) {
         self.card = card
         _degrees = degrees
         _url = url
@@ -185,7 +118,7 @@ struct CardImageRowButtonView: View {
                     .renderingMode(.original)
                     .foregroundColor(.accentColor)
             }
-                .buttonStyle(PlainButtonStyle())
+            .buttonStyle(PlainButtonStyle())
         } else {
             EmptyView()
         }

@@ -11,7 +11,9 @@ extension Date {
     
     func elapsedTime() -> String {
         
-        let interval = Calendar.current.dateComponents([.day, .hour, .minute], from: self, to: Date())
+        let interval = Calendar.current.dateComponents([.day, .hour, .minute],
+                                                       from: self,
+                                                       to: Date())
         
         if let day = interval.day, day > 0 {
             let formatter = DateFormatter()
@@ -26,6 +28,5 @@ extension Date {
         } else {
             return "a moment ago"
         }
-        
     }
 }

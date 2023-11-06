@@ -7,12 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5828109F2AF89F4D0000749C /* CacheAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5828109E2AF89F4D0000749C /* CacheAsyncImage.swift */; };
+		582810A02AF89F4D0000749C /* CacheAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5828109E2AF89F4D0000749C /* CacheAsyncImage.swift */; };
 		583684B82AF1FFF400DFE9EB /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 583684B72AF1FFF400DFE9EB /* SwiftUIIntrospect */; };
 		583684BA2AF1FFF400DFE9EB /* SwiftUIIntrospect-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 583684B92AF1FFF400DFE9EB /* SwiftUIIntrospect-Dynamic */; };
 		583684BC2AF1FFF400DFE9EB /* SwiftUIIntrospect-Static in Frameworks */ = {isa = PBXBuildFile; productRef = 583684BB2AF1FFF400DFE9EB /* SwiftUIIntrospect-Static */; };
 		583684BF2AF200AE00DFE9EB /* ScalingHeaderScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = 583684BE2AF200AE00DFE9EB /* ScalingHeaderScrollView */; };
 		583684C12AF21C0600DFE9EB /* SetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583684C02AF21C0600DFE9EB /* SetHeaderView.swift */; };
 		583684C22AF21C0600DFE9EB /* SetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583684C02AF21C0600DFE9EB /* SetHeaderView.swift */; };
+		5858F41D2AF772C30067919E /* CardOtherPrintingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5858F41C2AF772C30067919E /* CardOtherPrintingsView.swift */; };
+		5858F41E2AF772C30067919E /* CardOtherPrintingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5858F41C2AF772C30067919E /* CardOtherPrintingsView.swift */; };
+		5858F4202AF7758C0067919E /* CardOtherPrintingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5858F41F2AF7758C0067919E /* CardOtherPrintingsViewModel.swift */; };
+		5858F4212AF7758C0067919E /* CardOtherPrintingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5858F41F2AF7758C0067919E /* CardOtherPrintingsViewModel.swift */; };
 		8B34024F2824CAF200AC2705 /* ASCollectionView in Frameworks */ = {isa = PBXBuildFile; productRef = 8B34024E2824CAF200AC2705 /* ASCollectionView */; };
 		8B3695502845296200D1F544 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 8B36954F2845296200D1F544 /* SwiftUIPager */; };
 		8B41B74E2812144E00AECF85 /* Tests_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B74D2812144E00AECF85 /* Tests_iOS.swift */; };
@@ -44,15 +50,12 @@
 		8B41B84028126ED700AECF85 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B83C28126ED600AECF85 /* NewsView.swift */; };
 		8B41B84128126ED700AECF85 /* NewsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B83D28126ED600AECF85 /* NewsViewModel.swift */; };
 		8B41B84228126ED700AECF85 /* NewsMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B83E28126ED700AECF85 /* NewsMap.swift */; };
-		8B41B84628126F3000AECF85 /* TabTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84428126F3000AECF85 /* TabTestView.swift */; };
-		8B41B84728126F3000AECF85 /* TabTestViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84528126F3000AECF85 /* TabTestViewModel.swift */; };
 		8B41B84B28126F9600AECF85 /* SearchPathsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84928126F9600AECF85 /* SearchPathsView.swift */; };
 		8B41B84F28126FC900AECF85 /* BusyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84D28126FC900AECF85 /* BusyView.swift */; };
 		8B41B85028126FC900AECF85 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B41B84E28126FC900AECF85 /* ErrorView.swift */; };
 		8B68987F28724F8D003837F1 /* TextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B68987E28724F8D003837F1 /* TextViewWrapper.swift */; };
 		8B68988028724F8D003837F1 /* TextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B68987E28724F8D003837F1 /* TextViewWrapper.swift */; };
 		8B6CAF6C284043DC0073E8FE /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6CAF6B284043DC0073E8FE /* SnapshotHelper.swift */; };
-		8B75CA1E28130B2500597662 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA1D28130B2500597662 /* SDWebImageSwiftUI */; };
 		8B75CA2428130B8900597662 /* Kanna in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA2328130B8900597662 /* Kanna */; };
 		8B75CA2728130BD100597662 /* BetterSafariView in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA2628130BD100597662 /* BetterSafariView */; };
 		8B75CA2A28130C0600597662 /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA2928130C0600597662 /* FeedKit */; };
@@ -62,7 +65,6 @@
 		8B75CA3428130ECC00597662 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA3328130ECC00597662 /* FirebaseDatabase */; };
 		8B75CA36281310F000597662 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B75CA35281310F000597662 /* GoogleService-Info.plist */; };
 		8B75CA37281310F000597662 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B75CA35281310F000597662 /* GoogleService-Info.plist */; };
-		8B75CA3A281311E000597662 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA39281311E000597662 /* SDWebImageSwiftUI */; };
 		8B75CA3E281311E000597662 /* Kanna in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA3D281311E000597662 /* Kanna */; };
 		8B75CA40281311E000597662 /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA3F281311E000597662 /* FeedKit */; };
 		8B75CA42281311E000597662 /* ManaKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8B75CA41281311E000597662 /* ManaKit */; };
@@ -122,7 +124,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5828109E2AF89F4D0000749C /* CacheAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheAsyncImage.swift; sourceTree = "<group>"; };
 		583684C02AF21C0600DFE9EB /* SetHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetHeaderView.swift; sourceTree = "<group>"; };
+		5858F41C2AF772C30067919E /* CardOtherPrintingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardOtherPrintingsView.swift; sourceTree = "<group>"; };
+		5858F41F2AF7758C0067919E /* CardOtherPrintingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardOtherPrintingsViewModel.swift; sourceTree = "<group>"; };
 		8B41B7352812144D00AECF85 /* ManaGuideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManaGuideApp.swift; sourceTree = "<group>"; };
 		8B41B7372812144E00AECF85 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8B41B73C2812144E00AECF85 /* Mana Guide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mana Guide.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -148,8 +153,6 @@
 		8B41B83C28126ED600AECF85 /* NewsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
 		8B41B83D28126ED600AECF85 /* NewsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsViewModel.swift; sourceTree = "<group>"; };
 		8B41B83E28126ED700AECF85 /* NewsMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsMap.swift; sourceTree = "<group>"; };
-		8B41B84428126F3000AECF85 /* TabTestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabTestView.swift; sourceTree = "<group>"; };
-		8B41B84528126F3000AECF85 /* TabTestViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabTestViewModel.swift; sourceTree = "<group>"; };
 		8B41B84928126F9600AECF85 /* SearchPathsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchPathsView.swift; sourceTree = "<group>"; };
 		8B41B84D28126FC900AECF85 /* BusyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusyView.swift; sourceTree = "<group>"; };
 		8B41B84E28126FC900AECF85 /* ErrorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
@@ -187,7 +190,6 @@
 				8B75CA2A28130C0600597662 /* FeedKit in Frameworks */,
 				583684BA2AF1FFF400DFE9EB /* SwiftUIIntrospect-Dynamic in Frameworks */,
 				8B75CA542816EE6C00597662 /* SwiftUIX in Frameworks */,
-				8B75CA1E28130B2500597662 /* SDWebImageSwiftUI in Frameworks */,
 				8B75CA3228130ECC00597662 /* FirebaseCrashlytics in Frameworks */,
 				583684BC2AF1FFF400DFE9EB /* SwiftUIIntrospect-Static in Frameworks */,
 				8B75CA3428130ECC00597662 /* FirebaseDatabase in Frameworks */,
@@ -206,7 +208,6 @@
 				8B75CA44281311E000597662 /* FirebaseAuth in Frameworks */,
 				8B75CA42281311E000597662 /* ManaKit in Frameworks */,
 				8B75CA46281311E000597662 /* FirebaseCrashlytics in Frameworks */,
-				8B75CA3A281311E000597662 /* SDWebImageSwiftUI in Frameworks */,
 				8B75CA48281311E000597662 /* FirebaseDatabase in Frameworks */,
 				8B75CA40281311E000597662 /* FeedKit in Frameworks */,
 			);
@@ -341,6 +342,8 @@
 				8BCE601E2870108200389713 /* CardImageRowView.swift */,
 				8BCE601B2870101B00389713 /* CardView.swift */,
 				8BCE601828700C7000389713 /* CardViewModel.swift */,
+				5858F41C2AF772C30067919E /* CardOtherPrintingsView.swift */,
+				5858F41F2AF7758C0067919E /* CardOtherPrintingsViewModel.swift */,
 			);
 			path = Card;
 			sourceTree = "<group>";
@@ -372,8 +375,7 @@
 			isa = PBXGroup;
 			children = (
 				8B41B84928126F9600AECF85 /* SearchPathsView.swift */,
-				8B41B84428126F3000AECF85 /* TabTestView.swift */,
-				8B41B84528126F3000AECF85 /* TabTestViewModel.swift */,
+				5828109E2AF89F4D0000749C /* CacheAsyncImage.swift */,
 			);
 			path = Experimental;
 			sourceTree = "<group>";
@@ -439,7 +441,6 @@
 			);
 			name = "ManaGuide (iOS)";
 			packageProductDependencies = (
-				8B75CA1D28130B2500597662 /* SDWebImageSwiftUI */,
 				8B75CA2328130B8900597662 /* Kanna */,
 				8B75CA2628130BD100597662 /* BetterSafariView */,
 				8B75CA2928130C0600597662 /* FeedKit */,
@@ -473,7 +474,6 @@
 			);
 			name = "ManaGuide (macOS)";
 			packageProductDependencies = (
-				8B75CA39281311E000597662 /* SDWebImageSwiftUI */,
 				8B75CA3D281311E000597662 /* Kanna */,
 				8B75CA3F281311E000597662 /* FeedKit */,
 				8B75CA41281311E000597662 /* ManaKit */,
@@ -557,7 +557,6 @@
 			);
 			mainGroup = 8B41B72F2812144D00AECF85;
 			packageReferences = (
-				8B75CA1C28130B2500597662 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				8B75CA2228130B8900597662 /* XCRemoteSwiftPackageReference "Kanna" */,
 				8B75CA2528130BD100597662 /* XCRemoteSwiftPackageReference "BetterSafariView" */,
 				8B75CA2828130C0600597662 /* XCRemoteSwiftPackageReference "FeedKit" */,
@@ -626,6 +625,7 @@
 				8BCE602828701B2800389713 /* CardsView.swift in Sources */,
 				8B41B7A32812585300AECF85 /* Constants.swift in Sources */,
 				8B41B85028126FC900AECF85 /* ErrorView.swift in Sources */,
+				5858F41D2AF772C30067919E /* CardOtherPrintingsView.swift in Sources */,
 				8B41B84F28126FC900AECF85 /* BusyView.swift in Sources */,
 				8B41B79D2812585300AECF85 /* View+Extras.swift in Sources */,
 				8BCE600D2870029C00389713 /* ViewModel.swift in Sources */,
@@ -644,15 +644,15 @@
 				8B41B75D2812144F00AECF85 /* ManaGuideApp.swift in Sources */,
 				8B75CA4B28162BDD00597662 /* TabNavigationView.swift in Sources */,
 				8BCE601928700C7000389713 /* CardViewModel.swift in Sources */,
-				8B41B84728126F3000AECF85 /* TabTestViewModel.swift in Sources */,
 				8B41B79F2812585300AECF85 /* WebView.swift in Sources */,
 				583684C12AF21C0600DFE9EB /* SetHeaderView.swift in Sources */,
 				8BCE602B28701B4800389713 /* CardsSearchViewModel.swift in Sources */,
 				8BCE60102870066500389713 /* CardsStoreViews.swift in Sources */,
 				8B41B84228126ED700AECF85 /* NewsMap.swift in Sources */,
 				8B41B78F281257F600AECF85 /* SetsViewModel.swift in Sources */,
-				8B41B84628126F3000AECF85 /* TabTestView.swift in Sources */,
+				5828109F2AF89F4D0000749C /* CacheAsyncImage.swift in Sources */,
 				8B41B84028126ED700AECF85 /* NewsView.swift in Sources */,
+				5858F4202AF7758C0067919E /* CardOtherPrintingsViewModel.swift in Sources */,
 				8BCE6007287000B700389713 /* SetViewModel.swift in Sources */,
 				8B41B84B28126F9600AECF85 /* SearchPathsView.swift in Sources */,
 				8BCE6025287012C200389713 /* CardsStoreSeeAllView.swift in Sources */,
@@ -670,12 +670,14 @@
 				8B75CA512816327F00597662 /* NewsFeedRowView.swift in Sources */,
 				8B41B7A42812585300AECF85 /* Constants.swift in Sources */,
 				8B41B79E2812585300AECF85 /* View+Extras.swift in Sources */,
+				582810A02AF89F4D0000749C /* CacheAsyncImage.swift in Sources */,
 				8BCE601A28700C7000389713 /* CardViewModel.swift in Sources */,
 				8B41B794281257F600AECF85 /* SetRowView.swift in Sources */,
 				8B41B784281257D300AECF85 /* ContentView.swift in Sources */,
 				8BCE60202870108200389713 /* CardImageRowView.swift in Sources */,
 				8BCE6026287012C200389713 /* CardsStoreSeeAllView.swift in Sources */,
 				8BCE601D2870101B00389713 /* CardView.swift in Sources */,
+				5858F4212AF7758C0067919E /* CardOtherPrintingsViewModel.swift in Sources */,
 				8BCE600E2870029C00389713 /* ViewModel.swift in Sources */,
 				583684C22AF21C0600DFE9EB /* SetHeaderView.swift in Sources */,
 				8BCE602928701B2800389713 /* CardsView.swift in Sources */,
@@ -688,6 +690,7 @@
 				8BCE6006287000B700389713 /* SetView.swift in Sources */,
 				8BCE602C28701B4800389713 /* CardsSearchViewModel.swift in Sources */,
 				8B41B790281257F600AECF85 /* SetsViewModel.swift in Sources */,
+				5858F41E2AF772C30067919E /* CardOtherPrintingsView.swift in Sources */,
 				8B41B79C2812585300AECF85 /* SearchNavigation.swift in Sources */,
 				8BCE6014287006B900389713 /* CardsStoreView.swift in Sources */,
 				8B68988028724F8D003837F1 /* TextViewWrapper.swift in Sources */,
@@ -1106,14 +1109,6 @@
 				kind = branch;
 			};
 		};
-		8B75CA1C28130B2500597662 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		8B75CA2228130B8900597662 /* XCRemoteSwiftPackageReference "Kanna" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tid-kijyun/Kanna.git";
@@ -1203,11 +1198,6 @@
 			package = 8B36954E2845296100D1F544 /* XCRemoteSwiftPackageReference "SwiftUIPager" */;
 			productName = SwiftUIPager;
 		};
-		8B75CA1D28130B2500597662 /* SDWebImageSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8B75CA1C28130B2500597662 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
-			productName = SDWebImageSwiftUI;
-		};
 		8B75CA2328130B8900597662 /* Kanna */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8B75CA2228130B8900597662 /* XCRemoteSwiftPackageReference "Kanna" */;
@@ -1242,11 +1232,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8B75CA2E28130ECC00597662 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseDatabase;
-		};
-		8B75CA39281311E000597662 /* SDWebImageSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8B75CA1C28130B2500597662 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
-			productName = SDWebImageSwiftUI;
 		};
 		8B75CA3D281311E000597662 /* Kanna */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -13,6 +13,7 @@ import ManaKit
 
 enum CardsViewSort: String {
     case name,
+         collectorNumber,
          rarity,
          type
 }
@@ -31,16 +32,29 @@ class CardsViewModel: ViewModel {
             
             switch sort {
             case .name:
-                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
+            case .collectorNumber:
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                        ascending: true))
             case .rarity:
-                sortDescriptors.append(NSSortDescriptor(key: "rarity.name", ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "rarity.name",
+                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
             case .type:
-                sortDescriptors.append(NSSortDescriptor(key: "type.name", ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "type.name",
+                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
             }
             
             return sortDescriptors
@@ -54,6 +68,8 @@ class CardsViewModel: ViewModel {
             switch sort {
             case .name:
                 keyPath = "nameSection"
+            case .collectorNumber:
+                keyPath = "numberOrder"
             case .rarity:
                 keyPath = "rarity.name"
             case .type:

@@ -31,6 +31,7 @@ class CardsSearchViewModel: CardsViewModel {
     
     // MARK: - Methods
 
+    @MainActor
     override func fetchRemoteData() {
         if !willFetch() {
             return
@@ -44,21 +45,16 @@ class CardsSearchViewModel: CardsViewModel {
             isBusy.toggle()
             isFailed = false
 
-            dataAPI.fetchCards(query: query!,
-                               completion: { result in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    switch result {
-                    case .success:
-                        self.fetchLocalData()
-                    case .failure(let error):
-                        print(error)
-                        self.isFailed = true
-                        self.data.removeAll()
-                    }
-                    
-                    self.isBusy.toggle()
+            Task {
+                do {
+                    try await dataAPI.fetchCards(query: query!)
+                    fetchLocalData()
+                } catch {
+                    isFailed = true
+                    data.removeAll()
                 }
-            })
+                isBusy.toggle()
+            }
         } else {
             fetchLocalData()
         }
@@ -90,6 +86,8 @@ class CardsSearchViewModel: CardsViewModel {
         get {
             switch sort {
             case .name:
+                return frc.sectionIndexTitles
+            case .collectorNumber:
                 return frc.sectionIndexTitles
             case .rarity:
                 return frc.sectionIndexTitles
@@ -130,7 +128,9 @@ extension CardsSearchViewModel: NSFetchedResultsControllerDelegate {
 
 extension CardsSearchViewModel {
     func defaultFetchRequest(query: String) -> NSFetchRequest<MGCard> {
-        let predicate = NSPredicate(format: "newID != nil AND newID != '' AND collectorNumber != nil AND language.code = %@ AND name CONTAINS[cd] %@", "en", query)
+        let predicate = NSPredicate(format: "newID != nil AND newID != '' AND collectorNumber != nil AND language.code = %@ AND name CONTAINS[cd] %@",
+                                    "en",
+                                    query)
         
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
         request.sortDescriptors = sortDescriptors

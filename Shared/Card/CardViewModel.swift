@@ -21,7 +21,9 @@ class CardViewModel: ViewModel {
     
     // MARK: - Initializers
     
-    init(newID: String, relatedCards: [NSManagedObjectID], dataAPI: API = ManaKit.shared) {
+    init(newID: String,
+         relatedCards: [NSManagedObjectID],
+         dataAPI: API = ManaKit.shared) {
         self.newID = newID
         self.relatedCards = relatedCards
         self.dataAPI = dataAPI
@@ -29,8 +31,9 @@ class CardViewModel: ViewModel {
 
     // MARK: - Methods
     
+    @MainActor
     override func fetchRemoteData() {
-        guard !isBusy && card == nil else {
+        guard !isBusy /*&& card == nil*/ else {
             return
         }
 
@@ -38,20 +41,15 @@ class CardViewModel: ViewModel {
             isBusy.toggle()
             isFailed = false
 
-            dataAPI.fetchCard(newID: newID,
-                             completion: { result in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    switch result {
-                    case .success(let card):
-                        self.card = card?.objectID
-                    case .failure(let error):
-                        print(error)
-                        self.isFailed = true
-                        self.card = nil
-                    }
-                    self.isBusy.toggle()
+            Task {
+                do {
+                    card = try await dataAPI.fetchCard(newID: newID)?.objectID
+                } catch {
+                    isFailed = true
+                    card = nil
                 }
-            })
+                isBusy.toggle()
+            }
         } else {
             self.card = ManaKit.shared.find(MGCard.self,
                                             properties: nil,
@@ -61,6 +59,39 @@ class CardViewModel: ViewModel {
                                             context: ManaKit.shared.viewContext)?.first?.objectID
         }
     }
+}
+
+extension CardViewModel {
+    var cardObject: MGCard? {
+        get {
+            if let card = card {
+                find(MGCard.self, id: card)
+            } else {
+                nil
+            }
+        }
+    }
+    
+    // TODO: implement this
+//    func fetchAdjacentCards(number: Int) {
+//        guard let card = card,
+//           let index = relatedCards.firstIndex(of: card) else {
+//            return
+//        }
+//
+//        var adjacentCards = [MGCard]()
+//        let lowBounds = 0
+//        let highBounds = 0
+//        // TODO: calculate the related cards from number
+//        
+//        for adjacentCard in adjacentCards {
+//            if dataAPI.willFetchCard(newID: adjacentCard.newID) {
+//                dataAPI.fetchCard(newID: adjacentCard.newID) { _ in
+//                    
+//                }
+//            }
+//        }
+//    }
 }
 
 // MARK: - Legacy Code

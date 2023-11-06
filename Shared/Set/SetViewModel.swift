@@ -23,7 +23,9 @@ class SetViewModel: CardsViewModel {
     private var frc: NSFetchedResultsController<MGCard>
     
     // MARK: - Initializers
-    init(setCode: String, languageCode: String, dataAPI: API = ManaKit.shared) {
+    init(setCode: String,
+         languageCode: String,
+         dataAPI: API = ManaKit.shared) {
         self.setCode = setCode
         self.languageCode = languageCode
         self.dataAPI = dataAPI
@@ -47,9 +49,7 @@ class SetViewModel: CardsViewModel {
                 } else {
                     return frc.sectionIndexTitles
                 }
-            case .rarity:
-                return frc.sectionIndexTitles
-            case .type:
+            case .collectorNumber, .rarity, .type:
                 return frc.sectionIndexTitles
             }
         }
@@ -57,33 +57,29 @@ class SetViewModel: CardsViewModel {
 
     // MARK: - Methods
     
+    @MainActor
     override func fetchRemoteData() {
         guard !isBusy && data.isEmpty else {
             return
         }
         
-        if dataAPI.willFetchSet(code: setCode, languageCode: languageCode) {
+        if dataAPI.willFetchSet(code: setCode,
+                                languageCode: languageCode) {
             isBusy.toggle()
             isFailed = false
 
-            dataAPI.fetchSet(code: setCode,
-                             languageCode: languageCode,
-                             completion: { result in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    switch result {
-                    case .success(let set):
-                        self.set = set?.objectID
-                        self.fetchLocalData()
-                    case .failure(let error):
-                        print(error)
-                        self.isFailed = true
-                        self.set = nil
-                        self.data.removeAll()
-                    }
-                    
-                    self.isBusy.toggle()
+            Task {
+                do {
+                    set = try await dataAPI.fetchSet(code: setCode,
+                                                     languageCode: languageCode)?.objectID
+                    fetchLocalData()
+                } catch {
+                    self.isFailed = true
+                    self.set = nil
+                    self.data.removeAll()
                 }
-            })
+                isBusy.toggle()
+            }
         } else {
             set = ManaKit.shared.find(MGSet.self,
                                       properties: nil,
@@ -96,7 +92,8 @@ class SetViewModel: CardsViewModel {
     }
     
     override func fetchLocalData() {
-        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(setCode: setCode, languageCode: languageCode),
+        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(setCode: setCode,
+                                                                           languageCode: languageCode),
                                          managedObjectContext: ManaKit.shared.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath,
                                          cacheName: nil)
@@ -120,27 +117,51 @@ class SetViewModel: CardsViewModel {
             switch sort {
             case .name:
                 if languageCode == "en" {
-                    sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+                    sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                            ascending: true))
                 } else {
-                    sortDescriptors.append(NSSortDescriptor(key: "printedName", ascending: true))
+                    sortDescriptors.append(NSSortDescriptor(key: "printedName",
+                                                            ascending: true))
                 }
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
+
+            case .collectorNumber:
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
+                if languageCode == "en" {
+                    sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                            ascending: true))
+                } else {
+                    sortDescriptors.append(NSSortDescriptor(key: "printedName",
+                                                            ascending: true))
+                }
+
             case .rarity:
-                sortDescriptors.append(NSSortDescriptor(key: "rarity.name", ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "rarity.name",
+                                                        ascending: true))
                 if languageCode == "en" {
-                    sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+                    sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                            ascending: true))
                 } else {
-                    sortDescriptors.append(NSSortDescriptor(key: "printedName", ascending: true))
+                    sortDescriptors.append(NSSortDescriptor(key: "printedName",
+                                                            ascending: true))
                 }
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
+
             case .type:
-                sortDescriptors.append(NSSortDescriptor(key: "type.name", ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "type.name",
+                                                        ascending: true))
                 if languageCode == "en" {
-                    sortDescriptors.append(NSSortDescriptor(key: "name", ascending: true))
+                    sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                            ascending: true))
                 } else {
-                    sortDescriptors.append(NSSortDescriptor(key: "printedName", ascending: true))
+                    sortDescriptors.append(NSSortDescriptor(key: "printedName",
+                                                            ascending: true))
                 }
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder", ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
             }
             
             return sortDescriptors
@@ -164,7 +185,9 @@ extension SetViewModel: NSFetchedResultsControllerDelegate {
 
 extension SetViewModel {
     func defaultFetchRequest(setCode: String, languageCode: String) -> NSFetchRequest<MGCard> {
-        let predicate = NSPredicate(format: "set.code == %@ AND language.code == %@ AND collectorNumber != null ", setCode, languageCode)
+        let predicate = NSPredicate(format: "set.code == %@ AND language.code == %@ AND collectorNumber != null ",
+                                    setCode,
+                                    languageCode)
         
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
         request.predicate = predicate

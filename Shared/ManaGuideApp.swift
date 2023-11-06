@@ -14,7 +14,10 @@ struct ManaGuideApp: App {
     @Environment(\.scenePhase) var scenePhase
 
     init() {
-        print("docsPath = \(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])")
+        let docsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory,
+                                                           .userDomainMask,
+                                                           true)[0]
+        print("docsPath = \(docsPath)")
         
         FirebaseApp.configure()
 
