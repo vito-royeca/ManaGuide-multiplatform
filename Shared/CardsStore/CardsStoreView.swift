@@ -34,15 +34,19 @@ struct CardsStoreView: View {
                 BusyView()
             } else if cardsViewModel.isFailed {
                 ErrorView {
-                    cardsViewModel.fetchRemoteData()
+                    Task {
+                        try await cardsViewModel.fetchRemoteData()
+                    }
                 }
             } else {
                 bodyData
             }
         }
             .onAppear {
-                cardsViewModel.sort = sort
-                cardsViewModel.fetchRemoteData()
+                Task {
+                    cardsViewModel.sort = sort
+                    try await cardsViewModel.fetchRemoteData()
+                }
             }
     }
     
@@ -107,7 +111,9 @@ extension NSNotification {
 #Preview {
     let cardsViewModel = SetViewModel(setCode: "snc",
                                       languageCode: "en")
-    cardsViewModel.fetchRemoteData()
+    Task {
+        try await cardsViewModel.fetchRemoteData()
+    }
 
     return CardsStoreView(setViewModel: nil,
                    cardsViewModel: cardsViewModel)
@@ -148,7 +154,7 @@ struct CardsStoreDataView : View {
                                                   id: selectedCard) {
                     NavigationView {
                         CardView(newID: card.newIDCopy,
-                                 relatedCards: cardsViewModel.data)
+                                 relatedCards: [] /*cardsViewModel.data*/)
                     }
                 } else {
                     EmptyView()

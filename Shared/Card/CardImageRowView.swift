@@ -60,7 +60,9 @@ struct CardImageRowView: View {
 
 #Preview {
     let viewModel = CardViewModel(newID: "isd_en_51", relatedCards: [])
-    viewModel.fetchRemoteData()
+    Task {
+        try await viewModel.fetchRemoteData()
+    }
 
     return List {
         if let card = viewModel.cardObject {

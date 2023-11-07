@@ -72,8 +72,10 @@ struct CardListRowView: View {
 #Preview {
     let model = CardViewModel(newID: "isd_en_51",
                               relatedCards: [])
-    model.fetchRemoteData()
-    
+    Task {
+        try await model.fetchRemoteData()
+    }
+
     return List {
         if let card = model.cardObject {
             CardListRowView(card: card)

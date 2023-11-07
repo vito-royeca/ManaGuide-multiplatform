@@ -33,7 +33,9 @@ struct CardView: View {
                 BusyView()
             } else if viewModel.isFailed {
                 ErrorView {
-                    viewModel.fetchRemoteData()
+                    Task {
+                        try await viewModel.fetchRemoteData()
+                    }
                 }
             } else {
                 #if os(iOS)
@@ -48,19 +50,20 @@ struct CardView: View {
             }
         }
         .onAppear {
-            viewModel.fetchRemoteData()
+            Task {
+                try await viewModel.fetchRemoteData()
+            }
         }
     }
     
     var compactView: some View {
         GeometryReader { proxy in
-            if let card = viewModel.card,
-               let cardObject = viewModel.find(MGCard.self, id: card) {
+            if let cardObject = viewModel.cardObject {
                 List {
                     Section {
                         let width = proxy.size.width * 0.7
                         let height = proxy.size.height * 0.5
-                        carouselView(card: card,
+                        carouselView(card: cardObject.objectID,
                                      width: width,
                                      height: height)
                     }
@@ -164,7 +167,7 @@ struct CardView: View {
 
     func carouselView(card: NSManagedObjectID, width: CGFloat, height: CGFloat) -> some View {
         Pager(page: Page.withIndex(viewModel.relatedCards.firstIndex(of: card) ?? 0),
-              data: viewModel.relatedCards) { card in
+              data: viewModel.relatedCards.isEmpty ? [card] : viewModel.relatedCards) { card in
             if let cardObject = viewModel.find(MGCard.self,
                                                id: card) {
                 CardImageRowView(card: cardObject)
@@ -176,7 +179,9 @@ struct CardView: View {
                 if let cardObject = viewModel.find(MGCard.self,
                                                    id: card) {
                     viewModel.newID = cardObject.newIDCopy
-                    viewModel.fetchRemoteData()
+                    Task {
+                        try await viewModel.fetchRemoteData()
+                    }
                 }
             })
             .itemSpacing(0.8)

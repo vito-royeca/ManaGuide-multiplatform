@@ -209,7 +209,9 @@ struct CardsStorePriceView: View {
 // MARK: - Previews
 #Preview {
     let viewModel = CardViewModel(newID: "isd_en_176", relatedCards: [])
-    viewModel.fetchRemoteData()
+    Task {
+        try await viewModel.fetchRemoteData()
+    }
 
     return Group {
         if let card = viewModel.card,

@@ -103,12 +103,16 @@ struct CardsStoreSeeAllView: View {
 
 #Preview {
     let model = CardsSearchViewModel()
-    model.query = "lion"
-    model.scopeSelection = 0
-    model.fetchRemoteData()
-    
+
+    Task {
+        
+        model.query = "lion"
+        model.scopeSelection = 0
+        try await model.fetchRemoteData()
+    }
+
     return NavigationView {
         CardsStoreSeeAllView(title: "title",
-                             cards: model.data)
+                             cards: [] /*model.data*/)
     }
 }
