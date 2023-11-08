@@ -142,7 +142,7 @@ struct CardExtraInfoView: View {
                             CardOtherPrintingsView(newID: card.newIDCopy,
                                                    languageCode: card.language?.code ?? "en")
                         } label: {
-                            Text("View All")
+                            Text("See all")
                         }
                     }
                 }

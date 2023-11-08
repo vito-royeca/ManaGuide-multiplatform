@@ -59,7 +59,7 @@ struct SetView: View {
             }
         } content: {
             contentView
-                .padding(.horizontal, 5)
+                .padding(.horizontal, 10)
         }
         .collapseProgress($progress)
         .allowsHeaderCollapse()
@@ -79,6 +79,7 @@ struct SetView: View {
         ForEach(viewModel.sections, id: \.name) { section in
             ForEach(section.objects as? [MGCard] ?? []) { card in
                 CardsStoreLargeView(card: card)
+                    .padding(.bottom, 10)
                     .onTapGesture {
                         selectedCard = card
                     }
