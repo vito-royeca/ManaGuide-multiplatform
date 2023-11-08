@@ -13,11 +13,11 @@ import ManaKit
 struct CardsStoreView: View {
     
     // MARK: - Variables
-    var setViewModel: SetViewModel?
+    @AppStorage("cardsSort") private var sort = CardsViewSort.name
     @StateObject var cardsViewModel: CardsViewModel
     @State private var showingSort = false
     @State private var showingDisplay = false
-    @AppStorage("cardsSort") private var sort = CardsViewSort.name
+    var setViewModel: SetViewModel?
 
     // MARK: - Initializers
     
@@ -154,7 +154,7 @@ struct CardsStoreDataView : View {
                                                   id: selectedCard) {
                     NavigationView {
                         CardView(newID: card.newIDCopy,
-                                 relatedCards: [] /*cardsViewModel.data*/)
+                                 relatedCards: [], withCloseButton: true)
                     }
                 } else {
                     EmptyView()

@@ -52,7 +52,8 @@ struct CardsStoreSeeAllView: View {
                     if let card = viewModel.find(MGCard.self,
                                                  id: selectedCard) {
                         CardView(newID: card.newIDCopy,
-                                 relatedCards: cards)
+                                 relatedCards: cards,
+                                 withCloseButton: true)
                     } else {
                         EmptyView()
                     }
@@ -87,7 +88,8 @@ struct CardsStoreSeeAllView: View {
                         if let card = viewModel.find(MGCard.self,
                                                      id: selectedCard) {
                             CardView(newID: card.newIDCopy,
-                                     relatedCards: cards)
+                                     relatedCards: cards,
+                                     withCloseButton: true)
                         } else {
                             EmptyView()
                         }

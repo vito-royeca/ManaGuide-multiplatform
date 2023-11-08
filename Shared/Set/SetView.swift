@@ -51,7 +51,7 @@ struct SetView: View {
     var scalingHeaderView: some View {
         ScalingHeaderScrollView {
             ZStack {
-                Color.white.edgesIgnoringSafeArea(.all)
+                Color(UIColor.systemBackground).edgesIgnoringSafeArea(.all)
                 SetHeaderView(viewModel: viewModel,
                               progress: $progress)
                     .frame(height: 200)
@@ -69,7 +69,8 @@ struct SetView: View {
         .sheet(item: $selectedCard) { card in
             NavigationView {
                 CardView(newID: card.newIDCopy,
-                         relatedCards: viewModel.cards)
+                         relatedCards: viewModel.cards,
+                         withCloseButton: true)
             }
         }
     }
