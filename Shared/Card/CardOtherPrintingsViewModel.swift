@@ -12,12 +12,15 @@ import ManaKit
 class CardOtherPrintingsViewModel: CardsViewModel {
 
     // MARK: - Variables
+
     var newID: String
     var languageCode: String
     var dataAPI: API
     private var frc: NSFetchedResultsController<MGCard>
-    
+    private var otherPrintingIDs = [String]()
+
     // MARK: - Initializers
+
     init(newID: String,
          languageCode: String,
          dataAPI: API = ManaKit.shared) {
@@ -35,18 +38,28 @@ class CardOtherPrintingsViewModel: CardsViewModel {
             return
         }
 
-        DispatchQueue.main.async {
-            self.isBusy.toggle()
-            self.isFailed = false
-        }
-
         do {
-            _ = try await dataAPI.fetchCardOtherPrintings(newID: newID,
-                                                          languageCode: languageCode,
-                                                          sortDescriptors: sortDescriptors)
-            DispatchQueue.main.async {
-                self.fetchLocalData()
-                self.isBusy.toggle()
+            if try dataAPI.willFetchCardOtherPrintings(newID: newID,
+                                                       languageCode: languageCode) {
+                DispatchQueue.main.async {
+                    self.isBusy.toggle()
+                    self.isFailed = false
+                }
+                
+                let cards = try await dataAPI.fetchCardOtherPrintings(newID: newID,
+                                                                      languageCode: languageCode,
+                                                                      sortDescriptors: sortDescriptors)
+                otherPrintingIDs = cards.map { $0.newIDCopy }
+                DispatchQueue.main.async {
+                    
+                    self.fetchLocalData()
+                    self.isBusy.toggle()
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.findOtherPrintingIDs()
+                    self.fetchLocalData()
+                }
             }
         } catch {
             DispatchQueue.main.async {
@@ -95,12 +108,26 @@ extension CardOtherPrintingsViewModel: NSFetchedResultsControllerDelegate {
 
 extension CardOtherPrintingsViewModel {
     func defaultFetchRequest(newID: String) -> NSFetchRequest<MGCard> {
-        let predicate = NSPredicate(format: "newID IN %@"/*, (cardObject?.sortedOtherPrintings ?? []).map { $0.newIDCopy }*/)
+        let predicate = NSPredicate(format: "newID IN %@", otherPrintingIDs)
         
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
         request.predicate = predicate
         request.sortDescriptors = sortDescriptors
 
         return request
+    }
+}
+
+extension CardOtherPrintingsViewModel {
+    func findOtherPrintingIDs() {
+        let predicate = NSPredicate(format: "newID == %@", newID)
+        if let card = ManaKit.shared.find(MGCard.self,
+                                      properties: nil,
+                                      predicate: predicate,
+                                      sortDescriptors: nil,
+                                      createIfNotFound: true)?.first,
+           let sortedOtherPrintings = card.sortedOtherPrintings {
+            otherPrintingIDs = sortedOtherPrintings.map { $0.newIDCopy }
+        }
     }
 }

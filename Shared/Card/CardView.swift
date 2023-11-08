@@ -640,7 +640,9 @@ struct CardExtraInfoView: View {
             }
             
             if let otherPrintings = card.sortedOtherPrintings {
-                CardOtherPrintingsListView(card: card, otherPrintings: otherPrintings)
+                let firstTen = otherPrintings.count >= 10 ?
+                Array(otherPrintings[0...9]) : otherPrintings
+                CardOtherPrintingsListView(card: card, otherPrintings: firstTen)
             }
         }
     }

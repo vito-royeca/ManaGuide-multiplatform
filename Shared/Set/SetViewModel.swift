@@ -79,8 +79,8 @@ class SetViewModel: CardsViewModel {
                 }
             } else {
                 DispatchQueue.main.async {
-                    self.fetchLocalData()
                     self.findSet()
+                    self.fetchLocalData()
                 }
             }
         } catch {
@@ -206,7 +206,7 @@ extension SetViewModel {
     }
     
     func findSet() {
-        let predicate = NSPredicate(format: "code == %@", self.setCode)
+        let predicate = NSPredicate(format: "code == %@", setCode)
         set = ManaKit.shared.find(MGSet.self,
                                   properties: nil,
                                   predicate: predicate,
