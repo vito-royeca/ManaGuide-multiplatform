@@ -50,8 +50,9 @@ struct SetHeaderView: View {
                 } else {
                     Button(action: {
                         viewModel.languageCode = language.code ?? ""
-                        viewModel.data.removeAll()
-                        viewModel.fetchRemoteData()
+                        Task {
+                            try await viewModel.fetchRemoteData()
+                        }
                     },
                            label: {
                         Text(language.displayCode ?? "")
@@ -70,7 +71,9 @@ struct SetHeaderView: View {
 #Preview {
     let viewModel = SetViewModel(setCode: "who",
                                  languageCode: "en")
-    viewModel.fetchRemoteData()
+    Task {
+        try await viewModel.fetchRemoteData()
+    }
     
     return SetHeaderView(viewModel: viewModel,
                          progress: .constant(0))

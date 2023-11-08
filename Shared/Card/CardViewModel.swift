@@ -31,37 +31,48 @@ class CardViewModel: ViewModel {
 
     // MARK: - Methods
     
-    @MainActor
-    override func fetchRemoteData() {
-        guard !isBusy /*&& card == nil*/ else {
+    override func fetchRemoteData() async throws {
+        guard !isBusy else {
             return
         }
 
-        if dataAPI.willFetchCard(newID: newID) {
-            isBusy.toggle()
-            isFailed = false
-
-            Task {
-                do {
-                    card = try await dataAPI.fetchCard(newID: newID)?.objectID
-                } catch {
-                    isFailed = true
-                    card = nil
+        do {
+            if try dataAPI.willFetchCard(newID: newID) {
+                DispatchQueue.main.async {
+                    self.isBusy.toggle()
+                    self.isFailed = false
                 }
-                isBusy.toggle()
+                
+                let card = try await dataAPI.fetchCard(newID: newID)
+
+                DispatchQueue.main.async {
+                    self.card = card?.objectID
+                    self.isBusy.toggle()
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.findCard()
+                }
             }
-        } else {
-            self.card = ManaKit.shared.find(MGCard.self,
-                                            properties: nil,
-                                            predicate: NSPredicate(format: "newID == %@", newID),
-                                            sortDescriptors: nil,
-                                            createIfNotFound: false,
-                                            context: ManaKit.shared.viewContext)?.first?.objectID
+        } catch {
+            DispatchQueue.main.async {
+                self.isBusy.toggle()
+                self.isFailed = true
+            }
         }
     }
 }
 
 extension CardViewModel {
+    func findCard() {
+        let predicate = NSPredicate(format: "newID == %@", newID)
+        card = ManaKit.shared.find(MGCard.self,
+                                   properties: nil,
+                                   predicate: predicate,
+                                   sortDescriptors: nil,
+                                   createIfNotFound: false)?.first?.objectID
+    }
+
     var cardObject: MGCard? {
         get {
             if let card = card {

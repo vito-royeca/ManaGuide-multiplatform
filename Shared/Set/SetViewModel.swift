@@ -57,37 +57,38 @@ class SetViewModel: CardsViewModel {
 
     // MARK: - Methods
     
-    @MainActor
-    override func fetchRemoteData() {
-        guard !isBusy && data.isEmpty else {
+    override func fetchRemoteData() async throws {
+        guard !isBusy else {
             return
         }
         
-        if dataAPI.willFetchSet(code: setCode,
-                                languageCode: languageCode) {
-            isBusy.toggle()
-            isFailed = false
-
-            Task {
-                do {
-                    set = try await dataAPI.fetchSet(code: setCode,
-                                                     languageCode: languageCode)?.objectID
-                    fetchLocalData()
-                } catch {
-                    self.isFailed = true
-                    self.set = nil
-                    self.data.removeAll()
+        do {
+            if try dataAPI.willFetchSet(code: setCode,
+                                    languageCode: languageCode) {
+                DispatchQueue.main.async {
+                    self.isBusy.toggle()
+                    self.isFailed = false
                 }
-                isBusy.toggle()
+                
+                let set = try await dataAPI.fetchSet(code: setCode,
+                                                     languageCode: languageCode)?.objectID
+                DispatchQueue.main.async {
+                    self.set = set
+                    self.fetchLocalData()
+                    self.isBusy.toggle()
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.findSet()
+                    self.fetchLocalData()
+                }
             }
-        } else {
-            set = ManaKit.shared.find(MGSet.self,
-                                      properties: nil,
-                                      predicate: NSPredicate(format: "code == %@", setCode),
-                                      sortDescriptors: nil,
-                                      createIfNotFound: true,
-                                      context: ManaKit.shared.viewContext)?.first?.objectID
-            fetchLocalData()
+        } catch {
+            DispatchQueue.main.async {
+                self.set = nil
+                self.isBusy.toggle()
+                self.isFailed = true
+            }
         }
     }
     
@@ -101,12 +102,10 @@ class SetViewModel: CardsViewModel {
         
         do {
             try frc.performFetch()
-            data = (frc.fetchedObjects ?? []).map({ $0.objectID })
             sections = frc.sections ?? []
         } catch {
             print(error)
             isFailed = true
-            data.removeAll()
         }
     }
     
@@ -173,11 +172,7 @@ class SetViewModel: CardsViewModel {
 
 extension SetViewModel: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        guard let cards = controller.fetchedObjects as? [MGCard] else {
-            return
-        }
-        
-        data = cards.map({ $0.objectID })
+        sections = controller.sections ?? []
     }
 }
 
@@ -210,6 +205,15 @@ extension SetViewModel {
         return languages
     }
     
+    func findSet() {
+        let predicate = NSPredicate(format: "code == %@", setCode)
+        set = ManaKit.shared.find(MGSet.self,
+                                  properties: nil,
+                                  predicate: predicate,
+                                  sortDescriptors: nil,
+                                  createIfNotFound: false)?.first?.objectID
+    }
+
     var setObject: MGSet? {
         get {
             if let set = set {
@@ -218,6 +222,14 @@ extension SetViewModel {
                 nil
             }
         }
+    }
+    
+    var cards: [NSManagedObjectID] {
+        guard let array = frc.fetchedObjects else {
+            return []
+        }
+        
+        return array.map { $0.objectID }
     }
 }
 

@@ -28,7 +28,9 @@ struct SetView: View {
                 BusyView()
             } else if viewModel.isFailed {
                 ErrorView {
-                    viewModel.fetchRemoteData()
+                    Task {
+                        try await viewModel.fetchRemoteData()
+                    }
                 }
             } else {
                 ZStack {
@@ -39,8 +41,10 @@ struct SetView: View {
             }
         }
         .onAppear {
-            viewModel.sort = sort
-            viewModel.fetchRemoteData()
+            Task {
+                viewModel.sort = sort
+                try await viewModel.fetchRemoteData()
+            }
         }
     }
     
@@ -65,15 +69,14 @@ struct SetView: View {
         .sheet(item: $selectedCard) { card in
             NavigationView {
                 CardView(newID: card.newIDCopy,
-                         relatedCards: viewModel.data)
+                         relatedCards: viewModel.cards)
             }
         }
     }
     
     var contentView: some View {
-        ForEach(viewModel.data) { card in
-            if let card = viewModel.find(MGCard.self,
-                                         id: card) {
+        ForEach(viewModel.sections, id: \.name) { section in
+            ForEach(section.objects as? [MGCard] ?? []) { card in
                 CardsStoreLargeView(card: card)
                     .onTapGesture {
                         selectedCard = card

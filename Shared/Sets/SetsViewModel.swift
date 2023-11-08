@@ -99,28 +99,35 @@ class SetsViewModel: ViewModel {
     
     // MARK: - Methods
     
-    @MainActor
-    override func fetchRemoteData() {
-        guard !isBusy && data.isEmpty else {
+    override func fetchRemoteData() async throws {
+        guard !isBusy else {
             return
         }
         
-        if dataAPI.willFetchSets() {
-            isBusy.toggle()
-            isFailed = false
-            
-            Task {
-                do {
-                    try await dataAPI.fetchSets()
-                    fetchLocalData()
-                } catch {
-                    self.isFailed = true
-                    self.data.removeAll()
+        do {
+            if try dataAPI.willFetchSets() {
+                DispatchQueue.main.async {
+                    self.isBusy.toggle()
+                    self.isFailed = false
                 }
-                isBusy.toggle()
+                
+                _ = try await dataAPI.fetchSets(sortDescriptors: sortDescriptors)
+                
+                DispatchQueue.main.async {
+                    self.fetchLocalData()
+                    self.isBusy.toggle()
+                }
+                
+            } else {
+                DispatchQueue.main.async {
+                    self.fetchLocalData()
+                }
             }
-        } else {
-            fetchLocalData()
+        } catch {
+            DispatchQueue.main.async {
+                self.isBusy.toggle()
+                self.isFailed = true
+            }
         }
     }
     
@@ -133,17 +140,10 @@ class SetsViewModel: ViewModel {
         
         do {
             try frc.performFetch()
-
-            if query.isEmpty {
-                data = (frc.fetchedObjects ?? []).map({ $0.objectID })
-            } else {
-                filteredData = (frc.fetchedObjects ?? []).map({ $0.objectID })
-            }
             sections = frc.sections ?? []
         } catch {
             print(error)
             isFailed = true
-            data.removeAll()
         }
     }
 }
@@ -152,11 +152,7 @@ class SetsViewModel: ViewModel {
 
 extension SetsViewModel: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        guard let sets = controller.fetchedObjects as? [MGSet] else {
-            return
-        }
-
-        data = sets.map({ $0.objectID })
+        sections = controller.sections ?? []
     }
 }
 

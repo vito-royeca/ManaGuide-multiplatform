@@ -31,32 +31,32 @@ class CardsSearchViewModel: CardsViewModel {
     
     // MARK: - Methods
 
-    @MainActor
-    override func fetchRemoteData() {
+    override func fetchRemoteData() async throws {
         if !willFetch() {
             return
         }
         
-        guard !isBusy && data.isEmpty else {
+        guard !isBusy else {
             return
         }
-        
-        if dataAPI.willFetchCards(query: query!) {
-            isBusy.toggle()
-            isFailed = false
 
-            Task {
-                do {
-                    try await dataAPI.fetchCards(query: query!)
-                    fetchLocalData()
-                } catch {
-                    isFailed = true
-                    data.removeAll()
-                }
-                isBusy.toggle()
+        DispatchQueue.main.async {
+            self.isBusy.toggle()
+            self.isFailed = false
+        }
+        
+        do {
+            _ = try await dataAPI.fetchCards(query: query!,
+                                             sortDescriptors: sortDescriptors)
+            DispatchQueue.main.async {
+                self.fetchLocalData()
+                self.isBusy.toggle()
             }
-        } else {
-            fetchLocalData()
+        } catch {
+            DispatchQueue.main.async {
+                self.isBusy.toggle()
+                self.isFailed = true
+            }
         }
     }
     
@@ -73,12 +73,10 @@ class CardsSearchViewModel: CardsViewModel {
         
         do {
             try frc.performFetch()
-            data = (frc.fetchedObjects ?? []).map({ $0.objectID })
             sections = frc.sections ?? []
         } catch {
             print(error)
             isFailed = true
-            data.removeAll()
         }
     }
     
@@ -116,11 +114,7 @@ class CardsSearchViewModel: CardsViewModel {
 
 extension CardsSearchViewModel: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        guard let cards = controller.fetchedObjects as? [MGCard] else {
-            return
-        }
-
-        data = cards.map({ $0.objectID })
+        sections = controller.sections ?? []
     }
 }
 

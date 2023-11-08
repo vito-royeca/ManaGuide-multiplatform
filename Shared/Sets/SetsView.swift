@@ -23,15 +23,19 @@ struct SetsView: View {
                 BusyView()
             } else if viewModel.isFailed {
                 ErrorView {
-                    viewModel.fetchRemoteData()
+                    Task {
+                        try await viewModel.fetchRemoteData()
+                    }
                 }
             } else {
                 bodyData
             }
         }
             .onAppear {
-                viewModel.sort = sort
-                viewModel.fetchRemoteData()
+                Task {
+                    viewModel.sort = sort
+                    try await viewModel.fetchRemoteData()
+                }
             }
             .onChange(of: query) { _ in
                 search()
@@ -58,7 +62,9 @@ struct SetsView: View {
             .fullScreenCover(item: $selectedSet) { set in
                 SetView(setCode: set.code, languageCode: "en")
             }
-            .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search for Magic sets...")
+            .searchable(text: $query,
+                        placement: .navigationBarDrawer(displayMode: .automatic),
+                        prompt: "Search for Magic sets...")
             .modifier(SectionIndex(sections: viewModel.sections,
                                    sectionIndexTitles: viewModel.sectionIndexTitles))
             .toolbar {

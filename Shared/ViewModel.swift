@@ -12,8 +12,6 @@ import ManaKit
 class ViewModel: NSObject, ObservableObject {
     // MARK: - Published Variables
     
-    @Published var data = [NSManagedObjectID]()
-    @Published var filteredData = [NSManagedObjectID]()
     @Published var sections = [NSFetchedResultsSectionInfo]()
     @Published var isBusy = false
     @Published var isFailed = false
@@ -40,9 +38,8 @@ class ViewModel: NSObject, ObservableObject {
     
     // MARK: - Methods
     
-    @MainActor
-    func fetchRemoteData() { }
-    func fetchLocalData() { }
+    func fetchRemoteData() async throws { }
+    func fetchLocalData()  { }
     
     func find<T: MGEntity>(_ entity: T.Type,
                            id: NSManagedObjectID) -> T? {
