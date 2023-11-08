@@ -110,11 +110,13 @@ struct CardsStoreLargeView: View {
                             .font(Font.custom(font.name, size: font.size))
                         Spacer()
                     }
-                    AttributedText(
-                        NSAttributedString(symbol: card.displayManaCost,
-                                           pointSize: 16)
-                    )
-                        .multilineTextAlignment(.trailing)
+                    
+                    // FIXME: Abnormal number of gesture recognizer dependencies: 100. System performance may be affected. Please investigate reducing gesture recognizers and/or their dependencies.
+//                    AttributedText(
+//                        NSAttributedString(symbol: card.displayManaCost,
+//                                           pointSize: 16)
+//                    )
+//                        .multilineTextAlignment(.trailing)
                 }
                 HStack {
                     Text(card.displayKeyrune)
