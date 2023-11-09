@@ -59,7 +59,7 @@ struct SetView: View {
                 SetHeaderView(viewModel: viewModel,
                               progress: $progress)
                     .frame(height: 200)
-                    .padding(.top, 50)
+                    .padding(.top, 80)
             }
         } content: {
             if cardsDisplay == .image {
@@ -91,32 +91,38 @@ struct SetView: View {
     }
 
     var imageContentView: some View {
-//        let cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.3
         let cardWidth = (UIScreen.main.bounds.size.width - 60 ) * cardsPerRow
         
-        let cards = viewModel.dataArray(MGCard.self)
         let columns = [
             GridItem(.adaptive(minimum: cardWidth))
         ]
         
         return LazyVGrid(columns: columns,
-                     spacing: 20) {
-            ForEach(cards, id: \.self) { card in
-                CacheAsyncImage(url: card.imageURL(for: .png)) { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .clipped()
-                    } else {
-                        Image(uiImage: ManaKit.shared.image(name: .cardBack)!)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .clipped()
+                         spacing: 20,
+                         pinnedViews: [.sectionHeaders]) {
+            ForEach(viewModel.sections, id: \.name) { section in
+                Section(header: HStack {
+                    Text(section.name)
+                    Spacer()
+                }) {
+                    ForEach(section.objects as? [MGCard] ?? [], id: \.newIDCopy) { card in
+                        CacheAsyncImage(url: card.imageURL(for: .png)) { phase in
+                            if let image = phase.image {
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .clipped()
+                            } else {
+                                Image(uiImage: ManaKit.shared.image(name: .cardBack)!)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .clipped()
+                            }
+                        }
+                        .onTapGesture {
+                            selectedCard = card
+                        }
                     }
-                }
-                .onTapGesture {
-                    selectedCard = card
                 }
             }
         }
@@ -124,12 +130,17 @@ struct SetView: View {
 
     var listContentView: some View {
         ForEach(viewModel.sections, id: \.name) { section in
-            ForEach(section.objects as? [MGCard] ?? []) { card in
-                CardsStoreLargeView(card: card)
-                    .padding(.bottom, 10)
-                    .onTapGesture {
-                        selectedCard = card
-                    }
+            Section(header: HStack {
+                Text(section.name)
+                Spacer()
+            }) {
+                ForEach(section.objects as? [MGCard] ?? [], id: \.newIDCopy) { card in
+                    CardsStoreLargeView(card: card)
+                        .padding(.bottom, 10)
+                        .onTapGesture {
+                            selectedCard = card
+                        }
+                }
             }
         }
     }

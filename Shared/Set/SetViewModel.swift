@@ -94,6 +94,25 @@ class SetViewModel: CardsViewModel {
         }
     }
 
+    override var sectionNameKeyPath: String? {
+        get {
+            var keyPath: String?
+            
+            switch sort {
+            case .name:
+                keyPath = "nameSection"
+            case .collectorNumber:
+                keyPath = nil
+            case .rarity:
+                keyPath = "rarity.name"
+            case .type:
+                keyPath = "type.name"
+            }
+            
+            return keyPath
+        }
+    }
+
     override var sectionIndexTitles: [String] {
         get {
             switch sort {
