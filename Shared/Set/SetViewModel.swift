@@ -35,7 +35,65 @@ class SetViewModel: CardsViewModel {
     }
     
     // MARK: - Variables
-    
+
+    override var sortDescriptors: [NSSortDescriptor] {
+        get {
+            var sortDescriptors = [NSSortDescriptor]()
+
+            switch sort {
+            case .name:
+                if languageCode == "en" {
+                    sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                            ascending: true))
+                } else {
+                    sortDescriptors.append(NSSortDescriptor(key: "printedName",
+                                                            ascending: true))
+                }
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
+
+            case .collectorNumber:
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
+                if languageCode == "en" {
+                    sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                            ascending: true))
+                } else {
+                    sortDescriptors.append(NSSortDescriptor(key: "printedName",
+                                                            ascending: true))
+                }
+
+            case .rarity:
+                sortDescriptors.append(NSSortDescriptor(key: "rarity.name",
+                                                        ascending: true))
+                if languageCode == "en" {
+                    sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                            ascending: true))
+                } else {
+                    sortDescriptors.append(NSSortDescriptor(key: "printedName",
+                                                            ascending: true))
+                }
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
+
+            case .type:
+                sortDescriptors.append(NSSortDescriptor(key: "type.name",
+                                                        ascending: true))
+                if languageCode == "en" {
+                    sortDescriptors.append(NSSortDescriptor(key: "name",
+                                                            ascending: true))
+                } else {
+                    sortDescriptors.append(NSSortDescriptor(key: "printedName",
+                                                            ascending: true))
+                }
+                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
+                                                        ascending: true))
+            }
+            
+            return sortDescriptors
+        }
+    }
+
     override var sectionIndexTitles: [String] {
         get {
             switch sort {
@@ -109,62 +167,8 @@ class SetViewModel: CardsViewModel {
         }
     }
     
-    override var sortDescriptors: [NSSortDescriptor] {
-        get {
-            var sortDescriptors = [NSSortDescriptor]()
-
-            switch sort {
-            case .name:
-                if languageCode == "en" {
-                    sortDescriptors.append(NSSortDescriptor(key: "name",
-                                                            ascending: true))
-                } else {
-                    sortDescriptors.append(NSSortDescriptor(key: "printedName",
-                                                            ascending: true))
-                }
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
-                                                        ascending: true))
-
-            case .collectorNumber:
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
-                                                        ascending: true))
-                if languageCode == "en" {
-                    sortDescriptors.append(NSSortDescriptor(key: "name",
-                                                            ascending: true))
-                } else {
-                    sortDescriptors.append(NSSortDescriptor(key: "printedName",
-                                                            ascending: true))
-                }
-
-            case .rarity:
-                sortDescriptors.append(NSSortDescriptor(key: "rarity.name",
-                                                        ascending: true))
-                if languageCode == "en" {
-                    sortDescriptors.append(NSSortDescriptor(key: "name",
-                                                            ascending: true))
-                } else {
-                    sortDescriptors.append(NSSortDescriptor(key: "printedName",
-                                                            ascending: true))
-                }
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
-                                                        ascending: true))
-
-            case .type:
-                sortDescriptors.append(NSSortDescriptor(key: "type.name",
-                                                        ascending: true))
-                if languageCode == "en" {
-                    sortDescriptors.append(NSSortDescriptor(key: "name",
-                                                            ascending: true))
-                } else {
-                    sortDescriptors.append(NSSortDescriptor(key: "printedName",
-                                                            ascending: true))
-                }
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
-                                                        ascending: true))
-            }
-            
-            return sortDescriptors
-        }
+    override func dataArray<T: MGEntity>(_ type: T.Type) -> [T] {
+        return frc.fetchedObjects as? [T] ?? []
     }
 }
 

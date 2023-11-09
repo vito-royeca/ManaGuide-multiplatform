@@ -29,6 +29,8 @@
 		586B09E42AFC113F00325B3B /* CardTextRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586B09E22AFC113F00325B3B /* CardTextRowView.swift */; };
 		586B09E62AFC11E300325B3B /* CardExtraInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586B09E52AFC11E300325B3B /* CardExtraInfoView.swift */; };
 		586B09E72AFC11E300325B3B /* CardExtraInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586B09E52AFC11E300325B3B /* CardExtraInfoView.swift */; };
+		586B09EB2AFC6E7900325B3B /* CardsMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586B09EA2AFC6E7900325B3B /* CardsMenuView.swift */; };
+		586B09EC2AFC6E7900325B3B /* CardsMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586B09EA2AFC6E7900325B3B /* CardsMenuView.swift */; };
 		58F888622AFA8D7D00AE7031 /* ManaKit in Frameworks */ = {isa = PBXBuildFile; productRef = 58F888612AFA8D7D00AE7031 /* ManaKit */; };
 		8B34024F2824CAF200AC2705 /* ASCollectionView in Frameworks */ = {isa = PBXBuildFile; productRef = 8B34024E2824CAF200AC2705 /* ASCollectionView */; };
 		8B3695502845296200D1F544 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 8B36954F2845296200D1F544 /* SwiftUIPager */; };
@@ -156,6 +158,7 @@
 		586B09DF2AFC109200325B3B /* CardViewItemSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewItemSource.swift; sourceTree = "<group>"; };
 		586B09E22AFC113F00325B3B /* CardTextRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTextRowView.swift; sourceTree = "<group>"; };
 		586B09E52AFC11E300325B3B /* CardExtraInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardExtraInfoView.swift; sourceTree = "<group>"; };
+		586B09EA2AFC6E7900325B3B /* CardsMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsMenuView.swift; sourceTree = "<group>"; };
 		8B41B7352812144D00AECF85 /* ManaGuideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManaGuideApp.swift; sourceTree = "<group>"; };
 		8B41B7372812144E00AECF85 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8B41B73C2812144E00AECF85 /* Mana Guide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mana Guide.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -375,6 +378,7 @@
 			isa = PBXGroup;
 			children = (
 				8BCE6021287011D700389713 /* CardListRowView.swift */,
+				586B09EA2AFC6E7900325B3B /* CardsMenuView.swift */,
 				8BCE602A28701B4800389713 /* CardsSearchViewModel.swift */,
 				8BCE602728701B2800389713 /* CardsView.swift */,
 				8BCE6009287000DE00389713 /* CardsViewModel.swift */,
@@ -692,6 +696,7 @@
 				8B41B75D2812144F00AECF85 /* ManaGuideApp.swift in Sources */,
 				8B75CA4B28162BDD00597662 /* TabNavigationView.swift in Sources */,
 				8BCE601928700C7000389713 /* CardViewModel.swift in Sources */,
+				586B09EB2AFC6E7900325B3B /* CardsMenuView.swift in Sources */,
 				8B41B79F2812585300AECF85 /* WebView.swift in Sources */,
 				583684C12AF21C0600DFE9EB /* SetHeaderView.swift in Sources */,
 				8BCE602B28701B4800389713 /* CardsSearchViewModel.swift in Sources */,
@@ -725,6 +730,7 @@
 				8B41B79E2812585300AECF85 /* View+Extras.swift in Sources */,
 				582810A02AF89F4D0000749C /* CacheAsyncImage.swift in Sources */,
 				8BCE601A28700C7000389713 /* CardViewModel.swift in Sources */,
+				586B09EC2AFC6E7900325B3B /* CardsMenuView.swift in Sources */,
 				8B41B794281257F600AECF85 /* SetRowView.swift in Sources */,
 				586B09E72AFC11E300325B3B /* CardExtraInfoView.swift in Sources */,
 				8B41B784281257D300AECF85 /* ContentView.swift in Sources */,
@@ -910,6 +916,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 310;
 				DEVELOPMENT_TEAM = "";
@@ -942,6 +949,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 310;
 				DEVELOPMENT_TEAM = "";

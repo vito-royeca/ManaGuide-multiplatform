@@ -11,12 +11,14 @@ import ScalingHeaderScrollView
 
 struct SetView: View {
     @Environment(\.presentationMode) var presentationMode
-    @AppStorage("cardsSort") private var sort = CardsViewSort.name
+    @AppStorage("CardsViewSort") private var cardsSort = CardsViewSort.defaultValue
+    @AppStorage("CardsViewDisplay") private var cardsDisplay = CardsViewDisplay.defaultValue
     @StateObject var viewModel: SetViewModel
     @State private var progress: CGFloat = 0
     @State private var showingSort = false
     @State private var selectedCard: MGCard?
-    
+    @State private var cardsPerRow = 0.5
+
     init(setCode: String, languageCode: String) {
         _viewModel = StateObject(wrappedValue: SetViewModel(setCode: setCode,
                                                             languageCode: languageCode))
@@ -41,8 +43,10 @@ struct SetView: View {
             }
         }
         .onAppear {
+            cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.3
+
             Task {
-                viewModel.sort = sort
+                viewModel.sort = cardsSort
                 try await viewModel.fetchRemoteData()
             }
         }
@@ -58,13 +62,24 @@ struct SetView: View {
                     .padding(.top, 50)
             }
         } content: {
-            contentView
-                .padding(.horizontal, 10)
+            if cardsDisplay == .image {
+                imageContentView
+                    .padding(.horizontal, 10)
+            } else if cardsDisplay == .list {
+                listContentView
+                    .padding(.horizontal, 10)
+            }
         }
         .collapseProgress($progress)
         .allowsHeaderCollapse()
-        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsStoreViewSort)) { (output) in
-            viewModel.fetchLocalData()
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsStoreViewSort)) { output in
+            if let sort = output.object as? CardsViewSort {
+                viewModel.sort = sort
+                viewModel.fetchLocalData()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+            cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.3
         }
         .sheet(item: $selectedCard) { card in
             NavigationView {
@@ -74,8 +89,40 @@ struct SetView: View {
             }
         }
     }
-    
-    var contentView: some View {
+
+    var imageContentView: some View {
+//        let cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.3
+        let cardWidth = (UIScreen.main.bounds.size.width - 60 ) * cardsPerRow
+        
+        let cards = viewModel.dataArray(MGCard.self)
+        let columns = [
+            GridItem(.adaptive(minimum: cardWidth))
+        ]
+        
+        return LazyVGrid(columns: columns,
+                     spacing: 20) {
+            ForEach(cards, id: \.self) { card in
+                CacheAsyncImage(url: card.imageURL(for: .png)) { phase in
+                    if let image = phase.image {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .clipped()
+                    } else {
+                        Image(uiImage: ManaKit.shared.image(name: .cardBack)!)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .clipped()
+                    }
+                }
+                .onTapGesture {
+                    selectedCard = card
+                }
+            }
+        }
+    }
+
+    var listContentView: some View {
         ForEach(viewModel.sections, id: \.name) { section in
             ForEach(section.objects as? [MGCard] ?? []) { card in
                 CardsStoreLargeView(card: card)
@@ -99,14 +146,7 @@ struct SetView: View {
                     .padding(.leading, 17)
                     .foregroundColor(.accentColor)
                 Spacer()
-                Button(action: {
-                    showingSort.toggle()
-                }) {
-                    Image(systemName: "arrow.up.arrow.down")
-                }
-                    .actionSheet(isPresented: $showingSort) {
-                        sortActionSheet
-                    }
+                CardsMenuView()
                     .padding(.top, 50)
                     .padding(.trailing, 17)
                     .foregroundColor(.accentColor)
@@ -114,39 +154,6 @@ struct SetView: View {
             Spacer()
         }
         .ignoresSafeArea()
-    }
-    
-    private var sortActionSheet: ActionSheet {
-        ActionSheet(
-            title: Text("Sort by"),
-            buttons: [
-                .default(Text("\(sort == .name ? "\u{2713}" : "") Name")) {
-                    sort = .name
-                    viewModel.sort = .name
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
-                                                    object: nil)
-                },
-                .default(Text("\(sort == .collectorNumber ? "\u{2713}" : "") Collector Number")) {
-                    sort = .collectorNumber
-                    viewModel.sort = .collectorNumber
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
-                                                    object: nil)
-                },
-                .default(Text("\(sort == .rarity ? "\u{2713}" : "") Rarity")) {
-                    sort = .rarity
-                    viewModel.sort = .rarity
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
-                                                    object: nil)
-                },
-                .default(Text("\(sort == .type ? "\u{2713}" : "") Type")) {
-                    sort = .type
-                    viewModel.sort = .type
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
-                                                    object: nil)
-                },
-                .cancel(Text("Cancel"))
-            ]
-        )
     }
 }
 
