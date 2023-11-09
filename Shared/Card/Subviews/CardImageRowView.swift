@@ -38,6 +38,7 @@ struct CardImageRowView: View {
             } else if card.layout?.name == "Art Series" ||
                 card.layout?.name == "Double Faced Token" ||
                 card.layout?.name == "Modal Dfc" ||
+                card.layout?.name == "Reversible Card" ||
                 card.layout?.name == "Transform" {
                 imageView
                     .rotation3DEffect(.degrees(degrees),
@@ -96,6 +97,7 @@ struct CardImageRowButtonView: View {
         } else if card.layout?.name == "Art Series" ||
             card.layout?.name == "Double Faced Token" ||
             card.layout?.name == "Modal Dfc" ||
+            card.layout?.name == "Reversible Card" ||
             card.layout?.name == "Transform" {
             imageName = "arrow.left.and.right.righttriangle.left.righttriangle.right"
         }
@@ -111,6 +113,7 @@ struct CardImageRowButtonView: View {
            card.layout?.name == "Art Series" ||
            card.layout?.name == "Double Faced Token" ||
            card.layout?.name == "Modal Dfc" ||
+           card.layout?.name == "Reversible Card" ||
            card.layout?.name == "Transform" {
         
             Button(action: {
@@ -139,6 +142,7 @@ struct CardImageRowButtonView: View {
         } else if card.layout?.name == "Art Series" ||
             card.layout?.name == "Double Faced Token" ||
             card.layout?.name == "Modal Dfc" ||
+            card.layout?.name == "Reversible Card" ||
             card.layout?.name == "Transform" {
             withAnimation {
                 self.degrees = self.degrees == 0 ? 180 : 0

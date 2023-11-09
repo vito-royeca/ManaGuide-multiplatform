@@ -58,7 +58,8 @@ struct CardOtherPrintingsView: View {
         .sheet(item: $selectedCard) { card in
             NavigationView {
                 CardView(newID: card.newIDCopy,
-                         relatedCards: [] /*viewModel.data*/)
+                         relatedCards: [],
+                         withCloseButton: true)
             }
         }
         .listStyle(.plain)

@@ -40,6 +40,9 @@ class ViewModel: NSObject, ObservableObject {
     
     func fetchRemoteData() async throws { }
     func fetchLocalData()  { }
+    func dataArray<T: MGEntity>(_ type: T.Type) -> [T] {
+        return [T]()
+    }
     
     func find<T: MGEntity>(_ entity: T.Type,
                            id: NSManagedObjectID) -> T? {

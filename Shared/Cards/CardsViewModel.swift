@@ -16,6 +16,15 @@ enum CardsViewSort: String {
          collectorNumber,
          rarity,
          type
+    
+    static let defaultValue: CardsViewSort = .name
+}
+
+enum CardsViewDisplay: String {
+    case image,
+         list
+    
+    static let defaultValue: CardsViewDisplay = .image
 }
 
 // MARK: - CardsViewModel
@@ -24,7 +33,8 @@ class CardsViewModel: ViewModel {
 
     // MARK: - Variables
 
-    var sort: CardsViewSort = .name
+    @Published var sort: CardsViewSort = .name
+    @Published var display: CardsViewDisplay = .list
     
     override var sortDescriptors: [NSSortDescriptor] {
         get {
