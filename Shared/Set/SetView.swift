@@ -106,18 +106,9 @@ struct SetView: View {
                     Spacer()
                 }) {
                     ForEach(section.objects as? [MGCard] ?? [], id: \.newIDCopy) { card in
-                        CacheAsyncImage(url: card.imageURL(for: .png)) { phase in
-                            if let image = phase.image {
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .clipped()
-                            } else {
-                                Image(uiImage: ManaKit.shared.image(name: .cardBack)!)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .clipped()
-                            }
+                        VStack {
+                            CardImageRowView(card: card,
+                                             showPrice: true)
                         }
                         .onTapGesture {
                             selectedCard = card
@@ -172,7 +163,7 @@ struct SetView: View {
 
 #Preview {
     NavigationView {
-        SetView(setCode: "isd", languageCode: "en")
+        SetView(setCode: "chk", languageCode: "en")
     }
         .previewInterfaceOrientation(.landscapeLeft)
 }
