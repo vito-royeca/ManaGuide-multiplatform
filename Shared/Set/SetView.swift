@@ -43,7 +43,7 @@ struct SetView: View {
             }
         }
         .onAppear {
-            cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.3
+            cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.4
 
             Task {
                 viewModel.sort = cardsSort
@@ -58,7 +58,7 @@ struct SetView: View {
                 Color(UIColor.systemBackground).edgesIgnoringSafeArea(.all)
                 SetHeaderView(viewModel: viewModel,
                               progress: $progress)
-                    .frame(height: 200)
+//                    .frame(height: 200)
                     .padding(.top, 80)
             }
         } content: {
@@ -72,6 +72,8 @@ struct SetView: View {
         }
         .collapseProgress($progress)
         .allowsHeaderCollapse()
+        .height(min: hasLogo() ? 150 : 130,
+                max: hasLogo() ? 300 : 260)
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsStoreViewSort)) { output in
             if let sort = output.object as? CardsViewSort {
                 viewModel.sort = sort
@@ -79,7 +81,7 @@ struct SetView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-            cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.3
+            cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.4
         }
         .sheet(item: $selectedCard) { card in
             NavigationView {
@@ -156,6 +158,15 @@ struct SetView: View {
             Spacer()
         }
         .ignoresSafeArea()
+    }
+    
+    private func hasLogo() -> Bool {
+        guard let set = viewModel.setObject,
+            let _ = set.bigLogoURL else {
+            return false
+        }
+        
+        return true
     }
 }
 

@@ -120,7 +120,7 @@ struct SetsView: View {
 struct SetsView_Previews: PreviewProvider {
     static var previews: some View {
         SetsView()
-            .previewInterfaceOrientation(.landscapeRight)
+//            .previewInterfaceOrientation(.landscapeRight)
     }
 }
 
