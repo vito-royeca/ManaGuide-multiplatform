@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct SetsMenuView: View {
-    @AppStorage("setsSort") private var setsSort = SetsViewSort.releaseDate
-    @AppStorage("setsTypeFilter") private var setsTypeFilter: String?
     @EnvironmentObject private var viewModel: SetsViewModel
+    @AppStorage("SetsViewSort") private var setsSort = SetsViewSort.defaultValue
+    @AppStorage("SetsTypeFilter") private var setsTypeFilter: String?
 
     var body: some View {
         Menu {
             sortByMenu
             typeFilterMenu
+            clearMenu
         } label: {
             Image(systemName: "ellipsis.circle")
         }
@@ -23,46 +24,23 @@ struct SetsMenuView: View {
     
     var sortByMenu: some View {
         Menu {
-            Button(action: {
-                setsSort = .name
-                NotificationCenter.default.post(name: NSNotification.SetsViewSort,
-                                                object: setsSort)
-            }) {
-                if setsSort == .name {
-                    Label("Name",
-                          systemImage: "checkmark")
-                } else {
-                    Text("Name")
-                }
-            }
-
-            Button(action: {
-                setsSort = .releaseDate
-                NotificationCenter.default.post(name: NSNotification.SetsViewSort,
-                                                object: setsSort)
-            }) {
-                if setsSort == .releaseDate {
-                    Label("Release Date",
-                          systemImage: "checkmark")
-                } else {
-                    Text("Release Date")
-                }
-            }
-
-            Button(action: {
-                setsSort = .type
-                NotificationCenter.default.post(name: NSNotification.SetsViewSort,
-                                                object: setsSort)
-            }) {
-                if setsSort == .type {
-                    Label("Type",
-                          systemImage: "checkmark")
-                } else {
-                    Text("Type")
+            ForEach(SetsViewSort.allCases, id:\.description) { sort in
+                Button(action: {
+                    setsSort = sort
+                    NotificationCenter.default.post(name: NSNotification.SetsViewSort,
+                                                    object: setsSort)
+                }) {
+                    if setsSort == sort {
+                        Label(setsSort.description,
+                              systemImage: "checkmark")
+                    } else {
+                        Text(sort.description)
+                    }
                 }
             }
         } label: {
-            Text("Sort by")
+            Label("Sort by\n\(setsSort.description)",
+                  systemImage: "arrow.up.arrow.down")
         }
     }
     
@@ -74,10 +52,10 @@ struct SetsMenuView: View {
                                                 object: setsTypeFilter)
             }) {
                 if setsTypeFilter == nil {
-                    Label("\u{2014}",
+                    Label(String.emdash,
                           systemImage: "checkmark")
                 } else {
-                    Text("\u{2014}")
+                    Text(String.emdash)
                 }
             }
 
@@ -96,7 +74,20 @@ struct SetsMenuView: View {
                 }
             }
         } label: {
-            Text("Filter by")
+            Label("Filter by Type\n\(setsTypeFilter ?? String.emdash)",
+                  systemImage: "doc.text.magnifyingglass")
+        }
+    }
+    
+    var clearMenu: some View {
+        Button(action: {
+            setsSort = SetsViewSort.defaultValue
+            setsTypeFilter = nil
+            NotificationCenter.default.post(name: NSNotification.SetsViewClear,
+                                            object: nil)
+        }) {
+            Label("Reset to defaults",
+                  systemImage: "clear")
         }
     }
 }

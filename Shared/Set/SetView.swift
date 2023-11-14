@@ -12,6 +12,8 @@ import ScalingHeaderScrollView
 struct SetView: View {
     @Environment(\.presentationMode) var presentationMode
     @AppStorage("CardsViewSort") private var cardsSort = CardsViewSort.defaultValue
+    @AppStorage("CardsRarityFilter") private var cardsRarityFilter: String?
+    @AppStorage("CardsTypeFilter") private var cardsTypeFilter: String?
     @AppStorage("CardsViewDisplay") private var cardsDisplay = CardsViewDisplay.defaultValue
     @StateObject var viewModel: SetViewModel
     @State private var progress: CGFloat = 0
@@ -47,6 +49,8 @@ struct SetView: View {
 
             Task {
                 viewModel.sort = cardsSort
+                viewModel.rarityFilter = cardsRarityFilter
+                viewModel.typeFilter = cardsTypeFilter
                 try await viewModel.fetchRemoteData()
             }
         }
@@ -78,6 +82,29 @@ struct SetView: View {
                 viewModel.sort = sort
                 viewModel.fetchLocalData()
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewRarityFilter)) { output in
+            if let typeFilter = output.object as? String {
+                viewModel.rarityFilter = typeFilter
+            } else {
+                viewModel.rarityFilter = nil
+            }
+            viewModel.fetchLocalData()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewTypeFilter)) { output in
+            if let typeFilter = output.object as? String {
+                viewModel.typeFilter = typeFilter
+            } else {
+                viewModel.typeFilter = nil
+            }
+            viewModel.fetchLocalData()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewClear)) { output in
+            viewModel.sort = cardsSort
+            viewModel.rarityFilter = cardsRarityFilter
+            viewModel.typeFilter = cardsTypeFilter
+            viewModel.display = cardsDisplay
+            viewModel.fetchLocalData()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
             cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.4
@@ -150,6 +177,7 @@ struct SetView: View {
                     .foregroundColor(.accentColor)
                 Spacer()
                 CardsMenuView()
+                    .environmentObject(viewModel as CardsViewModel)
                     .padding(.top, 50)
                     .padding(.trailing, 17)
                     .foregroundColor(.accentColor)
@@ -164,7 +192,7 @@ struct SetView: View {
 
 #Preview {
     NavigationView {
-        SetView(setCode: "chk", languageCode: "en")
+        SetView(setCode: "ugl", languageCode: "en")
     }
         .previewInterfaceOrientation(.landscapeLeft)
 }

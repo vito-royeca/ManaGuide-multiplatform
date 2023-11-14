@@ -10,12 +10,14 @@ import SwiftUI
 import ManaKit
 
 struct SetsView: View {
-    @AppStorage("setsSort") private var sort = SetsViewSort.releaseDate
-    @AppStorage("setsTypeFilter") private var setsTypeFilter: String?
     @StateObject var viewModel = SetsViewModel()
+    @State var query = ""
+
+    @AppStorage("SetsViewSort") private var setsSort = SetsViewSort.defaultValue
+    @AppStorage("SetsTypeFilter") private var setsTypeFilter: String?
     @State private var showingSort = false
     @State private var selectedSet: MGSet?
-    @State var query = ""
+    
     
     var body: some View {
         NavigationView {
@@ -33,7 +35,7 @@ struct SetsView: View {
         }
             .onAppear {
                 Task {
-                    viewModel.sort = sort
+                    viewModel.sort = setsSort
                     viewModel.typeFilter = setsTypeFilter
                     try await viewModel.fetchRemoteData()
                 }
@@ -83,6 +85,11 @@ struct SetsView: View {
                 }
                 viewModel.fetchLocalData()
             }
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.SetsViewClear)) { output in
+                viewModel.sort = setsSort
+                viewModel.typeFilter = setsTypeFilter
+                viewModel.fetchLocalData()
+            }
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     SetsMenuView()
@@ -93,7 +100,10 @@ struct SetsView: View {
     }
     
     func search() {
+        setsTypeFilter = nil
+
         viewModel.query = query
+        viewModel.typeFilter = setsTypeFilter
         viewModel.fetchLocalData()
     }
 }

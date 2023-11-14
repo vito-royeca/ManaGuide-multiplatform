@@ -121,7 +121,7 @@ struct SetRowView: View {
                 Text("Block")
                     .font(.footnote)
                     .foregroundColor(Color.gray)
-                Text(set.setBlock?.name ?? "\u{2014}")
+                Text(set.setBlock?.name ?? String.emdash)
                     .font(.subheadline)
             }
         }

@@ -203,10 +203,22 @@ extension SetViewModel: NSFetchedResultsControllerDelegate {
 
 extension SetViewModel {
     func defaultFetchRequest(setCode: String, languageCode: String) -> NSFetchRequest<MGCard> {
-        let predicate = NSPredicate(format: "set.code == %@ AND language.code == %@ AND collectorNumber != null ",
+        var predicate = NSPredicate(format: "set.code == %@ AND language.code == %@ AND collectorNumber != null ",
                                     setCode,
                                     languageCode)
         
+        if let rarityFilter = rarityFilter {
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
+                                                                            NSPredicate(format: "rarity.name == %@",
+                                                                                        rarityFilter)])
+        }
+
+        if let typeFilter = typeFilter {
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
+                                                                            NSPredicate(format: "type.name == %@",
+                                                                                        typeFilter)])
+        }
+
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
         request.predicate = predicate
         request.sortDescriptors = sortDescriptors

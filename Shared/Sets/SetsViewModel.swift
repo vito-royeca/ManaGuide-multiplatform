@@ -12,10 +12,25 @@ import ManaKit
 
 // MARK: - Settings
 
-enum SetsViewSort: String {
+enum SetsViewSort: String, CaseIterable {
     case name,
          releaseDate,
          type
+    
+    var description: String {
+        get {
+            switch self {
+            case .name:
+                "Name"
+            case .releaseDate:
+                "Release Date"
+            case .type:
+                "Type"
+            }
+        }
+    }
+    
+    static let defaultValue: SetsViewSort = .releaseDate
 }
 
 // MARK: - SetsViewModel
