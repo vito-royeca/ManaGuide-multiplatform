@@ -58,7 +58,6 @@ struct SetView: View {
                 Color(UIColor.systemBackground).edgesIgnoringSafeArea(.all)
                 SetHeaderView(viewModel: viewModel,
                               progress: $progress)
-//                    .frame(height: 200)
                     .padding(.top, 80)
             }
         } content: {
@@ -72,8 +71,8 @@ struct SetView: View {
         }
         .collapseProgress($progress)
         .allowsHeaderCollapse()
-        .height(min: hasLogo() ? 150 : 130,
-                max: hasLogo() ? 300 : 260)
+        .height(min: 150,
+                max: 300)
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsStoreViewSort)) { output in
             if let sort = output.object as? CardsViewSort {
                 viewModel.sort = sort
@@ -158,15 +157,6 @@ struct SetView: View {
             Spacer()
         }
         .ignoresSafeArea()
-    }
-    
-    private func hasLogo() -> Bool {
-        guard let set = viewModel.setObject,
-            let _ = set.bigLogoURL else {
-            return false
-        }
-        
-        return true
     }
 }
 

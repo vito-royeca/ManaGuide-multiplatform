@@ -15,7 +15,8 @@ struct CardsStoreHeaderView: View {
     var body: some View {
         VStack(spacing: 10) {
             if let set = viewModel.setObject {
-                SetRowView(set: set)
+                SetRowView(set: set,
+                           style: .header)
             }
         }
     }

@@ -50,7 +50,8 @@ struct SetsView: View {
             ForEach(viewModel.sections, id: \.name) { section in
                 Section(header: Text(section.name)) {
                     OutlineGroup(section.objects as? [MGSet] ?? [], children: \.sortedChildren) { set in
-                        SetRowView(set: set)
+                        SetRowView(set: set,
+                                   style: .listRow)
                             .onTapGesture {
                                 selectedSet = set
                             }
