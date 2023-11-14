@@ -52,7 +52,7 @@ struct CardOtherPrintingsView: View {
                 }
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsStoreViewSort)) { (output) in
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewSort)) { (output) in
             viewModel.fetchLocalData()
         }
         .sheet(item: $selectedCard) { card in

@@ -55,7 +55,7 @@ struct CardListRowView: View {
 //                            Button(action: {
 //                                print("button pressed")
 //                            }) {
-//                                Image(systemName: "ellipsis")
+//                                Image(systemName: "ellipsis.circle")
 //                                    .renderingMode(.original)
 //                                    .foregroundColor(Color(.systemBlue))
 //                            }

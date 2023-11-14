@@ -30,7 +30,6 @@ struct SetRowView: View {
                         .font(.footnote)
                         .foregroundColor(Color.gray)
                     Text(set.keyrune2Unicode)
-//                        .scaledToFit()
                         .font(Font.custom("Keyrune", size: 20))
                 }
                 Spacer()
@@ -82,7 +81,7 @@ struct SetRowView: View {
                     .frame(width: 100, height: 50)
             }
             Text(set.name ?? "")
-                .font(.subheadline)
+                .font(.title3)
             Spacer()
         }
     }
@@ -109,8 +108,21 @@ struct SetRowView: View {
             }
             HStack {
                 Text(set.name ?? "")
+                    .font(.title3)
+                Spacer()
+            }
+            HStack {
+                Text("Type")
+                    .font(.footnote)
+                    .foregroundColor(Color.gray)
+                Text(set.setType?.name ?? "")
                     .font(.subheadline)
                 Spacer()
+                Text("Block")
+                    .font(.footnote)
+                    .foregroundColor(Color.gray)
+                Text(set.setBlock?.name ?? "\u{2014}")
+                    .font(.subheadline)
             }
         }
     }

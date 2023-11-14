@@ -11,7 +11,7 @@ import ManaKit
 
 struct SetsView: View {
     @AppStorage("setsSort") private var sort = SetsViewSort.releaseDate
-    
+    @AppStorage("setsTypeFilter") private var setsTypeFilter: String?
     @StateObject var viewModel = SetsViewModel()
     @State private var showingSort = false
     @State private var selectedSet: MGSet?
@@ -34,6 +34,7 @@ struct SetsView: View {
             .onAppear {
                 Task {
                     viewModel.sort = sort
+                    viewModel.typeFilter = setsTypeFilter
                     try await viewModel.fetchRemoteData()
                 }
             }
@@ -68,46 +69,27 @@ struct SetsView: View {
                         prompt: "Search for Magic sets...")
             .modifier(SectionIndex(sections: viewModel.sections,
                                    sectionIndexTitles: viewModel.sectionIndexTitles))
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.SetsViewSort)) { output in
+                if let sort = output.object as? SetsViewSort {
+                    viewModel.sort = sort
+                    viewModel.fetchLocalData()
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.SetsViewTypeFilter)) { output in
+                if let typeFilter = output.object as? String {
+                    viewModel.typeFilter = typeFilter
+                } else {
+                    viewModel.typeFilter = nil
+                }
+                viewModel.fetchLocalData()
+            }
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingSort.toggle()
-                    }) {
-                        Image(systemName: "arrow.up.arrow.down")
-                    }
-                        .actionSheet(isPresented: $showingSort) {
-                            sortActionSheet
-                        }
-                        .foregroundColor(.accentColor)
+                    SetsMenuView()
+                        .environmentObject(viewModel)
                 }
             }
             .navigationBarTitle("Sets")
-    }
-    
-    
-    
-    var sortActionSheet: ActionSheet {
-        ActionSheet(
-            title: Text("Sort by"),
-            buttons: [
-                .default(Text("\(sort == .name ? "\u{2713}" : "") Name")) {
-                    sort = .name
-                    viewModel.sort = .name
-                    viewModel.fetchLocalData()
-                },
-                .default(Text("\(sort == .releaseDate ? "\u{2713}" : "") Release Date")) {
-                    sort = .releaseDate
-                    viewModel.sort = .releaseDate
-                    viewModel.fetchLocalData()
-                },
-                .default(Text("\(sort == .type ? "\u{2713}" : "") Type")) {
-                    sort = .type
-                    viewModel.sort = .type
-                    viewModel.fetchLocalData()
-                },
-                .cancel(Text("Cancel"))
-            ]
-        )
     }
     
     func search() {

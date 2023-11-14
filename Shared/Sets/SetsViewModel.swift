@@ -27,6 +27,7 @@ class SetsViewModel: ViewModel {
     var dataAPI: API
     var sort: SetsViewSort = .releaseDate
     var query = ""
+    var typeFilter: String?
     private var frc: NSFetchedResultsController<MGSet>
     
     // MARK: - Initializers
@@ -161,7 +162,12 @@ extension SetsViewModel: NSFetchedResultsControllerDelegate {
 extension SetsViewModel {
     func defaultFetchRequest(query: String) -> NSFetchRequest<MGSet> {
         var predicate = NSPredicate(format: "parent = nil")
-        
+
+        if let typeFilter = typeFilter {
+            predicate = NSPredicate(format: "setType.name = %@",
+                                    typeFilter)
+        }
+
         if !query.isEmpty {
             if query.count <= 2 {
                 predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
@@ -183,3 +189,16 @@ extension SetsViewModel {
         return request
     }
 }
+
+extension SetsViewModel {
+    func setTypes() -> [MGSetType] {
+        let types = ManaKit.shared.find(MGSetType.self,
+                                        properties: nil,
+                                        predicate: nil,
+                                        sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)],
+                                        createIfNotFound: true,
+                                        context: ManaKit.shared.viewContext)  ?? []
+        return types
+    }
+}
+

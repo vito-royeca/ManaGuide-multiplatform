@@ -71,9 +71,9 @@ struct SetView: View {
         }
         .collapseProgress($progress)
         .allowsHeaderCollapse()
-        .height(min: 150,
-                max: 300)
-        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsStoreViewSort)) { output in
+        .height(min: 160,
+                max: 320)
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewSort)) { output in
             if let sort = output.object as? CardsViewSort {
                 viewModel.sort = sort
                 viewModel.fetchLocalData()
