@@ -25,20 +25,14 @@ struct SetsView: View {
                 BusyView()
             } else if viewModel.isFailed {
                 ErrorView {
-                    Task {
-                        try await viewModel.fetchRemoteData()
-                    }
+                    fetchRemoteData()
                 }
             } else {
                 bodyData
             }
         }
             .onAppear {
-                Task {
-                    viewModel.sort = setsSort
-                    viewModel.typeFilter = setsTypeFilter
-                    try await viewModel.fetchRemoteData()
-                }
+                fetchRemoteData()
             }
             .onChange(of: query) { _ in
                 search()
@@ -48,7 +42,7 @@ struct SetsView: View {
             }
     }
     
-    var bodyData: some View {
+    private var bodyData: some View {
         List {
             ForEach(viewModel.sections, id: \.name) { section in
                 Section(header: Text(section.name)) {
@@ -72,23 +66,15 @@ struct SetsView: View {
             .modifier(SectionIndex(sections: viewModel.sections,
                                    sectionIndexTitles: viewModel.sectionIndexTitles))
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.SetsViewSort)) { output in
-                if let sort = output.object as? SetsViewSort {
-                    viewModel.sort = sort
-                    viewModel.fetchLocalData()
-                }
+                setsSort = output.object as? SetsViewSort ?? SetsViewSort.defaultValue
+                sort()
             }
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.SetsViewTypeFilter)) { output in
-                if let typeFilter = output.object as? String {
-                    viewModel.typeFilter = typeFilter
-                } else {
-                    viewModel.typeFilter = nil
-                }
-                viewModel.fetchLocalData()
+                setsTypeFilter = output.object as? String ?? nil
+                filterByType()
             }
-            .onReceive(NotificationCenter.default.publisher(for: NSNotification.SetsViewClear)) { output in
-                viewModel.sort = setsSort
-                viewModel.typeFilter = setsTypeFilter
-                viewModel.fetchLocalData()
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.SetsViewClear)) { _ in
+                resetToDefaults()
             }
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -99,10 +85,34 @@ struct SetsView: View {
             .navigationBarTitle("Sets")
     }
     
-    func search() {
+    private func search() {
         setsTypeFilter = nil
 
         viewModel.query = query
+        viewModel.typeFilter = setsTypeFilter
+        viewModel.fetchLocalData()
+    }
+    
+    private func fetchRemoteData() {
+        Task {
+            viewModel.sort = setsSort
+            viewModel.typeFilter = setsTypeFilter
+            try await viewModel.fetchRemoteData()
+        }
+    }
+    
+    private func sort() {
+        viewModel.sort = setsSort
+        viewModel.fetchLocalData()
+    }
+    
+    private func filterByType() {
+        viewModel.typeFilter = setsTypeFilter
+        viewModel.fetchLocalData()
+    }
+    
+    private func resetToDefaults() {
+        viewModel.sort = setsSort
         viewModel.typeFilter = setsTypeFilter
         viewModel.fetchLocalData()
     }

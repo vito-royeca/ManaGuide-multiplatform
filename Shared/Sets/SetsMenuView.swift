@@ -22,7 +22,7 @@ struct SetsMenuView: View {
         }
     }
     
-    var sortByMenu: some View {
+    private var sortByMenu: some View {
         Menu {
             ForEach(SetsViewSort.allCases, id:\.description) { sort in
                 Button(action: {
@@ -44,21 +44,8 @@ struct SetsMenuView: View {
         }
     }
     
-    var typeFilterMenu: some View {
+    private var typeFilterMenu: some View {
         Menu {
-            Button(action: {
-                setsTypeFilter = nil
-                NotificationCenter.default.post(name: NSNotification.SetsViewTypeFilter,
-                                                object: setsTypeFilter)
-            }) {
-                if setsTypeFilter == nil {
-                    Label(String.emdash,
-                          systemImage: "checkmark")
-                } else {
-                    Text(String.emdash)
-                }
-            }
-
             ForEach(viewModel.setTypes(), id: \.name) { setType in
                 Button(action: {
                     setsTypeFilter = setType.name
@@ -66,10 +53,10 @@ struct SetsMenuView: View {
                                                     object: setsTypeFilter)
                 }) {
                     if setsTypeFilter == setType.name {
-                        Label("\(setsTypeFilter ?? "")",
+                        Label("\(setsTypeFilter ?? String.emdash)",
                               systemImage: "checkmark")
                     } else {
-                        Text("\(setType.name ?? "")")
+                        Text("\(setType.name ?? String.emdash)")
                     }
                 }
             }
@@ -79,7 +66,7 @@ struct SetsMenuView: View {
         }
     }
     
-    var clearMenu: some View {
+    private var clearMenu: some View {
         Button(action: {
             setsSort = SetsViewSort.defaultValue
             setsTypeFilter = nil

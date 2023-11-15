@@ -26,7 +26,7 @@ struct CardsMenuView: View {
         }
     }
     
-    var sortByMenu: some View {
+    private var sortByMenu: some View {
         Menu {
             ForEach(CardsViewSort.allCases, id:\.description) { sort in
                 Button(action: {
@@ -48,21 +48,8 @@ struct CardsMenuView: View {
         }
     }
 
-    var rarityFilterMenu: some View {
+    private var rarityFilterMenu: some View {
         Menu {
-            Button(action: {
-                cardsRarityFilter = nil
-                NotificationCenter.default.post(name: NSNotification.CardsViewRarityFilter,
-                                                object: cardsRarityFilter)
-            }) {
-                if cardsRarityFilter == nil {
-                    Label(String.emdash,
-                          systemImage: "checkmark")
-                } else {
-                    Text(String.emdash)
-                }
-            }
-
             ForEach(viewModel.rarities(), id: \.name) { rarity in
                 Button(action: {
                     cardsRarityFilter = rarity.name
@@ -70,10 +57,10 @@ struct CardsMenuView: View {
                                                     object: cardsRarityFilter)
                 }) {
                     if cardsRarityFilter == rarity.name {
-                        Label("\(cardsRarityFilter ?? "")",
+                        Label("\(cardsRarityFilter ?? String.emdash)",
                               systemImage: "checkmark")
                     } else {
-                        Text("\(rarity.name ?? "")")
+                        Text("\(rarity.name ?? String.emdash)")
                     }
                 }
             }
@@ -83,21 +70,8 @@ struct CardsMenuView: View {
         }
     }
 
-    var typeFilterMenu: some View {
+    private var typeFilterMenu: some View {
         Menu {
-            Button(action: {
-                cardsTypeFilter = nil
-                NotificationCenter.default.post(name: NSNotification.CardsViewTypeFilter,
-                                                object: cardsTypeFilter)
-            }) {
-                if cardsTypeFilter == nil {
-                    Label(String.emdash,
-                          systemImage: "checkmark")
-                } else {
-                    Text(String.emdash)
-                }
-            }
-
             ForEach(viewModel.cardTypes(), id: \.name) { cardType in
                 Button(action: {
                     cardsTypeFilter = cardType.name
@@ -105,10 +79,10 @@ struct CardsMenuView: View {
                                                     object: cardsTypeFilter)
                 }) {
                     if cardsTypeFilter == cardType.name {
-                        Label("\(cardsTypeFilter ?? "")",
+                        Label("\(cardsTypeFilter ?? String.emdash)",
                               systemImage: "checkmark")
                     } else {
-                        Text("\(cardType.name ?? "")")
+                        Text("\(cardType.name ?? String.emdash)")
                     }
                 }
             }
@@ -118,15 +92,13 @@ struct CardsMenuView: View {
         }
     }
 
-    
-    
-    var viewAsMenu: some View {
+    private var viewAsMenu: some View {
         Menu {
             ForEach(CardsViewDisplay.allCases, id:\.description) { display in
                 Button(action: {
                     cardsDisplay = display
-                    NotificationCenter.default.post(name: NSNotification.CardsViewTypeFilter,
-                                                    object: cardsTypeFilter)
+                    NotificationCenter.default.post(name: NSNotification.CardsViewDisplay,
+                                                    object: cardsDisplay)
                 }) {
                     if cardsDisplay == display {
                         Label(cardsDisplay.description,
@@ -142,7 +114,7 @@ struct CardsMenuView: View {
         }
     }
     
-    var clearMenu: some View {
+    private var clearMenu: some View {
         Button(action: {
             cardsSort = CardsViewSort.defaultValue
             cardsRarityFilter = nil

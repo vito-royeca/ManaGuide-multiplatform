@@ -32,9 +32,7 @@ struct SetView: View {
                 BusyView()
             } else if viewModel.isFailed {
                 ErrorView {
-                    Task {
-                        try await viewModel.fetchRemoteData()
-                    }
+                    fetchRemoteData()
                 }
             } else {
                 ZStack {
@@ -46,17 +44,11 @@ struct SetView: View {
         }
         .onAppear {
             cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.4
-
-            Task {
-                viewModel.sort = cardsSort
-                viewModel.rarityFilter = cardsRarityFilter
-                viewModel.typeFilter = cardsTypeFilter
-                try await viewModel.fetchRemoteData()
-            }
+            fetchRemoteData()
         }
     }
     
-    var scalingHeaderView: some View {
+    private var scalingHeaderView: some View {
         ScalingHeaderScrollView {
             ZStack {
                 Color(UIColor.systemBackground).edgesIgnoringSafeArea(.all)
@@ -78,33 +70,19 @@ struct SetView: View {
         .height(min: 160,
                 max: 320)
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewSort)) { output in
-            if let sort = output.object as? CardsViewSort {
-                viewModel.sort = sort
-                viewModel.fetchLocalData()
-            }
+            cardsSort = output.object as? CardsViewSort ?? CardsViewSort.defaultValue
+            sort()
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewRarityFilter)) { output in
-            if let typeFilter = output.object as? String {
-                viewModel.rarityFilter = typeFilter
-            } else {
-                viewModel.rarityFilter = nil
-            }
-            viewModel.fetchLocalData()
+            cardsRarityFilter = output.object as? String ?? nil
+            filterByRarity()
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewTypeFilter)) { output in
-            if let typeFilter = output.object as? String {
-                viewModel.typeFilter = typeFilter
-            } else {
-                viewModel.typeFilter = nil
-            }
-            viewModel.fetchLocalData()
+            cardsTypeFilter = output.object as? String ?? nil
+            filterByType()
         }
-        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewClear)) { output in
-            viewModel.sort = cardsSort
-            viewModel.rarityFilter = cardsRarityFilter
-            viewModel.typeFilter = cardsTypeFilter
-            viewModel.display = cardsDisplay
-            viewModel.fetchLocalData()
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewClear)) { _ in
+            resetToDefaults()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
             cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.4
@@ -118,7 +96,7 @@ struct SetView: View {
         }
     }
 
-    var imageContentView: some View {
+    private var imageContentView: some View {
         let cardWidth = (UIScreen.main.bounds.size.width - 60 ) * cardsPerRow
         
         let columns = [
@@ -147,7 +125,7 @@ struct SetView: View {
         }
     }
 
-    var listContentView: some View {
+    private var listContentView: some View {
         ForEach(viewModel.sections, id: \.name) { section in
             Section(header: HStack {
                 Text(section.name)
@@ -185,6 +163,38 @@ struct SetView: View {
             Spacer()
         }
         .ignoresSafeArea()
+    }
+    
+    private func fetchRemoteData() {
+        Task {
+            viewModel.sort = cardsSort
+            viewModel.rarityFilter = cardsRarityFilter
+            viewModel.typeFilter = cardsTypeFilter
+            try await viewModel.fetchRemoteData()
+        }
+    }
+
+    private func sort() {
+        viewModel.sort = cardsSort
+        viewModel.fetchLocalData()
+    }
+
+    private func filterByRarity() {
+        viewModel.rarityFilter = cardsRarityFilter
+        viewModel.fetchLocalData()
+    }
+
+    private func filterByType() {
+        viewModel.typeFilter = cardsTypeFilter
+        viewModel.fetchLocalData()
+    }
+
+    private func resetToDefaults() {
+        viewModel.sort = cardsSort
+        viewModel.rarityFilter = cardsRarityFilter
+        viewModel.typeFilter = cardsTypeFilter
+        viewModel.display = cardsDisplay
+        viewModel.fetchLocalData()
     }
 }
 
