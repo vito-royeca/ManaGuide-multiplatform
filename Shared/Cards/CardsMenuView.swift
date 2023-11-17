@@ -8,86 +8,131 @@
 import SwiftUI
 
 struct CardsMenuView: View {
+    @EnvironmentObject private var viewModel: CardsViewModel
     @AppStorage("CardsViewSort") private var cardsSort = CardsViewSort.defaultValue
+    @AppStorage("CardsRarityFilter") private var cardsRarityFilter: String?
+    @AppStorage("CardsTypeFilter") private var cardsTypeFilter: String?
     @AppStorage("CardsViewDisplay") private var cardsDisplay = CardsViewDisplay.defaultValue
     
     var body: some View {
         Menu {
-            Menu {
+            sortByMenu
+            rarityFilterMenu
+            typeFilterMenu
+            viewAsMenu
+            clearMenu
+        } label: {
+            Image(systemName: "ellipsis.circle")
+        }
+    }
+    
+    private var sortByMenu: some View {
+        Menu {
+            ForEach(CardsViewSort.allCases, id:\.description) { sort in
                 Button(action: {
-                    cardsSort = .name
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
+                    cardsSort = sort
+                    NotificationCenter.default.post(name: NSNotification.CardsViewSort,
                                                     object: cardsSort)
                 }) {
-                    if cardsSort == .name {
-                        Label("Name",
+                    if cardsSort == sort {
+                        Label(cardsSort.description,
                               systemImage: "checkmark")
                     } else {
-                        Text("Name")
+                        Text(sort.description)
                     }
                 }
-                Button(action: {
-                    cardsSort = .collectorNumber
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
-                                                    object: cardsSort)
-                }) {
-                    if cardsSort == .collectorNumber {
-                        Label("Collector Number",
-                              systemImage: "checkmark")
-                    } else {
-                        Text("Collector Number")
-                    }
-                }
-                Button(action: {
-                    cardsSort = .rarity
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
-                                                    object: cardsSort)
-                }) {
-                    if cardsSort == .rarity {
-                        Label("Rarity",
-                              systemImage: "checkmark")
-                    } else {
-                        Text("Rarity")
-                    }
-                }
-                Button(action: {
-                    cardsSort = .type
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
-                                                    object: cardsSort)
-                }) {
-                    if cardsSort == .type {
-                        Label("Type",
-                              systemImage: "checkmark")
-                    } else {
-                        Text("Type")
-                    }
-                }
-            } label: {
-                Text("Sort by")
-            }
-
-            Menu {
-                Button(action: {
-                    cardsDisplay = .image
-                }) {
-                    Label("Image",
-                          systemImage: cardsDisplay == .image ? "photo.circle.fill" : "photo")
-                }
-                Button(action: {
-                    cardsDisplay = .list
-                }) {
-                    Label("List",
-                          systemImage: cardsDisplay == .list ? "list.bullet.circle.fill": "list.bullet")
-                }
-            } label: {
-                Text("View as")
             }
         } label: {
-            Image(systemName: "ellipsis")
+            Label("Sort by\n\(cardsSort.description)",
+                  systemImage: "arrow.up.arrow.down")
+        }
+    }
+
+    private var rarityFilterMenu: some View {
+        Menu {
+            ForEach(viewModel.rarities(), id: \.name) { rarity in
+                Button(action: {
+                    cardsRarityFilter = rarity.name
+                    NotificationCenter.default.post(name: NSNotification.CardsViewRarityFilter,
+                                                    object: cardsRarityFilter)
+                }) {
+                    if cardsRarityFilter == rarity.name {
+                        Label("\(cardsRarityFilter ?? String.emdash)",
+                              systemImage: "checkmark")
+                    } else {
+                        Text("\(rarity.name ?? String.emdash)")
+                    }
+                }
+            }
+        } label: {
+            Label("Filter by Rarity\n\(cardsRarityFilter ?? String.emdash)",
+                  systemImage: "doc.text.magnifyingglass")
+        }
+    }
+
+    private var typeFilterMenu: some View {
+        Menu {
+            ForEach(viewModel.cardTypes(), id: \.name) { cardType in
+                Button(action: {
+                    cardsTypeFilter = cardType.name
+                    NotificationCenter.default.post(name: NSNotification.CardsViewTypeFilter,
+                                                    object: cardsTypeFilter)
+                }) {
+                    if cardsTypeFilter == cardType.name {
+                        Label("\(cardsTypeFilter ?? String.emdash)",
+                              systemImage: "checkmark")
+                    } else {
+                        Text("\(cardType.name ?? String.emdash)")
+                    }
+                }
+            }
+        } label: {
+            Label("Filter by Type\n\(cardsTypeFilter ?? String.emdash)",
+                  systemImage: "doc.text.magnifyingglass")
+        }
+    }
+
+    private var viewAsMenu: some View {
+        Menu {
+            ForEach(CardsViewDisplay.allCases, id:\.description) { display in
+                Button(action: {
+                    cardsDisplay = display
+                    NotificationCenter.default.post(name: NSNotification.CardsViewDisplay,
+                                                    object: cardsDisplay)
+                }) {
+                    if cardsDisplay == display {
+                        Label(cardsDisplay.description,
+                              systemImage: "checkmark")
+                    } else {
+                        Text(display.description)
+                    }
+                }
+            }
+        } label: {
+            Label("View as\n\(cardsDisplay.description)",
+                  systemImage: "eye")
+        }
+    }
+    
+    private var clearMenu: some View {
+        Button(action: {
+            cardsSort = CardsViewSort.defaultValue
+            cardsRarityFilter = nil
+            cardsTypeFilter = nil
+            cardsDisplay = CardsViewDisplay.defaultValue
+            NotificationCenter.default.post(name: NSNotification.CardsViewClear,
+                                            object: nil)
+        }) {
+            Label("Reset to defaults",
+                  systemImage: "clear")
         }
     }
 }
 
+
 #Preview {
-    CardsMenuView()
+    let viewModel = CardsViewModel()
+
+    return CardsMenuView()
+        .environmentObject(viewModel)
 }

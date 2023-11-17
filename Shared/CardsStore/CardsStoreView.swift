@@ -67,7 +67,7 @@ struct CardsStoreView: View {
                         .foregroundColor(.accentColor)
                 }
             }
-            .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsStoreViewSort)) { (output) in
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewSort)) { (output) in
                 cardsViewModel.fetchLocalData()
             }
     }
@@ -79,31 +79,25 @@ struct CardsStoreView: View {
                 .default(Text("\(sort == .name ? "\u{2713}" : "") Name")) {
                     sort = .name
                     cardsViewModel.sort = .name
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
+                    NotificationCenter.default.post(name: NSNotification.CardsViewSort,
                                                     object: nil)
                 },
                 .default(Text("\(sort == .rarity ? "\u{2713}" : "") Rarity")) {
                     sort = .rarity
                     cardsViewModel.sort = .rarity
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
+                    NotificationCenter.default.post(name: NSNotification.CardsViewSort,
                                                     object: nil)
                 },
                 .default(Text("\(sort == .type ? "\u{2713}" : "") Type")) {
                     sort = .type
                     cardsViewModel.sort = .type
-                    NotificationCenter.default.post(name: NSNotification.CardsStoreViewSort,
+                    NotificationCenter.default.post(name: NSNotification.CardsViewSort,
                                                     object: nil)
                 },
                 .cancel(Text("Cancel"))
             ]
         )
     }
-}
-
-// MARK: - NSNotifications
-
-extension NSNotification {
-    static let CardsStoreViewSort = Notification.Name.init("CardsStoreViewSort")
 }
 
 // MARK: - Previews

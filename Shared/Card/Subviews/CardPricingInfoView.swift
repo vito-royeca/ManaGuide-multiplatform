@@ -44,11 +44,11 @@ struct CardPricingRowView: View {
 //                .font(.headline)
             Spacer()
             VStack(alignment: .trailing) {
-                Text("Normal \(normal > 0 ? String(format: "$%.2f", normal) : "\u{2014}")")
+                Text("Normal \(normal > 0 ? String(format: "$%.2f", normal) : String.emdash)")
 //                    .font(.subheadline)
                     .foregroundColor(Color.blue)
 //                Spacer()
-                Text("Foil \(foil > 0 ? String(format: "$%.2f", foil) : "\u{2014}")")
+                Text("Foil \(foil > 0 ? String(format: "$%.2f", foil) : String.emdash)")
 //                    .font(.subheadline)
                     .foregroundColor(Color.green)
             }

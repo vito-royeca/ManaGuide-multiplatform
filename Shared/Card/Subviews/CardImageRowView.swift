@@ -12,9 +12,30 @@ struct CardImageRowView: View {
     @State var degrees : Double = 0
     @State var url : URL?
     let card: MGCard
-    
+    var showPrice = false
+
     var body: some View {
-        VStack(alignment: .center, spacing: 2) {
+        VStack {
+            ZStack {
+                imageView
+                VStack {
+                    Spacer()
+                    CardImageRowButtonView(card: card,
+                                           degrees: $degrees,
+                                           url: $url)
+                }
+            }
+            if showPrice {
+                priceView
+            }
+        }
+            .onAppear {
+                url = card.imageURL(for: .png)
+            }
+    }
+    
+    private var imageView: some View {
+        VStack {
             let imageView = CacheAsyncImage(url: url) { phase in
                 if let image = phase.image {
                     image
@@ -28,7 +49,7 @@ struct CardImageRowView: View {
                         .clipped()
                 }
             }
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
             
             if card.layout?.name == "Flip" ||
                 card.layout?.name == "Planar" ||
@@ -36,24 +57,43 @@ struct CardImageRowView: View {
                 imageView
                     .rotationEffect(Angle(degrees: degrees))
             } else if card.layout?.name == "Art Series" ||
-                card.layout?.name == "Double Faced Token" ||
-                card.layout?.name == "Modal Dfc" ||
-                card.layout?.name == "Reversible Card" ||
-                card.layout?.name == "Transform" {
+                        card.layout?.name == "Double Faced Token" ||
+                        card.layout?.name == "Modal Dfc" ||
+                        card.layout?.name == "Reversible Card" ||
+                        card.layout?.name == "Transform" {
                 imageView
                     .rotation3DEffect(.degrees(degrees),
                                       axis: (x: 0, y: 0, z: 0))
             } else {
                 imageView
             }
-
-            CardImageRowButtonView(card: card,
-                                   degrees: $degrees,
-                                   url: $url)
         }
-            .onAppear {
-                url = card.imageURL(for: .png)
-            }        
+    }
+
+    private var priceView: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("Normal")
+                    .font(.footnote)
+                    .foregroundColor(Color.blue)
+                Spacer()
+                Text(card.displayNormalPrice)
+                    .font(.footnote)
+                    .foregroundColor(Color.blue)
+                    .multilineTextAlignment(.trailing)
+            }
+            HStack {
+                Text("Foil")
+                    .font(.footnote)
+                    .foregroundColor(Color.green)
+                Spacer()
+                Text(card.displayFoilPrice)
+                    .font(.footnote)
+                    .foregroundColor(Color.green)
+                    .multilineTextAlignment(.trailing)
+            }
+        }
+        .padding(.horizontal, 10)
     }
 }
 

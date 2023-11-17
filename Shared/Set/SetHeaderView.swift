@@ -16,20 +16,8 @@ struct SetHeaderView: View {
         ZStack {
             VStack {
                 if let set = viewModel.setObject {
-                    if let logoUrl = set.bigLogoURL {
-                        CacheAsyncImage(url: logoUrl) { phase in
-                            if let image = phase.image {
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .clipped()
-                            } else {
-                                EmptyView()
-                            }
-                        }
-                        .frame(maxHeight: 100)
-                    }
-                    SetRowView(set: set)
+                    SetRowView(set: set,
+                               style: .header)
                 }
                 languageButtonsView
             }

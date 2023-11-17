@@ -35,9 +35,7 @@ struct CardView: View {
                 BusyView()
             } else if viewModel.isFailed {
                 ErrorView {
-                    Task {
-                        try await viewModel.fetchRemoteData()
-                    }
+                    fetchRemoteData()
                 }
             } else {
                 #if os(iOS)
@@ -52,13 +50,11 @@ struct CardView: View {
             }
         }
         .onAppear {
-            Task {
-                try await viewModel.fetchRemoteData()
-            }
+            fetchRemoteData()
         }
     }
     
-    var compactView: some View {
+    private var compactView: some View {
         GeometryReader { proxy in
             if let cardObject = viewModel.cardObject {
                 List {
@@ -111,7 +107,7 @@ struct CardView: View {
         }
     }
     
-    var regularView: some View {
+    private var regularView: some View {
         GeometryReader { proxy in
             if let card = viewModel.card,
                let cardObject = viewModel.find(MGCard.self, id: card) {
@@ -169,7 +165,7 @@ struct CardView: View {
         }
     }
 
-    func carouselView(card: NSManagedObjectID, width: CGFloat, height: CGFloat) -> some View {
+    private func carouselView(card: NSManagedObjectID, width: CGFloat, height: CGFloat) -> some View {
         Pager(page: Page.withIndex(viewModel.relatedCards.firstIndex(of: card) ?? 0),
               data: viewModel.relatedCards.isEmpty ? [card] : viewModel.relatedCards) { card in
             if let cardObject = viewModel.find(MGCard.self,
@@ -183,9 +179,7 @@ struct CardView: View {
                 if let cardObject = viewModel.find(MGCard.self,
                                                    id: card) {
                     viewModel.newID = cardObject.newIDCopy
-                    Task {
-                        try await viewModel.fetchRemoteData()
-                    }
+                    fetchRemoteData()
                 }
             })
             .itemSpacing(0.9)
@@ -195,7 +189,7 @@ struct CardView: View {
             .frame(height: height)
     }
     
-    var activityView: some View {
+    private var activityView: some View {
         var itemSources = [UIActivityItemSource]()
         
         if let card = viewModel.card,
@@ -212,7 +206,7 @@ struct CardView: View {
             }
     }
     
-    func shareAction() {
+    private func shareAction() {
         guard let card = viewModel.card,
            let cardObject = viewModel.find(MGCard.self,
                                            id: card) else {
@@ -229,6 +223,12 @@ struct CardView: View {
         let window = connectedScenes.first?.windows.first { $0.isKeyWindow }
 
         window?.rootViewController?.present(activityVC, animated: true, completion: nil)
+    }
+    
+    private func fetchRemoteData() {
+        Task {
+            try await viewModel.fetchRemoteData()
+        }
     }
 }
 

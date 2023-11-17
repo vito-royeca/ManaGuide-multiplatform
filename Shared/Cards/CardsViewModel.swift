@@ -11,19 +11,45 @@ import ManaKit
 
 // MARK: - Settings
 
-enum CardsViewSort: String {
+enum CardsViewSort: String, CaseIterable {
     case name,
          collectorNumber,
          rarity,
          type
     
+    var description: String {
+        get {
+            switch self {
+            case .name:
+                "Name"
+            case .collectorNumber:
+                "Collector Number"
+            case .rarity:
+                "Rarity"
+            case .type:
+                "Type"
+            }
+        }
+    }
+
     static let defaultValue: CardsViewSort = .name
 }
 
-enum CardsViewDisplay: String {
+enum CardsViewDisplay: String, CaseIterable {
     case image,
          list
     
+    var description: String {
+        get {
+            switch self {
+            case .image:
+                "Image"
+            case .list:
+                "List"
+            }
+        }
+    }
+
     static let defaultValue: CardsViewDisplay = .image
 }
 
@@ -35,7 +61,9 @@ class CardsViewModel: ViewModel {
 
     @Published var sort: CardsViewSort = .name
     @Published var display: CardsViewDisplay = .list
-    
+    var rarityFilter: String?
+    var typeFilter: String?
+
     override var sortDescriptors: [NSSortDescriptor] {
         get {
             var sortDescriptors = [NSSortDescriptor]()
@@ -88,5 +116,28 @@ class CardsViewModel: ViewModel {
             
             return keyPath
         }
+    }
+}
+
+extension CardsViewModel {
+    func cardTypes() -> [MGCardType] {
+        let predicate = NSPredicate(format: "parent = nil")
+        let types = ManaKit.shared.find(MGCardType.self,
+                                        properties: nil,
+                                        predicate: predicate,
+                                        sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)],
+                                        createIfNotFound: false,
+                                        context: ManaKit.shared.viewContext)  ?? []
+        return types
+    }
+    
+    func rarities() -> [MGRarity] {
+        let rarities = ManaKit.shared.find(MGRarity.self,
+                                        properties: nil,
+                                        predicate: nil,
+                                        sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)],
+                                        createIfNotFound: false,
+                                        context: ManaKit.shared.viewContext)  ?? []
+        return rarities
     }
 }

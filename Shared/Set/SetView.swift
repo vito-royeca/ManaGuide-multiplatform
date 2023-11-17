@@ -12,6 +12,8 @@ import ScalingHeaderScrollView
 struct SetView: View {
     @Environment(\.presentationMode) var presentationMode
     @AppStorage("CardsViewSort") private var cardsSort = CardsViewSort.defaultValue
+    @AppStorage("CardsRarityFilter") private var cardsRarityFilter: String?
+    @AppStorage("CardsTypeFilter") private var cardsTypeFilter: String?
     @AppStorage("CardsViewDisplay") private var cardsDisplay = CardsViewDisplay.defaultValue
     @StateObject var viewModel: SetViewModel
     @State private var progress: CGFloat = 0
@@ -30,9 +32,7 @@ struct SetView: View {
                 BusyView()
             } else if viewModel.isFailed {
                 ErrorView {
-                    Task {
-                        try await viewModel.fetchRemoteData()
-                    }
+                    fetchRemoteData()
                 }
             } else {
                 ZStack {
@@ -43,23 +43,18 @@ struct SetView: View {
             }
         }
         .onAppear {
-            cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.3
-
-            Task {
-                viewModel.sort = cardsSort
-                try await viewModel.fetchRemoteData()
-            }
+            cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.4
+            fetchRemoteData()
         }
     }
     
-    var scalingHeaderView: some View {
+    private var scalingHeaderView: some View {
         ScalingHeaderScrollView {
             ZStack {
                 Color(UIColor.systemBackground).edgesIgnoringSafeArea(.all)
                 SetHeaderView(viewModel: viewModel,
                               progress: $progress)
-                    .frame(height: 200)
-                    .padding(.top, 50)
+                    .padding(.top, 80)
             }
         } content: {
             if cardsDisplay == .image {
@@ -72,14 +67,25 @@ struct SetView: View {
         }
         .collapseProgress($progress)
         .allowsHeaderCollapse()
-        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsStoreViewSort)) { output in
-            if let sort = output.object as? CardsViewSort {
-                viewModel.sort = sort
-                viewModel.fetchLocalData()
-            }
+        .height(min: 160,
+                max: 320)
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewSort)) { output in
+            cardsSort = output.object as? CardsViewSort ?? CardsViewSort.defaultValue
+            sort()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewRarityFilter)) { output in
+            cardsRarityFilter = output.object as? String ?? nil
+            filterByRarity()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewTypeFilter)) { output in
+            cardsTypeFilter = output.object as? String ?? nil
+            filterByType()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewClear)) { _ in
+            resetToDefaults()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-            cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.3
+            cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.4
         }
         .sheet(item: $selectedCard) { card in
             NavigationView {
@@ -90,46 +96,48 @@ struct SetView: View {
         }
     }
 
-    var imageContentView: some View {
-//        let cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.3
+    private var imageContentView: some View {
         let cardWidth = (UIScreen.main.bounds.size.width - 60 ) * cardsPerRow
         
-        let cards = viewModel.dataArray(MGCard.self)
         let columns = [
             GridItem(.adaptive(minimum: cardWidth))
         ]
         
         return LazyVGrid(columns: columns,
-                     spacing: 20) {
-            ForEach(cards, id: \.self) { card in
-                CacheAsyncImage(url: card.imageURL(for: .png)) { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .clipped()
-                    } else {
-                        Image(uiImage: ManaKit.shared.image(name: .cardBack)!)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .clipped()
+                         spacing: 20,
+                         pinnedViews: [.sectionHeaders]) {
+            ForEach(viewModel.sections, id: \.name) { section in
+                Section(header: HStack {
+                    Text(section.name)
+                    Spacer()
+                }) {
+                    ForEach(section.objects as? [MGCard] ?? [], id: \.newIDCopy) { card in
+                        VStack {
+                            CardImageRowView(card: card,
+                                             showPrice: true)
+                        }
+                        .onTapGesture {
+                            selectedCard = card
+                        }
                     }
-                }
-                .onTapGesture {
-                    selectedCard = card
                 }
             }
         }
     }
 
-    var listContentView: some View {
+    private var listContentView: some View {
         ForEach(viewModel.sections, id: \.name) { section in
-            ForEach(section.objects as? [MGCard] ?? []) { card in
-                CardsStoreLargeView(card: card)
-                    .padding(.bottom, 10)
-                    .onTapGesture {
-                        selectedCard = card
-                    }
+            Section(header: HStack {
+                Text(section.name)
+                Spacer()
+            }) {
+                ForEach(section.objects as? [MGCard] ?? [], id: \.newIDCopy) { card in
+                    CardsStoreLargeView(card: card)
+                        .padding(.bottom, 10)
+                        .onTapGesture {
+                            selectedCard = card
+                        }
+                }
             }
         }
     }
@@ -147,6 +155,7 @@ struct SetView: View {
                     .foregroundColor(.accentColor)
                 Spacer()
                 CardsMenuView()
+                    .environmentObject(viewModel as CardsViewModel)
                     .padding(.top, 50)
                     .padding(.trailing, 17)
                     .foregroundColor(.accentColor)
@@ -155,13 +164,46 @@ struct SetView: View {
         }
         .ignoresSafeArea()
     }
+    
+    private func fetchRemoteData() {
+        Task {
+            viewModel.sort = cardsSort
+            viewModel.rarityFilter = cardsRarityFilter
+            viewModel.typeFilter = cardsTypeFilter
+            try await viewModel.fetchRemoteData()
+            try await viewModel.fetchAllCards()
+        }
+    }
+
+    private func sort() {
+        viewModel.sort = cardsSort
+        viewModel.fetchLocalData()
+    }
+
+    private func filterByRarity() {
+        viewModel.rarityFilter = cardsRarityFilter
+        viewModel.fetchLocalData()
+    }
+
+    private func filterByType() {
+        viewModel.typeFilter = cardsTypeFilter
+        viewModel.fetchLocalData()
+    }
+
+    private func resetToDefaults() {
+        viewModel.sort = cardsSort
+        viewModel.rarityFilter = cardsRarityFilter
+        viewModel.typeFilter = cardsTypeFilter
+        viewModel.display = cardsDisplay
+        viewModel.fetchLocalData()
+    }
 }
 
 // MARK: - Previews
 
 #Preview {
     NavigationView {
-        SetView(setCode: "isd", languageCode: "en")
+        SetView(setCode: "ugl", languageCode: "en")
     }
         .previewInterfaceOrientation(.landscapeLeft)
 }
