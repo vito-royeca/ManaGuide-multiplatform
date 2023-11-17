@@ -171,6 +171,7 @@ struct SetView: View {
             viewModel.rarityFilter = cardsRarityFilter
             viewModel.typeFilter = cardsTypeFilter
             try await viewModel.fetchRemoteData()
+            try await viewModel.fetchAllCards()
         }
     }
 

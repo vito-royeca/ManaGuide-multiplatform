@@ -249,6 +249,15 @@ extension SetViewModel {
                                   createIfNotFound: false)?.first?.objectID
     }
 
+    func fetchAllCards() async throws {
+        for card in cards {
+            if let cardObject = find(MGCard.self, id: card),
+               try ManaKit.shared.willFetchCard(newID: cardObject.newIDCopy) {
+                _ = try await ManaKit.shared.fetchCard(newID: cardObject.newIDCopy)
+            }
+        }
+    }
+
     var setObject: MGSet? {
         get {
             if let set = set {

@@ -18,7 +18,7 @@ class CardViewModel: ViewModel {
     var newID: String
     var relatedCards: [NSManagedObjectID]
     var dataAPI: API
-    
+
     // MARK: - Initializers
     
     init(newID: String,
@@ -82,27 +82,6 @@ extension CardViewModel {
             }
         }
     }
-    
-    // TODO: implement this
-//    func fetchAdjacentCards(number: Int) {
-//        guard let card = card,
-//           let index = relatedCards.firstIndex(of: card) else {
-//            return
-//        }
-//
-//        var adjacentCards = [MGCard]()
-//        let lowBounds = 0
-//        let highBounds = 0
-//        // TODO: calculate the related cards from number
-//        
-//        for adjacentCard in adjacentCards {
-//            if dataAPI.willFetchCard(newID: adjacentCard.newID) {
-//                dataAPI.fetchCard(newID: adjacentCard.newID) { _ in
-//                    
-//                }
-//            }
-//        }
-//    }
 }
 
 // MARK: - Legacy Code

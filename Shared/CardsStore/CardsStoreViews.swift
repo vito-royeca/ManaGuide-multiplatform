@@ -82,55 +82,62 @@ struct CardsStoreFeatureView: View {
 }
 
 struct CardsStoreLargeView: View {
-    @State var card: MGCard
+    let card: MGCard
     
     var body: some View {
         HStack(alignment: .top) {
-            CacheAsyncImage(url: card.imageURL(for: .artCrop)) { phase in
-                if let image = phase.image {
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .clipped()
-                } else {
-                    Image(uiImage: ManaKit.shared.image(name: .cropBack)!)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .clipped()
-                }
+            imageView
+            infoView
+            Spacer()
+        }
+    }
+
+    private var imageView: some View {
+        CacheAsyncImage(url: card.imageURL(for: .artCrop)) { phase in
+            if let image = phase.image {
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .clipped()
+            } else {
+                Image(uiImage: ManaKit.shared.image(name: .cropBack)!)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .clipped()
             }
-            .frame(width: 80,
-                   height: 80)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            
-            VStack(alignment: .leading) {
-                ZStack {
-                    HStack {
-                        let font = card.nameFont
-                        Text(card.displayName ?? "")
-                            .font(Font.custom(font.name, size: font.size))
-                        Spacer()
-                    }
-                    
-                    // FIXME: Abnormal number of gesture recognizer dependencies: 100. System performance may be affected. Please investigate reducing gesture recognizers and/or their dependencies.
+        }
+        .frame(width: 80,
+               height: 80)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+
+    private var infoView: some View {
+        VStack(alignment: .leading) {
+            ZStack {
+                HStack {
+                    let font = card.nameFont
+                    Text(card.displayName ?? "")
+                        .font(Font.custom(font.name, size: font.size))
+                    Spacer()
+                }
+                
+                // FIXME: Abnormal number of gesture recognizer dependencies: 100. System performance may be affected. Please investigate reducing gesture recognizers and/or their dependencies.
 //                    AttributedText(
 //                        NSAttributedString(symbol: card.displayManaCost,
 //                                           pointSize: 16)
 //                    )
 //                        .multilineTextAlignment(.trailing)
-                }
-                HStack {
-                    Text(card.displayKeyrune)
-                        .font(Font.custom("Keyrune", size: 20))
-                        .foregroundColor(Color(card.keyruneColor))
-                    Text("\u{2022} #\(card.collectorNumber ?? "") \u{2022} \(card.rarity?.name ?? "") \u{2022} \(card.language?.displayCode ?? "")")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                }
-                Spacer()
-                CardsStorePriceView(card: card)
+            }
+            HStack {
+                Text(card.displayKeyrune)
+                    .font(Font.custom("Keyrune", size: 20))
+                    .foregroundColor(Color(card.keyruneColor))
+                Text("\u{2022} #\(card.collectorNumber ?? "") \u{2022} \(card.rarity?.name ?? "") \u{2022} \(card.language?.displayCode ?? "")")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
             }
             Spacer()
+            CardsStorePriceView(card: card)
         }
     }
 }

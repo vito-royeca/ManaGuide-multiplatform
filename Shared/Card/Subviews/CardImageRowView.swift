@@ -31,10 +31,10 @@ struct CardImageRowView: View {
         }
             .onAppear {
                 url = card.imageURL(for: .png)
-            }        
+            }
     }
     
-    var imageView: some View {
+    private var imageView: some View {
         VStack {
             let imageView = CacheAsyncImage(url: url) { phase in
                 if let image = phase.image {
@@ -70,7 +70,7 @@ struct CardImageRowView: View {
         }
     }
 
-    var priceView: some View {
+    private var priceView: some View {
         VStack(spacing: 0) {
             HStack {
                 Text("Normal")
