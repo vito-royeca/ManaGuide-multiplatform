@@ -41,16 +41,19 @@ struct SetsView: View {
                 search()
             }
     }
-    
+
+    // MARK: - Private variables
+
     private var bodyData: some View {
         List {
             ForEach(viewModel.sections, id: \.name) { section in
                 Section(header: Text(section.name)) {
-                    OutlineGroup(section.objects as? [MGSet] ?? [], children: \.sortedChildren) { set in
+                    OutlineGroup(section.objects as? [MGSet] ?? [],
+                                 children: \.sortedChildren) { set in
                         SetRowView(set: set,
                                    style: .listRow)
                             .onTapGesture {
-                                selectedSet = set
+                                select(set: set)
                             }
                     }
                 }
@@ -66,12 +69,10 @@ struct SetsView: View {
             .modifier(SectionIndex(sections: viewModel.sections,
                                    sectionIndexTitles: viewModel.sectionIndexTitles))
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.SetsViewSort)) { output in
-                setsSort = output.object as? SetsViewSort ?? SetsViewSort.defaultValue
-                sort()
+                sortBy(sorter: output.object as? SetsViewSort ?? SetsViewSort.defaultValue)
             }
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.SetsViewTypeFilter)) { output in
-                setsTypeFilter = output.object as? String ?? nil
-                filterByType()
+                filterBy(type: output.object as? String ?? nil)
             }
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.SetsViewClear)) { _ in
                 resetToDefaults()
@@ -84,7 +85,9 @@ struct SetsView: View {
             }
             .navigationBarTitle("Sets")
     }
-    
+
+    // MARK: - Private methods
+
     private func search() {
         setsTypeFilter = nil
 
@@ -101,13 +104,19 @@ struct SetsView: View {
         }
     }
     
-    private func sort() {
-        viewModel.sort = setsSort
+    private func select(set: MGSet) {
+        selectedSet = set
+    }
+
+    private func sortBy(sorter: SetsViewSort) {
+        setsSort = sorter
+        viewModel.sort = sorter
         viewModel.fetchLocalData()
     }
     
-    private func filterByType() {
-        viewModel.typeFilter = setsTypeFilter
+    private func filterBy(type: String?) {
+        setsTypeFilter = type
+        viewModel.typeFilter = type
         viewModel.fetchLocalData()
     }
     

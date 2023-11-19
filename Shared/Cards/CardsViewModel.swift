@@ -126,7 +126,7 @@ extension CardsViewModel {
                                         properties: nil,
                                         predicate: predicate,
                                         sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)],
-                                        createIfNotFound: false,
+                                        createIfNotFound: true,
                                         context: ManaKit.shared.viewContext)  ?? []
         return types
     }
@@ -136,7 +136,7 @@ extension CardsViewModel {
                                         properties: nil,
                                         predicate: nil,
                                         sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)],
-                                        createIfNotFound: false,
+                                        createIfNotFound: true,
                                         context: ManaKit.shared.viewContext)  ?? []
         return rarities
     }

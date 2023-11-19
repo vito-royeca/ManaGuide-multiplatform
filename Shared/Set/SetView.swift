@@ -15,6 +15,7 @@ struct SetView: View {
     @AppStorage("CardsRarityFilter") private var cardsRarityFilter: String?
     @AppStorage("CardsTypeFilter") private var cardsTypeFilter: String?
     @AppStorage("CardsViewDisplay") private var cardsDisplay = CardsViewDisplay.defaultValue
+
     @StateObject var viewModel: SetViewModel
     @State private var progress: CGFloat = 0
     @State private var showingSort = false
@@ -43,11 +44,13 @@ struct SetView: View {
             }
         }
         .onAppear {
-            cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.4
+            updateCardsPerRow()
             fetchRemoteData()
         }
     }
     
+    // MARK: - Private variables
+
     private var scalingHeaderView: some View {
         ScalingHeaderScrollView {
             ZStack {
@@ -70,22 +73,19 @@ struct SetView: View {
         .height(min: 160,
                 max: 320)
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewSort)) { output in
-            cardsSort = output.object as? CardsViewSort ?? CardsViewSort.defaultValue
-            sort()
+            sortBy(sorter: output.object as? CardsViewSort ?? CardsViewSort.defaultValue)
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewRarityFilter)) { output in
-            cardsRarityFilter = output.object as? String ?? nil
-            filterByRarity()
+            filterBy(rarity: output.object as? String ?? nil)
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewTypeFilter)) { output in
-            cardsTypeFilter = output.object as? String ?? nil
-            filterByType()
+            filterBy(type: output.object as? String ?? nil)
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewClear)) { _ in
             resetToDefaults()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-            cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.4
+            updateCardsPerRow()
         }
         .sheet(item: $selectedCard) { card in
             NavigationView {
@@ -117,7 +117,7 @@ struct SetView: View {
                                              showPrice: true)
                         }
                         .onTapGesture {
-                            selectedCard = card
+                            select(card: card)
                         }
                     }
                 }
@@ -135,7 +135,7 @@ struct SetView: View {
                     CardsStoreLargeView(card: card)
                         .padding(.bottom, 10)
                         .onTapGesture {
-                            selectedCard = card
+                            select(card: card)
                         }
                 }
             }
@@ -164,29 +164,37 @@ struct SetView: View {
         }
         .ignoresSafeArea()
     }
-    
+
+    // MARK: - Private methods
+
     private func fetchRemoteData() {
         Task {
             viewModel.sort = cardsSort
             viewModel.rarityFilter = cardsRarityFilter
             viewModel.typeFilter = cardsTypeFilter
             try await viewModel.fetchRemoteData()
-            try await viewModel.fetchAllCards()
         }
     }
 
-    private func sort() {
-        viewModel.sort = cardsSort
+    private func select(card: MGCard) {
+        selectedCard = card
+    }
+
+    private func sortBy(sorter: CardsViewSort) {
+        cardsSort = sorter
+        viewModel.sort = sorter
         viewModel.fetchLocalData()
     }
 
-    private func filterByRarity() {
-        viewModel.rarityFilter = cardsRarityFilter
+    private func filterBy(rarity: String?) {
+        cardsRarityFilter = rarity
+        viewModel.rarityFilter = rarity
         viewModel.fetchLocalData()
     }
 
-    private func filterByType() {
-        viewModel.typeFilter = cardsTypeFilter
+    private func filterBy(type: String?) {
+        cardsTypeFilter = type
+        viewModel.typeFilter = type
         viewModel.fetchLocalData()
     }
 
@@ -196,6 +204,10 @@ struct SetView: View {
         viewModel.typeFilter = cardsTypeFilter
         viewModel.display = cardsDisplay
         viewModel.fetchLocalData()
+    }
+    
+    private func updateCardsPerRow() {
+        cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.4
     }
 }
 
