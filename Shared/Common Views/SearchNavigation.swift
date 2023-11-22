@@ -41,7 +41,7 @@ protocol SearchNavigationDelegate {
 }
 
 struct SearchNavigation<Content: View>: UIViewControllerRepresentable {
-    @Binding var query: String?
+    @Binding var query: String
     @Binding var scopeSelection: Int
     @Binding var isBusy: Bool
     var delegate: SearchNavigationDelegate?
@@ -89,7 +89,7 @@ struct SearchNavigation<Content: View>: UIViewControllerRepresentable {
     }
     
     class Coordinator: NSObject, UISearchBarDelegate {
-        @Binding var query: String?
+        @Binding var query: String
         @Binding var scopeSelection: Int
         @Binding var isBusy: Bool
         var delegate: SearchNavigationDelegate?
@@ -97,7 +97,7 @@ struct SearchNavigation<Content: View>: UIViewControllerRepresentable {
         let searchController = UISearchController(searchResultsController: nil)
         
         init(content: Content,
-             query: Binding<String?>,
+             query: Binding<String>,
              scopeSelection: Binding<Int>,
              isBusy: Binding<Bool>,
              delegate: SearchNavigationDelegate?) {
@@ -141,7 +141,7 @@ struct SearchNavigation<Content: View>: UIViewControllerRepresentable {
         }
         
         func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-            query = nil
+            query = ""
             scopeSelection = 0
             delegate?.cancel()
         }

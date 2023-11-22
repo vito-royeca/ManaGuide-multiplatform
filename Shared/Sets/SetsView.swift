@@ -16,8 +16,6 @@ struct SetsView: View {
     @AppStorage("SetsViewSort") private var setsSort = SetsViewSort.defaultValue
     @AppStorage("SetsTypeFilter") private var setsTypeFilter: String?
     @State private var showingSort = false
-    @State private var selectedSet: MGSet?
-    
     
     var body: some View {
         NavigationView {
@@ -28,7 +26,7 @@ struct SetsView: View {
                     fetchRemoteData()
                 }
             } else {
-                bodyData
+                contentView
             }
         }
             .onAppear {
@@ -44,28 +42,19 @@ struct SetsView: View {
 
     // MARK: - Private variables
 
-    private var bodyData: some View {
+    private var contentView: some View {
         List {
             ForEach(viewModel.sections, id: \.name) { section in
                 Section(header: Text(section.name)) {
                     OutlineGroup(section.objects as? [MGSet] ?? [],
                                  children: \.sortedChildren) { set in
-                        SetRowView(set: set,
-                                   style: .listRow)
-                            .onTapGesture {
-                                select(set: set)
-                            }
+                        
+                        rowView(for: set)
                     }
                 }
             }
         }
             .listStyle(.plain)
-            .fullScreenCover(item: $selectedSet) { set in
-                SetView(setCode: set.code, languageCode: "en")
-            }
-            .searchable(text: $query,
-                        placement: .navigationBarDrawer(displayMode: .automatic),
-                        prompt: "Search for Magic sets...")
             .modifier(SectionIndex(sections: viewModel.sections,
                                    sectionIndexTitles: viewModel.sectionIndexTitles))
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.SetsViewSort)) { output in
@@ -84,6 +73,24 @@ struct SetsView: View {
                 }
             }
             .navigationBarTitle("Sets")
+            .searchable(text: $query,
+                        placement: .navigationBarDrawer(displayMode: .automatic),
+                        prompt: "Search for Magic sets...")
+    }
+
+    private func rowView(for set: MGSet) -> some View {
+        let destinationView = SetView(setCode: set.code,
+                                      languageCode: "en")
+        let navigationLink = NavigationLink(destination: destinationView) {
+            EmptyView()
+        }
+        
+        return ZStack {
+            SetRowView(set: set,
+                       style: .listRow)
+            navigationLink
+                .opacity(0)
+        }
     }
 
     // MARK: - Private methods
@@ -104,10 +111,6 @@ struct SetsView: View {
         }
     }
     
-    private func select(set: MGSet) {
-        selectedSet = set
-    }
-
     private func sortBy(sorter: SetsViewSort) {
         setsSort = sorter
         viewModel.sort = sorter

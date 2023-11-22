@@ -241,6 +241,6 @@ struct CardToolbar: ToolbarContent {
                  relatedCards: [],
                  withCloseButton: true)
     }
-    .previewInterfaceOrientation(.portraitUpsideDown)
+    .previewInterfaceOrientation(.landscapeRight)
 }
 

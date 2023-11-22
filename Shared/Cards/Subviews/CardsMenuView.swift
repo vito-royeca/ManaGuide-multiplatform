@@ -14,11 +14,15 @@ struct CardsMenuView: View {
     @AppStorage("CardsTypeFilter") private var cardsTypeFilter: String?
     @AppStorage("CardsViewDisplay") private var cardsDisplay = CardsViewDisplay.defaultValue
     
+    var includeFilters = true
+
     var body: some View {
         Menu {
             sortByMenu
-            rarityFilterMenu
-            typeFilterMenu
+            if includeFilters {
+                rarityFilterMenu
+                typeFilterMenu
+            }
             viewAsMenu
             clearMenu
         } label: {

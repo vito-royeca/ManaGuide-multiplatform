@@ -14,16 +14,13 @@ class CardsSearchViewModel: CardsViewModel {
     // MARK: - Variables
 
     var dataAPI: API
-    var query: String?
-    var scopeSelection: Int
+    var query = ""
     private var frc: NSFetchedResultsController<MGCard>
     
     // MARK: - Initializers
 
     init(dataAPI: API = ManaKit.shared) {
         self.dataAPI = dataAPI
-        query = ""
-        scopeSelection = 0
         frc = NSFetchedResultsController()
         
         super.init()
@@ -46,7 +43,7 @@ class CardsSearchViewModel: CardsViewModel {
         }
         
         do {
-            _ = try await dataAPI.fetchCards(query: query!,
+            _ = try await dataAPI.fetchCards(query: query,
                                              sortDescriptors: sortDescriptors)
             DispatchQueue.main.async {
                 self.fetchLocalData()
@@ -65,7 +62,7 @@ class CardsSearchViewModel: CardsViewModel {
             return
         }
         
-        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(query: query!),
+        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(query: query),
                                          managedObjectContext: ManaKit.shared.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath,
                                          cacheName: nil)
@@ -97,7 +94,7 @@ class CardsSearchViewModel: CardsViewModel {
 
     func willFetch() -> Bool {
         let hasPredicate = frc.fetchRequest.predicate != nil
-        let hasQuery = query != nil && !query!.isEmpty
+        let hasQuery = !query.isEmpty
         var result = false
         
         if hasPredicate {
@@ -131,5 +128,15 @@ extension CardsSearchViewModel {
         request.predicate = predicate
 
         return request
+    }
+}
+
+extension CardsSearchViewModel {
+    var cards: [NSManagedObjectID] {
+        guard let array = frc.fetchedObjects else {
+            return []
+        }
+        
+        return array.map { $0.objectID }
     }
 }

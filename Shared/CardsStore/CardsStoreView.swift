@@ -39,7 +39,7 @@ struct CardsStoreView: View {
                     }
                 }
             } else {
-                bodyData
+                contentView
             }
         }
             .onAppear {
@@ -50,7 +50,7 @@ struct CardsStoreView: View {
             }
     }
     
-    var bodyData: some View {
+    private var contentView: some View {
         CardsStoreDataView(sort: sort,
                            setViewModel: setViewModel,
                            cardsViewModel: cardsViewModel)
@@ -72,7 +72,7 @@ struct CardsStoreView: View {
             }
     }
 
-    var sortActionSheet: ActionSheet {
+    private var sortActionSheet: ActionSheet {
         ActionSheet(
             title: Text("Sort by"),
             buttons: [

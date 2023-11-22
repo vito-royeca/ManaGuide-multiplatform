@@ -36,11 +36,11 @@ struct TabNavigationView: View {
                 }
                 .tag(TabItem.sets)
 
-            CardsView()
+            CardsSearchView()
                 .navigationViewStyle(.stack)
                 .tabItem {
-                    Image(systemName: "lanyardcard")
-                    Text("Cards")
+                    Image(systemName: "magnifyingglass")
+                    Text("Search")
                 }
                 .tag(TabItem.cards)
         }
