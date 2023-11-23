@@ -17,42 +17,77 @@ struct CardOtherInfoView: View {
     
     var body: some View {
         Group {
-            CardTextRowView(title: card.set?.name ?? " ", subtitle: "Set")
+            LabeledContent {
+                Text(card.set?.name ?? String.emdash)
+            } label: {
+                Text("Set")
+            }
             
-            HStack {
-                Text("Set Symbol")
-//                    .font(.headline)
-                Spacer()
+            LabeledContent {
                 Text(card.displayKeyrune)
                     .scaledToFit()
                     .font(Font.custom("Keyrune", size: 20))
                     .foregroundColor(Color(card.keyruneColor))
+            } label: {
+                Text("Set Symbol")
             }
             
-            CardTextRowView(title: card.rarity?.name ?? " ", subtitle: "Rarity")
+            LabeledContent {
+                Text(card.rarity?.name ?? String.emdash)
+            } label: {
+                Text("Rarity")
+            }
             
-            CardTextRowView(title: "#\(card.collectorNumber ?? " ")", subtitle: "Collector Number")
+            LabeledContent {
+                Text("#\(card.collectorNumber ?? String.emdash)")
+            } label: {
+                Text("Collector Number")
+            }
             
-            CardTextRowView(title: card.artist?.name ?? " ", subtitle: "Artist")
+            LabeledContent {
+                Text(card.artist?.name ?? String.emdash)
+            } label: {
+                Text("Artist")
+            }
             
             if let frame = card.frame {
-                CardTextRowView(title: frame.name ?? " ", subtitle: "Frame")
+                LabeledContent {
+                    Text(frame.name ?? String.emdash)
+                } label: {
+                    Text("Frame")
+                }
             }
 
             if let language = card.language {
-                CardTextRowView(title: language.name ?? " ", subtitle: "Language")
+                LabeledContent {
+                    Text(language.name ?? String.emdash)
+                } label: {
+                    Text("Language")
+                }
             }
             
             if let layout = card.layout {
-                CardTextRowView(title: layout.name ?? " ", subtitle: "Layout")
+                LabeledContent {
+                    Text(layout.name ?? String.emdash)
+                } label: {
+                    Text("Layout")
+                }
             }
 
             if let releaseDate = card.displayReleaseDate {
-                CardTextRowView(title: releaseDate, subtitle: "Release Date")
+                LabeledContent {
+                    Text(releaseDate)
+                } label: {
+                    Text("Release Date")
+                }
             }
             
             if let watermark = card.watermark {
-                CardTextRowView(title: watermark.name ?? " ", subtitle: "Watermark")
+                LabeledContent {
+                    Text(watermark.name ?? String.emdash)
+                } label: {
+                    Text("Watermark")
+                }
             }
         }
     }

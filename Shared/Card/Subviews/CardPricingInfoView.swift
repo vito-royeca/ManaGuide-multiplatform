@@ -39,19 +39,15 @@ struct CardPricingRowView: View {
     var foil: Double
     
     var body: some View {
-        HStack {
-            Text(title)
-//                .font(.headline)
-            Spacer()
+        LabeledContent {
             VStack(alignment: .trailing) {
                 Text("Normal \(normal > 0 ? String(format: "$%.2f", normal) : String.emdash)")
-//                    .font(.subheadline)
                     .foregroundColor(Color.blue)
-//                Spacer()
                 Text("Foil \(foil > 0 ? String(format: "$%.2f", foil) : String.emdash)")
-//                    .font(.subheadline)
                     .foregroundColor(Color.green)
             }
+        } label: {
+            Text(title)
         }
     }
 }

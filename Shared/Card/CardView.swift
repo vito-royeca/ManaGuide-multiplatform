@@ -56,7 +56,7 @@ struct CardView: View {
     private var compactView: some View {
         GeometryReader { proxy in
             if let cardObject = viewModel.cardObject {
-                List {
+                Form {
                     Section {
                         let height = proxy.size.height * 0.4
                         CardCarouselView(viewModel: viewModel,
@@ -110,7 +110,7 @@ struct CardView: View {
                 HStack(alignment: .top) {
                     let height = proxy.size.height * 0.7
                     
-                    List {
+                    Form {
                         CardCarouselView(viewModel: viewModel,
                                          height: height)
                         
@@ -121,7 +121,7 @@ struct CardView: View {
                         }
                     }
                 
-                    List {
+                    Form {
                         if let faces = cardObject.sortedFaces {
                             ForEach(faces) { face in
                                 Section {
@@ -237,7 +237,7 @@ struct CardToolbar: ToolbarContent {
 
 #Preview {
     return NavigationView {
-        CardView(newID: "rvr_en_273",
+        CardView(newID: "isd_en_51",
                  relatedCards: [],
                  withCloseButton: true)
     }

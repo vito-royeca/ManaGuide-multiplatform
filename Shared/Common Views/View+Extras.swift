@@ -15,7 +15,7 @@ extension View {
         let newAttributedString = NSMutableAttributedString(attributedString: attributedString)
         
         let range = NSRange(location: 0, length: newAttributedString.string.count)
-        let color = colorScheme == .dark ? UIColor.white : UIColor.black
+        let color = UIColor.systemGray //colorScheme == .dark ? UIColor.white : UIColor.black
         newAttributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: color, range: range)
         
         return newAttributedString

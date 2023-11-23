@@ -76,8 +76,11 @@ struct CardExtraInfoView: View {
                 DisclosureGroup("Legalities: \(formatLegalities.count)",
                                 isExpanded: $isLegalitiesExpanded) {
                     ForEach(formatLegalities) { formatLegality in
-                        CardTextRowView(title: formatLegality.format?.name ?? " ",
-                                        subtitle: formatLegality.legality?.name ?? " ")
+                        LabeledContent {
+                            Text(formatLegality.legality?.name ?? String.emdash)
+                        } label: {
+                            Text(formatLegality.format?.name ?? String.emdash)
+                        }
                     }
                 }
             }
@@ -98,16 +101,16 @@ struct CardExtraInfoView: View {
                 DisclosureGroup("Rulings: \(rulings.count)",
                                 isExpanded: $isRulingsExpanded) {
                     ForEach(rulings) { ruling in
-                        VStack(alignment: .leading) {
-                            Text(ruling.displayDatePublished ?? " ")
-                            Spacer()
+                        LabeledContent {
                             AttributedText(
                                 addColor(to: NSAttributedString(symbol: ruling.text ?? " ",
                                                                 pointSize: 16),
                                          colorScheme: colorScheme)
                             )
-                                .font(.subheadline)
+                        } label: {
+                            Text(ruling.displayDatePublished ?? " ")
                         }
+                        .labeledContentStyle(.vertical)
                     }
                 }
             }
@@ -154,6 +157,7 @@ struct CardExtraInfoView: View {
 // MARK: - ColorRowView
 
 struct ColorRowView: View {
+    @Environment(\.colorScheme) var colorScheme
     var title: String
     var colors: [MGColor]?
     private var colorSymbols: String?
@@ -164,20 +168,23 @@ struct ColorRowView: View {
         
         if let colors = colors {
             colorSymbols = colors.map{ "{CI_\($0.symbol ?? "")}" }.joined(separator: "")
+        } else {
+            colorSymbols = String.emdash
         }
     }
     
     var body: some View {
-        HStack {
-            Text(title)
-//                .font(.headline)
-            Spacer()
+        LabeledContent {
             if let colorSymbols = colorSymbols {
                 AttributedText(
-                    NSAttributedString(symbol: colorSymbols, pointSize: 16)
+                    addColor(to: NSAttributedString(symbol: colorSymbols,
+                                                    pointSize: 16),
+                             colorScheme: colorScheme)
                 )
                 .multilineTextAlignment(.trailing)
             }
+        } label: {
+            Text(title)
         }
     }
 }

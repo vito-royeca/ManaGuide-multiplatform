@@ -10,8 +10,6 @@ import ManaKit
 
 struct CardCommonInfoView: View {
     @Environment(\.colorScheme) var colorScheme
-    @State var isPrintedTextExpanded = false
-    @State var isOracleTextExpanded = false
     let cmcFormatter = NumberFormatter()
     var card: MGCard
     
@@ -24,84 +22,82 @@ struct CardCommonInfoView: View {
     }
     
     var body: some View {
-        HStack {
-            Text("Mana Cost")
-//                .font(.headline)
-            Spacer()
+        LabeledContent {
             AttributedText(
                 NSAttributedString(symbol: card.displayManaCost,
                                    pointSize: 16)
             )
-                .multilineTextAlignment(.trailing)
+            .multilineTextAlignment(.trailing)
+        } label: {
+            Text("Mana Cost")
         }
         
-        HStack {
-            Text("Converted Mana Cost")
-//                .font(.headline)
-            Spacer()
+        LabeledContent {
             Text(cmcFormatter.string(from: card.cmc as NSNumber) ?? " ")
-//                .font(.subheadline)
+        } label: {
+            Text("Converted Mana Cost")
         }
-        
-        HStack {
-            Text("Type")
-//                .font(.headline)
-            Spacer()
+
+        LabeledContent {
             Text(card.displayTypeLine ?? "")
-//                .font(.subheadline)
+        } label: {
+            Text("Type")
         }
-        
+
         if let displayPowerToughness = card.displayPowerToughness {
-            HStack {
-                Text("Power/Toughness")
-//                    .font(.headline)
-                Spacer()
+            LabeledContent {
                 Text(displayPowerToughness)
-//                    .font(.subheadline)
+            } label: {
+                Text("Power/Toughness")
             }
         }
         
         if let loyalty = card.loyalty,
            !loyalty.isEmpty {
-            HStack {
-                Text("Loyalty")
-//                    .font(.headline)
-                Spacer()
+            LabeledContent {
                 Text(loyalty)
-//                    .font(.subheadline)
+            } label: {
+                Text("Loyalty")
             }
         }
 
         if let printedText = card.printedText,
            !printedText.isEmpty {
-            DisclosureGroup("Printed Text", isExpanded: $isPrintedTextExpanded) {
+            LabeledContent {
                 AttributedText(
-                    addColor(to: NSAttributedString(symbol: printedText, pointSize: 16), colorScheme: colorScheme)
+                    addColor(to: NSAttributedString(symbol: printedText,
+                                                    pointSize: 16),
+                             colorScheme: colorScheme)
                 )
+            } label: {
+                Text("Printed Text")
             }
+            .labeledContentStyle(.vertical)
         }
 
         if let oracleText = card.oracleText,
            !oracleText.isEmpty {
-            DisclosureGroup("Oracle Text", isExpanded: $isOracleTextExpanded) {
+            LabeledContent {
                 AttributedText(
                     addColor(to: NSAttributedString(symbol: oracleText,
                                                     pointSize: 16),
                              colorScheme: colorScheme)
                 )
+            } label: {
+                Text("Oracle Text")
             }
+            .labeledContentStyle(.vertical)
         }
         
         if let flavorText = card.flavorText,
            !flavorText.isEmpty {
-            VStack(alignment: .leading) {
-                Text("Flavor Text")
-//                    .font(.headline)
-                Spacer()
+            LabeledContent {
                 Text(flavorText)
-//                    .font(.subheadline)
                     .italic()
+            } label: {
+                Text("Flavor Text")
             }
+            .labeledContentStyle(.vertical)
         }
     }
 }

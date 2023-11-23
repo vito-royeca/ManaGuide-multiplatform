@@ -19,16 +19,11 @@ struct CardsView: View {
     @State private var cardsPerRow = 0.5
 
     var body: some View {
-        VStack {
-            if cardsDisplay == .image {
-                CardsImageView(selectedCard: $selectedCard,
-                               cardsPerRow: $cardsPerRow)
-                .environmentObject(viewModel)
-                .padding(.horizontal, 10)
-            } else if cardsDisplay == .list {
-                CardsListView(selectedCard: $selectedCard)
-                    .environmentObject(viewModel)
-                    .padding(.horizontal, 10)
+        Group {
+            if cardsDisplay == .list {
+                listView
+            } else if cardsDisplay == .image {
+                imageView
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewSort)) { output in
@@ -49,6 +44,17 @@ struct CardsView: View {
         .onAppear {
             updateCardsPerRow()
         }
+    }
+
+    private var listView: some View {
+        CardsListView(selectedCard: $selectedCard)
+            .environmentObject(viewModel)
+    }
+    
+    private var imageView: some View {
+        CardsImageView(selectedCard: $selectedCard,
+                       cardsPerRow: $cardsPerRow)
+            .environmentObject(viewModel)
     }
 
     // MARK: - Private methods
