@@ -36,7 +36,7 @@ struct TabNavigationView: View {
                 }
                 .tag(TabItem.sets)
 
-            CardsSearchView()
+            CardsSearchFormView()
                 .navigationViewStyle(.stack)
                 .tabItem {
                     Image(systemName: "magnifyingglass")

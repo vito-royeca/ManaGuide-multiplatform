@@ -13,10 +13,22 @@ class CardsSearchViewModel: CardsViewModel {
     
     // MARK: - Variables
 
-    var dataAPI: API
-    var query = ""
+    private var dataAPI: API
     private var frc: NSFetchedResultsController<MGCard>
     
+    @Published var name = "" {
+        didSet {
+            updateWillFetch()
+        }
+    }
+    
+    @Published var colorsFilter = [MGColor]()
+    @Published var raritiesFilter = [MGRarity]()
+    @Published var typesFilter = [MGCardType]()
+    
+    @Published var willFetch = false
+    @Published var colors = [MGColor]()
+
     // MARK: - Initializers
 
     init(dataAPI: API = ManaKit.shared) {
@@ -29,25 +41,35 @@ class CardsSearchViewModel: CardsViewModel {
     // MARK: - Methods
 
     override func fetchRemoteData() async throws {
-        if !willFetch() {
-            return
-        }
-        
         guard !isBusy else {
             return
         }
 
-        DispatchQueue.main.async {
-            self.isBusy.toggle()
-            self.isFailed = false
-        }
-        
         do {
-            _ = try await dataAPI.fetchCards(query: query,
-                                             sortDescriptors: sortDescriptors)
-            DispatchQueue.main.async {
-                self.fetchLocalData()
-                self.isBusy.toggle()
+            if try dataAPI.willFetchCards(name: name,
+                                          colors: colorsFilter.compactMap { $0.symbol },
+                                          rarities: raritiesFilter.compactMap { $0.name },
+                                          types: typesFilter.compactMap { $0.name }) {
+                DispatchQueue.main.async {
+                    self.isBusy.toggle()
+                    self.isFailed = false
+                }
+                
+                _ = try await dataAPI.fetchCards(name: name,
+                                                 colors: colorsFilter.compactMap { $0.symbol },
+                                                 rarities: raritiesFilter.compactMap { $0.name },
+                                                 types: typesFilter.compactMap { $0.name },
+                                                 sortDescriptors: sortDescriptors)
+                
+                DispatchQueue.main.async {
+                    self.fetchLocalData()
+                    self.isBusy.toggle()
+                }
+                
+            } else {
+                DispatchQueue.main.async {
+                    self.fetchLocalData()
+                }
             }
         } catch {
             DispatchQueue.main.async {
@@ -58,11 +80,7 @@ class CardsSearchViewModel: CardsViewModel {
     }
     
     override func fetchLocalData() {
-        if !willFetch() {
-            return
-        }
-        
-        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(query: query),
+        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(name: name),
                                          managedObjectContext: ManaKit.shared.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath,
                                          cacheName: nil)
@@ -91,20 +109,6 @@ class CardsSearchViewModel: CardsViewModel {
             }
         }
     }
-
-    func willFetch() -> Bool {
-        let hasPredicate = frc.fetchRequest.predicate != nil
-        let hasQuery = !query.isEmpty
-        var result = false
-        
-        if hasPredicate {
-            result = true
-        } else {
-            result = hasQuery
-        }
-        
-        return result
-    }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
@@ -118,10 +122,35 @@ extension CardsSearchViewModel: NSFetchedResultsControllerDelegate {
 // MARK: - NSFetchRequest
 
 extension CardsSearchViewModel {
-    func defaultFetchRequest(query: String) -> NSFetchRequest<MGCard> {
-        let predicate = NSPredicate(format: "newID != nil AND newID != '' AND collectorNumber != nil AND language.code = %@ AND name CONTAINS[cd] %@",
-                                    "en",
-                                    query)
+    func defaultFetchRequest(name: String) -> NSFetchRequest<MGCard> {
+        let format = "newID != nil AND newID != '' AND collectorNumber != nil AND language.code = %@"
+        var predicate = NSPredicate(format: format,
+                                    "en")
+        
+        if !name.isEmpty {
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
+                                                                            NSPredicate(format: "name CONTAINS[cd] %@",
+                                                                                        name)
+            ])
+        }
+        if !colorsFilter.isEmpty {
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
+                                                                            NSPredicate(format: "ANY colors.symbol IN %@",
+                                                                                        colorsFilter.compactMap { $0.symbol })
+            ])
+        }
+        if !raritiesFilter.isEmpty {
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
+                                                                            NSPredicate(format: "rarity.name IN %@",
+                                                                                        raritiesFilter.compactMap { $0.name })
+            ])
+        }
+        if !typesFilter.isEmpty {
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
+                                                                            NSPredicate(format: "ANY supertypes.name IN %@",
+                                                                                        typesFilter.compactMap { $0.name })
+            ])
+        }
         
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
         request.sortDescriptors = sortDescriptors
@@ -138,5 +167,42 @@ extension CardsSearchViewModel {
         }
         
         return array.map { $0.objectID }
+    }
+    
+    override func fetchOtherData() async throws {
+        try await super.fetchOtherData()
+        
+        let sortDescriptors = [NSSortDescriptor(key: "name",
+                                                ascending: true)]
+        
+        if try ManaKit.shared.willFetchColors() {
+            _ = try await ManaKit.shared.fetchColors(sortDescriptors: sortDescriptors)
+        }
+        
+        DispatchQueue.main.async {
+            let newSortDescriptors = [NSSortDescriptor(key: "name",
+                                                       ascending: true)]
+            self.colors = ManaKit.shared.find(MGColor.self,
+                                         properties: nil,
+                                         predicate: nil,
+                                         sortDescriptors: newSortDescriptors,
+                                         createIfNotFound: false,
+                                         context: ManaKit.shared.viewContext)  ?? []
+        }
+    }
+    
+    func updateWillFetch() {
+        willFetch = (!name.isEmpty && name.count >= 4) ||
+            (colorsFilter.count +
+            raritiesFilter.count +
+            typesFilter.count) >= 2
+        
+    }
+    
+    func resetFilters() {
+        name = ""
+        colorsFilter = [MGColor]()
+        raritiesFilter = [MGRarity]()
+        typesFilter = [MGCardType]()
     }
 }

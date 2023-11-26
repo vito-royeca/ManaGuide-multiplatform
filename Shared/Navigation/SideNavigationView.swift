@@ -34,7 +34,7 @@ struct SideNavigationView: View {
                 }
                 
                 NavigationLink(tag: SideItem.cards, selection: $selection) {
-                    CardsSearchView()
+                    CardsSearchFormView()
                 } label: {
                     Label("Search", systemImage: "magnifyingglass")
                 }

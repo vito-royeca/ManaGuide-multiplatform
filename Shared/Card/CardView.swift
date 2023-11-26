@@ -237,7 +237,7 @@ struct CardToolbar: ToolbarContent {
 
 #Preview {
     return NavigationView {
-        CardView(newID: "isd_en_51",
+        CardView(newID: "ddh_en_17",
                  relatedCards: [],
                  withCloseButton: true)
     }

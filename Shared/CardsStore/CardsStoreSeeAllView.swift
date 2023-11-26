@@ -108,7 +108,7 @@ struct CardsStoreSeeAllView: View {
 
     Task {
         
-        model.query = "lion"
+        model.name = "lion"
         try await model.fetchRemoteData()
     }
 
