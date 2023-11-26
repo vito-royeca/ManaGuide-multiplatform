@@ -21,7 +21,7 @@ struct ManaGuideApp: App {
         
         FirebaseApp.configure()
 
-        ManaKit.shared.configure(apiURL: "http://managuideapp.com")
+        ManaKit.shared.configure(apiURL: "https://managuideapp.com")
         ManaKit.shared.setupResources()
         
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(Color.accentColor)

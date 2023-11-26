@@ -1,74 +1,107 @@
 //
 //  CardsView.swift
-//  ManaGuide
+//  ManaGuide (iOS)
 //
-//  Created by Vito Royeca on 3/24/22.
+//  Created by Vito Royeca on 11/19/23.
 //
-
-import SwiftUI
 
 import SwiftUI
 import ManaKit
 
 struct CardsView: View {
-    @StateObject var viewModel = CardsSearchViewModel()
-    @State var query: String?
-    @State var scopeSelection: Int = 0
-    
+    @EnvironmentObject var viewModel: CardsViewModel
+    @Binding var selectedCard: MGCard?
+
+    @AppStorage("CardsViewSort") private var cardsSort = CardsViewSort.defaultValue
+    @AppStorage("CardsRarityFilter") private var cardsRarityFilter: String?
+    @AppStorage("CardsTypeFilter") private var cardsTypeFilter: String?
+    @AppStorage("CardsViewDisplay") private var cardsDisplay = CardsViewDisplay.defaultValue
+    @State private var cardsPerRow = 0.5
+
     var body: some View {
-        SearchNavigation(query: $query,
-                         scopeSelection: $scopeSelection,
-                         isBusy: $viewModel.isBusy,
-                         delegate: self) {
-            CardsStoreView(setViewModel: nil,
-                           cardsViewModel: viewModel)
-                .navigationBarTitle("Cards")
+        Group {
+            if cardsDisplay == .list {
+                listView
+            } else if cardsDisplay == .image {
+                imageView
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewSort)) { output in
+            sortBy(sorter: output.object as? CardsViewSort ?? CardsViewSort.defaultValue)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewRarityFilter)) { output in
+            filterBy(rarity: output.object as? String ?? nil)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewTypeFilter)) { output in
+            filterBy(type: output.object as? String ?? nil)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.CardsViewClear)) { _ in
+            resetToDefaults()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+            updateCardsPerRow()
+        }
+        .onAppear {
+            updateCardsPerRow()
         }
     }
-}
 
-struct CardsView_Previews: PreviewProvider {
-    static var previews: some View {
-        CardsView()
-    }
-}
-
-// MARK: - SearchNavigation
-
-extension CardsView: SearchNavigationDelegate {
-    var options: [SearchNavigationOptionKey : Any]? {
-        return [
-            .automaticallyShowsSearchBar: true,
-            .obscuresBackgroundDuringPresentation: true,
-            .hidesNavigationBarDuringPresentation: true,
-            .hidesSearchBarWhenScrolling: false,
-            .placeholder: "Search for Magic cards...",
-            .showsBookmarkButton: false,
-//            .scopeButtonTitles: ["All", "Bookmarked", "Seen"],
-//            .scopeBarButtonTitleTextAttributes: [NSAttributedString.Key.font: UIFont.dckxRegularText],
-//            .searchTextFieldFont: UIFont.dckxRegularText
-         ]
+    private var listView: some View {
+        CardsListView(selectedCard: $selectedCard)
+            .environmentObject(viewModel)
     }
     
-    func search() {
-        guard let query = query,
-            query.count >= 3 else {
-            return
-        }
-        
-        viewModel.query = query
-        viewModel.scopeSelection = scopeSelection
+    private var imageView: some View {
+        CardsImageView(selectedCard: $selectedCard,
+                       cardsPerRow: $cardsPerRow)
+            .environmentObject(viewModel)
+    }
+
+    // MARK: - Private methods
+
+    private func fetchRemoteData() {
         Task {
+            viewModel.sort = cardsSort
+            viewModel.rarityFilter = cardsRarityFilter
+            viewModel.typeFilter = cardsTypeFilter
             try await viewModel.fetchRemoteData()
         }
     }
-    
-    func scope() {
-        
-    }
-    
-    func cancel() {
-        query =  nil
+
+    private func sortBy(sorter: CardsViewSort) {
+        cardsSort = sorter
+        viewModel.sort = sorter
         viewModel.fetchLocalData()
     }
+
+    private func filterBy(rarity: String?) {
+        cardsRarityFilter = rarity
+        viewModel.rarityFilter = rarity
+        viewModel.fetchLocalData()
+    }
+
+    private func filterBy(type: String?) {
+        cardsTypeFilter = type
+        viewModel.typeFilter = type
+        viewModel.fetchLocalData()
+    }
+
+    private func resetToDefaults() {
+        viewModel.sort = cardsSort
+        viewModel.rarityFilter = cardsRarityFilter
+        viewModel.typeFilter = cardsTypeFilter
+        viewModel.display = cardsDisplay
+        viewModel.fetchLocalData()
+    }
+
+    private func updateCardsPerRow() {
+        cardsPerRow = UIDevice.current.orientation == .portrait ? 0.5 : 0.4
+    }
+}
+
+#Preview {
+    let model = CardsViewModel()
+    
+    return CardsView(selectedCard: .constant(nil))
+        .environmentObject(model)
 }

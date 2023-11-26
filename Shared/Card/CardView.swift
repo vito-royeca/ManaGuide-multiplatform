@@ -8,7 +8,6 @@
 import CoreData
 import SwiftUI
 import ManaKit
-import SwiftUIPager
 import SwiftUIX
 
 struct CardView: View {
@@ -57,13 +56,11 @@ struct CardView: View {
     private var compactView: some View {
         GeometryReader { proxy in
             if let cardObject = viewModel.cardObject {
-                List {
+                Form {
                     Section {
-                        let width = proxy.size.width * 0.7
                         let height = proxy.size.height * 0.4
-                        carouselView(card: cardObject.objectID,
-                                     width: width,
-                                     height: height)
+                        CardCarouselView(viewModel: viewModel,
+                                         height: height)
                     }
                     
                     if let prices = cardObject.prices?.allObjects as? [MGCardPrice] {
@@ -101,8 +98,6 @@ struct CardView: View {
                     .sheet(isPresented: $isShowingShareSheet, content: {
                         activityView
                     })
-            } else {
-                EmptyView()
             }
         }
     }
@@ -113,13 +108,11 @@ struct CardView: View {
                let cardObject = viewModel.find(MGCard.self, id: card) {
                 
                 HStack(alignment: .top) {
-                    let width = proxy.size.width * 0.7
                     let height = proxy.size.height * 0.7
                     
-                    List {
-                        carouselView(card: card,
-                                     width: width,
-                                     height: height)
+                    Form {
+                        CardCarouselView(viewModel: viewModel,
+                                         height: height)
                         
                         if let prices = cardObject.prices?.allObjects as? [MGCardPrice] {
                             Section {
@@ -128,7 +121,7 @@ struct CardView: View {
                         }
                     }
                 
-                    List {
+                    Form {
                         if let faces = cardObject.sortedFaces {
                             ForEach(faces) { face in
                                 Section {
@@ -159,36 +152,10 @@ struct CardView: View {
                     .sheet(isPresented: $isShowingShareSheet) {
                         activityView
                     }
-            } else {
-                EmptyView()
             }
         }
     }
 
-    private func carouselView(card: NSManagedObjectID, width: CGFloat, height: CGFloat) -> some View {
-        Pager(page: Page.withIndex(viewModel.relatedCards.firstIndex(of: card) ?? 0),
-              data: viewModel.relatedCards.isEmpty ? [card] : viewModel.relatedCards) { card in
-            if let cardObject = viewModel.find(MGCard.self,
-                                               id: card) {
-                CardImageRowView(card: cardObject)
-            }
-        }
-            .onPageChanged({ pageNumber in
-                let card = viewModel.relatedCards[pageNumber]
-                
-                if let cardObject = viewModel.find(MGCard.self,
-                                                   id: card) {
-                    viewModel.newID = cardObject.newIDCopy
-                    fetchRemoteData()
-                }
-            })
-            .itemSpacing(0.9)
-            .itemAspectRatio(0.9)
-            .interactive(scale: 0.9)
-            .pagingPriority(.high)
-            .frame(height: height)
-    }
-    
     private var activityView: some View {
         var itemSources = [UIActivityItemSource]()
         
@@ -270,10 +237,10 @@ struct CardToolbar: ToolbarContent {
 
 #Preview {
     return NavigationView {
-        CardView(newID: "rvr_en_273",
+        CardView(newID: "ddh_en_17",
                  relatedCards: [],
-                 withCloseButton: false)
+                 withCloseButton: true)
     }
-    .previewInterfaceOrientation(.portraitUpsideDown)
+    .previewInterfaceOrientation(.landscapeRight)
 }
 

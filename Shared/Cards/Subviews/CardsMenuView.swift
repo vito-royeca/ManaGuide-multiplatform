@@ -14,15 +14,22 @@ struct CardsMenuView: View {
     @AppStorage("CardsTypeFilter") private var cardsTypeFilter: String?
     @AppStorage("CardsViewDisplay") private var cardsDisplay = CardsViewDisplay.defaultValue
     
+    var includeFilters = true
+
     var body: some View {
         Menu {
             sortByMenu
-            rarityFilterMenu
-            typeFilterMenu
+            if includeFilters {
+                rarityFilterMenu
+                typeFilterMenu
+            }
             viewAsMenu
             clearMenu
         } label: {
             Image(systemName: "ellipsis.circle")
+        }
+        .onAppear {
+            fetchRemoteData()
         }
     }
     
@@ -50,7 +57,20 @@ struct CardsMenuView: View {
 
     private var rarityFilterMenu: some View {
         Menu {
-            ForEach(viewModel.rarities(), id: \.name) { rarity in
+            Button(action: {
+                cardsRarityFilter = nil
+                NotificationCenter.default.post(name: NSNotification.CardsViewRarityFilter,
+                                                object: cardsRarityFilter)
+            }) {
+                if cardsRarityFilter == nil {
+                    Label(String.emdash,
+                          systemImage: "checkmark")
+                } else {
+                    Text(String.emdash)
+                }
+            }
+
+            ForEach(viewModel.rarities, id: \.name) { rarity in
                 Button(action: {
                     cardsRarityFilter = rarity.name
                     NotificationCenter.default.post(name: NSNotification.CardsViewRarityFilter,
@@ -72,7 +92,20 @@ struct CardsMenuView: View {
 
     private var typeFilterMenu: some View {
         Menu {
-            ForEach(viewModel.cardTypes(), id: \.name) { cardType in
+            Button(action: {
+                cardsTypeFilter = nil
+                NotificationCenter.default.post(name: NSNotification.CardsViewTypeFilter,
+                                                object: nil)
+            }) {
+                if cardsTypeFilter == nil {
+                    Label(String.emdash,
+                          systemImage: "checkmark")
+                } else {
+                    Text(String.emdash)
+                }
+            }
+            
+            ForEach(viewModel.cardTypes, id: \.name) { cardType in
                 Button(action: {
                     cardsTypeFilter = cardType.name
                     NotificationCenter.default.post(name: NSNotification.CardsViewTypeFilter,
@@ -125,6 +158,12 @@ struct CardsMenuView: View {
         }) {
             Label("Reset to defaults",
                   systemImage: "clear")
+        }
+    }
+    
+    private func fetchRemoteData() {
+        Task {
+            try await viewModel.fetchOtherData()
         }
     }
 }

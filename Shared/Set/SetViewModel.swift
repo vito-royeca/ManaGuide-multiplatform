@@ -215,8 +215,8 @@ extension SetViewModel {
 
         if let typeFilter = typeFilter {
             predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
-                                                                            NSPredicate(format: "type.name == %@",
-                                                                                        typeFilter)])
+                                                                            NSPredicate(format: "ANY supertypes.name IN %@",
+                                                                                        [typeFilter])])
         }
 
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
@@ -247,15 +247,6 @@ extension SetViewModel {
                                   predicate: predicate,
                                   sortDescriptors: nil,
                                   createIfNotFound: false)?.first?.objectID
-    }
-
-    func fetchAllCards() async throws {
-        for card in cards {
-            if let cardObject = find(MGCard.self, id: card),
-               try ManaKit.shared.willFetchCard(newID: cardObject.newIDCopy) {
-                _ = try await ManaKit.shared.fetchCard(newID: cardObject.newIDCopy)
-            }
-        }
     }
 
     var setObject: MGSet? {
