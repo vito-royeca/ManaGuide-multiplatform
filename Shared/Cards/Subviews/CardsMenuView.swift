@@ -156,14 +156,13 @@ struct CardsMenuView: View {
             NotificationCenter.default.post(name: NSNotification.CardsViewClear,
                                             object: nil)
         }) {
-            Label("Reset to defaults",
-                  systemImage: "clear")
+            Text("Reset to defaults")
         }
     }
     
     private func fetchRemoteData() {
         Task {
-            try await viewModel.fetchOtherData()
+//            try await viewModel.fetchOtherData()
         }
     }
 }

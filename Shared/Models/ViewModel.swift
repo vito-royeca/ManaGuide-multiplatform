@@ -5,7 +5,7 @@
 //  Created by Vito Royeca on 7/2/22.
 //
 
-import Foundation
+import SwiftUI
 import CoreData
 import ManaKit
 
@@ -15,6 +15,7 @@ class ViewModel: NSObject, ObservableObject {
     @Published var sections = [NSFetchedResultsSectionInfo]()
     @Published var isBusy = false
     @Published var isFailed = false
+    var query = ""
     
     // MARK: - Variables
     

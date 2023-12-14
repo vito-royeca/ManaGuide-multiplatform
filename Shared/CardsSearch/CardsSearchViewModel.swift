@@ -169,27 +169,27 @@ extension CardsSearchViewModel {
         return array.map { $0.objectID }
     }
     
-    override func fetchOtherData() async throws {
-        try await super.fetchOtherData()
-        
-        let sortDescriptors = [NSSortDescriptor(key: "name",
-                                                ascending: true)]
-        
-        if try ManaKit.shared.willFetchColors() {
-            _ = try await ManaKit.shared.fetchColors(sortDescriptors: sortDescriptors)
-        }
-        
-        DispatchQueue.main.async {
-            let newSortDescriptors = [NSSortDescriptor(key: "name",
-                                                       ascending: true)]
-            self.colors = ManaKit.shared.find(MGColor.self,
-                                         properties: nil,
-                                         predicate: nil,
-                                         sortDescriptors: newSortDescriptors,
-                                         createIfNotFound: false,
-                                         context: ManaKit.shared.viewContext)  ?? []
-        }
-    }
+//    override func fetchOtherData() async throws {
+//        try await super.fetchOtherData()
+//        
+//        let sortDescriptors = [NSSortDescriptor(key: "name",
+//                                                ascending: true)]
+//        
+//        if try ManaKit.shared.willFetchColors() {
+//            _ = try await ManaKit.shared.fetchColors(sortDescriptors: sortDescriptors)
+//        }
+//        
+//        DispatchQueue.main.async {
+//            let newSortDescriptors = [NSSortDescriptor(key: "name",
+//                                                       ascending: true)]
+//            self.colors = ManaKit.shared.find(MGColor.self,
+//                                         properties: nil,
+//                                         predicate: nil,
+//                                         sortDescriptors: newSortDescriptors,
+//                                         createIfNotFound: false,
+//                                         context: ManaKit.shared.viewContext)  ?? []
+//        }
+//    }
     
     func updateWillFetch() {
         willFetch = (!name.isEmpty && name.count >= 4) ||

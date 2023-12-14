@@ -42,7 +42,7 @@ struct CardsSearchFormView: View {
                     }
                     .labeledContentStyle(.vertical)
                     
-                    colorsField
+//                    colorsField
                     raritiesField
                     typesField
                 }
@@ -53,7 +53,7 @@ struct CardsSearchFormView: View {
                         viewModel.resetFilters()
                         viewModel.updateWillFetch()
                     } label: {
-                        Image(systemName: "clear")
+                        Text("Clear")
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -72,105 +72,124 @@ struct CardsSearchFormView: View {
                 }
             }
             .navigationBarTitle("Search")
-            .onAppear {
-                Task {
-                    try await viewModel.fetchOtherData()
+            .sheet(isPresented: $isRaritiesExpanded) {
+                NavigationView {
+                    CardFilterSelectorView(viewModel: RaritiesViewModel(),
+                                           type: MGRarity.self,
+                                           selectedFilters: $viewModel.raritiesFilter)
+                    .navigationTitle("Rarity")
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button {
+                                isRaritiesExpanded.toggle()
+                            } label: {
+                                Text("Close")
+                            }
+                        }
+                    }
+                }
+            }
+            .sheet(isPresented: $isTypesExpanded) {
+                NavigationView {
+                    CardFilterSelectorView(viewModel: CardTypesViewModel(),
+                                           type: MGCardType.self,
+                                           selectedFilters: $viewModel.typesFilter)
+                    .navigationTitle("Type")
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button {
+                                isTypesExpanded.toggle()
+                            } label: {
+                                Text("Close")
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
-    private var colorsField: some View {
-        let flexibleView = ScrollView {
-            FlexibleView(data: viewModel.colors,
-                         spacing: 5,
-                         alignment: .leading) { color in
-                if viewModel.colorsFilter.contains(where: { $0 == color }) {
-                    ColorFilterButton(color: color,
-                                      isSelected: true) {
-                        viewModel.colorsFilter.removeAll(where: { $0 == color })
-                        viewModel.updateWillFetch()
-                    }
-                } else {
-                    ColorFilterButton(color: color,
-                                      isSelected: false) {
-                        viewModel.colorsFilter.append(color)
-                        viewModel.updateWillFetch()
-                    }
-                }
-            }
-        }
-        
-        return DisclosureGroup("Color",
-                        isExpanded: $isColorsExpanded) {
-            VStack(alignment: .leading) {
-                Text("Select / deselect an item")
-                    .foregroundStyle(.gray)
-                flexibleView
-            }
-        }
-    }
+//    private var colorsField: some View {
+//        let flexibleView = ScrollView {
+//            FlexibleView(data: viewModel.colors,
+//                         spacing: 5,
+//                         alignment: .leading) { color in
+//                if viewModel.colorsFilter.contains(where: { $0 == color }) {
+//                    ColorFilterButton(color: color,
+//                                      isSelected: true) {
+//                        viewModel.colorsFilter.removeAll(where: { $0 == color })
+//                        viewModel.updateWillFetch()
+//                    }
+//                } else {
+//                    ColorFilterButton(color: color,
+//                                      isSelected: false) {
+//                        viewModel.colorsFilter.append(color)
+//                        viewModel.updateWillFetch()
+//                    }
+//                }
+//            }
+//        }
+//        
+//        return DisclosureGroup("Color",
+//                        isExpanded: $isColorsExpanded) {
+//            VStack(alignment: .leading) {
+//                Text("Select / deselect an item")
+//                    .foregroundStyle(.gray)
+//                flexibleView
+//            }
+//        }
+//    }
 
     private var raritiesField: some View {
-        let flexibleView = ScrollView {
-            FlexibleView(data: viewModel.rarities,
-                         spacing: 5,
-                         alignment: .leading) { rarity in
-                if viewModel.raritiesFilter.contains(rarity) {
-                    FilterButton(text: rarity.name ?? "",
-                                 isSelected: true) {
+        LabeledContent {
+            ScrollView {
+                FlexibleView(data: viewModel.raritiesFilter,
+                             spacing: 8,
+                             alignment: .leading) { rarity in
+                    RemovableFilterButton(text: rarity.description) {
                         viewModel.raritiesFilter.removeAll(where: { $0 == rarity })
                         viewModel.updateWillFetch()
                     }
-                } else {
-                    FilterButton(text: rarity.name ?? "",
-                                 isSelected: false) {
-                        viewModel.raritiesFilter.append(rarity)
-                        viewModel.updateWillFetch()
-                    }
                 }
             }
-        }
-        
-        return DisclosureGroup("Rarity",
-                        isExpanded: $isRaritiesExpanded) {
-            VStack(alignment: .leading) {
-                Text("Select / deselect an item")
-                    .foregroundStyle(.gray)
-                flexibleView
+        } label: {
+            HStack {
+                Text("Rarity")
+                Spacer()
+                Button(action: {
+                    isRaritiesExpanded.toggle()
+                }, label: {
+                    Image(systemName: "pencil")
+                })
             }
         }
+        .labeledContentStyle(.vertical)
     }
 
     private var typesField: some View {
-        let flexibleView = ScrollView {
-            FlexibleView(data: viewModel.cardTypes,
-                         spacing: 8,
-                         alignment: .leading) { cardType in
-                if viewModel.typesFilter.contains(cardType) {
-                    FilterButton(text: cardType.name ?? "",
-                                 isSelected: true) {
+        LabeledContent {
+            ScrollView {
+                FlexibleView(data: viewModel.typesFilter,
+                             spacing: 8,
+                             alignment: .leading) { cardType in
+                    RemovableFilterButton(text: cardType.description) {
                         viewModel.typesFilter.removeAll(where: { $0 == cardType })
-                        viewModel.updateWillFetch()
-                    }
-                } else {
-                    FilterButton(text: cardType.name ?? "",
-                                 isSelected: false) {
-                        viewModel.typesFilter.append(cardType)
                         viewModel.updateWillFetch()
                     }
                 }
             }
-        }
-
-        return DisclosureGroup("Type",
-                        isExpanded: $isTypesExpanded) {
-            VStack(alignment: .leading) {
-                Text("Select / deselect an item")
-                    .foregroundStyle(.gray)
-                flexibleView
+        } label: {
+            HStack {
+                Text("Type")
+                Spacer()
+                Button(action: {
+                    isTypesExpanded.toggle()
+                }, label: {
+                    Image(systemName: "pencil")
+                })
             }
         }
+        .labeledContentStyle(.vertical)
     }
     
     private func fetchRemoteData() {
@@ -207,6 +226,23 @@ struct FilterButton: View {
             button
                 .buttonStyle(.bordered)
         }
+    }
+}
+
+// MARK: -  RemovableFilterButton
+
+struct RemovableFilterButton: View {
+    let text: String
+    let action: () -> Void
+
+    @ScaledMetric(relativeTo: .title) var paddingWidth = 15
+
+    var body: some View {
+        Button(text, systemImage: "minus.circle") {
+            action()
+        }
+        .buttonStyle(.bordered)
+        .foregroundColor(.accentColor)
     }
 }
 

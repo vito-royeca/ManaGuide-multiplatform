@@ -121,41 +121,41 @@ class CardsViewModel: ViewModel {
     }
 }
 
-extension CardsViewModel {
-    @objc func fetchOtherData() async throws {
-        let sortDescriptors = [NSSortDescriptor(key: "name",
-                                                ascending: true)]
-        
-        if try ManaKit.shared.willFetchColors() {
-            _ = try await ManaKit.shared.fetchColors(sortDescriptors: sortDescriptors)
-        }
-            
-        if try ManaKit.shared.willFetchRarities() {
-            _ = try await ManaKit.shared.fetchRarities(sortDescriptors: sortDescriptors)
-        }
-        
-        if try ManaKit.shared.willFetchCardTypes() {
-            _ = try await ManaKit.shared.fetchCardTypes(sortDescriptors: sortDescriptors)
-        }
-        
-        DispatchQueue.main.async {
-            let newSortDescriptors = [NSSortDescriptor(key: "name",
-                                                       ascending: true)]
-            
-            self.rarities = ManaKit.shared.find(MGRarity.self,
-                                            properties: nil,
-                                            predicate: nil,
-                                            sortDescriptors: newSortDescriptors,
-                                            createIfNotFound: false,
-                                            context: ManaKit.shared.viewContext)  ?? []
-            
-            let predicate = NSPredicate(format: "parent == nil")
-            self.cardTypes = ManaKit.shared.find(MGCardType.self,
-                                            properties: nil,
-                                            predicate: predicate,
-                                            sortDescriptors: newSortDescriptors,
-                                            createIfNotFound: false,
-                                            context: ManaKit.shared.viewContext)  ?? []
-        }
-    }
-}
+//extension CardsViewModel {
+//    @objc func fetchOtherData() async throws {
+//        let sortDescriptors = [NSSortDescriptor(key: "name",
+//                                                ascending: true)]
+//        
+//        if try ManaKit.shared.willFetchColors() {
+//            _ = try await ManaKit.shared.fetchColors(sortDescriptors: sortDescriptors)
+//        }
+//            
+//        if try ManaKit.shared.willFetchRarities() {
+//            _ = try await ManaKit.shared.fetchRarities(sortDescriptors: sortDescriptors)
+//        }
+//        
+//        if try ManaKit.shared.willFetchCardTypes() {
+//            _ = try await ManaKit.shared.fetchCardTypes(sortDescriptors: sortDescriptors)
+//        }
+//        
+//        DispatchQueue.main.async {
+//            let newSortDescriptors = [NSSortDescriptor(key: "name",
+//                                                       ascending: true)]
+//            
+//            self.rarities = ManaKit.shared.find(MGRarity.self,
+//                                            properties: nil,
+//                                            predicate: nil,
+//                                            sortDescriptors: newSortDescriptors,
+//                                            createIfNotFound: false,
+//                                            context: ManaKit.shared.viewContext)  ?? []
+//            
+//            let predicate = NSPredicate(format: "parent == nil")
+//            self.cardTypes = ManaKit.shared.find(MGCardType.self,
+//                                            properties: nil,
+//                                            predicate: predicate,
+//                                            sortDescriptors: newSortDescriptors,
+//                                            createIfNotFound: false,
+//                                            context: ManaKit.shared.viewContext)  ?? []
+//        }
+//    }
+//}

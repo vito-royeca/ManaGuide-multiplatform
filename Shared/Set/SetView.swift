@@ -89,6 +89,6 @@ struct SetView: View {
         SetView(setCode: "isd",
                 languageCode: "en")
     }
-        .previewInterfaceOrientation(.landscapeLeft)
+//        .previewInterfaceOrientation(.landscapeLeft)
 }
 

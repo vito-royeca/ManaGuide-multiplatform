@@ -73,8 +73,7 @@ struct SetsMenuView: View {
             NotificationCenter.default.post(name: NSNotification.SetsViewClear,
                                             object: nil)
         }) {
-            Label("Reset to defaults",
-                  systemImage: "clear")
+            Text("Reset to defaults")
         }
     }
 }

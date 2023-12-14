@@ -41,7 +41,6 @@ class SetsViewModel: ViewModel {
     
     var dataAPI: API
     var sort: SetsViewSort = .releaseDate
-    var query = ""
     var typeFilter: String?
     private var frc: NSFetchedResultsController<MGSet>
     
