@@ -25,6 +25,8 @@ class CardsSearchViewModel: CardsViewModel {
     @Published var colorsFilter = [MGColor]()
     @Published var raritiesFilter = [MGRarity]()
     @Published var typesFilter = [MGCardType]()
+    @Published var gamesFilter = [MGGame]()
+    @Published var keywordsFilter = [MGKeyword]()
     
     @Published var willFetch = false
     @Published var colors = [MGColor]()

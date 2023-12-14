@@ -14,6 +14,8 @@ struct CardsSearchFormView: View {
     @State private var isColorsExpanded = false
     @State private var isRaritiesExpanded = false
     @State private var isTypesExpanded = false
+    @State private var isGamesExpanded = false
+    @State private var isKeywordsExpanded = false
     @State private var navigationPath = NavigationPath()
 
     var body: some View {
@@ -45,6 +47,8 @@ struct CardsSearchFormView: View {
 //                    colorsField
                     raritiesField
                     typesField
+                    gamesField
+                    keywordsField
                 }
             }
             .toolbar {
@@ -99,6 +103,40 @@ struct CardsSearchFormView: View {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button {
                                 isTypesExpanded.toggle()
+                            } label: {
+                                Text("Close")
+                            }
+                        }
+                    }
+                }
+            }
+            .sheet(isPresented: $isGamesExpanded) {
+                NavigationView {
+                    CardFilterSelectorView(viewModel: GamesViewModel(),
+                                           type: MGGame.self,
+                                           selectedFilters: $viewModel.gamesFilter)
+                    .navigationTitle("Game")
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button {
+                                isGamesExpanded.toggle()
+                            } label: {
+                                Text("Close")
+                            }
+                        }
+                    }
+                }
+            }
+            .sheet(isPresented: $isKeywordsExpanded) {
+                NavigationView {
+                    CardFilterSelectorView(viewModel: KeywordsViewModel(),
+                                           type: MGKeyword.self,
+                                           selectedFilters: $viewModel.keywordsFilter)
+                    .navigationTitle("Keyword")
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button {
+                                isKeywordsExpanded.toggle()
                             } label: {
                                 Text("Close")
                             }
@@ -184,6 +222,58 @@ struct CardsSearchFormView: View {
                 Spacer()
                 Button(action: {
                     isTypesExpanded.toggle()
+                }, label: {
+                    Image(systemName: "pencil")
+                })
+            }
+        }
+        .labeledContentStyle(.vertical)
+    }
+    
+    private var gamesField: some View {
+        LabeledContent {
+            ScrollView {
+                FlexibleView(data: viewModel.gamesFilter,
+                             spacing: 8,
+                             alignment: .leading) { game in
+                    RemovableFilterButton(text: game.description) {
+                        viewModel.gamesFilter.removeAll(where: { $0 == game })
+                        viewModel.updateWillFetch()
+                    }
+                }
+            }
+        } label: {
+            HStack {
+                Text("Game")
+                Spacer()
+                Button(action: {
+                    isGamesExpanded.toggle()
+                }, label: {
+                    Image(systemName: "pencil")
+                })
+            }
+        }
+        .labeledContentStyle(.vertical)
+    }
+    
+    private var keywordsField: some View {
+        LabeledContent {
+            ScrollView {
+                FlexibleView(data: viewModel.keywordsFilter,
+                             spacing: 8,
+                             alignment: .leading) { keyword in
+                    RemovableFilterButton(text: keyword.description) {
+                        viewModel.keywordsFilter.removeAll(where: { $0 == keyword })
+                        viewModel.updateWillFetch()
+                    }
+                }
+            }
+        } label: {
+            HStack {
+                Text("Keyword")
+                Spacer()
+                Button(action: {
+                    isKeywordsExpanded.toggle()
                 }, label: {
                     Image(systemName: "pencil")
                 })
