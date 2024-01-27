@@ -28,6 +28,8 @@ struct CardOtherPrintingsView: View {
                     Task {
                         try await viewModel.fetchRemoteData()
                     }
+                } cancelAction: {
+                    viewModel.isBusy = false
                 }
             } else {
                 listView

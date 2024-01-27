@@ -20,6 +20,8 @@ struct CardView: View {
     @State private var isShowingShareSheet = false
     private var withCloseButton: Bool
 
+    @State private var progress: CGFloat = 0
+
     init(newID: String,
          relatedCards: [NSManagedObjectID],
          withCloseButton: Bool) {
@@ -35,6 +37,8 @@ struct CardView: View {
             } else if viewModel.isFailed {
                 ErrorView {
                     fetchRemoteData()
+                } cancelAction: {
+                    viewModel.isBusy = false
                 }
             } else {
                 #if os(iOS)
@@ -58,10 +62,13 @@ struct CardView: View {
             if let cardObject = viewModel.cardObject {
                 Form {
                     Section {
-                        let height = proxy.size.height * 0.4
+                        let width = proxy.size.width
+                        let height = proxy.size.height * 0.5
                         CardCarouselView(viewModel: viewModel,
                                          height: height)
+                        .frame(width: width, height: height)
                     }
+                    .listRowBackground(EmptyView().background(.clear))
                     
                     if let prices = cardObject.prices?.allObjects as? [MGCardPrice] {
                         Section {
@@ -88,27 +95,25 @@ struct CardView: View {
                         CardExtraInfoView(card: cardObject)
                     }
                 }
-                    .navigationBarTitle(Text(cardObject.displayName ?? ""))
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        CardToolbar(withCloseButton: withCloseButton,
-                                    presentationMode: presentationMode,
-                                    isShowingShareSheet: $isShowingShareSheet)
-                    }
-                    .sheet(isPresented: $isShowingShareSheet, content: {
-                        activityView
-                    })
+                .navigationBarTitle(Text(cardObject.displayName ?? ""))
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    CardToolbar(withCloseButton: withCloseButton,
+                                presentationMode: presentationMode,
+                                isShowingShareSheet: $isShowingShareSheet)
+                }
+                .sheet(isPresented: $isShowingShareSheet, content: {
+                    activityView
+                })
             }
         }
     }
     
     private var regularView: some View {
         GeometryReader { proxy in
-            if let card = viewModel.card,
-               let cardObject = viewModel.find(MGCard.self, id: card) {
-                
+            if let cardObject = viewModel.cardObject {
                 HStack(alignment: .top) {
-                    let height = proxy.size.height * 0.7
+                    let height = proxy.size.height * 0.5
                     
                     Form {
                         CardCarouselView(viewModel: viewModel,
@@ -244,3 +249,38 @@ struct CardToolbar: ToolbarContent {
     .previewInterfaceOrientation(.landscapeRight)
 }
 
+struct CardDetailsView: View {
+    var cardObject: MGCard
+    var showPrices: Bool
+
+    var body: some View {
+        List {
+            if showPrices,
+                let prices = cardObject.prices?.allObjects as? [MGCardPrice] {
+                Section {
+                    CardPricingInfoView(prices: prices)
+                }
+            }
+            
+            if let faces = cardObject.sortedFaces {
+                ForEach(faces) { face in
+                    Section {
+                        CardCommonInfoView(card: face)
+                    }
+                }
+            } else {
+                Section {
+                    CardCommonInfoView(card: cardObject)
+                }
+            }
+            
+            Section {
+                CardOtherInfoView(card: cardObject)
+            }
+            Section {
+                CardExtraInfoView(card: cardObject)
+            }
+        }
+        
+    }
+}
