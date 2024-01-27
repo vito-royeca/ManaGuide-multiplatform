@@ -10,10 +10,13 @@ import ManaKit
 
 struct ErrorView: View {
     var retryAction: () -> Void
+    var cancelAction: () -> Void
     @State private var imageName: String
     
-    init(_ retryAction: @escaping () -> Void) {
+    init(retryAction: @escaping () -> Void,
+         cancelAction: @escaping () -> Void) {
         self.retryAction = retryAction
+        self.cancelAction = cancelAction
         imageName = "failure01"
     }
     
@@ -21,42 +24,75 @@ struct ErrorView: View {
         GeometryReader { proxy in
             VStack(spacing: 20) {
                 Spacer()
-                Text("An error has occured.")
-                    .font(Font.custom(ManaKit.Fonts.magic2015.name,
-                                      size: 30))
+                messageView
                 HStack {
                     Spacer()
-                    Image(imageName)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+                    imageView
                         .frame(width: proxy.size.width * 0.8,
                                alignment: .center)
-                        .cornerRadius(16)
-                        .clipped()
-                        .onAppear {
-                            let random = Int.random(in: 1..<14)
-                            imageName = "failure\(random < 10 ? "0" : "")\(random)"
-                        }
                     Spacer()
                 }
-                Button(action: {
-                    retryAction()
-                }) {
-                    Text("Try again")
-                        .font(Font.custom(ManaKit.Fonts.magic2015.name,
-                                          size: 20))
-                        .padding(10)
-                        .cornerRadius(10)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.accentColor,
-                                        lineWidth: 1)
-                        )
+                HStack {
+                    retryButton
+                    cancelButton
                 }
-                    .foregroundColor(.accentColor)
                 Spacer()
             }
         }
+    }
+    
+    private var messageView: some View {
+        Text("An error has occured.")
+            .font(Font.custom(ManaKit.Fonts.magic2015.name,
+                              size: 30))
+    }
+
+    private var imageView: some View {
+        Image(imageName)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .cornerRadius(16)
+            .clipped()
+            .onAppear {
+                let random = Int.random(in: 1..<14)
+                imageName = "failure\(random < 10 ? "0" : "")\(random)"
+            }
+    }
+
+    private var retryButton: some View {
+        Button(action: {
+            retryAction()
+        }) {
+            Text("Try again")
+                .font(Font.custom(ManaKit.Fonts.magic2015.name,
+                                  size: 20))
+                .padding(10)
+                .cornerRadius(10)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.accentColor,
+                                lineWidth: 1)
+                )
+        }
+        .foregroundColor(.accentColor)
+    }
+    
+    private var cancelButton: some View {
+        Button(action: {
+            cancelAction()
+        }) {
+            Text("Cancel")
+                .font(Font.custom(ManaKit.Fonts.magic2015.name,
+                                  size: 20))
+                .padding(10)
+                .cornerRadius(10)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.accentColor,
+                                lineWidth: 1)
+                )
+        }
+        .foregroundColor(.accentColor)
     }
 }
 
@@ -64,6 +100,8 @@ struct ErrorView_Previews: PreviewProvider {
     static var previews: some View {
         ErrorView {
             print("Retry")
+        } cancelAction: {
+            print("Cancel")
         }
     }
 }

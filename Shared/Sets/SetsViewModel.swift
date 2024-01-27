@@ -43,6 +43,7 @@ class SetsViewModel: ViewModel {
     var sort: SetsViewSort = .releaseDate
     var typeFilter: String?
     private var frc: NSFetchedResultsController<MGSet>
+    private var setIDs = [String]()
     
     // MARK: - Initializers
     init(dataAPI: API = ManaKit.shared) {
@@ -126,13 +127,12 @@ class SetsViewModel: ViewModel {
                     self.isFailed = false
                 }
                 
-                _ = try await dataAPI.fetchSets(sortDescriptors: sortDescriptors)
-                
+                setIDs = try await dataAPI.fetchSets(sortDescriptors: sortDescriptors).map { $0.code }
+
                 DispatchQueue.main.async {
                     self.fetchLocalData()
                     self.isBusy.toggle()
                 }
-                
             } else {
                 DispatchQueue.main.async {
                     self.fetchLocalData()
@@ -194,6 +194,12 @@ extension SetsViewModel {
                                                                                             query,
                                                                                             query)])
             }
+        }
+        
+        if !setIDs.isEmpty {
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
+                                                                            NSPredicate(format: "code IN %@",
+                                                                                        setIDs)])
         }
         
         let request: NSFetchRequest<MGSet> = MGSet.fetchRequest()

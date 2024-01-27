@@ -14,7 +14,6 @@ struct CardsSearchFormView: View {
     @State private var isColorsExpanded = false
     @State private var isRaritiesExpanded = false
     @State private var isTypesExpanded = false
-    @State private var isGamesExpanded = false
     @State private var isKeywordsExpanded = false
     @State private var navigationPath = NavigationPath()
 
@@ -24,6 +23,9 @@ struct CardsSearchFormView: View {
         } else if viewModel.isFailed {
             ErrorView {
                 fetchRemoteData()
+            } cancelAction: {
+                viewModel.isFailed = false
+                navigationPath = NavigationPath()
             }
         } else {
             contentView
@@ -33,10 +35,10 @@ struct CardsSearchFormView: View {
     private var contentView: some View {
         NavigationStack(path: $navigationPath) {
             Form {
-                Section(footer: Text("Note: type a name or select at least any 2 filters.")) {
+                Section(footer: Text("Note: type a name to enable Search")) {
                     LabeledContent {
                         TextField("Title",
-                                  text: $viewModel.name,
+                                  text: $viewModel.nameFilter,
                                   prompt: Text("Name of card, at least 4 characters"),
                                   axis: .horizontal)
                     } label: {
@@ -47,7 +49,6 @@ struct CardsSearchFormView: View {
 //                    colorsField
                     raritiesField
                     typesField
-                    gamesField
                     keywordsField
                 }
             }
@@ -55,7 +56,6 @@ struct CardsSearchFormView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         viewModel.resetFilters()
-                        viewModel.updateWillFetch()
                     } label: {
                         Text("Clear")
                     }
@@ -66,7 +66,7 @@ struct CardsSearchFormView: View {
                     } label: {
                         Image(systemName: "play.fill")
                     }
-                    .disabled(!viewModel.willFetch)
+                    .disabled(!viewModel.willFetch())
                     .navigationDestination(for: String.self) { view in
                         if view == "CardsSearchResultsView" {
                             CardsSearchResultsView()
@@ -110,23 +110,6 @@ struct CardsSearchFormView: View {
                     }
                 }
             }
-            .sheet(isPresented: $isGamesExpanded) {
-                NavigationView {
-                    CardFilterSelectorView(viewModel: GamesViewModel(),
-                                           type: MGGame.self,
-                                           selectedFilters: $viewModel.gamesFilter)
-                    .navigationTitle("Game")
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button {
-                                isGamesExpanded.toggle()
-                            } label: {
-                                Text("Close")
-                            }
-                        }
-                    }
-                }
-            }
             .sheet(isPresented: $isKeywordsExpanded) {
                 NavigationView {
                     CardFilterSelectorView(viewModel: KeywordsViewModel(),
@@ -147,37 +130,6 @@ struct CardsSearchFormView: View {
         }
     }
 
-//    private var colorsField: some View {
-//        let flexibleView = ScrollView {
-//            FlexibleView(data: viewModel.colors,
-//                         spacing: 5,
-//                         alignment: .leading) { color in
-//                if viewModel.colorsFilter.contains(where: { $0 == color }) {
-//                    ColorFilterButton(color: color,
-//                                      isSelected: true) {
-//                        viewModel.colorsFilter.removeAll(where: { $0 == color })
-//                        viewModel.updateWillFetch()
-//                    }
-//                } else {
-//                    ColorFilterButton(color: color,
-//                                      isSelected: false) {
-//                        viewModel.colorsFilter.append(color)
-//                        viewModel.updateWillFetch()
-//                    }
-//                }
-//            }
-//        }
-//        
-//        return DisclosureGroup("Color",
-//                        isExpanded: $isColorsExpanded) {
-//            VStack(alignment: .leading) {
-//                Text("Select / deselect an item")
-//                    .foregroundStyle(.gray)
-//                flexibleView
-//            }
-//        }
-//    }
-
     private var raritiesField: some View {
         LabeledContent {
             ScrollView {
@@ -186,7 +138,6 @@ struct CardsSearchFormView: View {
                              alignment: .leading) { rarity in
                     RemovableFilterButton(text: rarity.description) {
                         viewModel.raritiesFilter.removeAll(where: { $0 == rarity })
-                        viewModel.updateWillFetch()
                     }
                 }
             }
@@ -197,7 +148,7 @@ struct CardsSearchFormView: View {
                 Button(action: {
                     isRaritiesExpanded.toggle()
                 }, label: {
-                    Image(systemName: "pencil")
+                    Image(systemName: "plus")
                 })
             }
         }
@@ -212,7 +163,6 @@ struct CardsSearchFormView: View {
                              alignment: .leading) { cardType in
                     RemovableFilterButton(text: cardType.description) {
                         viewModel.typesFilter.removeAll(where: { $0 == cardType })
-                        viewModel.updateWillFetch()
                     }
                 }
             }
@@ -223,33 +173,7 @@ struct CardsSearchFormView: View {
                 Button(action: {
                     isTypesExpanded.toggle()
                 }, label: {
-                    Image(systemName: "pencil")
-                })
-            }
-        }
-        .labeledContentStyle(.vertical)
-    }
-    
-    private var gamesField: some View {
-        LabeledContent {
-            ScrollView {
-                FlexibleView(data: viewModel.gamesFilter,
-                             spacing: 8,
-                             alignment: .leading) { game in
-                    RemovableFilterButton(text: game.description) {
-                        viewModel.gamesFilter.removeAll(where: { $0 == game })
-                        viewModel.updateWillFetch()
-                    }
-                }
-            }
-        } label: {
-            HStack {
-                Text("Game")
-                Spacer()
-                Button(action: {
-                    isGamesExpanded.toggle()
-                }, label: {
-                    Image(systemName: "pencil")
+                    Image(systemName: "plus")
                 })
             }
         }
@@ -264,7 +188,6 @@ struct CardsSearchFormView: View {
                              alignment: .leading) { keyword in
                     RemovableFilterButton(text: keyword.description) {
                         viewModel.keywordsFilter.removeAll(where: { $0 == keyword })
-                        viewModel.updateWillFetch()
                     }
                 }
             }
@@ -275,7 +198,7 @@ struct CardsSearchFormView: View {
                 Button(action: {
                     isKeywordsExpanded.toggle()
                 }, label: {
-                    Image(systemName: "pencil")
+                    Image(systemName: "plus")
                 })
             }
         }

@@ -24,6 +24,8 @@ struct SetsView: View {
             } else if viewModel.isFailed {
                 ErrorView {
                     fetchRemoteData()
+                } cancelAction: {
+                    viewModel.isFailed = false
                 }
             } else {
                 contentView
