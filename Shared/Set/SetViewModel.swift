@@ -23,6 +23,7 @@ class SetViewModel: CardsViewModel {
     private var frc: NSFetchedResultsController<MGCard>
     
     // MARK: - Initializers
+
     init(setCode: String,
          languageCode: String,
          dataAPI: API = ManaKit.shared) {

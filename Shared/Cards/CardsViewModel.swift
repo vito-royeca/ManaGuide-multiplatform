@@ -50,7 +50,7 @@ enum CardsViewDisplay: String, CaseIterable {
         }
     }
 
-    static let defaultValue: CardsViewDisplay = .image
+    static let defaultValue: CardsViewDisplay = .list
 }
 
 // MARK: - CardsViewModel

@@ -112,7 +112,7 @@ struct CardsStoreLargeView: View {
     }
 
     private var infoView: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 10) {
             ZStack {
                 HStack {
                     let font = card.nameFont

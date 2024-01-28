@@ -37,6 +37,8 @@ struct CardsStoreView: View {
                     Task {
                         try await cardsViewModel.fetchRemoteData()
                     }
+                } cancelAction: {
+                    cardsViewModel.isFailed = false
                 }
             } else {
                 contentView

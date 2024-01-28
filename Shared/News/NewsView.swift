@@ -24,6 +24,8 @@ struct NewsView: View {
             } else if viewModel.isFailed {
                 ErrorView {
                     viewModel.fetchData()
+                } cancelAction: {
+                    viewModel.isFailed = false
                 }
             } else {
                 #if os(iOS)

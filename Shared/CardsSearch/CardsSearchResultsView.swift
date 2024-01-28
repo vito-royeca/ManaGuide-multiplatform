@@ -10,10 +10,27 @@ import ManaKit
 
 struct CardsSearchResultsView: View {
     @EnvironmentObject var viewModel: CardsSearchViewModel
+
     @State private var selectedCard: MGCard?
-    
+    @AppStorage("CardsViewDisplay") private var cardsDisplay = CardsViewDisplay.defaultValue
+
     var body: some View {
-        contentView
+        Group {
+            if viewModel.isBusy {
+                BusyView()
+            } else if viewModel.isFailed {
+                ErrorView {
+                    fetchRemoteData()
+                } cancelAction: {
+                    viewModel.isFailed = false
+                }
+            } else {
+                contentView
+            }
+        }
+        .onAppear {
+            fetchRemoteData()
+        }
     }
     
     private var contentView: some View {
@@ -21,13 +38,11 @@ struct CardsSearchResultsView: View {
             if viewModel.cards.isEmpty {
                 EmptyResultView()
             } else {
-                List {
-                    CardsView(selectedCard: $selectedCard)
-                        .environmentObject(viewModel as CardsViewModel)
+                if cardsDisplay == .list {
+                    listWithModifierView
+                } else if cardsDisplay == .image {
+                    listView
                 }
-                .listStyle(.plain)
-                .modifier(SectionIndex(sections: viewModel.sections,
-                                       sectionIndexTitles: viewModel.sectionIndexTitles))
             }
         }
         .sheet(item: $selectedCard) { card in
@@ -44,6 +59,30 @@ struct CardsSearchResultsView: View {
             }
         }
         .navigationBarTitle("\(viewModel.cards.count) result\(viewModel.cards.count > 1 ? "s" : "")")
+    }
+
+    private var listView: some View {
+        List {
+            CardsView(selectedCard: $selectedCard)
+                .environmentObject(viewModel as CardsViewModel)
+        }
+        .listStyle(.plain)
+    }
+
+    private var listWithModifierView: some View {
+        List {
+            CardsView(selectedCard: $selectedCard)
+                .environmentObject(viewModel as CardsViewModel)
+        }
+        .listStyle(.plain)
+        .modifier(SectionIndex(sections: viewModel.sections,
+                               sectionIndexTitles: viewModel.sectionIndexTitles))
+    }
+    
+    private func fetchRemoteData() {
+        Task {
+            try await viewModel.fetchRemoteData()
+        }
     }
 }
 

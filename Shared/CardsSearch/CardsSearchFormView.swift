@@ -11,7 +11,6 @@ import ManaKit
 struct CardsSearchFormView: View {
     @StateObject var viewModel = CardsSearchViewModel()
     
-    @State private var isColorsExpanded = false
     @State private var isRaritiesExpanded = false
     @State private var isTypesExpanded = false
     @State private var isKeywordsExpanded = false
@@ -22,10 +21,9 @@ struct CardsSearchFormView: View {
             BusyView()
         } else if viewModel.isFailed {
             ErrorView {
-                fetchRemoteData()
+                performSearch()
             } cancelAction: {
-                viewModel.isFailed = false
-                navigationPath = NavigationPath()
+                cancelSearch()
             }
         } else {
             contentView
@@ -41,12 +39,12 @@ struct CardsSearchFormView: View {
                                   text: $viewModel.nameFilter,
                                   prompt: Text("Name of card, at least 4 characters"),
                                   axis: .horizontal)
+                            .submitLabel(.done)
                     } label: {
                         Text("Name")
                     }
                     .labeledContentStyle(.vertical)
                     
-//                    colorsField
                     raritiesField
                     typesField
                     keywordsField
@@ -62,9 +60,9 @@ struct CardsSearchFormView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        fetchRemoteData()
+                        performSearch()
                     } label: {
-                        Image(systemName: "play.fill")
+                        Image(systemName: "magnifyingglass")
                     }
                     .disabled(!viewModel.willFetch())
                     .navigationDestination(for: String.self) { view in
@@ -205,11 +203,16 @@ struct CardsSearchFormView: View {
         .labeledContentStyle(.vertical)
     }
     
-    private func fetchRemoteData() {
-        Task {
-            try await viewModel.fetchRemoteData()
-            navigationPath.append("CardsSearchResultsView")
-        }
+    private func performSearch() {
+        viewModel.isFailed = false
+        viewModel.isBusy = false
+        navigationPath.append("CardsSearchResultsView")
+    }
+    
+    private func cancelSearch() {
+        viewModel.isFailed = false
+        viewModel.isBusy = false
+        navigationPath = NavigationPath()
     }
 }
 

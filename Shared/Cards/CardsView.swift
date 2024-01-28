@@ -11,6 +11,7 @@ import ManaKit
 struct CardsView: View {
     @EnvironmentObject var viewModel: CardsViewModel
     @Binding var selectedCard: MGCard?
+    var showSections = false
 
     @AppStorage("CardsViewSort") private var cardsSort = CardsViewSort.defaultValue
     @AppStorage("CardsRarityFilter") private var cardsRarityFilter: String?

@@ -26,6 +26,8 @@ struct SetView: View {
             } else if viewModel.isFailed {
                 ErrorView {
                     fetchRemoteData()
+                } cancelAction: {
+                    viewModel.isFailed = false
                 }
             } else {
                 scalingHeaderView
@@ -86,7 +88,7 @@ struct SetView: View {
 
 #Preview {
     NavigationView {
-        SetView(setCode: "isd",
+        SetView(setCode: "clu",
                 languageCode: "en")
     }
 //        .previewInterfaceOrientation(.landscapeLeft)
