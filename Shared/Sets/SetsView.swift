@@ -81,8 +81,13 @@ struct SetsView: View {
     }
 
     private func rowView(for set: MGSet) -> some View {
+        let language = set.sortedLanguages?.first(where: {
+            $0.code == "en"
+        }) ?? set.sortedLanguages?.first
+        let languageCode = language?.code ?? "en"
+
         let destinationView = SetView(setCode: set.code,
-                                      languageCode: "en")
+                                      languageCode: languageCode)
         let navigationLink = NavigationLink(destination: destinationView) {
             EmptyView()
         }
@@ -140,4 +145,3 @@ struct SetsView_Previews: PreviewProvider {
 //            .previewInterfaceOrientation(.landscapeRight)
     }
 }
-

@@ -74,27 +74,27 @@ class CardsViewModel: ViewModel {
             case .name:
                 sortDescriptors.append(NSSortDescriptor(key: "name",
                                                         ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
-                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "releaseDate",
+                                                        ascending: false))
             case .collectorNumber:
                 sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
                                                         ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "name",
-                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "releaseDate",
+                                                        ascending: false))
             case .rarity:
                 sortDescriptors.append(NSSortDescriptor(key: "rarity.name",
                                                         ascending: true))
                 sortDescriptors.append(NSSortDescriptor(key: "name",
                                                         ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
-                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "releaseDate",
+                                                        ascending: false))
             case .type:
                 sortDescriptors.append(NSSortDescriptor(key: "type.name",
                                                         ascending: true))
                 sortDescriptors.append(NSSortDescriptor(key: "name",
                                                         ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
-                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "releaseDate",
+                                                        ascending: false))
             }
             
             return sortDescriptors

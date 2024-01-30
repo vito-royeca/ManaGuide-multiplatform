@@ -96,7 +96,6 @@ struct CardView: View {
                     }
                 }
                 .navigationBarTitle(Text(cardObject.displayName ?? ""))
-                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     CardToolbar(withCloseButton: withCloseButton,
                                 presentationMode: presentationMode,

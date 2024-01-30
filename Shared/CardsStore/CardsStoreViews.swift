@@ -113,7 +113,7 @@ struct CardsStoreLargeView: View {
 
     private var infoView: some View {
         VStack(alignment: .leading, spacing: 10) {
-            ZStack {
+//            ZStack {
                 HStack {
                     let font = card.nameFont
                     Text(card.displayName ?? "")
@@ -127,7 +127,7 @@ struct CardsStoreLargeView: View {
 //                                           pointSize: 16)
 //                    )
 //                        .multilineTextAlignment(.trailing)
-            }
+//            }
             HStack {
                 Text(card.displayKeyrune)
                     .font(Font.custom("Keyrune", size: 20))
@@ -136,7 +136,7 @@ struct CardsStoreLargeView: View {
                     .font(.footnote)
                     .foregroundColor(.secondary)
             }
-            Spacer()
+//            Spacer()
             CardsStorePriceView(card: card)
         }
     }

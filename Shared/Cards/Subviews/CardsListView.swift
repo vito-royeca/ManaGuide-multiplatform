@@ -24,6 +24,7 @@ struct CardsListView: View {
                         .onTapGesture {
                             select(card: card)
                         }
+                        .listRowSeparator(.hidden)
                 }
             }
         }

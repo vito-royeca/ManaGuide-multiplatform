@@ -18,13 +18,15 @@ struct ManaGuideApp: App {
                                                            .userDomainMask,
                                                            true)[0]
         print("docsPath = \(docsPath)")
-        
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(Color.accentColor)
+
+        // Server setup
         FirebaseApp.configure()
 
         ManaKit.shared.configure(apiURL: "https://managuideapp.com")
-        ManaKit.shared.setupResources()
-        
-        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(Color.accentColor)
+        Task {
+            await ManaKit.shared.setupResources()
+        }
     }
     
     var body: some Scene {

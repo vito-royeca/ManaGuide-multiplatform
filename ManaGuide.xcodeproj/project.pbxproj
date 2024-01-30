@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,6 +15,8 @@
 		583684BF2AF200AE00DFE9EB /* ScalingHeaderScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = 583684BE2AF200AE00DFE9EB /* ScalingHeaderScrollView */; };
 		583684C12AF21C0600DFE9EB /* SetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583684C02AF21C0600DFE9EB /* SetHeaderView.swift */; };
 		583684C22AF21C0600DFE9EB /* SetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583684C02AF21C0600DFE9EB /* SetHeaderView.swift */; };
+		58452D282B68627E00612960 /* ManaKit in Frameworks */ = {isa = PBXBuildFile; productRef = 58452D272B68627E00612960 /* ManaKit */; };
+		584A9A9A2B65E7FA0096479C /* SetsDisclosureStyyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584A9A992B65E7FA0096479C /* SetsDisclosureStyyle.swift */; };
 		5858F41D2AF772C30067919E /* CardOtherPrintingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5858F41C2AF772C30067919E /* CardOtherPrintingsView.swift */; };
 		5858F41E2AF772C30067919E /* CardOtherPrintingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5858F41C2AF772C30067919E /* CardOtherPrintingsView.swift */; };
 		5858F4202AF7758C0067919E /* CardOtherPrintingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5858F41F2AF7758C0067919E /* CardOtherPrintingsViewModel.swift */; };
@@ -36,10 +38,10 @@
 		58A147152B0345D800A957B7 /* SetsMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A147132B0345D800A957B7 /* SetsMenuView.swift */; };
 		58A147172B0348DC00A957B7 /* Notifications+Names.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A147162B0348DC00A957B7 /* Notifications+Names.swift */; };
 		58A147182B0348DC00A957B7 /* Notifications+Names.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A147162B0348DC00A957B7 /* Notifications+Names.swift */; };
-		58A1471A2B03E4E100A957B7 /* String+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A147192B03E4E100A957B7 /* String+Constants.swift */; };
-		58A1471B2B03E4E100A957B7 /* String+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A147192B03E4E100A957B7 /* String+Constants.swift */; };
-		58A1471C2B03E4E100A957B7 /* String+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A147192B03E4E100A957B7 /* String+Constants.swift */; };
-		58A1471D2B03E4E100A957B7 /* String+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A147192B03E4E100A957B7 /* String+Constants.swift */; };
+		58A1471A2B03E4E100A957B7 /* String+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A147192B03E4E100A957B7 /* String+Utilities.swift */; };
+		58A1471B2B03E4E100A957B7 /* String+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A147192B03E4E100A957B7 /* String+Utilities.swift */; };
+		58A1471C2B03E4E100A957B7 /* String+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A147192B03E4E100A957B7 /* String+Utilities.swift */; };
+		58A1471D2B03E4E100A957B7 /* String+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A147192B03E4E100A957B7 /* String+Utilities.swift */; };
 		58AA32B92B27B5FB003BC20D /* CardFilterSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58AA32B82B27B5FB003BC20D /* CardFilterSelectorView.swift */; };
 		58AA32BF2B27DB3D003BC20D /* CardTypesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58AA32BE2B27DB3D003BC20D /* CardTypesViewModel.swift */; };
 		58AB9C5B2B0FF37F00A73696 /* LabeledContentStyle+Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58AB9C5A2B0FF37F00A73696 /* LabeledContentStyle+Styles.swift */; };
@@ -66,6 +68,7 @@
 		58ED3E9E2B0C064C003A93DD /* EmptyResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58ED3E9D2B0C064C003A93DD /* EmptyResultView.swift */; };
 		58ED3E9F2B0C064C003A93DD /* EmptyResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58ED3E9D2B0C064C003A93DD /* EmptyResultView.swift */; };
 		58ED3EA12B0C064C003A93DD /* EmptyResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58ED3E9D2B0C064C003A93DD /* EmptyResultView.swift */; };
+		58EDF53A2B687F5800B88D8D /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EDF5392B687F5800B88D8D /* TestView.swift */; };
 		58F888622AFA8D7D00AE7031 /* ManaKit in Frameworks */ = {isa = PBXBuildFile; productRef = 58F888612AFA8D7D00AE7031 /* ManaKit */; };
 		58FD5A5E2B2ACBA50051F785 /* GamesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FD5A5D2B2ACBA50051F785 /* GamesViewModel.swift */; };
 		58FD5A602B2ACC170051F785 /* KeywordsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FD5A5F2B2ACC170051F785 /* KeywordsViewModel.swift */; };
@@ -187,6 +190,7 @@
 		580D25042B1284BA00D10942 /* CardsSearchResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsSearchResultsView.swift; sourceTree = "<group>"; };
 		5828109E2AF89F4D0000749C /* CacheAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheAsyncImage.swift; sourceTree = "<group>"; };
 		583684C02AF21C0600DFE9EB /* SetHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetHeaderView.swift; sourceTree = "<group>"; };
+		584A9A992B65E7FA0096479C /* SetsDisclosureStyyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetsDisclosureStyyle.swift; sourceTree = "<group>"; };
 		5858F41C2AF772C30067919E /* CardOtherPrintingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardOtherPrintingsView.swift; sourceTree = "<group>"; };
 		5858F41F2AF7758C0067919E /* CardOtherPrintingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardOtherPrintingsViewModel.swift; sourceTree = "<group>"; };
 		586B09D62AFC0C0E00325B3B /* CardOtherInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardOtherInfoView.swift; sourceTree = "<group>"; };
@@ -198,7 +202,7 @@
 		58A147102B033A9E00A957B7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		58A147132B0345D800A957B7 /* SetsMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetsMenuView.swift; sourceTree = "<group>"; };
 		58A147162B0348DC00A957B7 /* Notifications+Names.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notifications+Names.swift"; sourceTree = "<group>"; };
-		58A147192B03E4E100A957B7 /* String+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Constants.swift"; sourceTree = "<group>"; };
+		58A147192B03E4E100A957B7 /* String+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Utilities.swift"; sourceTree = "<group>"; };
 		58AA32B82B27B5FB003BC20D /* CardFilterSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardFilterSelectorView.swift; sourceTree = "<group>"; };
 		58AA32BE2B27DB3D003BC20D /* CardTypesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTypesViewModel.swift; sourceTree = "<group>"; };
 		58AB9C5A2B0FF37F00A73696 /* LabeledContentStyle+Styles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LabeledContentStyle+Styles.swift"; sourceTree = "<group>"; };
@@ -212,6 +216,7 @@
 		58ED3E992B0ABE54003A93DD /* CardsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsListView.swift; sourceTree = "<group>"; };
 		58ED3E9B2B0AC271003A93DD /* CardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsView.swift; sourceTree = "<group>"; };
 		58ED3E9D2B0C064C003A93DD /* EmptyResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyResultView.swift; sourceTree = "<group>"; };
+		58EDF5392B687F5800B88D8D /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
 		58FD5A5D2B2ACBA50051F785 /* GamesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesViewModel.swift; sourceTree = "<group>"; };
 		58FD5A5F2B2ACC170051F785 /* KeywordsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeywordsViewModel.swift; sourceTree = "<group>"; };
 		58FFCFB52B098A4A00813BC2 /* CardCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCarouselView.swift; sourceTree = "<group>"; };
@@ -275,6 +280,7 @@
 				8B75CA2A28130C0600597662 /* FeedKit in Frameworks */,
 				8B75CA542816EE6C00597662 /* SwiftUIX in Frameworks */,
 				8B75CA3228130ECC00597662 /* FirebaseCrashlytics in Frameworks */,
+				58452D282B68627E00612960 /* ManaKit in Frameworks */,
 				8B75CA3428130ECC00597662 /* FirebaseDatabase in Frameworks */,
 				8B75CA3028130ECC00597662 /* FirebaseAuth in Frameworks */,
 				8B75CA2728130BD100597662 /* BetterSafariView in Frameworks */,
@@ -529,6 +535,8 @@
 			children = (
 				8B41B84928126F9600AECF85 /* SearchPathsView.swift */,
 				5828109E2AF89F4D0000749C /* CacheAsyncImage.swift */,
+				584A9A992B65E7FA0096479C /* SetsDisclosureStyyle.swift */,
+				58EDF5392B687F5800B88D8D /* TestView.swift */,
 			);
 			path = Experimental;
 			sourceTree = "<group>";
@@ -576,7 +584,7 @@
 				8BAC9E43282F4036008848D8 /* Date+ElapsedTime.swift */,
 				58AB9C5A2B0FF37F00A73696 /* LabeledContentStyle+Styles.swift */,
 				58A147162B0348DC00A957B7 /* Notifications+Names.swift */,
-				58A147192B03E4E100A957B7 /* String+Constants.swift */,
+				58A147192B03E4E100A957B7 /* String+Utilities.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -611,6 +619,7 @@
 				583684B72AF1FFF400DFE9EB /* SwiftUIIntrospect */,
 				583684BE2AF200AE00DFE9EB /* ScalingHeaderScrollView */,
 				58F888612AFA8D7D00AE7031 /* ManaKit */,
+				58452D272B68627E00612960 /* ManaKit */,
 			);
 			productName = "ManaGuide (iOS)";
 			productReference = 8B41B73C2812144E00AECF85 /* Mana Guide.app */;
@@ -721,7 +730,7 @@
 				8B36954E2845296100D1F544 /* XCRemoteSwiftPackageReference "SwiftUIPager" */,
 				583684B62AF1FFF400DFE9EB /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 				583684BD2AF200AE00DFE9EB /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */,
-				5849E27B2AFA8B1000AD37D5 /* XCLocalSwiftPackageReference "../ManaKit" */,
+				58452D262B68627E00612960 /* XCRemoteSwiftPackageReference "ManaKit" */,
 			);
 			productRefGroup = 8B41B73D2812144E00AECF85 /* Products */;
 			projectDirPath = "";
@@ -789,6 +798,7 @@
 				58AA32BF2B27DB3D003BC20D /* CardTypesViewModel.swift in Sources */,
 				58A147142B0345D800A957B7 /* SetsMenuView.swift in Sources */,
 				8BCE600D2870029C00389713 /* ViewModel.swift in Sources */,
+				58EDF53A2B687F5800B88D8D /* TestView.swift in Sources */,
 				8B41B84128126ED700AECF85 /* NewsViewModel.swift in Sources */,
 				8B41B793281257F600AECF85 /* SetRowView.swift in Sources */,
 				8BCE601F2870108200389713 /* CardImageRowView.swift in Sources */,
@@ -818,7 +828,7 @@
 				8B41B79F2812585300AECF85 /* WebView.swift in Sources */,
 				583684C12AF21C0600DFE9EB /* SetHeaderView.swift in Sources */,
 				8BCE602B28701B4800389713 /* CardsSearchViewModel.swift in Sources */,
-				58A1471A2B03E4E100A957B7 /* String+Constants.swift in Sources */,
+				58A1471A2B03E4E100A957B7 /* String+Utilities.swift in Sources */,
 				8BCE60102870066500389713 /* CardsStoreViews.swift in Sources */,
 				586B09D72AFC0C0E00325B3B /* CardOtherInfoView.swift in Sources */,
 				8B41B84228126ED700AECF85 /* NewsMap.swift in Sources */,
@@ -837,6 +847,7 @@
 				8BCE6013287006B900389713 /* CardsStoreView.swift in Sources */,
 				58AB9C702B11BF1A00A73696 /* _FlexibleView.swift in Sources */,
 				586B09DA2AFC0CB700325B3B /* CardCommonInfoView.swift in Sources */,
+				584A9A9A2B65E7FA0096479C /* SetsDisclosureStyyle.swift in Sources */,
 				58C3A6A52B2A7D2300DD716A /* RaritiesViewModel.swift in Sources */,
 				8BCE601C2870101B00389713 /* CardView.swift in Sources */,
 				58AB9C5B2B0FF37F00A73696 /* LabeledContentStyle+Styles.swift in Sources */,
@@ -882,7 +893,7 @@
 				8B41B7A02812585300AECF85 /* WebView.swift in Sources */,
 				8BCE6006287000B700389713 /* SetView.swift in Sources */,
 				8BCE602C28701B4800389713 /* CardsSearchViewModel.swift in Sources */,
-				58A1471B2B03E4E100A957B7 /* String+Constants.swift in Sources */,
+				58A1471B2B03E4E100A957B7 /* String+Utilities.swift in Sources */,
 				8B41B790281257F600AECF85 /* SetsViewModel.swift in Sources */,
 				5858F41E2AF772C30067919E /* CardOtherPrintingsView.swift in Sources */,
 				58AB9C782B11C0D500A73696 /* SizeReader.swift in Sources */,
@@ -899,7 +910,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				58A1471C2B03E4E100A957B7 /* String+Constants.swift in Sources */,
+				58A1471C2B03E4E100A957B7 /* String+Utilities.swift in Sources */,
 				8B41B7502812144E00AECF85 /* Tests_iOSLaunchTests.swift in Sources */,
 				8B41B74E2812144E00AECF85 /* Tests_iOS.swift in Sources */,
 				58AB9C672B119AC700A73696 /* CardsSearch.swift in Sources */,
@@ -918,7 +929,7 @@
 				58AB9C682B119AC700A73696 /* CardsSearch.swift in Sources */,
 				58AB9C5E2B0FF37F00A73696 /* LabeledContentStyle+Styles.swift in Sources */,
 				58AB9C632B1195EE00A73696 /* CardsSearchFormView.swift in Sources */,
-				58A1471D2B03E4E100A957B7 /* String+Constants.swift in Sources */,
+				58A1471D2B03E4E100A957B7 /* String+Utilities.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1059,9 +1070,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 310;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 43CD66539H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ManaGuide--iOS--Info.plist";
@@ -1093,9 +1104,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 310;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 43CD66539H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ManaGuide--iOS--Info.plist";
@@ -1185,7 +1196,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jovitoroyeca.ManaGuide.Tests-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1204,7 +1215,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jovitoroyeca.ManaGuide.Tests-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1305,13 +1316,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		5849E27B2AFA8B1000AD37D5 /* XCLocalSwiftPackageReference "../ManaKit" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../ManaKit;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
 		583684B62AF1FFF400DFE9EB /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -1327,6 +1331,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.4;
+			};
+		};
+		58452D262B68627E00612960 /* XCRemoteSwiftPackageReference "ManaKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/vito-royeca/ManaKit.git";
+			requirement = {
+				branch = master;
+				kind = branch;
 			};
 		};
 		8B36954E2845296100D1F544 /* XCRemoteSwiftPackageReference "SwiftUIPager" */ = {
@@ -1397,6 +1409,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 583684BD2AF200AE00DFE9EB /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */;
 			productName = ScalingHeaderScrollView;
+		};
+		58452D272B68627E00612960 /* ManaKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 58452D262B68627E00612960 /* XCRemoteSwiftPackageReference "ManaKit" */;
+			productName = ManaKit;
 		};
 		58F888612AFA8D7D00AE7031 /* ManaKit */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -12,12 +12,15 @@ struct CardsSearchResultsView: View {
     @EnvironmentObject var viewModel: CardsSearchViewModel
 
     @State private var selectedCard: MGCard?
-    @AppStorage("CardsViewDisplay") private var cardsDisplay = CardsViewDisplay.defaultValue
 
     var body: some View {
         Group {
             if viewModel.isBusy {
-                BusyView()
+                if viewModel.isLoadingNextPage {
+                    contentView
+                } else {
+                    BusyView()
+                }
             } else if viewModel.isFailed {
                 ErrorView {
                     fetchRemoteData()
@@ -25,63 +28,86 @@ struct CardsSearchResultsView: View {
                     viewModel.isFailed = false
                 }
             } else {
-                contentView
+                if viewModel.cards.isEmpty {
+                    EmptyResultView()
+                } else {
+                    contentView
+                }
             }
         }
         .onAppear {
             fetchRemoteData()
         }
+        .onDisappear {
+//            viewModel.resetPagination()
+        }
     }
     
     private var contentView: some View {
-        ZStack {
-            if viewModel.cards.isEmpty {
-                EmptyResultView()
-            } else {
-                if cardsDisplay == .list {
-                    listWithModifierView
-                } else if cardsDisplay == .image {
-                    listView
+        listView
+            .navigationBarTitle(viewModel.cards.isEmpty ? "" : "Results")
+            .sheet(item: $selectedCard) { card in
+                NavigationView {
+                    CardView(newID: card.newIDCopy,
+                             relatedCards: viewModel.cards,
+                             withCloseButton: true)
                 }
             }
-        }
-        .sheet(item: $selectedCard) { card in
-            NavigationView {
-                CardView(newID: card.newIDCopy,
-                         relatedCards: viewModel.cards,
-                         withCloseButton: true)
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    CardsMenuView(includeFilters: false)
+                        .environmentObject(viewModel as CardsViewModel)
+                }
             }
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                CardsMenuView(includeFilters: false)
-                    .environmentObject(viewModel as CardsViewModel)
-            }
-        }
-        .navigationBarTitle("\(viewModel.cards.count) result\(viewModel.cards.count > 1 ? "s" : "")")
     }
 
     private var listView: some View {
         List {
             CardsView(selectedCard: $selectedCard)
                 .environmentObject(viewModel as CardsViewModel)
+            if viewModel.hasMoreData {
+                Text("Loading...")
+                    .font(Font.custom(ManaKit.Fonts.magic2015.name,
+                                      size: 15))
+//                lastRowView
+//                    .listRowSeparator(.hidden)
+            }
         }
         .listStyle(.plain)
     }
 
-    private var listWithModifierView: some View {
-        List {
-            CardsView(selectedCard: $selectedCard)
-                .environmentObject(viewModel as CardsViewModel)
+    var lastRowView: some View {
+        Group {
+            if viewModel.isBusy {
+                ProgressView("Loading...")
+                    .progressViewStyle(.circular)
+                    .font(Font.custom(ManaKit.Fonts.magic2015.name,
+                                      size: 20))
+            } else if viewModel.isFailed {
+                ErrorView {
+                    fetchRemoteData()
+                } cancelAction: {
+                    viewModel.isFailed = false
+                }
+            } else {
+                EmptyView()
+            }
         }
-        .listStyle(.plain)
-        .modifier(SectionIndex(sections: viewModel.sections,
-                               sectionIndexTitles: viewModel.sectionIndexTitles))
+        .frame(height: 60)
+        .onAppear {
+            fetchRemoteNextPage()
+        }
     }
-    
+
     private func fetchRemoteData() {
         Task {
             try await viewModel.fetchRemoteData()
+        }
+    }
+    
+    private func fetchRemoteNextPage() {
+        Task {
+            try await viewModel.fetchRemoteNextPage()
         }
     }
 }

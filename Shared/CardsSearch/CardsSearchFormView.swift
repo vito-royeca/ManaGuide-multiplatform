@@ -62,7 +62,7 @@ struct CardsSearchFormView: View {
                     Button {
                         performSearch()
                     } label: {
-                        Image(systemName: "magnifyingglass")
+                        Text("Submit")
                     }
                     .disabled(!viewModel.willFetch())
                     .navigationDestination(for: String.self) { view in
