@@ -30,7 +30,7 @@ struct CardOtherPrintingsView: View {
             ForEach(otherPrintings) { otherPrinting in
                 CardsStoreLargeView(card: otherPrinting)
                     .onTapGesture {
-                        selectedCard = card
+                        selectedCard = otherPrinting
                     }
             }
             if firstTen.count >= 10 {

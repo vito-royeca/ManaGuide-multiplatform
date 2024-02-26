@@ -28,7 +28,7 @@ struct CardLanguagesView: View {
             ForEach(otherLanguages) { otherLanguage in
                 CardsStoreLargeView(card: otherLanguage)
                     .onTapGesture {
-                        selectedCard = card
+                        selectedCard = otherLanguage
                     }
             }
         }

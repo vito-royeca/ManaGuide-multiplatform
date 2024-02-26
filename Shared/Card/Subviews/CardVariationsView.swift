@@ -28,7 +28,7 @@ struct CardVariationsView: View {
             ForEach(variations) { variation in
                 CardsStoreLargeView(card: variation)
                     .onTapGesture {
-                        selectedCard = card
+                        selectedCard = variation
                     }
             }
         }
