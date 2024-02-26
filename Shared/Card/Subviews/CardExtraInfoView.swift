@@ -11,14 +11,14 @@ import ManaKit
 
 struct CardExtraInfoView: View {
     @Environment(\.colorScheme) var colorScheme
-    @State var isColorsExpanded         = false
-    @State var isComponentPartsExpanded = false
-    @State var isFrameEffectsExpanded   = false
-    @State var isLegalitiesExpanded     = false
-    @State var isOtherLanguagesExpanded = false
-    @State var isOtherPrintingsExpanded = false
-    @State var isRulingsExpanded        = false
-    @State var isVariationsExpanded     = false
+    @State var isColorsExpanded         = true
+//    @State var isComponentPartsExpanded = false
+    @State var isFrameEffectsExpanded   = true
+    @State var isLegalitiesExpanded     = true
+//    @State var isOtherLanguagesExpanded = false
+//    @State var isOtherPrintingsExpanded = false
+    @State var isRulingsExpanded        = true
+//    @State var isVariationsExpanded     = false
 
     var card: MGCard
     
@@ -38,61 +38,11 @@ struct CardExtraInfoView: View {
                              colors: card.sortedColorIndicators)
             }
             
-            if let componentParts = card.sortedComponentParts {
-                DisclosureGroup("Component Parts: \(componentParts.count)",
-                                isExpanded: $isComponentPartsExpanded) {
-                    ForEach(componentParts) { componentPart in
-                        if let part = componentPart.part,
-                           let component = componentPart.component {
-
-                            let newIDCopy = part.newIDCopy
-                            let name = component.name
-                            VStack(alignment: .leading) {
-                                Text(name)
-                                    .font(.headline)
-                                CardListRowView(card: part)
-                                    .background(NavigationLink("",
-                                                               destination: CardView(newID: newIDCopy,
-                                                                                     relatedCards: [],
-                                                                                     withCloseButton: false)).opacity(0))
-                            }
-                        } else {
-                            EmptyView()
-                        }
-                    }
-                }
-            }
-
             if let frameEffects = card.sortedFrameEffects {
                 DisclosureGroup("Frame Effects: \(frameEffects.count)",
                                 isExpanded: $isFrameEffectsExpanded) {
                     ForEach(frameEffects) { frameEffect in
                         Text(frameEffect.name ?? " ")
-                    }
-                }
-            }
-
-            if let formatLegalities = card.sortedFormatLegalities {
-                DisclosureGroup("Legalities: \(formatLegalities.count)",
-                                isExpanded: $isLegalitiesExpanded) {
-                    ForEach(formatLegalities) { formatLegality in
-                        LabeledContent {
-                            Text(formatLegality.legality?.name ?? String.emdash)
-                        } label: {
-                            Text(formatLegality.format?.name ?? String.emdash)
-                        }
-                    }
-                }
-            }
-
-            if let otherLanguages = card.sortedOtherLanguages {
-                DisclosureGroup("Other Languages: \(otherLanguages.count)",
-                                isExpanded: $isOtherLanguagesExpanded) {
-                    ForEach(otherLanguages) { otherLanguage in
-                        CardListRowView(card: otherLanguage)
-                            .background(NavigationLink("", destination: CardView(newID: otherLanguage.newIDCopy,
-                                                                                 relatedCards: [],
-                                                                                 withCloseButton: false)).opacity(0))
                     }
                 }
             }
@@ -115,37 +65,14 @@ struct CardExtraInfoView: View {
                 }
             }
 
-            if let variations = card.sortedVariations {
-                DisclosureGroup("Variations: \(variations.count)",
-                                isExpanded: $isVariationsExpanded) {
-                    ForEach(variations) { variation in
-                        CardListRowView(card: variation)
-                            .background(NavigationLink("",
-                                                       destination: CardView(newID: variation.newIDCopy,
-                                                                             relatedCards: variations.map { $0.objectID },
-                                                                             withCloseButton: false)).opacity(0))
-                    }
-                }
-            }
-            
-            if let otherPrintings = card.sortedOtherPrintings {
-                let firstTen = otherPrintings.count >= 10 ?
-                Array(otherPrintings[0...9]) : otherPrintings
-                DisclosureGroup("Other Printings",
-                                isExpanded: $isOtherPrintingsExpanded) {
-                    ForEach(firstTen) { otherPrinting in
-                        CardListRowView(card: otherPrinting)
-                            .background(NavigationLink("",
-                                                       destination: CardView(newID: otherPrinting.newIDCopy,
-                                                                             relatedCards: firstTen.map { $0.objectID },
-                                                                             withCloseButton: false)).opacity(0))
-                    }
-                    if firstTen.count >= 10 {
-                        NavigationLink {
-                            CardOtherPrintingsView(newID: card.newIDCopy,
-                                                   languageCode: card.language?.code ?? "en")
+            if let formatLegalities = card.sortedFormatLegalities {
+                DisclosureGroup("Legalities: \(formatLegalities.count)",
+                                isExpanded: $isLegalitiesExpanded) {
+                    ForEach(formatLegalities) { formatLegality in
+                        LabeledContent {
+                            Text(formatLegality.legality?.name ?? String.emdash)
                         } label: {
-                            Text("See all")
+                            Text(formatLegality.format?.name ?? String.emdash)
                         }
                     }
                 }

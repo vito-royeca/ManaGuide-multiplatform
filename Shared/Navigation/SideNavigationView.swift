@@ -43,7 +43,7 @@ struct SideNavigationView: View {
             initialView
             
         }
-            .navigationBarTitle("Mana Guide")
+            .navigationTitle(Text("Mana Guide"))
     }
 }
 

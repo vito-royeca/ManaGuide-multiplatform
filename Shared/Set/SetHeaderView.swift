@@ -19,7 +19,7 @@ struct SetHeaderView: View {
                     SetRowView(set: set,
                                style: .header)
                 }
-                languageButtonsView
+//                languageButtonsView
             }
             .padding(.horizontal, 5)
             .offset(y: progress * 50)
@@ -37,7 +37,7 @@ struct SetHeaderView: View {
                         .monospaced()
                 } else {
                     Button(action: {
-                        viewModel.languageCode = language.code ?? ""
+                        viewModel.languageCode = language.code 
                         Task {
                             try await viewModel.fetchRemoteData()
                         }

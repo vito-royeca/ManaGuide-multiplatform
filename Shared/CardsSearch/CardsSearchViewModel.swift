@@ -13,21 +13,20 @@ class CardsSearchViewModel: CardsViewModel {
     
     // MARK: - Variables
 
-    private var dataAPI: API
-    private var frc: NSFetchedResultsController<MGCard>
+    static let maxPageSize = 20
     
-    @Published var name = "" {
-        didSet {
-            updateWillFetch()
-        }
-    }
-    
-    @Published var colorsFilter = [MGColor]()
+    @Published var nameFilter = ""
     @Published var raritiesFilter = [MGRarity]()
     @Published var typesFilter = [MGCardType]()
-    
-    @Published var willFetch = false
-    @Published var colors = [MGColor]()
+    @Published var keywordsFilter = [MGKeyword]()
+    @Published var pageLimit = maxPageSize
+    @Published var pageOffset = 0
+    @Published var hasMoreData = true
+    @Published var isLoadingNextPage = false
+
+    private var dataAPI: API
+    private var frc: NSFetchedResultsController<MGCard>
+    private var resultIDs = [NSManagedObjectID]()
 
     // MARK: - Initializers
 
@@ -46,31 +45,32 @@ class CardsSearchViewModel: CardsViewModel {
         }
 
         do {
-            if try dataAPI.willFetchCards(name: name,
-                                          colors: colorsFilter.compactMap { $0.symbol },
+            if try dataAPI.willFetchCards(name: nameFilter,
                                           rarities: raritiesFilter.compactMap { $0.name },
-                                          types: typesFilter.compactMap { $0.name }) {
+                                          types: typesFilter.compactMap { $0.name },
+                                          keywords: keywordsFilter.compactMap { $0.name },
+                                          pageSize: CardsSearchViewModel.maxPageSize,
+                                          pageOffset: pageOffset) {
                 DispatchQueue.main.async {
                     self.isBusy.toggle()
                     self.isFailed = false
                 }
                 
-                _ = try await dataAPI.fetchCards(name: name,
-                                                 colors: colorsFilter.compactMap { $0.symbol },
-                                                 rarities: raritiesFilter.compactMap { $0.name },
-                                                 types: typesFilter.compactMap { $0.name },
-                                                 sortDescriptors: sortDescriptors)
-                
+                resultIDs = try await dataAPI.fetchCards(name: nameFilter,
+                                                         rarities: raritiesFilter.compactMap { $0.name },
+                                                         types: typesFilter.compactMap { $0.name },
+                                                         keywords: keywordsFilter.compactMap { $0.name },
+                                                         pageSize: CardsSearchViewModel.maxPageSize,
+                                                         pageOffset: pageOffset)
                 DispatchQueue.main.async {
-                    self.fetchLocalData()
                     self.isBusy.toggle()
                 }
-                
-            } else {
-                DispatchQueue.main.async {
-                    self.fetchLocalData()
-                }
             }
+
+            DispatchQueue.main.async {
+                self.fetchLocalData()
+            }
+
         } catch {
             DispatchQueue.main.async {
                 self.isBusy.toggle()
@@ -80,33 +80,19 @@ class CardsSearchViewModel: CardsViewModel {
     }
     
     override func fetchLocalData() {
-        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(name: name),
+        frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(),
                                          managedObjectContext: ManaKit.shared.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath,
                                          cacheName: nil)
         frc.delegate = self
         
+
         do {
             try frc.performFetch()
             sections = frc.sections ?? []
+            hasMoreData = (frc.fetchedObjects?.count ?? 0) >= CardsSearchViewModel.maxPageSize
         } catch {
-            print(error)
             isFailed = true
-        }
-    }
-    
-    override var sectionIndexTitles: [String] {
-        get {
-            switch sort {
-            case .name:
-                return frc.sectionIndexTitles
-            case .collectorNumber:
-                return frc.sectionIndexTitles
-            case .rarity:
-                return frc.sectionIndexTitles
-            case .type:
-                return frc.sectionIndexTitles
-            }
         }
     }
 }
@@ -122,39 +108,45 @@ extension CardsSearchViewModel: NSFetchedResultsControllerDelegate {
 // MARK: - NSFetchRequest
 
 extension CardsSearchViewModel {
-    func defaultFetchRequest(name: String) -> NSFetchRequest<MGCard> {
-        let format = "newID != nil AND newID != '' AND collectorNumber != nil AND language.code = %@"
-        var predicate = NSPredicate(format: format,
-                                    "en")
-        
-        if !name.isEmpty {
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
-                                                                            NSPredicate(format: "name CONTAINS[cd] %@",
-                                                                                        name)
-            ])
+    func defaultFetchRequest() -> NSFetchRequest<MGCard> {
+        var predicate = NSPredicate()
+
+        if resultIDs.isEmpty {
+            do {
+//                let url = try dataAPI.fetchCardsURL(name: nameFilter,
+//                                                    rarities: raritiesFilter.compactMap { $0.name },
+//                                                    types: typesFilter.compactMap { $0.name },
+//                                                    keywords: keywordsFilter.compactMap { $0.name },
+//                                                    pageSize: CardsSearchViewModel.maxPageSize,
+//                                                    pageOffset: pageOffset)
+//                let request: NSFetchRequest<SearchResult> = SearchResult.fetchRequest()
+//                request.predicate = NSPredicate(format: "pageOffset == %i AND url == %@",
+//                                                pageOffset,
+//                                                url.absoluteString)
+//                let objects = try ManaKit.shared.viewContext.fetch(request)
+//
+//                predicate = NSPredicate(format: "newID IN %@",
+//                                        objects.map { $0.newID })
+            } catch {
+                print(error)
+            }
+        } else {
+            var newIDs = [String]()
+            for resultID in resultIDs {
+                if let object = find(MGCard.self,
+                                     id: resultID) {
+                    newIDs.append(object.newIDCopy)
+                }
+            }
+            predicate = NSPredicate(format: "newID IN %@",
+                                    newIDs)
         }
-        if !colorsFilter.isEmpty {
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
-                                                                            NSPredicate(format: "ANY colors.symbol IN %@",
-                                                                                        colorsFilter.compactMap { $0.symbol })
-            ])
-        }
-        if !raritiesFilter.isEmpty {
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
-                                                                            NSPredicate(format: "rarity.name IN %@",
-                                                                                        raritiesFilter.compactMap { $0.name })
-            ])
-        }
-        if !typesFilter.isEmpty {
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
-                                                                            NSPredicate(format: "ANY supertypes.name IN %@",
-                                                                                        typesFilter.compactMap { $0.name })
-            ])
-        }
-        
+
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
         request.sortDescriptors = sortDescriptors
         request.predicate = predicate
+        request.fetchLimit = pageLimit
+        request.fetchOffset = pageOffset
 
         return request
     }
@@ -165,44 +157,40 @@ extension CardsSearchViewModel {
         guard let array = frc.fetchedObjects else {
             return []
         }
-        
         return array.map { $0.objectID }
     }
     
-    override func fetchOtherData() async throws {
-        try await super.fetchOtherData()
-        
-        let sortDescriptors = [NSSortDescriptor(key: "name",
-                                                ascending: true)]
-        
-        if try ManaKit.shared.willFetchColors() {
-            _ = try await ManaKit.shared.fetchColors(sortDescriptors: sortDescriptors)
-        }
-        
-        DispatchQueue.main.async {
-            let newSortDescriptors = [NSSortDescriptor(key: "name",
-                                                       ascending: true)]
-            self.colors = ManaKit.shared.find(MGColor.self,
-                                         properties: nil,
-                                         predicate: nil,
-                                         sortDescriptors: newSortDescriptors,
-                                         createIfNotFound: false,
-                                         context: ManaKit.shared.viewContext)  ?? []
-        }
-    }
-    
-    func updateWillFetch() {
-        willFetch = (!name.isEmpty && name.count >= 4) ||
-            (colorsFilter.count +
-            raritiesFilter.count +
-            typesFilter.count) >= 2
-        
+    func willFetch() -> Bool {
+        !nameFilter.isEmpty && nameFilter.count >= 4 ||
+        !raritiesFilter.isEmpty ||
+        !typesFilter.isEmpty ||
+        !keywordsFilter.isEmpty
     }
     
     func resetFilters() {
-        name = ""
-        colorsFilter = [MGColor]()
-        raritiesFilter = [MGRarity]()
-        typesFilter = [MGCardType]()
+        nameFilter = ""
+        raritiesFilter.removeAll()
+        typesFilter.removeAll()
+        keywordsFilter.removeAll()
+    }
+    
+    func resetPagination() {
+        pageOffset = 0
+        pageLimit = CardsSearchViewModel.maxPageSize
+        resultIDs.removeAll()
+    }
+    
+    func fetchRemoteNextPage() async throws {
+        DispatchQueue.main.async {
+            self.pageOffset += CardsSearchViewModel.maxPageSize
+            self.pageLimit = self.pageOffset
+            self.isLoadingNextPage = true
+        }
+        
+        try await fetchRemoteData()
+        
+        DispatchQueue.main.async {
+            self.isLoadingNextPage = false
+        }
     }
 }

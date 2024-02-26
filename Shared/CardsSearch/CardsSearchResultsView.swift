@@ -9,41 +9,111 @@ import SwiftUI
 import ManaKit
 
 struct CardsSearchResultsView: View {
+    static let viewName = "CardsSearchResultsView"
+
     @EnvironmentObject var viewModel: CardsSearchViewModel
+
     @State private var selectedCard: MGCard?
-    
+
     var body: some View {
-        contentView
+        Group {
+            if viewModel.isBusy {
+                if viewModel.isLoadingNextPage {
+                    contentView
+                } else {
+                    BusyView()
+                }
+            } else if viewModel.isFailed {
+                ErrorView {
+                    fetchRemoteData()
+                } cancelAction: {
+                    viewModel.isFailed = false
+                }
+            } else {
+                if viewModel.cards.isEmpty {
+                    EmptyResultView()
+                } else {
+                    contentView
+                }
+            }
+        }
+        .onAppear {
+            fetchRemoteData()
+        }
+        .onDisappear {
+            viewModel.resetPagination()
+        }
     }
     
     private var contentView: some View {
-        ZStack {
-            if viewModel.cards.isEmpty {
-                EmptyResultView()
-            } else {
-                List {
-                    CardsView(selectedCard: $selectedCard)
+        listView
+            .navigationTitle(Text(viewModel.cards.isEmpty ? "" : "Results"))
+            .sheet(item: $selectedCard) { card in
+                NavigationView {
+                    CardView(newID: card.newIDCopy,
+                             relatedCards: viewModel.cards,
+                             withCloseButton: true)
+                }
+            }
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    CardsMenuView(includeFilters: false)
                         .environmentObject(viewModel as CardsViewModel)
                 }
-                .listStyle(.plain)
-                .modifier(SectionIndex(sections: viewModel.sections,
-                                       sectionIndexTitles: viewModel.sectionIndexTitles))
+            }
+    }
+
+    private var listView: some View {
+        List {
+            CardsView(selectedCard: $selectedCard)
+                .environmentObject(viewModel as CardsViewModel)
+            if viewModel.hasMoreData {
+                Text("Loading...")
+                    .font(Font.custom(ManaKit.Fonts.magic2015.name,
+                                      size: 15))
+//                    .onAppear {
+//                        fetchRemoteNextPage()
+//                    }
+//                lastRowView
+//                    .listRowSeparator(.hidden)
             }
         }
-        .sheet(item: $selectedCard) { card in
-            NavigationView {
-                CardView(newID: card.newIDCopy,
-                         relatedCards: viewModel.cards,
-                         withCloseButton: true)
+        .listStyle(.plain)
+    }
+
+    var lastRowView: some View {
+        Group {
+            if viewModel.isBusy {
+                ProgressView("Loading...")
+                    .progressViewStyle(.circular)
+                    .font(Font.custom(ManaKit.Fonts.magic2015.name,
+                                      size: 20))
+            } else if viewModel.isFailed {
+                ErrorView {
+                    fetchRemoteData()
+                } cancelAction: {
+                    viewModel.isFailed = false
+                }
+            } else {
+                EmptyView()
             }
         }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                CardsMenuView(includeFilters: false)
-                    .environmentObject(viewModel as CardsViewModel)
-            }
+        .frame(height: 60)
+        .onAppear {
+            fetchRemoteNextPage()
         }
-        .navigationBarTitle("\(viewModel.cards.count) result\(viewModel.cards.count > 1 ? "s" : "")")
+    }
+
+    private func fetchRemoteData() {
+        Task {
+            try await viewModel.fetchRemoteData()
+        }
+    }
+    
+    private func fetchRemoteNextPage() {
+        Task {
+            try await viewModel.fetchRemoteNextPage()
+        }
     }
 }
 

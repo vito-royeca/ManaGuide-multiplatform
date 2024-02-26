@@ -44,11 +44,11 @@ struct CardOtherInfoView: View {
                 Text("Collector Number")
             }
             
-            LabeledContent {
-                Text(card.artist?.name ?? String.emdash)
-            } label: {
-                Text("Artist")
-            }
+//            LabeledContent {
+//                Text(card.artist?.name ?? String.emdash)
+//            } label: {
+//                Text("Artist")
+//            }
             
             if let frame = card.frame {
                 LabeledContent {

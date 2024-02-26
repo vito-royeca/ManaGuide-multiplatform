@@ -23,6 +23,7 @@ class SetViewModel: CardsViewModel {
     private var frc: NSFetchedResultsController<MGCard>
     
     // MARK: - Initializers
+
     init(setCode: String,
          languageCode: String,
          dataAPI: API = ManaKit.shared) {
@@ -147,10 +148,10 @@ class SetViewModel: CardsViewModel {
                     self.isFailed = false
                 }
                 
-                let set = try await dataAPI.fetchSet(code: setCode,
-                                                     languageCode: languageCode)?.objectID
+                let objectID = try await dataAPI.fetchSet(code: setCode,
+                                                          languageCode: languageCode)
                 DispatchQueue.main.async {
-                    self.set = set
+                    self.set = objectID
                     self.fetchLocalData()
                     self.isBusy.toggle()
                 }

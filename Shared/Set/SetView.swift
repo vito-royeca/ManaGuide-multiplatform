@@ -14,6 +14,8 @@ struct SetView: View {
     @State private var progress: CGFloat = 0
     @State private var selectedCard: MGCard?
 
+    @AppStorage("SetLanguageFilter") private var setLanguageFilter = "en"
+
     init(setCode: String, languageCode: String) {
         _viewModel = StateObject(wrappedValue: SetViewModel(setCode: setCode,
                                                             languageCode: languageCode))
@@ -26,14 +28,21 @@ struct SetView: View {
             } else if viewModel.isFailed {
                 ErrorView {
                     fetchRemoteData()
+                } cancelAction: {
+                    viewModel.isFailed = false
                 }
             } else {
                 scalingHeaderView
                     .ignoresSafeArea()
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.SetViewLanguageFilter)) { displayCode in
+            let languageCode = (displayCode.object as? String ?? "en").lowercased()
+            update(languageCode: languageCode)
+        }
         .onAppear {
             fetchRemoteData()
+            update(languageCode: setLanguageFilter)
         }
     }
     
@@ -56,7 +65,7 @@ struct SetView: View {
         }
         .collapseProgress($progress)
         .allowsHeaderCollapse()
-        .height(min: 160,
+        .height(min: 175,
                 max: 320)
         .sheet(item: $selectedCard) { card in
             NavigationView {
@@ -67,6 +76,8 @@ struct SetView: View {
         }
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
+                SetLanguageMenuView()
+                    .environmentObject(viewModel)
                 CardsMenuView()
                     .environmentObject(viewModel as CardsViewModel)
             }
@@ -80,15 +91,20 @@ struct SetView: View {
             try await viewModel.fetchRemoteData()
         }
     }
+    
+    private func update(languageCode: String) {
+        viewModel.languageCode = languageCode
+        fetchRemoteData()
+    }
 }
 
 // MARK: - Previews
 
 #Preview {
     NavigationView {
-        SetView(setCode: "isd",
+        SetView(setCode: "mkm",
                 languageCode: "en")
     }
-        .previewInterfaceOrientation(.landscapeLeft)
+//        .previewInterfaceOrientation(.landscapeLeft)
 }
 

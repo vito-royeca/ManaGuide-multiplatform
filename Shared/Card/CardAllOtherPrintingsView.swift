@@ -1,5 +1,5 @@
 //
-//  CardOtherPrintingsView.swift
+//  CardAllOtherPrintingsView.swift
 //  ManaGuide
 //
 //  Created by Vito Royeca on 11/5/23.
@@ -8,7 +8,7 @@
 import SwiftUI
 import ManaKit
 
-struct CardOtherPrintingsView: View {
+struct CardAllOtherPrintingsView: View {
     @AppStorage("cardsSort") private var sort = CardsViewSort.name
     @StateObject var viewModel: CardOtherPrintingsViewModel
     @State private var showingSort = false
@@ -28,6 +28,8 @@ struct CardOtherPrintingsView: View {
                     Task {
                         try await viewModel.fetchRemoteData()
                     }
+                } cancelAction: {
+                    viewModel.isBusy = false
                 }
             } else {
                 listView
@@ -63,14 +65,14 @@ struct CardOtherPrintingsView: View {
             }
         }
         .listStyle(.plain)
-        .navigationBarTitle("All Other Printings")
+        .navigationTitle(Text("All Other Printings"))
     }
 }
 
 // MARK: {reviews
 #Preview {
     NavigationView {
-        CardOtherPrintingsView(newID: "rvr_en_273", languageCode: "en")
+        CardAllOtherPrintingsView(newID: "rvr_en_273", languageCode: "en")
     }
         .previewInterfaceOrientation(.landscapeLeft)
 }

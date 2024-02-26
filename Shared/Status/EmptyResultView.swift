@@ -19,24 +19,36 @@ struct EmptyResultView: View {
         GeometryReader { proxy in
             VStack(spacing: 20) {
                 Spacer()
+                messageView
                 HStack {
                     Spacer()
-                    Image(imageName)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+                    imageView
                         .frame(width: proxy.size.width * 0.8,
                                alignment: .center)
-                        .cornerRadius(16)
-                        .clipped()
-                        .onAppear {
-                            let random = Int.random(in: 1..<6)
-                            imageName = "empty\(random < 5 ? "0" : "")\(random)"
-                        }
                     Spacer()
                 }
                 Spacer()
             }
         }
+    }
+    
+    private var messageView: some View {
+        Text("No results found")
+            .font(Font.custom(ManaKit.Fonts.magic2015.name,
+                              size: 30))
+    }
+    
+    private var imageView: some View {
+        Image(imageName)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            
+            .cornerRadius(16)
+            .clipped()
+            .onAppear {
+                let random = Int.random(in: 1..<5)
+                imageName = "empty\(random < 5 ? "0" : "")\(random)"
+            }
     }
 }
 

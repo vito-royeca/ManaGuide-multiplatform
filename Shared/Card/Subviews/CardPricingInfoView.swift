@@ -9,7 +9,7 @@ import SwiftUI
 import ManaKit
 
 struct CardPricingInfoView: View {
-    @State var isPricingExpanded = false
+    @State var isPricingExpanded = true
     var prices: [MGCardPrice]
     
     var body: some View {

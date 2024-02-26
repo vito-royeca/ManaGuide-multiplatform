@@ -11,7 +11,9 @@ import SwiftUI
 import ManaKit
 
 class CardViewModel: ViewModel {
+    @Published var index = 0
     @Published var card: NSManagedObjectID?
+    @Published var cards: [NSManagedObjectID] = []
     
     // MARK: - Variables
     
@@ -42,16 +44,25 @@ class CardViewModel: ViewModel {
                     self.isBusy.toggle()
                     self.isFailed = false
                 }
-                
-                let card = try await dataAPI.fetchCard(newID: newID)
 
+                let objectID = try await dataAPI.fetchCard(newID: newID)
+                
                 DispatchQueue.main.async {
-                    self.card = card?.objectID
                     self.isBusy.toggle()
+
+                    self.card = objectID
+                    if let card = self.card {
+                        self.cards = self.relatedCards.isEmpty ? [card] : self.relatedCards
+                        self.index = self.cards.firstIndex(of: card) ?? 0
+                    }
                 }
             } else {
                 DispatchQueue.main.async {
-                    self.findCard()
+                    self.card = self.findCard(newID: self.newID)
+                    if let card = self.card {
+                        self.cards = self.relatedCards.isEmpty ? [card] : self.relatedCards
+                        self.index = self.cards.firstIndex(of: card) ?? 0
+                    }
                 }
             }
         } catch {
@@ -61,12 +72,46 @@ class CardViewModel: ViewModel {
             }
         }
     }
+    
+    func fetchPreviousRemoteData() async throws {
+        for i in stride(from: 5, through: 1, by: -1) {
+            let previousIndex = index - i
+            
+            if previousIndex >= 0 {
+                do {
+                    if let previousCard = find(MGCard.self, id: cards[previousIndex]),
+                        try dataAPI.willFetchCard(newID: previousCard.newIDCopy) {
+                        let _ = try await dataAPI.fetchCard(newID: previousCard.newIDCopy)
+                    }
+                } catch {
+                    print(error)
+                }
+            }
+        }
+    }
+
+    func fetchNextRemoteData() async throws {
+        for i in 1...5 {
+            let nextIndex = index + i
+            
+            if nextIndex <= cards.count - 1 {
+                do {
+                    if let nextCard = find(MGCard.self, id: cards[nextIndex]),
+                       try dataAPI.willFetchCard(newID: nextCard.newIDCopy) {
+                        _ = try await dataAPI.fetchCard(newID: nextCard.newIDCopy)
+                    }
+                } catch {
+                    print(error)
+                }
+            }
+        }
+    }
 }
 
 extension CardViewModel {
-    func findCard() {
+    func findCard(newID: String) -> NSManagedObjectID? {
         let predicate = NSPredicate(format: "newID == %@", newID)
-        card = ManaKit.shared.find(MGCard.self,
+        return ManaKit.shared.find(MGCard.self,
                                    properties: nil,
                                    predicate: predicate,
                                    sortDescriptors: nil,

@@ -24,6 +24,8 @@ struct NewsView: View {
             } else if viewModel.isFailed {
                 ErrorView {
                     viewModel.fetchData()
+                } cancelAction: {
+                    viewModel.isFailed = false
                 }
             } else {
                 #if os(iOS)
@@ -77,7 +79,7 @@ struct NewsView: View {
 //                    .preferredControlAccentColor(.accentColor)
                     .dismissButtonStyle(.close)
             }
-            .navigationBarTitle("News")
+            .navigationTitle(Text("News"))
     }
     
     var regularView: some View {
@@ -107,7 +109,7 @@ struct NewsView: View {
                         .dismissButtonStyle(.close)
                 }
                 .padding()
-                .navigationBarTitle("News")
+                .navigationTitle(Text("News"))
         }
     }
 }

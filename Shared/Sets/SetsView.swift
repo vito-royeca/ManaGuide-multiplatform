@@ -24,6 +24,8 @@ struct SetsView: View {
             } else if viewModel.isFailed {
                 ErrorView {
                     fetchRemoteData()
+                } cancelAction: {
+                    viewModel.isFailed = false
                 }
             } else {
                 contentView
@@ -72,15 +74,20 @@ struct SetsView: View {
                         .environmentObject(viewModel)
                 }
             }
-            .navigationBarTitle("Sets")
+            .navigationTitle(Text("Sets"))
             .searchable(text: $query,
                         placement: .navigationBarDrawer(displayMode: .automatic),
                         prompt: "Search for Magic sets...")
     }
 
     private func rowView(for set: MGSet) -> some View {
+        let language = set.sortedLanguages?.first(where: {
+            $0.code == "en"
+        }) ?? set.sortedLanguages?.first
+        let languageCode = language?.code ?? "en"
+
         let destinationView = SetView(setCode: set.code,
-                                      languageCode: "en")
+                                      languageCode: languageCode)
         let navigationLink = NavigationLink(destination: destinationView) {
             EmptyView()
         }
@@ -138,4 +145,3 @@ struct SetsView_Previews: PreviewProvider {
 //            .previewInterfaceOrientation(.landscapeRight)
     }
 }
-

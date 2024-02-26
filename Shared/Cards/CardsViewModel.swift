@@ -50,7 +50,7 @@ enum CardsViewDisplay: String, CaseIterable {
         }
     }
 
-    static let defaultValue: CardsViewDisplay = .image
+    static let defaultValue: CardsViewDisplay = .list
 }
 
 // MARK: - CardsViewModel
@@ -74,27 +74,27 @@ class CardsViewModel: ViewModel {
             case .name:
                 sortDescriptors.append(NSSortDescriptor(key: "name",
                                                         ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
-                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "releaseDate",
+                                                        ascending: false))
             case .collectorNumber:
                 sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
                                                         ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "name",
-                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "releaseDate",
+                                                        ascending: false))
             case .rarity:
                 sortDescriptors.append(NSSortDescriptor(key: "rarity.name",
                                                         ascending: true))
                 sortDescriptors.append(NSSortDescriptor(key: "name",
                                                         ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
-                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "releaseDate",
+                                                        ascending: false))
             case .type:
                 sortDescriptors.append(NSSortDescriptor(key: "type.name",
                                                         ascending: true))
                 sortDescriptors.append(NSSortDescriptor(key: "name",
                                                         ascending: true))
-                sortDescriptors.append(NSSortDescriptor(key: "numberOrder",
-                                                        ascending: true))
+                sortDescriptors.append(NSSortDescriptor(key: "releaseDate",
+                                                        ascending: false))
             }
             
             return sortDescriptors
@@ -125,37 +125,37 @@ extension CardsViewModel {
     @objc func fetchOtherData() async throws {
         let sortDescriptors = [NSSortDescriptor(key: "name",
                                                 ascending: true)]
-        
+
         if try ManaKit.shared.willFetchColors() {
-            _ = try await ManaKit.shared.fetchColors(sortDescriptors: sortDescriptors)
+            _ = try await ManaKit.shared.fetchColors()
         }
-            
+
         if try ManaKit.shared.willFetchRarities() {
-            _ = try await ManaKit.shared.fetchRarities(sortDescriptors: sortDescriptors)
+            _ = try await ManaKit.shared.fetchRarities()
         }
-        
+
         if try ManaKit.shared.willFetchCardTypes() {
-            _ = try await ManaKit.shared.fetchCardTypes(sortDescriptors: sortDescriptors)
+            _ = try await ManaKit.shared.fetchCardTypes()
         }
-        
+
         DispatchQueue.main.async {
             let newSortDescriptors = [NSSortDescriptor(key: "name",
                                                        ascending: true)]
-            
+
             self.rarities = ManaKit.shared.find(MGRarity.self,
-                                            properties: nil,
-                                            predicate: nil,
-                                            sortDescriptors: newSortDescriptors,
-                                            createIfNotFound: false,
-                                            context: ManaKit.shared.viewContext)  ?? []
-            
+                                                properties: nil,
+                                                predicate: nil,
+                                                sortDescriptors: newSortDescriptors,
+                                                createIfNotFound: false,
+                                                context: ManaKit.shared.viewContext)  ?? []
+
             let predicate = NSPredicate(format: "parent == nil")
             self.cardTypes = ManaKit.shared.find(MGCardType.self,
-                                            properties: nil,
-                                            predicate: predicate,
-                                            sortDescriptors: newSortDescriptors,
-                                            createIfNotFound: false,
-                                            context: ManaKit.shared.viewContext)  ?? []
+                                                 properties: nil,
+                                                 predicate: predicate,
+                                                 sortDescriptors: newSortDescriptors,
+                                                 createIfNotFound: false,
+                                                 context: ManaKit.shared.viewContext)  ?? []
         }
     }
 }
