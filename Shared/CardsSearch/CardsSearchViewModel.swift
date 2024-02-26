@@ -30,7 +30,7 @@ class CardsSearchViewModel: CardsViewModel {
 
     // MARK: - Initializers
 
-    init(dataAPI: API = ManaKit.sharedCoreData) {
+    init(dataAPI: API = ManaKit.shared) {
         self.dataAPI = dataAPI
         frc = NSFetchedResultsController()
         
@@ -81,7 +81,7 @@ class CardsSearchViewModel: CardsViewModel {
     
     override func fetchLocalData() {
         frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(),
-                                         managedObjectContext: ManaKit.sharedCoreData.viewContext,
+                                         managedObjectContext: ManaKit.shared.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath,
                                          cacheName: nil)
         frc.delegate = self

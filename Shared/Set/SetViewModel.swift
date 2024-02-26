@@ -26,7 +26,7 @@ class SetViewModel: CardsViewModel {
 
     init(setCode: String,
          languageCode: String,
-         dataAPI: API = ManaKit.sharedCoreData) {
+         dataAPI: API = ManaKit.shared) {
         self.setCode = setCode
         self.languageCode = languageCode
         self.dataAPI = dataAPI
@@ -173,7 +173,7 @@ class SetViewModel: CardsViewModel {
     override func fetchLocalData() {
         frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(setCode: setCode,
                                                                            languageCode: languageCode),
-                                         managedObjectContext: ManaKit.sharedCoreData.viewContext,
+                                         managedObjectContext: ManaKit.shared.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath,
                                          cacheName: nil)
         frc.delegate = self
@@ -232,22 +232,22 @@ extension SetViewModel {
     func commonLanguages() -> [MGLanguage] {
         let codes = ["en", "es", "fr", "de", "it", "pt", "ja", "ko", "ru", "zhs", "zht"]
         let predicate = NSPredicate(format: "code IN %@", codes)
-        let languages = ManaKit.sharedCoreData.find(MGLanguage.self,
-                                                    properties: nil,
-                                                    predicate: predicate,
-                                                    sortDescriptors: [NSSortDescriptor(key: "code", ascending: true)],
-                                                    createIfNotFound: true,
-                                                    context: ManaKit.sharedCoreData.viewContext)  ?? []
+        let languages = ManaKit.shared.find(MGLanguage.self,
+                                            properties: nil,
+                                            predicate: predicate,
+                                            sortDescriptors: [NSSortDescriptor(key: "code", ascending: true)],
+                                            createIfNotFound: true,
+                                            context: ManaKit.shared.viewContext)  ?? []
         return languages
     }
     
     func findSet() {
         let predicate = NSPredicate(format: "code == %@", setCode)
-        set = ManaKit.sharedCoreData.find(MGSet.self,
-                                          properties: nil,
-                                          predicate: predicate,
-                                          sortDescriptors: nil,
-                                          createIfNotFound: false)?.first?.objectID
+        set = ManaKit.shared.find(MGSet.self,
+                                  properties: nil,
+                                  predicate: predicate,
+                                  sortDescriptors: nil,
+                                  createIfNotFound: false)?.first?.objectID
     }
 
     var setObject: MGSet? {

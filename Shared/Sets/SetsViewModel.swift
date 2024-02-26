@@ -46,7 +46,7 @@ class SetsViewModel: ViewModel {
     private var setIDs = [NSManagedObjectID]()
     
     // MARK: - Initializers
-    init(dataAPI: API = ManaKit.sharedCoreData) {
+    init(dataAPI: API = ManaKit.shared) {
         self.dataAPI = dataAPI
         frc = NSFetchedResultsController()
         
@@ -148,7 +148,7 @@ class SetsViewModel: ViewModel {
     
     override func fetchLocalData() {
         frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(query: query),
-                                         managedObjectContext: ManaKit.sharedCoreData.viewContext,
+                                         managedObjectContext: ManaKit.shared.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath,
                                          cacheName: nil)
         frc.delegate = self
@@ -199,8 +199,8 @@ extension SetsViewModel {
         if !setIDs.isEmpty {
             var setCodes = [String]()
             for setID in setIDs {
-                let set = ManaKit.sharedCoreData.object(MGSet.self,
-                                                        with: setID)
+                let set = ManaKit.shared.object(MGSet.self,
+                                                with: setID)
                 setCodes.append(set.code)
             }
             predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
@@ -218,12 +218,12 @@ extension SetsViewModel {
 
 extension SetsViewModel {
     func setTypes() -> [MGSetType] {
-        let types = ManaKit.sharedCoreData.find(MGSetType.self,
-                                                properties: nil,
-                                                predicate: nil,
-                                                sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)],
-                                                createIfNotFound: true,
-                                                context: ManaKit.sharedCoreData.viewContext)  ?? []
+        let types = ManaKit.shared.find(MGSetType.self,
+                                        properties: nil,
+                                        predicate: nil,
+                                        sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)],
+                                        createIfNotFound: true,
+                                        context: ManaKit.shared.viewContext)  ?? []
         return types
     }
 }

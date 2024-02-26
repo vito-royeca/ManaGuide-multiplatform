@@ -65,7 +65,7 @@ struct CardsStoreFeatureView: View {
                         .aspectRatio(contentMode: .fill)
                         .clipped()
                 } else {
-                    Image(uiImage: ManaKit.sharedCoreData.image(name: .cropBack)!)
+                    Image(uiImage: ManaKit.shared.image(name: .cropBack)!)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .clipped()
@@ -100,7 +100,7 @@ struct CardsStoreLargeView: View {
                     .aspectRatio(contentMode: .fill)
                     .clipped()
             } else {
-                Image(uiImage: ManaKit.sharedCoreData.image(name: .cropBack)!)
+                Image(uiImage: ManaKit.shared.image(name: .cropBack)!)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .clipped()
@@ -160,7 +160,7 @@ struct CardsStoreCompactView: View {
                         .aspectRatio(contentMode: .fill)
                         .clipped()
                 } else {
-                    Image(uiImage: ManaKit.sharedCoreData.image(name: .cropBack)!)
+                    Image(uiImage: ManaKit.shared.image(name: .cropBack)!)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .clipped()

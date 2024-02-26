@@ -23,7 +23,7 @@ class CardOtherPrintingsViewModel: CardsViewModel {
 
     init(newID: String,
          languageCode: String,
-         dataAPI: API = ManaKit.sharedCoreData) {
+         dataAPI: API = ManaKit.shared) {
         self.newID = newID
         self.languageCode = languageCode
         self.dataAPI = dataAPI
@@ -68,7 +68,7 @@ class CardOtherPrintingsViewModel: CardsViewModel {
     
     override func fetchLocalData() {
         frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(newID: newID),
-                                         managedObjectContext: ManaKit.sharedCoreData.viewContext,
+                                         managedObjectContext: ManaKit.shared.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath,
                                          cacheName: nil)
         frc.delegate = self
@@ -110,8 +110,8 @@ extension CardOtherPrintingsViewModel {
         if !otherPrintingIDs.isEmpty {
             var newIDs = [String]()
             for otherPrintingID in otherPrintingIDs {
-                let card = ManaKit.sharedCoreData.object(MGCard.self,
-                                                        with: otherPrintingID)
+                let card = ManaKit.shared.object(MGCard.self,
+                                                 with: otherPrintingID)
                 newIDs.append(card.newIDCopy)
             }
             predicate = NSPredicate(format: "newID IN %@", newIDs)
@@ -128,11 +128,11 @@ extension CardOtherPrintingsViewModel {
 extension CardOtherPrintingsViewModel {
     func findOtherPrintingIDs() {
         let predicate = NSPredicate(format: "newID == %@", newID)
-        if let card = ManaKit.sharedCoreData.find(MGCard.self,
-                                                  properties: nil,
-                                                  predicate: predicate,
-                                                  sortDescriptors: nil,
-                                                  createIfNotFound: false)?.first,
+        if let card = ManaKit.shared.find(MGCard.self,
+                                          properties: nil,
+                                          predicate: predicate,
+                                          sortDescriptors: nil,
+                                          createIfNotFound: false)?.first,
            let sortedOtherPrintings = card.sortedOtherPrintings {
             otherPrintingIDs = sortedOtherPrintings.map { $0.objectID }
         }

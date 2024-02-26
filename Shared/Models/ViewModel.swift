@@ -47,7 +47,7 @@ class ViewModel: NSObject, ObservableObject {
     
     func find<T: MGEntity>(_ entity: T.Type,
                            id: NSManagedObjectID) -> T? {
-        return ManaKit.sharedCoreData.viewContext.object(with: id) as? T
+        return ManaKit.shared.viewContext.object(with: id) as? T
     }
     
     func find<T: MGEntity>(_ entity: T.Type,
@@ -55,7 +55,7 @@ class ViewModel: NSObject, ObservableObject {
         var array = [T]()
         
         for id in ids {
-            if let object = ManaKit.sharedCoreData.viewContext.object(with: id) as? T {
+            if let object = ManaKit.shared.viewContext.object(with: id) as? T {
                 array.append(object)
             }
         }

@@ -25,7 +25,7 @@ class CardViewModel: ViewModel {
     
     init(newID: String,
          relatedCards: [NSManagedObjectID],
-         dataAPI: API = ManaKit.sharedCoreData) {
+         dataAPI: API = ManaKit.shared) {
         self.newID = newID
         self.relatedCards = relatedCards
         self.dataAPI = dataAPI
@@ -111,11 +111,11 @@ class CardViewModel: ViewModel {
 extension CardViewModel {
     func findCard(newID: String) -> NSManagedObjectID? {
         let predicate = NSPredicate(format: "newID == %@", newID)
-        return ManaKit.sharedCoreData.find(MGCard.self,
-                                           properties: nil,
-                                           predicate: predicate,
-                                           sortDescriptors: nil,
-                                           createIfNotFound: false)?.first?.objectID
+        return ManaKit.shared.find(MGCard.self,
+                                   properties: nil,
+                                   predicate: predicate,
+                                   sortDescriptors: nil,
+                                   createIfNotFound: false)?.first?.objectID
     }
 
     var cardObject: MGCard? {

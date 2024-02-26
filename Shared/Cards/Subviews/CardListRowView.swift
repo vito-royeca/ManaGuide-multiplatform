@@ -28,7 +28,7 @@ struct CardListRowView: View {
                                 .aspectRatio(contentMode: .fill)
                                 .clipped()
                         } else {
-                            Image(uiImage: ManaKit.sharedCoreData.image(name: .cropBack)!)
+                            Image(uiImage: ManaKit.shared.image(name: .cropBack)!)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .clipped()

@@ -18,7 +18,7 @@ class RaritiesViewModel: ViewModel {
     private var frc: NSFetchedResultsController<MGRarity>
     
     // MARK: - Initializers
-    init(dataAPI: API = ManaKit.sharedCoreData) {
+    init(dataAPI: API = ManaKit.shared) {
         self.dataAPI = dataAPI
         frc = NSFetchedResultsController()
         
@@ -86,7 +86,7 @@ class RaritiesViewModel: ViewModel {
     
     override func fetchLocalData() {
         frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(),
-                                         managedObjectContext: ManaKit.sharedCoreData.viewContext,
+                                         managedObjectContext: ManaKit.shared.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath,
                                          cacheName: nil)
         frc.delegate = self

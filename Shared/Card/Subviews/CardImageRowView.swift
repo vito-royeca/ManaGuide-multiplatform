@@ -43,7 +43,7 @@ struct CardImageRowView: View {
                         .aspectRatio(contentMode: .fit)
                         .clipped()
                 } else {
-                    Image(uiImage: ManaKit.sharedCoreData.image(name: .cardBack)!)
+                    Image(uiImage: ManaKit.shared.image(name: .cardBack)!)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .clipped()

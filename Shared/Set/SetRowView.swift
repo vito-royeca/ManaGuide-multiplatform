@@ -39,7 +39,7 @@ struct SetRowView: View {
                 }
                 .frame(width: 100, height: 50)
             } else {
-                Image(uiImage: ManaKit.sharedCoreData.image(name: .mtgLogo)!)
+                Image(uiImage: ManaKit.shared.image(name: .mtgLogo)!)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 50)
@@ -68,7 +68,7 @@ struct SetRowView: View {
                 }
                 .frame(maxHeight: 100)
             } else {
-                Image(uiImage: ManaKit.sharedCoreData.image(name: .mtgLogo)!)
+                Image(uiImage: ManaKit.shared.image(name: .mtgLogo)!)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(maxHeight: 100)
