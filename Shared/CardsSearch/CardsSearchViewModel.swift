@@ -26,11 +26,11 @@ class CardsSearchViewModel: CardsViewModel {
 
     private var dataAPI: API
     private var frc: NSFetchedResultsController<MGCard>
-    private var resultIDs = [String]()
+    private var resultIDs = [NSManagedObjectID]()
 
     // MARK: - Initializers
 
-    init(dataAPI: API = ManaKit.shared) {
+    init(dataAPI: API = ManaKit.sharedCoreData) {
         self.dataAPI = dataAPI
         frc = NSFetchedResultsController()
         
@@ -61,7 +61,7 @@ class CardsSearchViewModel: CardsViewModel {
                                                          types: typesFilter.compactMap { $0.name },
                                                          keywords: keywordsFilter.compactMap { $0.name },
                                                          pageSize: CardsSearchViewModel.maxPageSize,
-                                                         pageOffset: pageOffset).map { $0.newIDCopy }
+                                                         pageOffset: pageOffset)
                 DispatchQueue.main.async {
                     self.isBusy.toggle()
                 }
@@ -81,14 +81,14 @@ class CardsSearchViewModel: CardsViewModel {
     
     override func fetchLocalData() {
         frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(),
-                                         managedObjectContext: ManaKit.shared.viewContext,
+                                         managedObjectContext: ManaKit.sharedCoreData.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath,
                                          cacheName: nil)
         frc.delegate = self
         
+
         do {
             try frc.performFetch()
-
             sections = frc.sections ?? []
             hasMoreData = (frc.fetchedObjects?.count ?? 0) >= CardsSearchViewModel.maxPageSize
         } catch {
@@ -112,20 +112,34 @@ extension CardsSearchViewModel {
         var predicate = NSPredicate()
 
         if resultIDs.isEmpty {
-            let request: NSFetchRequest<SearchResult> = SearchResult.fetchRequest()
-            request.predicate = NSPredicate(format: "pageOffset == %i",
-                                            pageOffset)
-            
             do {
-                let objects = try ManaKit.shared.viewContext.fetch(request)
-                predicate = NSPredicate(format: "newID IN %@",
-                                        objects.map { $0.newID })
+//                let url = try dataAPI.fetchCardsURL(name: nameFilter,
+//                                                    rarities: raritiesFilter.compactMap { $0.name },
+//                                                    types: typesFilter.compactMap { $0.name },
+//                                                    keywords: keywordsFilter.compactMap { $0.name },
+//                                                    pageSize: CardsSearchViewModel.maxPageSize,
+//                                                    pageOffset: pageOffset)
+//                let request: NSFetchRequest<SearchResult> = SearchResult.fetchRequest()
+//                request.predicate = NSPredicate(format: "pageOffset == %i AND url == %@",
+//                                                pageOffset,
+//                                                url.absoluteString)
+//                let objects = try ManaKit.shared.viewContext.fetch(request)
+//
+//                predicate = NSPredicate(format: "newID IN %@",
+//                                        objects.map { $0.newID })
             } catch {
                 print(error)
             }
         } else {
+            var newIDs = [String]()
+            for resultID in resultIDs {
+                if let object = find(MGCard.self,
+                                     id: resultID) {
+                    newIDs.append(object.newIDCopy)
+                }
+            }
             predicate = NSPredicate(format: "newID IN %@",
-                                    resultIDs)
+                                    newIDs)
         }
 
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
@@ -163,7 +177,7 @@ extension CardsSearchViewModel {
     func resetPagination() {
         pageOffset = 0
         pageLimit = CardsSearchViewModel.maxPageSize
-//        cardIDs.removeAll()
+        resultIDs.removeAll()
     }
     
     func fetchRemoteNextPage() async throws {

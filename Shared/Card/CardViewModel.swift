@@ -25,7 +25,7 @@ class CardViewModel: ViewModel {
     
     init(newID: String,
          relatedCards: [NSManagedObjectID],
-         dataAPI: API = ManaKit.shared) {
+         dataAPI: API = ManaKit.sharedCoreData) {
         self.newID = newID
         self.relatedCards = relatedCards
         self.dataAPI = dataAPI
@@ -45,23 +45,23 @@ class CardViewModel: ViewModel {
                     self.isFailed = false
                 }
 
-                let card = try await dataAPI.fetchCard(newID: newID)
+                let objectID = try await dataAPI.fetchCard(newID: newID)
                 
                 DispatchQueue.main.async {
                     self.isBusy.toggle()
 
-                    self.card = card?.objectID
-                    if let objectID = card?.objectID {
-                        self.cards = self.relatedCards.isEmpty ? [objectID] : self.relatedCards
-                        self.index = self.cards.firstIndex(of: objectID) ?? 0
+                    self.card = objectID
+                    if let card = self.card {
+                        self.cards = self.relatedCards.isEmpty ? [card] : self.relatedCards
+                        self.index = self.cards.firstIndex(of: card) ?? 0
                     }
                 }
             } else {
                 DispatchQueue.main.async {
                     self.card = self.findCard(newID: self.newID)
-                    if let objectID = self.card {
-                        self.cards = self.relatedCards.isEmpty ? [objectID] : self.relatedCards
-                        self.index = self.cards.firstIndex(of: objectID) ?? 0
+                    if let card = self.card {
+                        self.cards = self.relatedCards.isEmpty ? [card] : self.relatedCards
+                        self.index = self.cards.firstIndex(of: card) ?? 0
                     }
                 }
             }
@@ -82,7 +82,6 @@ class CardViewModel: ViewModel {
                     if let previousCard = find(MGCard.self, id: cards[previousIndex]),
                         try dataAPI.willFetchCard(newID: previousCard.newIDCopy) {
                         let _ = try await dataAPI.fetchCard(newID: previousCard.newIDCopy)
-                    } else {
                     }
                 } catch {
                     print(error)
@@ -99,8 +98,7 @@ class CardViewModel: ViewModel {
                 do {
                     if let nextCard = find(MGCard.self, id: cards[nextIndex]),
                        try dataAPI.willFetchCard(newID: nextCard.newIDCopy) {
-                        let _ = try await dataAPI.fetchCard(newID: nextCard.newIDCopy)
-                    } else {
+                        _ = try await dataAPI.fetchCard(newID: nextCard.newIDCopy)
                     }
                 } catch {
                     print(error)
@@ -113,11 +111,11 @@ class CardViewModel: ViewModel {
 extension CardViewModel {
     func findCard(newID: String) -> NSManagedObjectID? {
         let predicate = NSPredicate(format: "newID == %@", newID)
-        return ManaKit.shared.find(MGCard.self,
-                                   properties: nil,
-                                   predicate: predicate,
-                                   sortDescriptors: nil,
-                                   createIfNotFound: false)?.first?.objectID
+        return ManaKit.sharedCoreData.find(MGCard.self,
+                                           properties: nil,
+                                           predicate: predicate,
+                                           sortDescriptors: nil,
+                                           createIfNotFound: false)?.first?.objectID
     }
 
     var cardObject: MGCard? {

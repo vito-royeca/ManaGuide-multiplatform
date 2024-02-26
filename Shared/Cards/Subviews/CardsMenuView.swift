@@ -162,7 +162,7 @@ struct CardsMenuView: View {
     
     private func fetchRemoteData() {
         Task {
-//            try await viewModel.fetchOtherData()
+            try await viewModel.fetchOtherData()
         }
     }
 }

@@ -13,7 +13,10 @@ extension NSNotification {
     static let CardsViewTypeFilter = Notification.Name.init("CardsViewTypeFilter")
     static let CardsViewDisplay = Notification.Name.init("CardsViewDisplay")
     static let CardsViewClear = Notification.Name.init("CardsViewClear")
+    static let CardMenu = Notification.Name.init("CardMenu")
+
     static let SetsViewSort = Notification.Name.init("SetsViewSort")
     static let SetsViewTypeFilter = Notification.Name.init("SetsViewTypeFilter")
     static let SetsViewClear = Notification.Name.init("SetsViewClear")
+    static let SetViewLanguageFilter = Notification.Name.init("SetViewLanguageFilter")
 }

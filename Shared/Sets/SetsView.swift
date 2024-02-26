@@ -74,7 +74,7 @@ struct SetsView: View {
                         .environmentObject(viewModel)
                 }
             }
-            .navigationBarTitle("Sets")
+            .navigationTitle(Text("Sets"))
             .searchable(text: $query,
                         placement: .navigationBarDrawer(displayMode: .automatic),
                         prompt: "Search for Magic sets...")

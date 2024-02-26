@@ -52,77 +52,50 @@ struct CardsSearchFormView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
+                    Button(action: {
                         viewModel.resetFilters()
-                    } label: {
+                    }) {
                         Text("Clear")
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
+                    Button(action: {
                         performSearch()
-                    } label: {
+                    }) {
                         Text("Submit")
                     }
                     .disabled(!viewModel.willFetch())
                     .navigationDestination(for: String.self) { view in
-                        if view == "CardsSearchResultsView" {
+                        if view == CardsSearchResultsView.viewName {
                             CardsSearchResultsView()
                                 .environmentObject(viewModel)
                         }
                     }
                 }
             }
-            .navigationBarTitle("Search")
+            .navigationTitle(Text("Search"))
             .sheet(isPresented: $isRaritiesExpanded) {
                 NavigationView {
                     CardFilterSelectorView(viewModel: RaritiesViewModel(),
                                            type: MGRarity.self,
-                                           selectedFilters: $viewModel.raritiesFilter)
-                    .navigationTitle("Rarity")
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button {
-                                isRaritiesExpanded.toggle()
-                            } label: {
-                                Text("Close")
-                            }
-                        }
-                    }
+                                           selectedFilters: $viewModel.raritiesFilter,
+                                           filterTitle: "Rarity")
                 }
             }
             .sheet(isPresented: $isTypesExpanded) {
                 NavigationView {
                     CardFilterSelectorView(viewModel: CardTypesViewModel(),
                                            type: MGCardType.self,
-                                           selectedFilters: $viewModel.typesFilter)
-                    .navigationTitle("Type")
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button {
-                                isTypesExpanded.toggle()
-                            } label: {
-                                Text("Close")
-                            }
-                        }
-                    }
+                                           selectedFilters: $viewModel.typesFilter,
+                                           filterTitle: "Type")
                 }
             }
             .sheet(isPresented: $isKeywordsExpanded) {
                 NavigationView {
                     CardFilterSelectorView(viewModel: KeywordsViewModel(),
                                            type: MGKeyword.self,
-                                           selectedFilters: $viewModel.keywordsFilter)
-                    .navigationTitle("Keyword")
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button {
-                                isKeywordsExpanded.toggle()
-                            } label: {
-                                Text("Close")
-                            }
-                        }
-                    }
+                                           selectedFilters: $viewModel.keywordsFilter,
+                                           filterTitle: "Keyword")
                 }
             }
         }
@@ -206,7 +179,7 @@ struct CardsSearchFormView: View {
     private func performSearch() {
         viewModel.isFailed = false
         viewModel.isBusy = false
-        navigationPath.append("CardsSearchResultsView")
+        navigationPath.append(CardsSearchResultsView.viewName)
     }
     
     private func cancelSearch() {
@@ -271,9 +244,9 @@ struct ColorFilterButton: View {
 
     var body: some View {
         let text = "{CI_\(color.symbol ?? "")}"
-        let button = Button {
+        let button = Button(action: {
             action()
-        } label: {
+        }) {
             HStack {
                 AttributedText(
                     NSAttributedString(symbol: text,

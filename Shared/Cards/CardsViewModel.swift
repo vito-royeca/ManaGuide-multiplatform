@@ -121,3 +121,41 @@ class CardsViewModel: ViewModel {
     }
 }
 
+extension CardsViewModel {
+    @objc func fetchOtherData() async throws {
+        let sortDescriptors = [NSSortDescriptor(key: "name",
+                                                ascending: true)]
+
+        if try ManaKit.sharedCoreData.willFetchColors() {
+            _ = try await ManaKit.sharedCoreData.fetchColors()
+        }
+
+        if try ManaKit.sharedCoreData.willFetchRarities() {
+            _ = try await ManaKit.sharedCoreData.fetchRarities()
+        }
+
+        if try ManaKit.sharedCoreData.willFetchCardTypes() {
+            _ = try await ManaKit.sharedCoreData.fetchCardTypes()
+        }
+
+        DispatchQueue.main.async {
+            let newSortDescriptors = [NSSortDescriptor(key: "name",
+                                                       ascending: true)]
+
+            self.rarities = ManaKit.sharedCoreData.find(MGRarity.self,
+                                                        properties: nil,
+                                                        predicate: nil,
+                                                        sortDescriptors: newSortDescriptors,
+                                                        createIfNotFound: false,
+                                                        context: ManaKit.sharedCoreData.viewContext)  ?? []
+
+            let predicate = NSPredicate(format: "parent == nil")
+            self.cardTypes = ManaKit.sharedCoreData.find(MGCardType.self,
+                                                         properties: nil,
+                                                         predicate: predicate,
+                                                         sortDescriptors: newSortDescriptors,
+                                                         createIfNotFound: false,
+                                                         context: ManaKit.sharedCoreData.viewContext)  ?? []
+        }
+    }
+}

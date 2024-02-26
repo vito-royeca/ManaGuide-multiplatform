@@ -23,9 +23,9 @@ struct ManaGuideApp: App {
         // Server setup
         FirebaseApp.configure()
 
-        ManaKit.shared.configure(apiURL: "https://managuideapp.com")
+        ManaKit.sharedCoreData.configure(apiURL: "https://managuideapp.com")
         Task {
-            await ManaKit.shared.setupResources()
+            await ManaKit.sharedCoreData.setupResources()
         }
     }
     

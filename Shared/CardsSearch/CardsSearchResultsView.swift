@@ -9,6 +9,8 @@ import SwiftUI
 import ManaKit
 
 struct CardsSearchResultsView: View {
+    static let viewName = "CardsSearchResultsView"
+
     @EnvironmentObject var viewModel: CardsSearchViewModel
 
     @State private var selectedCard: MGCard?
@@ -39,13 +41,13 @@ struct CardsSearchResultsView: View {
             fetchRemoteData()
         }
         .onDisappear {
-//            viewModel.resetPagination()
+            viewModel.resetPagination()
         }
     }
     
     private var contentView: some View {
         listView
-            .navigationBarTitle(viewModel.cards.isEmpty ? "" : "Results")
+            .navigationTitle(Text(viewModel.cards.isEmpty ? "" : "Results"))
             .sheet(item: $selectedCard) { card in
                 NavigationView {
                     CardView(newID: card.newIDCopy,
@@ -69,6 +71,9 @@ struct CardsSearchResultsView: View {
                 Text("Loading...")
                     .font(Font.custom(ManaKit.Fonts.magic2015.name,
                                       size: 15))
+//                    .onAppear {
+//                        fetchRemoteNextPage()
+//                    }
 //                lastRowView
 //                    .listRowSeparator(.hidden)
             }

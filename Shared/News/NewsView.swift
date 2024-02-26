@@ -79,7 +79,7 @@ struct NewsView: View {
 //                    .preferredControlAccentColor(.accentColor)
                     .dismissButtonStyle(.close)
             }
-            .navigationBarTitle("News")
+            .navigationTitle(Text("News"))
     }
     
     var regularView: some View {
@@ -109,7 +109,7 @@ struct NewsView: View {
                         .dismissButtonStyle(.close)
                 }
                 .padding()
-                .navigationBarTitle("News")
+                .navigationTitle(Text("News"))
         }
     }
 }

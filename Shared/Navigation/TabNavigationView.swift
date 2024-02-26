@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ManaKit
 
 struct TabNavigationView: View {
     enum TabItem {
@@ -15,6 +16,7 @@ struct TabNavigationView: View {
     }
     
     @State private var selection: TabItem = .news
+    private let keyruneUnicode = "e615" // Legends
     
     var body: some View {
         TabView(selection: $selection) {

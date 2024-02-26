@@ -43,10 +43,10 @@ class SetsViewModel: ViewModel {
     var sort: SetsViewSort = .releaseDate
     var typeFilter: String?
     private var frc: NSFetchedResultsController<MGSet>
-    private var setIDs = [String]()
+    private var setIDs = [NSManagedObjectID]()
     
     // MARK: - Initializers
-    init(dataAPI: API = ManaKit.shared) {
+    init(dataAPI: API = ManaKit.sharedCoreData) {
         self.dataAPI = dataAPI
         frc = NSFetchedResultsController()
         
@@ -127,7 +127,7 @@ class SetsViewModel: ViewModel {
                     self.isFailed = false
                 }
                 
-                setIDs = try await dataAPI.fetchSets(sortDescriptors: sortDescriptors).map { $0.code }
+                setIDs = try await dataAPI.fetchSets()
 
                 DispatchQueue.main.async {
                     self.fetchLocalData()
@@ -148,7 +148,7 @@ class SetsViewModel: ViewModel {
     
     override func fetchLocalData() {
         frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(query: query),
-                                         managedObjectContext: ManaKit.shared.viewContext,
+                                         managedObjectContext: ManaKit.sharedCoreData.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath,
                                          cacheName: nil)
         frc.delegate = self
@@ -197,9 +197,15 @@ extension SetsViewModel {
         }
         
         if !setIDs.isEmpty {
+            var setCodes = [String]()
+            for setID in setIDs {
+                let set = ManaKit.sharedCoreData.object(MGSet.self,
+                                                        with: setID)
+                setCodes.append(set.code)
+            }
             predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate,
                                                                             NSPredicate(format: "code IN %@",
-                                                                                        setIDs)])
+                                                                                        setCodes)])
         }
         
         let request: NSFetchRequest<MGSet> = MGSet.fetchRequest()
@@ -212,12 +218,12 @@ extension SetsViewModel {
 
 extension SetsViewModel {
     func setTypes() -> [MGSetType] {
-        let types = ManaKit.shared.find(MGSetType.self,
-                                        properties: nil,
-                                        predicate: nil,
-                                        sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)],
-                                        createIfNotFound: true,
-                                        context: ManaKit.shared.viewContext)  ?? []
+        let types = ManaKit.sharedCoreData.find(MGSetType.self,
+                                                properties: nil,
+                                                predicate: nil,
+                                                sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)],
+                                                createIfNotFound: true,
+                                                context: ManaKit.sharedCoreData.viewContext)  ?? []
         return types
     }
 }

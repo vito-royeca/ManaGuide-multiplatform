@@ -17,13 +17,13 @@ class CardOtherPrintingsViewModel: CardsViewModel {
     var languageCode: String
     var dataAPI: API
     private var frc: NSFetchedResultsController<MGCard>
-    private var otherPrintingIDs = [String]()
+    private var otherPrintingIDs = [NSManagedObjectID]()
 
     // MARK: - Initializers
 
     init(newID: String,
          languageCode: String,
-         dataAPI: API = ManaKit.shared) {
+         dataAPI: API = ManaKit.sharedCoreData) {
         self.newID = newID
         self.languageCode = languageCode
         self.dataAPI = dataAPI
@@ -46,12 +46,9 @@ class CardOtherPrintingsViewModel: CardsViewModel {
                     self.isFailed = false
                 }
                 
-                let cards = try await dataAPI.fetchCardOtherPrintings(newID: newID,
-                                                                      languageCode: languageCode,
-                                                                      sortDescriptors: sortDescriptors)
-                otherPrintingIDs = cards.map { $0.newIDCopy }
+                otherPrintingIDs = try await dataAPI.fetchCardOtherPrintings(newID: newID,
+                                                                             languageCode: languageCode)
                 DispatchQueue.main.async {
-                    
                     self.fetchLocalData()
                     self.isBusy.toggle()
                 }
@@ -71,7 +68,7 @@ class CardOtherPrintingsViewModel: CardsViewModel {
     
     override func fetchLocalData() {
         frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(newID: newID),
-                                         managedObjectContext: ManaKit.shared.viewContext,
+                                         managedObjectContext: ManaKit.sharedCoreData.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath,
                                          cacheName: nil)
         frc.delegate = self
@@ -108,7 +105,17 @@ extension CardOtherPrintingsViewModel: NSFetchedResultsControllerDelegate {
 
 extension CardOtherPrintingsViewModel {
     func defaultFetchRequest(newID: String) -> NSFetchRequest<MGCard> {
-        let predicate = NSPredicate(format: "newID IN %@", otherPrintingIDs)
+        var predicate: NSPredicate?
+        
+        if !otherPrintingIDs.isEmpty {
+            var newIDs = [String]()
+            for otherPrintingID in otherPrintingIDs {
+                let card = ManaKit.sharedCoreData.object(MGCard.self,
+                                                        with: otherPrintingID)
+                newIDs.append(card.newIDCopy)
+            }
+            predicate = NSPredicate(format: "newID IN %@", newIDs)
+        }
         
         let request: NSFetchRequest<MGCard> = MGCard.fetchRequest()
         request.predicate = predicate
@@ -121,13 +128,13 @@ extension CardOtherPrintingsViewModel {
 extension CardOtherPrintingsViewModel {
     func findOtherPrintingIDs() {
         let predicate = NSPredicate(format: "newID == %@", newID)
-        if let card = ManaKit.shared.find(MGCard.self,
-                                      properties: nil,
-                                      predicate: predicate,
-                                      sortDescriptors: nil,
-                                      createIfNotFound: true)?.first,
+        if let card = ManaKit.sharedCoreData.find(MGCard.self,
+                                                  properties: nil,
+                                                  predicate: predicate,
+                                                  sortDescriptors: nil,
+                                                  createIfNotFound: false)?.first,
            let sortedOtherPrintings = card.sortedOtherPrintings {
-            otherPrintingIDs = sortedOtherPrintings.map { $0.newIDCopy }
+            otherPrintingIDs = sortedOtherPrintings.map { $0.objectID }
         }
     }
 }

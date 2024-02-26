@@ -60,7 +60,7 @@ struct CardsStoreSeeAllView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarTitle(title)
+            .navigationTitle(Text(title))
     }
     
     var regularView: some View {
@@ -96,7 +96,7 @@ struct CardsStoreSeeAllView: View {
                     }
                 }
                 .navigationBarTitleDisplayMode(.inline)
-                .navigationBarTitle(title)
+                .navigationTitle(Text(title))
         }
     }
 }

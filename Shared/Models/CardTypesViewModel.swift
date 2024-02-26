@@ -18,7 +18,7 @@ class CardTypesViewModel: ViewModel {
     private var frc: NSFetchedResultsController<MGCardType>
     
     // MARK: - Initializers
-    init(dataAPI: API = ManaKit.shared) {
+    init(dataAPI: API = ManaKit.sharedCoreData) {
         self.dataAPI = dataAPI
         frc = NSFetchedResultsController()
         
@@ -64,7 +64,7 @@ class CardTypesViewModel: ViewModel {
                     self.isFailed = false
                 }
                 
-                _ = try await dataAPI.fetchCardTypes(sortDescriptors: sortDescriptors)
+                _ = try await dataAPI.fetchCardTypes()
                 
                 DispatchQueue.main.async {
                     self.fetchLocalData()
@@ -86,7 +86,7 @@ class CardTypesViewModel: ViewModel {
     
     override func fetchLocalData() {
         frc = NSFetchedResultsController(fetchRequest: defaultFetchRequest(),
-                                         managedObjectContext: ManaKit.shared.viewContext,
+                                         managedObjectContext: ManaKit.sharedCoreData.viewContext,
                                          sectionNameKeyPath: sectionNameKeyPath,
                                          cacheName: nil)
         frc.delegate = self

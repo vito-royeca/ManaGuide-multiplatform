@@ -13,7 +13,9 @@ struct CardFilterSelectorView<T: MGEntity>: View {
     @ObservedObject var viewModel: ViewModel
     var type: T.Type
     @Binding var selectedFilters: [T]
+    var filterTitle: String
     
+    @Environment(\.presentationMode) var presentationMode
     @State private var filters = [NSManagedObjectID: Bool]()
     @State private var query = ""
     
@@ -58,6 +60,16 @@ struct CardFilterSelectorView<T: MGEntity>: View {
             .searchable(text: $query,
                         placement: .navigationBarDrawer(displayMode: .automatic),
                         prompt: "Search...")
+            .navigationTitle(Text(filterTitle))
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "xmark")
+                    }
+                }
+            }
     }
     
     private func fetchRemoteData() {
@@ -101,5 +113,5 @@ struct CardFilterSelectorView<T: MGEntity>: View {
     let model = CardTypesViewModel()
     return CardFilterSelectorView(viewModel: model,
                                   type: MGCardType.self,
-                                  selectedFilters: .constant([]))
+                                  selectedFilters: .constant([]), filterTitle: "Filter")
 }
