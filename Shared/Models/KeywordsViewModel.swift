@@ -9,7 +9,7 @@ import CoreData
 import SwiftUI
 import ManaKit
 
-// MARK: - RaritiesViewModel
+// MARK: - KeywordsViewModel
 
 class KeywordsViewModel: ViewModel {
     // MARK: - Variables

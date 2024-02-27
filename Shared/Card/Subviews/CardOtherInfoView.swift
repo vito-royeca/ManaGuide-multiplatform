@@ -10,45 +10,32 @@ import ManaKit
 
 struct CardOtherInfoView: View {
     var card: MGCard
-    
-    init(card: MGCard) {
-        self.card = card
-    }
-    
+    @State private var isArtistsExpanded = true
+
     var body: some View {
         Group {
-            LabeledContent {
-                Text(card.set?.name ?? String.emdash)
-            } label: {
-                Text("Set")
-            }
-            
-            LabeledContent {
-                Text(card.displayKeyrune)
-                    .scaledToFit()
-                    .font(Font.custom("Keyrune", size: 20))
-                    .foregroundColor(Color(card.keyruneColor))
-            } label: {
-                Text("Set Symbol")
-            }
-            
-            LabeledContent {
-                Text(card.rarity?.name ?? String.emdash)
-            } label: {
-                Text("Rarity")
-            }
-            
             LabeledContent {
                 Text("#\(card.collectorNumber ?? String.emdash)")
             } label: {
                 Text("Collector Number")
             }
-            
-//            LabeledContent {
-//                Text(card.artist?.name ?? String.emdash)
-//            } label: {
-//                Text("Artist")
-//            }
+
+            if let artists = card.sortedArtists {
+                if artists.count > 1 {
+                    DisclosureGroup("Artists:",
+                                    isExpanded: $isArtistsExpanded) {
+                        ForEach(artists) { artist in
+                            Text(artist.name ?? " ")
+                        }
+                    }
+                } else {
+                    LabeledContent {
+                        Text(artists.first?.name ?? "")
+                    } label: {
+                        Text("Artist")
+                    }
+                }
+            }
             
             if let frame = card.frame {
                 LabeledContent {

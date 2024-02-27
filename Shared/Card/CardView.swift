@@ -81,6 +81,10 @@ struct CardView: View {
                             }
                         }
                     case .info:
+                        Section {
+                            CardSetInfoView(card: cardObject)
+                        }
+                        
                         if let faces = cardObject.sortedFaces {
                             ForEach(faces) { face in
                                 Section(face.displayName ?? "") {
@@ -175,6 +179,10 @@ struct CardView: View {
                     }
                 
                     Form {
+                        Section {
+                            CardSetInfoView(card: cardObject)
+                        }
+                        
                         if let faces = cardObject.sortedFaces {
                             ForEach(faces) { face in
                                 Section {
@@ -308,38 +316,3 @@ struct CardToolbar: ToolbarContent {
     .previewInterfaceOrientation(.landscapeRight)
 }
 
-struct CardDetailsView: View {
-    var cardObject: MGCard
-    var showPrices: Bool
-
-    var body: some View {
-        List {
-            if showPrices,
-                let prices = cardObject.prices?.allObjects as? [MGCardPrice] {
-                Section {
-                    CardPricingInfoView(prices: prices)
-                }
-            }
-            
-            if let faces = cardObject.sortedFaces {
-                ForEach(faces) { face in
-                    Section {
-                        CardCommonInfoView(card: face)
-                    }
-                }
-            } else {
-                Section {
-                    CardCommonInfoView(card: cardObject)
-                }
-            }
-            
-            Section {
-                CardOtherInfoView(card: cardObject)
-            }
-            Section {
-                CardExtraInfoView(card: cardObject)
-            }
-        }
-        
-    }
-}

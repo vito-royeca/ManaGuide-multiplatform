@@ -10,17 +10,9 @@ import ManaKit
 
 struct CardCommonInfoView: View {
     @Environment(\.colorScheme) var colorScheme
-    let cmcFormatter = NumberFormatter()
+    
     var card: MGCard
-    
-    init(card: MGCard) {
-        self.card = card
-        
-        cmcFormatter.minimumFractionDigits = 0
-        cmcFormatter.maximumFractionDigits = 2
-        cmcFormatter.numberStyle = .decimal
-    }
-    
+
     var body: some View {
         LabeledContent {
             AttributedText(
@@ -33,32 +25,9 @@ struct CardCommonInfoView: View {
         }
         
         LabeledContent {
-            Text(cmcFormatter.string(from: card.cmc as NSNumber) ?? " ")
-        } label: {
-            Text("Converted Mana Cost")
-        }
-
-        LabeledContent {
             Text(card.displayTypeLine ?? "")
         } label: {
             Text("Type")
-        }
-
-        if let displayPowerToughness = card.displayPowerToughness {
-            LabeledContent {
-                Text(displayPowerToughness)
-            } label: {
-                Text("Power/Toughness")
-            }
-        }
-        
-        if let loyalty = card.loyalty,
-           !loyalty.isEmpty {
-            LabeledContent {
-                Text(loyalty)
-            } label: {
-                Text("Loyalty")
-            }
         }
 
         if let printedText = card.printedText,
@@ -98,6 +67,23 @@ struct CardCommonInfoView: View {
                 Text("Flavor Text")
             }
             .labeledContentStyle(.vertical)
+        }
+        
+        if let displayPowerToughness = card.displayPowerToughness {
+            LabeledContent {
+                Text(displayPowerToughness)
+            } label: {
+                Text("Power/Toughness")
+            }
+        }
+        
+        if let loyalty = card.loyalty,
+           !loyalty.isEmpty {
+            LabeledContent {
+                Text(loyalty)
+            } label: {
+                Text("Loyalty")
+            }
         }
     }
 }

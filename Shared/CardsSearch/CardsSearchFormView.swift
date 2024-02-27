@@ -14,6 +14,7 @@ struct CardsSearchFormView: View {
     @State private var isRaritiesExpanded = false
     @State private var isTypesExpanded = false
     @State private var isKeywordsExpanded = false
+    @State private var isArtistsExpanded = false
     @State private var navigationPath = NavigationPath()
 
     var body: some View {
@@ -48,6 +49,7 @@ struct CardsSearchFormView: View {
                     raritiesField
                     typesField
                     keywordsField
+                    artistsField
                 }
             }
             .toolbar {
@@ -96,6 +98,14 @@ struct CardsSearchFormView: View {
                                            type: MGKeyword.self,
                                            selectedFilters: $viewModel.keywordsFilter,
                                            filterTitle: "Keyword")
+                }
+            }
+            .sheet(isPresented: $isArtistsExpanded) {
+                NavigationView {
+                    CardFilterSelectorView(viewModel: ArtistsViewModel(),
+                                           type: MGArtist.self,
+                                           selectedFilters: $viewModel.artistsFilter,
+                                           filterTitle: "Artist")
                 }
             }
         }
@@ -176,6 +186,31 @@ struct CardsSearchFormView: View {
         .labeledContentStyle(.vertical)
     }
     
+    private var artistsField: some View {
+        LabeledContent {
+            ScrollView {
+                FlexibleView(data: viewModel.artistsFilter,
+                             spacing: 8,
+                             alignment: .leading) { artist in
+                    RemovableFilterButton(text: artist.description) {
+                        viewModel.artistsFilter.removeAll(where: { $0 == artist })
+                    }
+                }
+            }
+        } label: {
+            HStack {
+                Text("Artist")
+                Spacer()
+                Button(action: {
+                    isArtistsExpanded.toggle()
+                }, label: {
+                    Image(systemName: "plus")
+                })
+            }
+        }
+        .labeledContentStyle(.vertical)
+    }
+
     private func performSearch() {
         viewModel.isFailed = false
         viewModel.isBusy = false

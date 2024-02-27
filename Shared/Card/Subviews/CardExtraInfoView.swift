@@ -12,13 +12,9 @@ import ManaKit
 struct CardExtraInfoView: View {
     @Environment(\.colorScheme) var colorScheme
     @State var isColorsExpanded         = true
-//    @State var isComponentPartsExpanded = false
     @State var isFrameEffectsExpanded   = true
     @State var isLegalitiesExpanded     = true
-//    @State var isOtherLanguagesExpanded = false
-//    @State var isOtherPrintingsExpanded = false
     @State var isRulingsExpanded        = true
-//    @State var isVariationsExpanded     = false
 
     var card: MGCard
     

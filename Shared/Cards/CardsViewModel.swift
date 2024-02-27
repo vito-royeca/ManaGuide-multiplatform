@@ -63,8 +63,10 @@ class CardsViewModel: ViewModel {
     @Published var display: CardsViewDisplay = .list
     @Published var cardTypes = [MGCardType]()
     @Published var rarities = [MGRarity]()
+    @Published var artists = [MGArtist]()
     var rarityFilter: String?
     var typeFilter: String?
+    var artistFilter: String?
 
     override var sortDescriptors: [NSSortDescriptor] {
         get {
@@ -123,9 +125,6 @@ class CardsViewModel: ViewModel {
 
 extension CardsViewModel {
     @objc func fetchOtherData() async throws {
-        let sortDescriptors = [NSSortDescriptor(key: "name",
-                                                ascending: true)]
-
         if try ManaKit.shared.willFetchColors() {
             _ = try await ManaKit.shared.fetchColors()
         }
@@ -136,6 +135,10 @@ extension CardsViewModel {
 
         if try ManaKit.shared.willFetchCardTypes() {
             _ = try await ManaKit.shared.fetchCardTypes()
+        }
+
+        if try ManaKit.shared.willFetchArtists() {
+            _ = try await ManaKit.shared.fetchArtists()
         }
 
         DispatchQueue.main.async {
@@ -156,6 +159,13 @@ extension CardsViewModel {
                                                  sortDescriptors: newSortDescriptors,
                                                  createIfNotFound: false,
                                                  context: ManaKit.shared.viewContext)  ?? []
+            
+            self.artists = ManaKit.shared.find(MGArtist.self,
+                                               properties: nil,
+                                               predicate: nil,
+                                               sortDescriptors: newSortDescriptors,
+                                               createIfNotFound: false,
+                                               context: ManaKit.shared.viewContext)  ?? []
         }
     }
 }

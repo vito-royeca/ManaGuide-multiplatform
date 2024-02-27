@@ -19,6 +19,7 @@ class CardsSearchViewModel: CardsViewModel {
     @Published var raritiesFilter = [MGRarity]()
     @Published var typesFilter = [MGCardType]()
     @Published var keywordsFilter = [MGKeyword]()
+    @Published var artistsFilter = [MGArtist]()
     @Published var pageLimit = maxPageSize
     @Published var pageOffset = 0
     @Published var hasMoreData = true
@@ -49,6 +50,7 @@ class CardsSearchViewModel: CardsViewModel {
                                           rarities: raritiesFilter.compactMap { $0.name },
                                           types: typesFilter.compactMap { $0.name },
                                           keywords: keywordsFilter.compactMap { $0.name },
+                                          artists: artistsFilter.compactMap { $0.name },
                                           pageSize: CardsSearchViewModel.maxPageSize,
                                           pageOffset: pageOffset) {
                 DispatchQueue.main.async {
@@ -60,6 +62,7 @@ class CardsSearchViewModel: CardsViewModel {
                                                          rarities: raritiesFilter.compactMap { $0.name },
                                                          types: typesFilter.compactMap { $0.name },
                                                          keywords: keywordsFilter.compactMap { $0.name },
+                                                         artists: artistsFilter.compactMap { $0.name },
                                                          pageSize: CardsSearchViewModel.maxPageSize,
                                                          pageOffset: pageOffset)
                 DispatchQueue.main.async {
@@ -164,7 +167,8 @@ extension CardsSearchViewModel {
         !nameFilter.isEmpty && nameFilter.count >= 4 ||
         !raritiesFilter.isEmpty ||
         !typesFilter.isEmpty ||
-        !keywordsFilter.isEmpty
+        !keywordsFilter.isEmpty ||
+        !artistsFilter.isEmpty
     }
     
     func resetFilters() {
