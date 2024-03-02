@@ -64,10 +64,19 @@ struct CardFilterSelectorView<T: MGEntity>: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
+                        selectedFilters.removeAll()
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Image(systemName: "xmark")
+                        Text("Cancel")
                     }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Text("Done")
+                    }
+                    .disabled(filters.values.filter { $0 }.isEmpty)
                 }
             }
     }
