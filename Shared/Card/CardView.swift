@@ -113,13 +113,11 @@ struct CardView: View {
                             }
                         }
                     case .parts:
-                        Section {
-                            if !(cardObject.sortedComponentParts?.isEmpty ?? true) {
-                                CardComponentPartsView(card: cardObject)
-                            } else {
-                                Text("No parts")
-                                    .listRowBackground(EmptyView().background(.clear))
-                            }
+                        if !(cardObject.sortedComponentParts?.isEmpty ?? true) {
+                            CardComponentPartsView(card: cardObject)
+                        } else {
+                            Text("No parts")
+                                .listRowBackground(EmptyView().background(.clear))
                         }
                     case .printings:
                         Section {
@@ -306,7 +304,7 @@ struct CardToolbar: ToolbarContent {
 
 #Preview {
     return NavigationView {
-        CardView(newID: "mkm_en_167",
+        CardView(newID: "emn_en_15a",
                  relatedCards: [],
                  withCloseButton: true)
     }

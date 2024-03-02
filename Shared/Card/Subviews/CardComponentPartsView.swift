@@ -9,6 +9,8 @@ import SwiftUI
 import ManaKit
 
 struct CardComponentPartsView: View {
+    @State private var selectedCard: MGCard?
+
     var card: MGCard
     
     init(card: MGCard) {
@@ -20,27 +22,28 @@ struct CardComponentPartsView: View {
     }
     
     var contentView: some View {
-        let componentParts = card.sortedComponentParts ?? []
-
+        let componentParts = card.sectionedComponentParts
+        
         return List {
-            ForEach(componentParts) { componentPart in
-                if let part = componentPart.part,
-                   let component = componentPart.component {
-
-                    let newIDCopy = part.newIDCopy
-                    let name = component.name
-                    VStack(alignment: .leading) {
-                        Text(name)
-                            .font(.headline)
-                        CardListRowView(card: part)
-                            .background(NavigationLink("",
-                                                       destination: CardView(newID: newIDCopy,
-                                                                             relatedCards: [],
-                                                                             withCloseButton: false)).opacity(0))
+            ForEach(Array(componentParts.keys), id: \.self) { key in
+                Section(key) {
+                    ForEach(componentParts[key] ?? []) { componentPart in
+                        if let part = componentPart.part {
+                            CardsStoreLargeView(card: part)
+                                .onTapGesture {
+                                    selectedCard = componentPart.part
+                                }
+                        }
                     }
-                } else {
-                    EmptyView()
+                    
                 }
+            }
+        }
+        .sheet(item: $selectedCard) { card in
+            NavigationView {
+                CardView(newID: card.newIDCopy,
+                         relatedCards: [],
+                         withCloseButton: true)
             }
         }
     }
