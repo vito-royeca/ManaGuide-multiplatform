@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CardMenuView: View {
+    @EnvironmentObject private var viewModel: CardViewModel
     @AppStorage("CardMenu") private var cardMenu = CardMenu.pricing.description
     
     var body: some View {
@@ -33,7 +34,27 @@ struct CardMenuView: View {
                         Text(menu.description)
                     }
                 }
+                .disabled(isDisabled(menu: menu))
             }
+        }
+    }
+    
+    private func isDisabled(menu: CardMenu) -> Bool {
+        guard let card = viewModel.cardObject else {
+            return false
+        }
+        
+        switch menu {
+        case .variations:
+            return card.sortedVariations?.isEmpty ?? true
+        case .parts:
+            return card.sortedComponentParts?.isEmpty ?? true
+        case .printings:
+            return card.sortedOtherPrintings?.isEmpty ?? true
+        case .languages:
+            return card.sortedOtherLanguages?.isEmpty ?? true
+        default:
+            return false
         }
     }
 }

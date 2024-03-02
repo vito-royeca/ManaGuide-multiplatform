@@ -291,6 +291,7 @@ struct CardToolbar: ToolbarContent {
         }
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             CardMenuView()
+                .environmentObject(viewModel)
             Button(action: {
                 isShowingShareSheet.toggle()
             }) {
