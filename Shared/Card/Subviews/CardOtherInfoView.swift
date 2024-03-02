@@ -10,8 +10,18 @@ import ManaKit
 
 struct CardOtherInfoView: View {
     var card: MGCard
+    
     @State private var isArtistsExpanded = true
+    private let cmcFormatter = NumberFormatter()
 
+    init(card: MGCard) {
+        self.card = card
+        
+        cmcFormatter.minimumFractionDigits = 0
+        cmcFormatter.maximumFractionDigits = 2
+        cmcFormatter.numberStyle = .decimal
+    }
+    
     var body: some View {
         Group {
             LabeledContent {
@@ -37,6 +47,12 @@ struct CardOtherInfoView: View {
                 }
             }
             
+            LabeledContent {
+                Text(cmcFormatter.string(from: card.cmc as NSNumber) ?? " ")
+            } label: {
+                Text("Converted Mana Cost")
+            }
+
             if let frame = card.frame {
                 LabeledContent {
                     Text(frame.name ?? String.emdash)

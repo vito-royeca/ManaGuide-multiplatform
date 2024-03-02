@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct CardMenuView: View {
-    @EnvironmentObject private var viewModel: SetViewModel
     @AppStorage("CardMenu") private var cardMenu = CardMenu.pricing.description
     
     var body: some View {

@@ -142,7 +142,7 @@ class SetViewModel: CardsViewModel {
         
         do {
             if try dataAPI.willFetchSet(code: setCode,
-                                    languageCode: languageCode) {
+                                        languageCode: languageCode) {
                 DispatchQueue.main.async {
                     self.isBusy.toggle()
                     self.isFailed = false

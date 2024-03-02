@@ -24,11 +24,11 @@ struct SetLanguageMenuView: View {
         Group {
             ForEach(viewModel.commonLanguages(), id:\.code) { language in
                 Button(action: {
-                    setLanguageFilter = language.displayCode?.lowercased() ?? "en"
+                    setLanguageFilter = language.code
                     NotificationCenter.default.post(name: NSNotification.SetViewLanguageFilter,
                                                     object: setLanguageFilter)
                 }) {
-                    if setLanguageFilter == language.displayCode?.lowercased() {
+                    if setLanguageFilter == language.code {
                         Label("\(language.displayCode?.uppercased() ?? "") \(language.name ?? "")",
                               systemImage: "checkmark")
                     } else {

@@ -23,53 +23,47 @@ struct CardExtraInfoView: View {
     }
     
     var body: some View {
-        Group {
-            DisclosureGroup("Colors",
-                            isExpanded: $isColorsExpanded) {
-                ColorRowView(title: "Colors", 
-                             colors: card.sortedColors)
-                ColorRowView(title: "Color Identities",
-                             colors: card.sortedColorIdentities)
-                ColorRowView(title: "Color Indicators",
-                             colors: card.sortedColorIndicators)
-            }
-            
-            if let frameEffects = card.sortedFrameEffects {
-                DisclosureGroup("Frame Effects: \(frameEffects.count)",
-                                isExpanded: $isFrameEffectsExpanded) {
-                    ForEach(frameEffects) { frameEffect in
-                        Text(frameEffect.name ?? " ")
-                    }
+        Section("Colors") {
+            ColorRowView(title: "Colors",
+                         colors: card.sortedColors)
+            ColorRowView(title: "Color Identities",
+                         colors: card.sortedColorIdentities)
+            ColorRowView(title: "Color Indicators",
+                         colors: card.sortedColorIndicators)
+        }
+        
+        if let frameEffects = card.sortedFrameEffects {
+            Section("Frame Effects") {
+                ForEach(frameEffects) { frameEffect in
+                    Text(frameEffect.name ?? " ")
                 }
             }
+        }
 
-            if let rulings = card.sortedRulings {
-                DisclosureGroup("Rulings: \(rulings.count)",
-                                isExpanded: $isRulingsExpanded) {
-                    ForEach(rulings) { ruling in
-                        LabeledContent {
-                            AttributedText(
-                                addColor(to: NSAttributedString(symbol: ruling.text ?? " ",
-                                                                pointSize: 16),
-                                         colorScheme: colorScheme)
-                            )
-                        } label: {
-                            Text(ruling.displayDatePublished ?? " ")
-                        }
-                        .labeledContentStyle(.vertical)
+        if let rulings = card.sortedRulings {
+            Section("Rulings") {
+                ForEach(rulings) { ruling in
+                    LabeledContent {
+                        AttributedText(
+                            addColor(to: NSAttributedString(symbol: ruling.text ?? " ",
+                                                            pointSize: 16),
+                                     colorScheme: colorScheme)
+                        )
+                    } label: {
+                        Text(ruling.displayDatePublished ?? " ")
                     }
+                    .labeledContentStyle(.vertical)
                 }
             }
+        }
 
-            if let formatLegalities = card.sortedFormatLegalities {
-                DisclosureGroup("Legalities: \(formatLegalities.count)",
-                                isExpanded: $isLegalitiesExpanded) {
-                    ForEach(formatLegalities) { formatLegality in
-                        LabeledContent {
-                            Text(formatLegality.legality?.name ?? String.emdash)
-                        } label: {
-                            Text(formatLegality.format?.name ?? String.emdash)
-                        }
+        if let formatLegalities = card.sortedFormatLegalities {
+            Section("Legalities") {
+                ForEach(formatLegalities) { formatLegality in
+                    LabeledContent {
+                        Text(formatLegality.legality?.name ?? String.emdash)
+                    } label: {
+                        Text(formatLegality.format?.name ?? String.emdash)
                     }
                 }
             }

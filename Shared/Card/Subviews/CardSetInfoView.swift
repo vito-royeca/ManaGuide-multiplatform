@@ -11,15 +11,6 @@ import ManaKit
 struct CardSetInfoView: View {
     @Environment(\.colorScheme) var colorScheme
     var card: MGCard
-    private let cmcFormatter = NumberFormatter()
-
-    init(card: MGCard) {
-        self.card = card
-        
-        cmcFormatter.minimumFractionDigits = 0
-        cmcFormatter.maximumFractionDigits = 2
-        cmcFormatter.numberStyle = .decimal
-    }
 
     var body: some View {
         
@@ -42,12 +33,6 @@ struct CardSetInfoView: View {
             Text(card.rarity?.name ?? String.emdash)
         } label: {
             Text("Rarity")
-        }
-        
-        LabeledContent {
-            Text(cmcFormatter.string(from: card.cmc as NSNumber) ?? " ")
-        } label: {
-            Text("Converted Mana Cost")
         }
     }
 }

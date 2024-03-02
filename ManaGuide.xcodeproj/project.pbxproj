@@ -28,8 +28,6 @@
 		585D69012B8BF4950013EDB5 /* SetLanguageMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585D68FD2B8BF4950013EDB5 /* SetLanguageMenuView.swift */; };
 		585D69032B8C01EB0013EDB5 /* CardMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585D69022B8C01EB0013EDB5 /* CardMenuView.swift */; };
 		585D69042B8C01EB0013EDB5 /* CardMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585D69022B8C01EB0013EDB5 /* CardMenuView.swift */; };
-		585D69052B8C01EB0013EDB5 /* CardMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585D69022B8C01EB0013EDB5 /* CardMenuView.swift */; };
-		585D69062B8C01EB0013EDB5 /* CardMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585D69022B8C01EB0013EDB5 /* CardMenuView.swift */; };
 		586B09D72AFC0C0E00325B3B /* CardOtherInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586B09D62AFC0C0E00325B3B /* CardOtherInfoView.swift */; };
 		586B09D82AFC0C0E00325B3B /* CardOtherInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586B09D62AFC0C0E00325B3B /* CardOtherInfoView.swift */; };
 		586B09DA2AFC0CB700325B3B /* CardCommonInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586B09D92AFC0CB700325B3B /* CardCommonInfoView.swift */; };
@@ -977,7 +975,6 @@
 				58AB9C5D2B0FF37F00A73696 /* LabeledContentStyle+Styles.swift in Sources */,
 				585D69002B8BF4950013EDB5 /* SetLanguageMenuView.swift in Sources */,
 				8B6CAF6C284043DC0073E8FE /* SnapshotHelper.swift in Sources */,
-				585D69052B8C01EB0013EDB5 /* CardMenuView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -991,7 +988,6 @@
 				8B41B75C2812144F00AECF85 /* Tests_macOSLaunchTests.swift in Sources */,
 				585D69012B8BF4950013EDB5 /* SetLanguageMenuView.swift in Sources */,
 				58ED3EA12B0C064C003A93DD /* EmptyResultView.swift in Sources */,
-				585D69062B8C01EB0013EDB5 /* CardMenuView.swift in Sources */,
 				8B41B75A2812144F00AECF85 /* Tests_macOS.swift in Sources */,
 				58D064C92B85A1C300FA004B /* CardOtherPrintingsView.swift in Sources */,
 				58AB9C682B119AC700A73696 /* CardsSearch.swift in Sources */,

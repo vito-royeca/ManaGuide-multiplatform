@@ -102,9 +102,7 @@ struct CardView: View {
                         }
 
                     case .extraInfo:
-                        Section {
-                            CardExtraInfoView(card: cardObject)
-                        }
+                        CardExtraInfoView(card: cardObject)
                     case .variations:
                         Section {
                             if !(cardObject.sortedVariations?.isEmpty ?? true)  {
@@ -295,7 +293,6 @@ struct CardToolbar: ToolbarContent {
         }
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             CardMenuView()
-                .environmentObject(viewModel)
             Button(action: {
                 isShowingShareSheet.toggle()
             }) {
@@ -309,7 +306,7 @@ struct CardToolbar: ToolbarContent {
 
 #Preview {
     return NavigationView {
-        CardView(newID: "pip_en_259",
+        CardView(newID: "mkm_en_167",
                  relatedCards: [],
                  withCloseButton: true)
     }
