@@ -27,7 +27,7 @@ struct SetView: View {
                 BusyView()
             } else if viewModel.isFailed {
                 ErrorView {
-                    update(languageCode: setLanguageFilter)
+                    update(languageCode: "en")
                 } cancelAction: {
                     viewModel.isFailed = false
                 }
@@ -41,7 +41,7 @@ struct SetView: View {
             update(languageCode: languageCode)
         }
         .onAppear {
-            update(languageCode: setLanguageFilter)
+            update(languageCode: "en")
         }
     }
     
@@ -87,8 +87,7 @@ struct SetView: View {
 
     private func update(languageCode: String) {
         Task {
-            viewModel.languageCode = languageCode
-            try await viewModel.fetchRemoteData()
+            viewModel.findSet()
             
             guard let setObject = viewModel.setObject else {
                 return
@@ -96,11 +95,13 @@ struct SetView: View {
             
             if let _ = (setObject.sortedLanguages ?? []).first(where: { $0.code == languageCode }) {
                 viewModel.languageCode = languageCode
+                setLanguageFilter = languageCode
             } else if let firstLanguage = (setObject.sortedLanguages ?? []).first {
                 viewModel.languageCode = firstLanguage.code
                 setLanguageFilter = firstLanguage.code
-                try await viewModel.fetchRemoteData()
             }
+            
+            try await viewModel.fetchRemoteData()
         }
     }
 }
