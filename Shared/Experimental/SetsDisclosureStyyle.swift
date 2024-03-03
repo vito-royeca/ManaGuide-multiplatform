@@ -2,7 +2,7 @@
 //  SetsDisclosureStyyle.swift
 //  ManaGuide (iOS)
 //
-//  Created by Miguel Ponce de Monio III on 1/27/24.
+//  Created by Vito Royeca on 1/27/24.
 //
 
 import SwiftUI

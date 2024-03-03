@@ -2,7 +2,7 @@
 //  String+Utilities.swift
 //  ManaGuide
 //
-//  Created by Miguel Ponce de Monio III on 11/14/23.
+//  Created by Vito Royeca on 11/14/23.
 //
 
 import Foundation

@@ -27,7 +27,7 @@ struct SetView: View {
                 BusyView()
             } else if viewModel.isFailed {
                 ErrorView {
-                    fetchRemoteData()
+                    update(languageCode: setLanguageFilter)
                 } cancelAction: {
                     viewModel.isFailed = false
                 }
@@ -41,7 +41,6 @@ struct SetView: View {
             update(languageCode: languageCode)
         }
         .onAppear {
-            fetchRemoteData()
             update(languageCode: setLanguageFilter)
         }
     }
@@ -86,15 +85,23 @@ struct SetView: View {
 
     // MARK: - Private methods
 
-    private func fetchRemoteData() {
-        Task {
-            try await viewModel.fetchRemoteData()
-        }
-    }
-    
     private func update(languageCode: String) {
-        viewModel.languageCode = languageCode
-        fetchRemoteData()
+        Task {
+            viewModel.languageCode = languageCode
+            try await viewModel.fetchRemoteData()
+            
+            guard let setObject = viewModel.setObject else {
+                return
+            }
+            
+            if let _ = (setObject.sortedLanguages ?? []).first(where: { $0.code == languageCode }) {
+                viewModel.languageCode = languageCode
+            } else if let firstLanguage = (setObject.sortedLanguages ?? []).first {
+                viewModel.languageCode = firstLanguage.code
+                setLanguageFilter = firstLanguage.code
+                try await viewModel.fetchRemoteData()
+            }
+        }
     }
 }
 
@@ -102,7 +109,7 @@ struct SetView: View {
 
 #Preview {
     NavigationView {
-        SetView(setCode: "mkm",
+        SetView(setCode: "pmda",
                 languageCode: "en")
     }
 //        .previewInterfaceOrientation(.landscapeLeft)

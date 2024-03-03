@@ -2,7 +2,7 @@
 //  CardsSearch.swift
 //  ManaGuide
 //
-//  Created by Miguel Ponce de Monio III on 11/24/23.
+//  Created by Vito Royeca on 11/24/23.
 //
 
 import Foundation
