@@ -9,17 +9,12 @@ import SwiftUI
 import ManaKit
 
 struct TabNavigationView: View {
-    enum TabItem {
-        case news
-        case sets
-        case cards
-    }
     
-    @State private var selection: TabItem = .news
+    @State private var tabState: Visibility = .visible
     private let keyruneUnicode = "e615" // Legends
     
     var body: some View {
-        TabView(selection: $selection) {
+        TabView {
 //            NavigationView {
 //                NewsView()
 //            }
@@ -28,23 +23,26 @@ struct TabNavigationView: View {
 //                    Image(systemName: "newspaper")
 //                    Text("News")
 //                }
-//                .tag(TabItem.news)
 
-            SetsView()
-                .navigationViewStyle(.stack)
-                .tabItem {
-                    Image(systemName: "rectangle.3.group")
-                    Text("Sets")
-                }
-                .tag(TabItem.sets)
+            TabStateScrollView(tabState: $tabState) {
+                SetsView()
+            }
+            .toolbar(tabState, for: .tabBar)
+            .animation(.easeInOut(duration: 0.3), value: tabState)
+            .tabItem {
+                Image(systemName: "rectangle.3.group")
+                Text("Sets")
+            }
 
-            CardsSearchFormView()
-                .navigationViewStyle(.stack)
-                .tabItem {
-                    Image(systemName: "magnifyingglass")
-                    Text("Search")
-                }
-                .tag(TabItem.cards)
+            TabStateScrollView(tabState: $tabState) {
+                CardsSearchFormView()
+            }
+            .toolbar(tabState, for: .tabBar)
+            .animation(.easeInOut(duration: 0.3), value: tabState)
+            .tabItem {
+                Image(systemName: "magnifyingglass")
+                Text("Search")
+            }
         }
     }
 }
