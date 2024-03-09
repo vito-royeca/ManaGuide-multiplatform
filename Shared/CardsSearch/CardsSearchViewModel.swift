@@ -130,6 +130,11 @@ extension CardsSearchViewModel {
 //
 //                predicate = NSPredicate(format: "newID IN %@",
 //                                        objects.map { $0.newID })
+                let localCache = ManaKit.shared.find(LocalCache.self,
+                                                     properties: ["url": ""],
+                                                     predicate: nil,
+                                                     sortDescriptors: nil,
+                                                     createIfNotFound: false)
             } catch {
                 print(error)
             }
